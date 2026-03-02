@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#DC2626"/>
+  <text x="50" y="38" text-anchor="middle" font-family="Arial Black" font-size="18" fill="white" font-weight="900">RUTA</text>
+  <text x="50" y="58" text-anchor="middle" font-family="Arial Black" font-size="24" fill="white" font-weight="900">X</text>
+  <text x="50" y="75" text-anchor="middle" font-family="Arial Black" font-size="16" fill="white" font-weight="900">ASIA</text>
+</svg>
