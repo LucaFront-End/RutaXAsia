@@ -1,6 +1,6 @@
 import './WhatsAppButton.css'
 
-const WHATSAPP_URL = 'https://wa.me/5215592441070?text=Hola%20quiero%20info%20sobre%20viajes%20a%20Asia'
+const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW%20Hola%20quiero%20info%20sobre%20viajes%20a%20Asia'
 
 function WhatsAppButton() {
     return (

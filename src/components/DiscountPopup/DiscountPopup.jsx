@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
+import { submitFormToCMS } from '../../lib/wixClient'
 import './DiscountPopup.css'
 
 function DiscountPopup() {
     const [visible, setVisible] = useState(false)
     const [closing, setClosing] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
+    const [submitted, setSubmitted] = useState(false)
 
     useEffect(() => {
         const dismissed = sessionStorage.getItem('rutaxasia_popup_dismissed')
@@ -22,9 +25,25 @@ function DiscountPopup() {
         }, 300)
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        handleClose()
+        const formData = new FormData(e.target)
+        const nombre = formData.get('nombre')
+        const email = formData.get('email')
+
+        setSubmitting(true)
+
+        try {
+            await submitFormToCMS({ nombre, email })
+            setSubmitted(true)
+            setTimeout(() => handleClose(), 2500)
+        } catch (err) {
+            console.error('Form submission error:', err)
+            // Close anyway so user isn't stuck
+            handleClose()
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     if (!visible) return null
@@ -37,11 +56,22 @@ function DiscountPopup() {
                     <span className="popup-tag">🎌 Oferta Exclusiva</span>
                     <h2 className="popup-title">Obtén un <span>10% de Descuento</span></h2>
                     <p className="popup-text">Válido en tu primer viaje con nosotros. Regístrate y recibe tu código exclusivo.</p>
-                    <form className="popup-form" onSubmit={handleSubmit}>
-                        <input type="text" placeholder="Tu nombre" required />
-                        <input type="email" placeholder="tu@email.com" required />
-                        <button type="submit" className="btn btn-primary btn-full">¡Quiero mi descuento!</button>
-                    </form>
+
+                    {submitted ? (
+                        <div className="popup-success">
+                            <span style={{ fontSize: '2rem' }}>🎉</span>
+                            <p>¡Registrado! Revisa tu correo para tu código.</p>
+                        </div>
+                    ) : (
+                        <form className="popup-form" onSubmit={handleSubmit}>
+                            <input type="text" name="nombre" placeholder="Tu nombre" required disabled={submitting} />
+                            <input type="email" name="email" placeholder="tu@email.com" required disabled={submitting} />
+                            <button type="submit" className="btn btn-primary btn-full" disabled={submitting}>
+                                {submitting ? 'Enviando...' : '¡Quiero mi descuento!'}
+                            </button>
+                        </form>
+                    )}
+
                     <small className="popup-disclaimer">No aplica con otras promociones.</small>
                 </div>
             </div>

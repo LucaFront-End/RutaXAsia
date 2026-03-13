@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Helmet } from 'react-helmet-async'
 
 
-const WHATSAPP_BASE = 'https://wa.me/5215592441070?text='
+const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
 
 /* ===== DATA ===== */
 const TRIPS = [
@@ -979,7 +979,7 @@ function Home() {
                             <div className="bp-ticket-cta">
                                 <p className="bp-cta-headline">¿Listo para despegar?</p>
                                 <a
-                                    href={`${WHATSAPP_BASE}Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20🎫✈️`}
+                                    href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20🎫✈️`}
                                     className="bp-cta-button bp-cta-pulse"
                                     target="_blank"
                                     rel="noopener noreferrer"

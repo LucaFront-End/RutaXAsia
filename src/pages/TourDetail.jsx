@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 
-const WHATSAPP_BASE = 'https://wa.me/5215592441070?text='
+const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
 
 /* ===== MOCK CMS DATA (replace with Wix Headless SDK) ===== */
 const TOURS = {
@@ -374,7 +374,7 @@ export default function TourDetail() {
         )
     }
 
-    const waMsg = `Hola! Quiero info sobre el tour "${tour.title}" (${tour.date})`
+    const waMsg = `SW Hola! Quiero info sobre el tour "${tour.title}" (${tour.date})`
     const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`
 
     return (

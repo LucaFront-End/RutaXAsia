@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './Header.css'
 
-const WHATSAPP_URL = 'https://wa.me/5215592441070?text=Hola%20quiero%20cotizar%20un%20viaje'
+const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW%20Hola%20quiero%20cotizar%20un%20viaje'
 
 const TOUR_LINKS = [
     { slug: 'sakura-2026', title: 'Sakura I 2026', flag: 'jp', sub: 'Japón & Corea · Mayo 2026' },
