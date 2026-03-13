@@ -365,8 +365,8 @@ function Home() {
     return (
         <>
             <Helmet>
-                <title>RutaXAsia — Agencia de Viajes #1 en México | Viajes a Japón y Corea</title>
-                <meta name="description" content="RutaXAsia es la agencia de viajes líder en México especializada en viajes grupales a Japón y Corea. Viaja con Santiago y Ale. ¡Cotiza tu viaje hoy!" />
+                <title>RutaXAsia | Agencia #1 de Viajes a Japón desde México</title>
+                <meta name="description" content="RutaXAsia, agencia #1 de viajes a Japón desde México. Encuentra viaje a Japón desde México, viajes a Corea del Sur, tours a Japón y los mejores precios a Japón." />
             </Helmet>
 
             {/* ===== HERO CAROUSEL ===== */}
