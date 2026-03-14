@@ -70,10 +70,10 @@ function Header() {
                             ))}
                         </div>
                     </li>
-                    <li><a href={homeLink('#nosotros')} onClick={closeMenu}>Nosotros</a></li>
+                    <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
                     <li><a href={homeLink('#comunidad')} onClick={closeMenu}>Comunidad</a></li>
-                    <li><a href={homeLink('#blog')} onClick={closeMenu}>Blog</a></li>
-                    <li><a href={homeLink('#contacto')} onClick={closeMenu}>Contacto</a></li>
+                    <li><Link to="/faq" onClick={closeMenu}>FAQ</Link></li>
+                    <li><Link to="/contacto" onClick={closeMenu}>Contacto</Link></li>
                 </ul>
 
                 <a href={WHATSAPP_URL} className="btn btn-primary navbar-cta" target="_blank" rel="noopener noreferrer">
