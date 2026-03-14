@@ -10,9 +10,7 @@ function Footer() {
                 <div className="footer-grid">
                     <div className="footer-brand">
                         <Link to="/" className="navbar-brand footer-logo">
-                            <span className="brand-ruta">RUTA</span>
-                            <span className="brand-x">X</span>
-                            <span className="brand-asia">ASIA</span>
+                            <img src="/logo.png" alt="RutaXAsia" className="navbar-logo" style={{height:'60px'}} />
                         </Link>
                         <p>Somos Santiago y Ale, fundadores de RutaXAsia. Nuestra pasión es llevar a viajeros mexicanos a vivir Asia de una forma auténtica, segura e inolvidable.</p>
                         <div className="footer-social">
@@ -52,10 +50,10 @@ function Footer() {
                     <div className="footer-contact">
                         <h4>Contacto</h4>
                         <ul>
-                            <li><a href="tel:+525513610083">📞 55 13 61 00 83</a></li>
-                            <li><a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">💬 WhatsApp</a></li>
-                            <li>✉️ reservas@rutaxasia.com</li>
-                            <li>📍 Río Lerma 232 Piso 23<br />Torre Diana, CP. 06500<br />Col. Cuauhtémoc, CDMX</li>
+                            <li><a href="tel:+525513610083">55 13 61 00 83</a></li>
+                            <li><a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+                            <li><a href="mailto:reservas@rutaxasia.com">reservas@rutaxasia.com</a></li>
+                            <li>Río Lerma 232 Piso 23<br />Torre Diana, CP. 06500<br />Col. Cuauhtémoc, CDMX</li>
                         </ul>
                     </div>
                 </div>

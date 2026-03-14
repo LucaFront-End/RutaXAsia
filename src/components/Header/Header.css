@@ -34,7 +34,7 @@
 }
 
 .navbar-logo {
-  height: 90px;
+  height: 100px;
   width: auto;
   object-fit: contain;
   transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);

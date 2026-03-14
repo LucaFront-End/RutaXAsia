@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 
 
@@ -428,7 +429,7 @@ function Home() {
                         </div>
 
                         <a
-                            href={`${WHATSAPP_BASE}Hola%20quiero%20cotizar%20${encodeURIComponent(currentTrip.title)}`}
+                            href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20cotizar%20${encodeURIComponent(currentTrip.title)}`}
                             className="btn btn-primary hero-btn-explore"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -624,7 +625,7 @@ function Home() {
                             <span className="dj-cta-tag">Empieza tu aventura</span>
                             <h2 className="dj-cta-heading">Diseñemos tu viaje perfecto a Asia. Habla hoy con nuestros expertos.</h2>
                             <a
-                                href={`${WHATSAPP_BASE}Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`}
+                                href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`}
                                 className="btn btn-primary dj-cta-btn"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -739,8 +740,8 @@ function Home() {
                                     </div>
 
                                     <div className="bp-card-actions">
-                                        <a href={`${WHATSAPP_BASE}Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}`} className="btn btn-primary bp-btn" target="_blank" rel="noopener noreferrer">Cotizar Ahora</a>
-                                        <a href="#" className="btn btn-outline bp-btn">Ver Itinerario</a>
+                                        <a href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}`} className="btn btn-primary bp-btn" target="_blank" rel="noopener noreferrer">Cotizar Ahora</a>
+                                        <Link to={`/tours/${trip.id}`} className="btn btn-outline bp-btn">Ver Itinerario</Link>
                                     </div>
                                 </div>
                             </div>
@@ -893,7 +894,7 @@ function Home() {
                                     <ul className="season-highlights">
                                         {s.highlights.map((h, j) => <li key={j}>{h}</li>)}
                                     </ul>
-                                    <a href={`${WHATSAPP_BASE}Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
+                                    <a href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
                                         Ver salidas →
                                     </a>
                                 </div>
@@ -995,9 +996,9 @@ function Home() {
                     {/* Secondary CTAs */}
                     <div className="bp-secondary" data-animate="fade-up">
                         <div className="bp-secondary-options">
-                            <a href="tel:+5215588527893" className="bp-phone-link">📞 Prefiero llamar</a>
+                            <a href="tel:+525513610083" className="bp-phone-link">📞 Prefiero llamar</a>
                             <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
-                            <a href="mailto:info@rutaxasia.com" className="bp-phone-link">✉️ Enviar email</a>
+                            <a href="mailto:reservas@rutaxasia.com" className="bp-phone-link">✉️ Enviar email</a>
                         </div>
                     </div>
                 </div>
