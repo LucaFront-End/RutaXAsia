@@ -38,9 +38,7 @@ function Header() {
         <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--open' : ''}`}>
             <div className="navbar-container">
                 <Link to="/" className="navbar-brand" onClick={closeMenu}>
-                    <span className="brand-ruta">RUTA</span>
-                    <span className="brand-x">X</span>
-                    <span className="brand-asia">ASIA</span>
+                    <img src="/logo.png" alt="RutaXAsia" className="navbar-logo" />
                 </Link>
 
                 <ul className={`navbar-menu${menuOpen ? ' navbar-menu--open' : ''}`}>

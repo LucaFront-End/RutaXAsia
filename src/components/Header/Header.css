@@ -28,25 +28,20 @@
 
 .navbar-brand {
   text-decoration: none;
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 2px;
   display: flex;
   align-items: center;
-  gap: 2px;
+  flex-shrink: 0;
 }
 
-.brand-ruta {
-  color: #fff;
+.navbar-logo {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.brand-x {
-  color: var(--color-primary);
-  font-size: 1.8rem;
-}
-
-.brand-asia {
-  color: #fff;
+.navbar--scrolled .navbar-logo {
+  height: 50px;
 }
 
 .navbar-menu {
