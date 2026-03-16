@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './Header.css'
 
-const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW%20Hola%20quiero%20cotizar%20un%20viaje'
+const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20cotizar%20un%20viaje'
 
 const TOUR_LINKS = [
     { slug: 'sakura-2026', title: 'Sakura I 2026', flag: 'jp', sub: 'Japón & Corea · Mayo 2026' },
@@ -69,8 +69,8 @@ function Header() {
                         </div>
                     </li>
                     <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
-                    <li><a href={homeLink('#comunidad')} onClick={closeMenu}>Comunidad</a></li>
-                    <li><Link to="/faq" onClick={closeMenu}>FAQ</Link></li>
+                    <li><Link to="/faq" onClick={closeMenu}>Preguntas Frecuentes</Link></li>
+
                     <li><Link to="/contacto" onClick={closeMenu}>Contacto</Link></li>
                 </ul>
 

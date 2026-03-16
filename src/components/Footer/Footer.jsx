@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import './Footer.css'
 
-const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW%20Hola%20quiero%20info%20sobre%20viajes%20a%20Asia'
+const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20viajes%20a%20Asia'
 
 function Footer() {
     return (
@@ -40,7 +40,6 @@ function Footer() {
                         <h4>Compañía</h4>
                         <ul>
                             <li><Link to="/nosotros">Acerca de Nosotros</Link></li>
-                            <li><a href="/#comunidad">Comunidad</a></li>
                             <li><Link to="/faq">Preguntas Frecuentes</Link></li>
                             <li><Link to="/contacto">Contacto</Link></li>
                             <li><a href="#">Términos y Condiciones</a></li>

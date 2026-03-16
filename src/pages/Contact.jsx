@@ -4,7 +4,7 @@ import { LuMessageCircle, LuMail, LuPhone, LuMapPin, LuClock, LuInstagram, LuFac
 import { FaTiktok } from 'react-icons/fa6'
 import { submitFormToCMS } from '../lib/wixClient'
 
-const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW%20Hola%20quiero%20info%20sobre%20viajes'
+const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20viajes'
 
 const CONTACT_METHODS = [
     { icon: <LuMessageCircle size={28} />, title: 'WhatsApp', desc: 'Respuesta en menos de 2 horas', value: '55 13 61 00 83', href: WHATSAPP_URL, cta: 'Escribir por WhatsApp', external: true },

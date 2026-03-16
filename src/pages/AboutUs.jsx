@@ -272,7 +272,7 @@ export default function AboutUs() {
                     <p className="au-cta-sub reveal" style={{"--delay":"0.1s"}}>Tu próxima aventura está a un mensaje de distancia</p>
                     <div className="au-cta-buttons reveal" style={{"--delay":"0.2s"}}>
                         <Link to="/#viajes" className="btn btn-primary">Ver Viajes <LuArrowRight size={16} style={{marginLeft:'0.3rem', verticalAlign:'middle'}} /></Link>
-                        <a href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20info%20sobre%20viajes`} className="btn btn-outline au-cta-wa" target="_blank" rel="noopener noreferrer">
+                        <a href={`${WHATSAPP_BASE}SW-Hola%20quiero%20info%20sobre%20viajes`} className="btn btn-outline au-cta-wa" target="_blank" rel="noopener noreferrer">
                             <LuMessageCircle size={16} style={{marginRight:'0.3rem', verticalAlign:'middle'}} /> WhatsApp
                         </a>
                     </div>

@@ -374,7 +374,7 @@ export default function TourDetail() {
         )
     }
 
-    const waMsg = `SW Hola! Quiero info sobre el tour "${tour.title}" (${tour.date})`
+    const waMsg = `SW-Hola! Quiero info sobre el tour "${tour.title}" (${tour.date})`
     const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`
 
     return (

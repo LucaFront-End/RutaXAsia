@@ -173,17 +173,17 @@ const DAY_JOURNEY = [
     },
     {
         time: '10:00 AM',
-        activity: 'Mercado de Nishiki',
-        heading: 'Explora el mercado más famoso de Japón y prueba sabores que no sabías que existían',
-        image: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?w=1000&h=1400&fit=crop&q=80',
+        activity: 'Shinjuku',
+        heading: 'Descubre la esencia de Tokio recorriendo las vibrantes calles de Shinjuku',
+        image: '/shinjuku-day.jpg',
         type: 'image',
         layout: 'vertical',
     },
     {
         time: '04:00 PM',
-        activity: 'K-BBQ en Seúl',
-        heading: 'Saborea la esencia de Corea con una experiencia gastronómica inolvidable',
-        image: 'https://images.unsplash.com/photo-1583032015879-e5022cb87c3b?w=1600&h=1000&fit=crop&q=80',
+        activity: 'Ramen en Tokio',
+        heading: 'Saborea la esencia de Tokio con un auténtico ramen japonés inolvidable',
+        image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=1600&h=1000&fit=crop&q=80',
         type: 'image',
         layout: 'horizontal',
     },
@@ -428,14 +428,12 @@ function Home() {
                             )}
                         </div>
 
-                        <a
-                            href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20cotizar%20${encodeURIComponent(currentTrip.title)}`}
+                        <Link
+                            to={`/tours/${currentTrip.id}`}
                             className="btn btn-primary hero-btn-explore"
-                            target="_blank"
-                            rel="noopener noreferrer"
                         >
                             Explorar <span className="hero-btn-arrow">→</span>
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Gallery Carousel */}
@@ -625,7 +623,7 @@ function Home() {
                             <span className="dj-cta-tag">Empieza tu aventura</span>
                             <h2 className="dj-cta-heading">Diseñemos tu viaje perfecto a Asia. Habla hoy con nuestros expertos.</h2>
                             <a
-                                href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`}
+                                href={`${WHATSAPP_BASE}SW-Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`}
                                 className="btn btn-primary dj-cta-btn"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -740,7 +738,7 @@ function Home() {
                                     </div>
 
                                     <div className="bp-card-actions">
-                                        <a href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}`} className="btn btn-primary bp-btn" target="_blank" rel="noopener noreferrer">Cotizar Ahora</a>
+                                        <a href={`${WHATSAPP_BASE}SW-Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}`} className="btn btn-primary bp-btn" target="_blank" rel="noopener noreferrer">Cotizar Ahora</a>
                                         <Link to={`/tours/${trip.id}`} className="btn btn-outline bp-btn">Ver Itinerario</Link>
                                     </div>
                                 </div>
@@ -867,7 +865,7 @@ function Home() {
                                 emoji: '🍂',
                                 months: 'Sept — Noviembre',
                                 temp: '10°C — 20°C',
-                                photo: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=800&h=1000&fit=crop',
+                                photo: '/otono-japan.jpg',
                                 color: '#d4602a',
                                 highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'],
                             },
@@ -894,7 +892,7 @@ function Home() {
                                     <ul className="season-highlights">
                                         {s.highlights.map((h, j) => <li key={j}>{h}</li>)}
                                     </ul>
-                                    <a href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
+                                    <a href={`${WHATSAPP_BASE}SW-Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
                                         Ver salidas →
                                     </a>
                                 </div>
@@ -980,7 +978,7 @@ function Home() {
                             <div className="bp-ticket-cta">
                                 <p className="bp-cta-headline">¿Listo para despegar?</p>
                                 <a
-                                    href={`${WHATSAPP_BASE}SW%20Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20🎫✈️`}
+                                    href={`${WHATSAPP_BASE}SW-Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20🎫✈️`}
                                     className="bp-cta-button bp-cta-pulse"
                                     target="_blank"
                                     rel="noopener noreferrer"

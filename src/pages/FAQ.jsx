@@ -141,7 +141,7 @@ export default function FAQ() {
                         {/* Still need help */}
                         <div className="fq-sidebar-help">
                             <p>¿No encontrás tu respuesta?</p>
-                            <a href="https://wa.me/525513610083?text=SW%20Hola%20tengo%20una%20pregunta%20sobre%20los%20viajes" className="btn btn-primary btn-full" target="_blank" rel="noopener noreferrer" style={{fontSize:'0.85rem', padding:'0.7rem 1.2rem'}}>
+                            <a href="https://wa.me/525513610083?text=SW-Hola%20tengo%20una%20pregunta%20sobre%20los%20viajes" className="btn btn-primary btn-full" target="_blank" rel="noopener noreferrer" style={{fontSize:'0.85rem', padding:'0.7rem 1.2rem'}}>
                                 <LuMessageCircle size={14} style={{marginRight:'0.3rem', verticalAlign:'middle'}} /> Preguntá por WhatsApp
                             </a>
                         </div>
@@ -192,7 +192,7 @@ export default function FAQ() {
                             <p className="fq-cta-sub">Escribinos y te armamos un plan personalizado en menos de 24 horas</p>
                         </div>
                         <div className="fq-cta-right">
-                            <a href="https://wa.me/525513610083?text=SW%20Hola%20quiero%20cotizar%20un%20viaje" className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                            <a href="https://wa.me/525513610083?text=SW-Hola%20quiero%20cotizar%20un%20viaje" className="btn btn-primary" target="_blank" rel="noopener noreferrer">
                                 <LuMessageCircle size={16} style={{marginRight:'0.3rem', verticalAlign:'middle'}} /> WhatsApp
                             </a>
                             <a href="mailto:reservas@rutaxasia.com" className="btn btn-outline fq-cta-outline">
