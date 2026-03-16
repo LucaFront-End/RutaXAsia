@@ -5,10 +5,12 @@ import './Header.css'
 const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20cotizar%20un%20viaje'
 
 const TOUR_LINKS = [
-    { slug: 'sakura-2026', title: 'Sakura I 2026', flag: 'jp', sub: 'Japón & Corea · Mayo 2026' },
+    { slug: 'sakura-2026', title: 'Sakura 2026', flag: 'jp', sub: 'Japón & Corea · Mayo 2026' },
     { slug: 'verano-japon-2026', title: 'Verano Japón 2026', flag: 'jp', sub: 'Japón · Julio 2026' },
+    { slug: 'octubre-japon-2026', title: 'Japón Octubre 2026', flag: 'jp', sub: 'Japón · Octubre 2026' },
     { slug: 'corea-2026', title: 'Corea 2026', flag: 'kr', sub: 'Corea del Sur · Octubre 2026' },
     { slug: 'otono-japon-2026', title: 'Otoño en Japón 2026', flag: 'jp', sub: 'Japón · Noviembre 2026' },
+    { slug: 'japon-corea-2026', title: 'Japón y Corea 2026', flag: 'jp', sub: 'Japón & Corea · Noviembre 2026' },
 ]
 
 function Header() {

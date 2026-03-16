@@ -3106,6 +3106,26 @@ a {
     animation: urgencyPulse 1.5s ease-in-out infinite;
 }
 
+.td-price-alt {
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+}
+
+.td-bottom-price-alt {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+}
+
 /* ---- 2. BENTO GALLERY ---- */
 .td-gallery {
     padding: 3rem 0;
@@ -3269,6 +3289,352 @@ a {
     line-height: 1.9;
     color: rgba(0, 0, 0, 0.6);
 }
+
+/* ---- ITINERARY SPLIT (Map + Detail) ---- */
+.td-itinerary-split {
+    display: flex;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    margin: 1.5rem 0 2rem;
+    min-height: 550px;
+}
+
+/* -- Map side -- */
+.td-itinerary-map {
+    flex: 1 1 55%;
+    position: relative;
+    min-height: 550px;
+}
+
+.td-itinerary-map .leaflet-container {
+    background: #faf5f0 !important;
+}
+
+.td-map-route-label {
+    position: absolute;
+    top: 0.8rem;
+    left: 1rem;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(0, 0, 0, 0.3);
+    font-weight: 700;
+    z-index: 1000;
+    background: rgba(250, 245, 240, 0.85);
+    backdrop-filter: blur(4px);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    pointer-events: none;
+}
+
+/* -- Dot markers -- */
+.td-dot-icon {
+    background: none !important;
+    border: none !important;
+}
+
+.td-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid #dc2626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    position: relative;
+}
+
+.td-dot span {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #dc2626;
+    line-height: 1;
+    transition: color 0.25s;
+}
+
+.td-dot:hover {
+    transform: scale(1.2);
+    background: #dc2626;
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);
+}
+
+.td-dot:hover span {
+    color: #fff;
+}
+
+.td-dot--active {
+    width: 36px;
+    height: 36px;
+    background: #dc2626;
+    border-color: #fff;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2), 0 4px 16px rgba(220, 38, 38, 0.35);
+    animation: dotPulse 2.5s ease-in-out infinite;
+}
+
+.td-dot--active span {
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.td-dot--active:hover {
+    transform: scale(1.1);
+}
+
+@keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2), 0 4px 16px rgba(220, 38, 38, 0.35); }
+    50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0), 0 4px 16px rgba(220, 38, 38, 0.2); }
+}
+
+/* -- Tooltips -- */
+.td-city-tooltip {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(220, 38, 38, 0.15) !important;
+    border-radius: 8px !important;
+    padding: 4px 10px !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    white-space: nowrap !important;
+}
+
+.td-city-tooltip::before {
+    border-top-color: rgba(220, 38, 38, 0.15) !important;
+}
+
+.td-city-tooltip--active {
+    background: #dc2626 !important;
+    color: #fff !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 2px 12px rgba(220, 38, 38, 0.3) !important;
+    font-size: 0.78rem !important;
+}
+
+.td-city-tooltip--active::before {
+    border-top-color: #dc2626 !important;
+}
+
+.td-city-tooltip-num {
+    font-weight: 800;
+    opacity: 0.7;
+}
+
+/* -- Detail panel side -- */
+.td-itinerary-detail {
+    flex: 0 0 45%;
+    max-width: 45%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    animation: detailFadeIn 0.35s ease;
+}
+
+@keyframes detailFadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.td-detail-img {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.td-detail-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.td-detail-img-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+}
+
+.td-detail-step {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.td-detail-body {
+    padding: 1.2rem 1.4rem 1.4rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.td-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.8rem;
+}
+
+.td-detail-flag {
+    width: 28px;
+    height: auto;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.td-detail-days {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #dc2626;
+    display: block;
+}
+
+.td-detail-city {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.td-detail-intro {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.5;
+    margin: 0 0 0.5rem;
+}
+
+.td-detail-desc {
+    font-size: 0.78rem;
+    color: #555;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+}
+
+.td-detail-highlights {
+    margin-bottom: 1rem;
+}
+
+.td-detail-hl-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #dc2626;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.td-detail-hl-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.td-detail-hl-list li {
+    font-size: 0.72rem;
+    color: #444;
+    padding-left: 1.1rem;
+    position: relative;
+    line-height: 1.4;
+}
+
+.td-detail-hl-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: #dc2626;
+    font-size: 0.55rem;
+    top: 2px;
+}
+
+/* -- Navigation buttons -- */
+.td-detail-nav {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.td-detail-nav-btn {
+    flex: 1;
+    padding: 0.6rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.td-detail-nav-btn:hover:not(:disabled) {
+    background: rgba(220, 38, 38, 0.04);
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+.td-detail-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.td-detail-nav-btn--next:not(:disabled) {
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
+}
+
+.td-detail-nav-btn--next:hover:not(:disabled) {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    color: #fff;
+}
+
+/* -- Leaflet overrides -- */
+.td-itinerary-map .leaflet-control-attribution,
+.td-itinerary-map .leaflet-control-zoom { display: none !important; }
+.td-itinerary-map .leaflet-tooltip-pane { z-index: 650 !important; }
+
+/* -- Responsive -- */
+@media (max-width: 900px) {
+    .td-itinerary-split {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .td-itinerary-map {
+        min-height: 350px;
+    }
+    .td-itinerary-detail {
+        flex: unset;
+        max-width: 100%;
+    }
+    .td-detail-img {
+        height: 180px;
+    }
+}
+
+
+
+
 
 /* ---- 4. CITY TABS ---- */
 .td-tabs-section {
