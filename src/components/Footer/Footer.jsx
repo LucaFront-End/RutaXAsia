@@ -40,9 +40,11 @@ function Footer() {
                         <h4>Compañía</h4>
                         <ul>
                             <li><Link to="/nosotros">Acerca de Nosotros</Link></li>
+                            <li><Link to="/blog">Blog</Link></li>
                             <li><Link to="/faq">Preguntas Frecuentes</Link></li>
                             <li><Link to="/contacto">Contacto</Link></li>
-                            <li><a href="#">Términos y Condiciones</a></li>
+                            <li><Link to="/terminos-y-condiciones">Términos y Condiciones</Link></li>
+                            <li><Link to="/aviso-de-privacidad">Aviso de Privacidad</Link></li>
                         </ul>
                     </div>
 

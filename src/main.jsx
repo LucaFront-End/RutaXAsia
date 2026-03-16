@@ -9,6 +9,9 @@ import TourDetail from './pages/TourDetail'
 import AboutUs from './pages/AboutUs'
 import FAQ from './pages/FAQ'
 import Contact from './pages/Contact'
+import Blog from './pages/Blog'
+import AvisoPrivacidad from './pages/AvisoPrivacidad'
+import TerminosCondiciones from './pages/TerminosCondiciones'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -21,10 +24,12 @@ createRoot(document.getElementById('root')).render(
                         <Route path="nosotros" element={<AboutUs />} />
                         <Route path="faq" element={<FAQ />} />
                         <Route path="contacto" element={<Contact />} />
+                        <Route path="blog" element={<Blog />} />
+                        <Route path="aviso-de-privacidad" element={<AvisoPrivacidad />} />
+                        <Route path="terminos-y-condiciones" element={<TerminosCondiciones />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
         </HelmetProvider>
     </StrictMode>,
 )
-
