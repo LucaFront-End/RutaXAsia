@@ -119,7 +119,7 @@ export default function AboutUs() {
                 <div className="au-hero-content container">
                     <div className="au-hero-badge">NUESTRA HISTORIA</div>
                     <h1 className="au-hero-h1">
-                        Somos <span className="au-hero-accent">Santiago</span> y <span className="au-hero-accent">Ale</span>
+                        Somos <span className="au-hero-accent">Juan</span> y <span className="au-hero-accent">Ale</span>
                     </h1>
                     <p className="au-hero-sub">
                         Expertos en viajes a Japón y Corea del Sur. Llevamos a viajeros latinos a vivir Asia de la forma más auténtica, segura e inolvidable.

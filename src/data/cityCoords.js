@@ -47,7 +47,9 @@ const CITY_COORDINATES = {
     // --- Kansai ---
     'kyoto':          { lat: 35.0116, lng: 135.7681, label: 'Kyoto',           country: 'jp' },
     'osaka':          { lat: 34.6937, lng: 135.5023, label: 'Osaka',           country: 'jp' },
+    'shin-osaka':     { lat: 34.7334, lng: 135.5000, label: 'Shin-Osaka',      country: 'jp' },
     'nara':           { lat: 34.6851, lng: 135.8048, label: 'Nara',            country: 'jp' },
+    'uji':            { lat: 34.8843, lng: 135.7998, label: 'Uji',             country: 'jp' },
     'kobe':           { lat: 34.6901, lng: 135.1956, label: 'Kobe',            country: 'jp' },
     'himeji':         { lat: 34.8394, lng: 134.6939, label: 'Himeji',          country: 'jp' },
     'wakayama':       { lat: 34.2260, lng: 135.1675, label: 'Wakayama',        country: 'jp' },
@@ -108,6 +110,7 @@ const CITY_COORDINATES = {
 
     // --- Islands ---
     'jeju':           { lat: 33.4996, lng: 126.5312, label: 'Jeju',            country: 'kr' },
+    'seongsan':       { lat: 33.4585, lng: 126.9400, label: 'Seongsan',        country: 'kr' },
 
     // --- DMZ ---
     'dmz':            { lat: 37.9317, lng: 126.8336, label: 'DMZ',             country: 'kr' },
@@ -116,18 +119,30 @@ const CITY_COORDINATES = {
     'daegu':          { lat: 35.8714, lng: 128.6014, label: 'Daegu',           country: 'kr' },
 }
 
-/* Legacy name mappings — maps old chapter city names to cityKeys */
+/* Chapter city name mappings — maps display names to cityKeys */
 export const CITY_NAME_TO_KEY = {
-    'Tokyo':              'tokyo',
-    'Hakone & Monte Fuji':'hakone',
-    'Hakone':             'hakone',
-    'Kyoto':              'kyoto',
-    'Kyoto & Nara':       'kyoto',
-    'Nara':               'nara',
-    'Osaka':              'osaka',
-    'Seúl':               'seoul',
-    'Busan':              'busan',
-    'Gyeongju & Regreso': 'gyeongju',
+    // Japan
+    'Tokyo':                  'tokyo',
+    'Shin Osaka':             'osaka',
+    'Hakone & Monte Fuji':    'hakone',
+    'Hakone':                 'hakone',
+    'Kyoto':                  'kyoto',
+    'Kioto':                  'kyoto',
+    'Kyoto & Nara':           'kyoto',
+    'Kioto & Uji':            'kyoto',
+    'Nara':                   'nara',
+    'Nara & Kioto':           'nara',
+    'Osaka':                  'osaka',
+    'Disneyland & DisneySea': 'tokyo',
+    'Kamakura':               'kamakura',
+    'Hiroshima':              'hiroshima',
+    'Miyajima':               'miyajima',
+    'Uji':                    'uji',
+    // Korea
+    'Seúl':                   'seoul',
+    'Busan':                  'busan',
+    'Jeju':                   'jeju',
+    'Gyeongju & Regreso':     'gyeongju',
 }
 
 /**

@@ -177,6 +177,66 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* Sold-out items */
+.nav-dropdown-item--sold {
+  opacity: 0.45;
+}
+.nav-sold-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+}
+
+/* Grouped tour (multi-date) */
+.nav-dropdown-group {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.4rem 0;
+  margin: 0.2rem 0;
+}
+
+.nav-dropdown-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.8rem;
+}
+
+.nav-dropdown-group-dates {
+  display: flex;
+  flex-direction: column;
+  padding-left: 2.6rem;
+  gap: 0.15rem;
+}
+
+.nav-dropdown-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.nav-dropdown-date:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-dropdown-date-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.nav-dropdown-date-range {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+}
 /* Hamburger */
 .navbar-toggle {
   display: none;

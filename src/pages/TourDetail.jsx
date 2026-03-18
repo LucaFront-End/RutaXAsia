@@ -46,6 +46,7 @@ export default function TourDetail() {
     const waMsg = `SW-Hola! Quiero info sobre el tour "${tour.title}" (${tour.date})`
     const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`
     const priceDisplay = tour.priceMXN ? `${tour.price} / ${tour.priceMXN}` : tour.price
+    const isSoldOut = tour.soldOut || tour.spotsLeft === 0
 
     return (
         <>
@@ -72,16 +73,27 @@ export default function TourDetail() {
                         <span className="td-chip">🏙️ {tour.cities}</span>
                     </div>
                     <div className="td-hero-cta-row">
-                        <a href={waLink} className="td-hero-btn" target="_blank" rel="noopener noreferrer">
-                            <WhatsAppIcon /> Reservar — {tour.price}
-                        </a>
+                        {!isSoldOut ? (
+                            <a href={waLink} className="td-hero-btn" target="_blank" rel="noopener noreferrer">
+                                <WhatsAppIcon /> Reservar — {tour.price}
+                            </a>
+                        ) : (
+                            <span className="td-hero-btn td-hero-btn--sold">SOLD OUT</span>
+                        )}
                         {tour.priceMXN && (
                             <span className="td-price-alt">{tour.priceMXN}</span>
                         )}
-                        {tour.spotsLeft <= 6 && (
+                        {!tour.groupLimit && tour.spotsLeft > 0 && tour.spotsLeft <= 6 && (
                             <span className="td-spots"><span className="td-spots-dot" />Solo {tour.spotsLeft} lugares</span>
                         )}
                     </div>
+                    {(tour.priceSubtext || tour.anticipoText || tour.groupLimit) && !isSoldOut && (
+                        <div className="td-hero-pricing-details">
+                            {tour.priceSubtext && <span className="td-pricing-tag">{tour.priceSubtext}</span>}
+                            {tour.anticipoText && <span className="td-pricing-tag">{tour.anticipoText}</span>}
+                            {tour.groupLimit && <span className="td-pricing-tag td-pricing-tag--urgent">{tour.groupLimit}</span>}
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -114,7 +126,13 @@ export default function TourDetail() {
             {/* ===== 3. OVERVIEW — Editorial text ===== */}
             <section className="td-editorial container">
                 <h2 className="td-section-label">Sobre este viaje</h2>
-                <p className="td-editorial-text">{tour.tagline} Un viaje con guía hispanohablante, hospedaje, vuelos y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
+                <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, vuelos y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
+                {tour.hospedaje && (
+                    <div className="td-hospedaje">
+                        <span className="td-hospedaje-icon">🏨</span>
+                        <span className="td-hospedaje-text"><strong>Hospedaje:</strong> {tour.hospedaje}</span>
+                    </div>
+                )}
             </section>
 
             {/* ===== 4. ITINERARY — Map + Detail Split ===== */}

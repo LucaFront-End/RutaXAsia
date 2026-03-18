@@ -38,11 +38,12 @@ function FitAndLock({ hasJapan, hasKorea }) {
     useEffect(() => {
         let bounds
         if (hasJapan && hasKorea) {
-            bounds = L.latLngBounds([[31, 125], [44, 146]])
+            bounds = L.latLngBounds([[30, 125], [44, 146]])
         } else if (hasJapan) {
-            bounds = L.latLngBounds([[33, 133], [37, 141]])
+            bounds = L.latLngBounds([[33, 131], [37, 141]])
         } else {
-            bounds = L.latLngBounds([[34, 125.5], [39, 130.5]])
+            /* Korea — extend south to 32.5 to include Jeju Island */
+            bounds = L.latLngBounds([[32.5, 125.5], [39, 130.5]])
         }
         map.fitBounds(bounds, { padding: [30, 30] })
         map.dragging.disable()

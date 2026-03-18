@@ -12,7 +12,7 @@ function Footer() {
                         <Link to="/" className="navbar-brand footer-logo">
                             <img src="/logo.png" alt="RutaXAsia" className="navbar-logo" style={{height:'60px'}} />
                         </Link>
-                        <p>Somos Santiago y Ale, fundadores de RutaXAsia. Nuestra pasión es llevar a viajeros mexicanos a vivir Asia de una forma auténtica, segura e inolvidable.</p>
+                        <p>Somos Juan y Ale, fundadores de RutaXAsia. Nuestra pasión es llevar a viajeros mexicanos a vivir Asia de una forma auténtica, segura e inolvidable.</p>
                         <div className="footer-social">
                             <a href="https://www.facebook.com/rutaxasia" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
@@ -29,10 +29,14 @@ function Footer() {
                     <div className="footer-links">
                         <h4>Viajes</h4>
                         <ul>
-                            <li><Link to="/tours/sakura-2026">Sakura I 2026</Link></li>
-                            <li><Link to="/tours/verano-japon-2026">Verano Japón 2026</Link></li>
-                            <li><Link to="/tours/corea-2026">Corea 2026</Link></li>
-                            <li><Link to="/tours/otono-japon-2026">Otoño Japón 2026</Link></li>
+                            <li><Link to="/tours/sakura-2026">Sakura 2026</Link></li>
+                            <li><Link to="/tours/japon-corea-mayo-2026">Japón y Corea (Mayo)</Link></li>
+                            <li><Link to="/tours/corea-junio-2026">Corea (Junio)</Link></li>
+                            <li><Link to="/tours/verano-japon-2026">Verano en Japón</Link></li>
+                            <li><Link to="/tours/corea-septiembre-2026">Corea (Septiembre)</Link></li>
+                            <li><Link to="/tours/octubre-japon-2026">Japón Octubre</Link></li>
+                            <li><Link to="/tours/japon-corea-2026">Japón y Corea (Octubre)</Link></li>
+                            <li><Link to="/tours/otono-japon-2026">Otoño en Japón</Link></li>
                         </ul>
                     </div>
 
@@ -54,8 +58,13 @@ function Footer() {
                             <li><a href="tel:+525513610083">55 13 61 00 83</a></li>
                             <li><a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
                             <li><a href="mailto:reservas@rutaxasia.com">reservas@rutaxasia.com</a></li>
-                            <li>Río Lerma 232 Piso 23<br />Torre Diana, CP. 06500<br />Col. Cuauhtémoc, CDMX</li>
+                            <li>Río Lerma 232 P23 A<br />Cuauhtémoc, CDMX, CP 6500</li>
                         </ul>
+                        <div className="footer-legal-badge">
+                            <span className="footer-rnt-title">Registro Nacional de Turismo</span>
+                            <span className="footer-rnt-num">No. 0409015ae266f</span>
+                            <span className="footer-rnt-rfc">RFC: SARJ740301GS3</span>
+                        </div>
                     </div>
                 </div>
 

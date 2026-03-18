@@ -5,12 +5,19 @@ import './Header.css'
 const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20cotizar%20un%20viaje'
 
 const TOUR_LINKS = [
-    { slug: 'sakura-2026', title: 'Sakura 2026', flag: 'jp', sub: 'Japón & Corea · Mayo 2026' },
-    { slug: 'verano-japon-2026', title: 'Verano Japón 2026', flag: 'jp', sub: 'Japón · Julio 2026' },
-    { slug: 'octubre-japon-2026', title: 'Japón Octubre 2026', flag: 'jp', sub: 'Japón · Octubre 2026' },
-    { slug: 'corea-2026', title: 'Corea 2026', flag: 'kr', sub: 'Corea del Sur · Octubre 2026' },
-    { slug: 'otono-japon-2026', title: 'Otoño en Japón 2026', flag: 'jp', sub: 'Japón · Noviembre 2026' },
-    { slug: 'japon-corea-2026', title: 'Japón y Corea 2026', flag: 'jp', sub: 'Japón & Corea · Noviembre 2026' },
+    { slug: 'sakura-2026', title: 'Sakura 2026', flag: 'jp', sub: 'Japón · Marzo 2026', soldOut: true },
+    { slug: 'japon-corea-mayo-2026', title: 'Japón y Corea', flag: 'jp', sub: 'Japón & Corea · Mayo 2026', soldOut: true },
+    {
+        title: 'Corea del Sur', flag: 'kr', sub: '2 fechas disponibles',
+        children: [
+            { slug: 'corea-junio-2026', label: 'Junio 2026', sub: '1 – 12 de junio' },
+            { slug: 'corea-septiembre-2026', label: 'Septiembre 2026', sub: '18 – 29 de septiembre' },
+        ],
+    },
+    { slug: 'verano-japon-2026', title: 'Verano en Japón', flag: 'jp', sub: 'Japón · Julio 2026 · 2 fechas' },
+    { slug: 'octubre-japon-2026', title: 'Japón Octubre', flag: 'jp', sub: 'Japón · Octubre 2026 · Trilogía Otoño' },
+    { slug: 'japon-corea-2026', title: 'Japón y Corea', flag: 'jp', sub: 'Japón & Corea · Octubre 2026' },
+    { slug: 'otono-japon-2026', title: 'Otoño en Japón', flag: 'jp', sub: 'Japón · Noviembre 2026' },
 ]
 
 function Header() {
@@ -59,11 +66,29 @@ function Header() {
                             </svg>
                         </button>
                         <div className="nav-dropdown-panel">
-                            {TOUR_LINKS.map(t => (
-                                <Link key={t.slug} to={`/tours/${t.slug}`} className="nav-dropdown-item" onClick={closeMenu}>
+                            {TOUR_LINKS.map((t, i) => t.children ? (
+                                <div key={i} className="nav-dropdown-group">
+                                    <div className="nav-dropdown-group-header">
+                                        <img src={`https://flagcdn.com/w40/${t.flag}.png`} alt="" className="nav-dropdown-flag" />
+                                        <div>
+                                            <span className="nav-dropdown-title">{t.title}</span>
+                                            <span className="nav-dropdown-sub">{t.sub}</span>
+                                        </div>
+                                    </div>
+                                    <div className="nav-dropdown-group-dates">
+                                        {t.children.map(c => (
+                                            <Link key={c.slug} to={`/tours/${c.slug}`} className="nav-dropdown-date" onClick={closeMenu}>
+                                                <span className="nav-dropdown-date-label">📅 {c.label}</span>
+                                                <span className="nav-dropdown-date-range">{c.sub}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <Link key={t.slug} to={`/tours/${t.slug}`} className={`nav-dropdown-item${t.soldOut ? ' nav-dropdown-item--sold' : ''}`} onClick={closeMenu}>
                                     <img src={`https://flagcdn.com/w40/${t.flag}.png`} alt="" className="nav-dropdown-flag" />
                                     <div>
-                                        <span className="nav-dropdown-title">{t.title}</span>
+                                        <span className="nav-dropdown-title">{t.title}{t.soldOut && <span className="nav-sold-badge">SOLD OUT</span>}</span>
                                         <span className="nav-dropdown-sub">{t.sub}</span>
                                     </div>
                                 </Link>

@@ -20,7 +20,10 @@ export default function AvisoPrivacidad() {
 
                     <div className="legal-content">
                         <h2>1. Responsable del Tratamiento de Datos Personales</h2>
-                        <p>RutaXAsia, con domicilio en Río Lerma 232 Piso 23, Torre Diana, CP. 06500, Col. Cuauhtémoc, Ciudad de México, México (en adelante "RutaXAsia"), es responsable del tratamiento de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
+                        <p>JUAN SANTIAGO MX VIAJES, operando bajo la marca comercial RutaXAsia, con domicilio en Río Lerma 232 P23 A, Cuauhtémoc, Cuauhtémoc, Ciudad de México, CP 6500 (en adelante "RutaXAsia"), es responsable del tratamiento de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
+                        <p><strong>RFC:</strong> SARJ740301GS3</p>
+                        <p><strong>Registro Nacional de Turismo:</strong> No. 0409015ae266f</p>
+                        <p><strong>Titular:</strong> Juan Agustín Santiago Rodríguez</p>
 
                         <h2>2. Datos Personales que Recabamos</h2>
                         <p>RutaXAsia podrá recabar los siguientes datos personales:</p>
@@ -61,7 +64,7 @@ export default function AvisoPrivacidad() {
                         <ul>
                             <li>Email: <a href="mailto:reservas@rutaxasia.com">reservas@rutaxasia.com</a></li>
                             <li>Teléfono: <a href="tel:+525513610083">55 13 61 00 83</a></li>
-                            <li>Dirección: Río Lerma 232 Piso 23, Torre Diana, Col. Cuauhtémoc, CDMX</li>
+                            <li>Dirección: Río Lerma 232 P23 A, Cuauhtémoc, CDMX, CP 6500</li>
                         </ul>
                     </div>
                 </div>
