@@ -198,7 +198,7 @@ const TIMELINE_EVENTS = [
         side: 'right',
     },
     {
-        year: '2011 – 2018',
+        year: '2011-18',
         title: 'Años de experiencia profesional',
         desc: 'Viajes frecuentes como consultor, ponente y coordinador de logística. Experiencia en manejo de grupos, movilización y cultura japonesa más allá de las grandes ciudades.',
         image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&h=400&fit=crop&q=80',
