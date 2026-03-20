@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react'
 import { submitFormToCMS } from '../../lib/wixClient'
 import './DiscountPopup.css'
 
+const ESTADOS_MEXICO = [
+    "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", 
+    "Chiapas", "Chihuahua", "Ciudad de México", "Coahuila", "Colima", 
+    "Durango", "Estado de México", "Guanajuato", "Guerrero", "Hidalgo", 
+    "Jalisco", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", 
+    "Puebla", "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", 
+    "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"
+];
 function DiscountPopup() {
     const [visible, setVisible] = useState(false)
     const [closing, setClosing] = useState(false)
@@ -28,13 +36,18 @@ function DiscountPopup() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData = new FormData(e.target)
-        const nombre = formData.get('nombre')
-        const email = formData.get('email')
+        const data = {
+            nombre: formData.get('nombre'),
+            telefono: formData.get('telefono'),
+            email: formData.get('email'),
+            ciudad: formData.get('ciudad'),
+            estado: formData.get('estado')
+        }
 
         setSubmitting(true)
 
         try {
-            await submitFormToCMS({ nombre, email })
+            await submitFormToCMS(data)
             setSubmitted(true)
             setTimeout(() => handleClose(), 2500)
         } catch (err) {
@@ -64,8 +77,16 @@ function DiscountPopup() {
                         </div>
                     ) : (
                         <form className="popup-form" onSubmit={handleSubmit}>
-                            <input type="text" name="nombre" placeholder="Tu nombre" required disabled={submitting} />
-                            <input type="email" name="email" placeholder="tu@email.com" required disabled={submitting} />
+                            <input type="text" name="nombre" placeholder="Nombre completo" required disabled={submitting} />
+                            <input type="tel" name="telefono" placeholder="WhatsApp / Teléfono" required disabled={submitting} />
+                            <input type="email" name="email" placeholder="Correo electrónico" required disabled={submitting} />
+                            <input type="text" name="ciudad" placeholder="Ciudad" required disabled={submitting} />
+                            <select name="estado" required disabled={submitting} defaultValue="">
+                                <option value="" disabled>Estado de la República</option>
+                                {ESTADOS_MEXICO.map(estado => (
+                                    <option key={estado} value={estado}>{estado}</option>
+                                ))}
+                            </select>
                             <button type="submit" className="btn btn-primary btn-full" disabled={submitting}>
                                 {submitting ? 'Enviando...' : '¡Quiero mi descuento!'}
                             </button>

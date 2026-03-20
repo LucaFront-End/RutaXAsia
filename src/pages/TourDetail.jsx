@@ -188,7 +188,7 @@ export default function TourDetail() {
                 <div className="td-bottom-overlay" />
                 <div className="td-bottom-inner container">
                     <h2 className="td-bottom-h2">¿Listo para vivir {tour.title}?</h2>
-                    <p className="td-bottom-p">Escribinos y reservá tu lugar antes de que se agoten.</p>
+                    <p className="td-bottom-p">Escríbenos y reserva tu lugar antes de que se agoten.</p>
                     <a href={waLink} className="td-bottom-btn" target="_blank" rel="noopener noreferrer">
                         <WhatsAppIcon /> Reservar — {tour.price}
                     </a>

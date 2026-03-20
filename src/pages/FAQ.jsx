@@ -11,7 +11,7 @@ const FAQ_CATEGORIES = [
         items: [
             { q: '¿Necesito visa para viajar a Japón?', a: 'No. Los ciudadanos mexicanos no necesitan visa para estancias turísticas de hasta 90 días en Japón. Solo necesitás tu pasaporte vigente con al menos 6 meses de validez.' },
             { q: '¿Necesito visa para Corea del Sur?', a: 'No. México tiene un acuerdo de exención de visa con Corea del Sur para estancias turísticas de hasta 90 días. Solo se requiere pasaporte vigente y boleto de regreso.' },
-            { q: '¿Cuánto tiempo antes debo reservar?', a: 'Recomendamos reservar con al menos 3-4 meses de anticipación. Nuestros grupos son de máximo 15 personas y se llenan rápido, especialmente la temporada de Sakura. Con el anticipo quedás asegurado.' },
+            { q: '¿Cuánto tiempo antes debo reservar?', a: 'Recomendamos reservar con al menos 3-4 meses de anticipación. Nuestros grupos son de máximo 20 personas y se llenan rápido, especialmente la temporada de Sakura. Con el anticipo quedas asegurado.' },
             { q: '¿Puedo viajar solo/a?', a: 'Sí, la mayoría de nuestros viajeros van solos. Es una excelente oportunidad para conocer gente con intereses similares. Ofrecemos hospedaje compartido o individual según tu preferencia.' },
             { q: '¿Qué vacunas necesito?', a: 'Japón y Corea del Sur no requieren vacunas obligatorias para viajeros mexicanos. Sin embargo, recomendamos tener al día las vacunas básicas. Te enviamos una guía completa al reservar.' },
             { q: '¿Necesito saber japonés o coreano?', a: 'No es necesario. Nuestro guía hispanohablante te acompaña durante todo el viaje. Además, te enviamos un kit con frases básicas y apps útiles de traducción antes de partir.' },
@@ -35,7 +35,7 @@ const FAQ_CATEGORIES = [
         color: '#059669',
         items: [
             { q: '¿Qué incluye el tour?', a: 'Todos nuestros tours incluyen: vuelos internacionales desde CDMX, hospedaje 3-4 estrellas, transporte interno (JR Pass en Japón, KTX en Corea), guía hispanohablante, seguro de viaje internacional, WiFi portátil o eSIM, y comidas especiales seleccionadas.' },
-            { q: '¿Cuántas personas van en cada grupo?', a: 'Máximo 15 personas por grupo. Esto nos permite dar atención personalizada, ser flexibles con el itinerario y crear una experiencia mucho más íntima que los tours masivos de 40+ personas.' },
+            { q: '¿Cuántas personas van en cada grupo?', a: 'Máximo 20 personas por grupo. Esto nos permite dar atención personalizada, ser flexibles con el itinerario y crear una experiencia mucho más íntima que los tours masivos de 40+ personas.' },
             { q: '¿Hay tiempo libre durante el viaje?', a: 'Sí. Cada día tiene un balance entre actividades organizadas y tiempo libre. Creemos que descubrir un lugar por tu cuenta es parte esencial del viaje. Te damos recomendaciones personalizadas para esas horas libres.' },
             { q: '¿Es seguro viajar a Japón y Corea?', a: 'Japón y Corea del Sur son de los países más seguros del mundo. Los índices de criminalidad son extremadamente bajos, el transporte es impecable y la gente es increíblemente amable. Además, viajás con nuestro grupo y guía en todo momento.' },
             { q: '¿Qué tipo de hospedaje usan?', a: 'Usamos hoteles 3-4 estrellas bien ubicados y verificados personalmente por nosotros. En algunos tours incluimos una noche en ryokan (posada tradicional japonesa) con onsen (baños termales). Todo seleccionado para una experiencia auténtica y cómoda.' },
@@ -61,7 +61,7 @@ const QUICK_FACTS = [
     { icon: <LuBanknote size={20} />, text: 'Pago en cuotas sin intereses' },
     { icon: <LuShieldCheck size={20} />, text: 'Seguro de viaje incluido' },
     { icon: <LuWifi size={20} />, text: 'WiFi portátil incluido' },
-    { icon: <LuUsers size={20} />, text: 'Máx. 15 personas por grupo' },
+    { icon: <LuUsers size={20} />, text: 'Máx. 20 personas por grupo' },
 ]
 
 export default function FAQ() {

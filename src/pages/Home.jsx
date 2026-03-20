@@ -43,7 +43,7 @@ const TRIPS = [
         image: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=600&h=400&fit=crop',
         heroImage: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=1920&h=1080&fit=crop&q=85',
         gallery: [
-            { title: 'Tokyo Tower', img: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=400&h=500&fit=crop' },
+            { title: 'Tokyo Tower', img: '/images/tours/tokyo-tower.png' },
             { title: 'Bukchon, Seúl', img: '/images/tours/bukchon-seoul.jpg' },
             { title: 'Shibuya Crossing', img: 'https://images.unsplash.com/photo-1547448526-5e9d57fa28f7?w=400&h=500&fit=crop' },
         ],
@@ -307,7 +307,7 @@ const TESTIMONIALS = [
     { name: 'Ana García', trip: 'Sakura 2025', location: 'Río Meguro, Sakura', initials: 'AG', text: 'Tenía miedo de viajar tan lejos sola, pero el grupo fue increíble. Hice amigos para toda la vida.', photo: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=400&h=500&fit=crop', rotate: -1.5 },
     { name: 'Diego Martínez', trip: 'Corea 2025', location: 'Bukchon, Seúl', initials: 'DM', text: 'La organización es de primer nivel. Cada día fue una sorpresa nueva. Corea superó todas mis expectativas.', photo: '/images/tours/bukchon-seoul.jpg', rotate: 3 },
     { name: 'Lucía Fernández', trip: 'Sakura 2024', location: 'Monte Fuji', initials: 'LF', text: 'Ver el Monte Fuji con los cerezos en flor fue un sueño. Gracias RutaXAsia por hacerlo posible.', photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&h=500&fit=crop', rotate: -2.5 },
-    { name: 'Roberto Sánchez', trip: 'Verano 2025', location: 'Dotonbori, Osaka', initials: 'RS', text: 'La comida, la cultura, la gente... todo fue perfecto. Osaka de noche es otra experiencia.', photo: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&h=500&fit=crop', rotate: 1.5 },
+    { name: 'Roberto Sánchez', trip: 'Verano 2025', location: 'Kioto', initials: 'RS', text: 'La comida, la cultura, la gente... todo fue perfecto. Osaka de noche es otra experiencia.', photo: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&h=500&fit=crop', rotate: 1.5 },
 ]
 
 /* ===== COMPONENT ===== */
@@ -419,6 +419,9 @@ function Home() {
             const wrapper = hScrollRef.current
             const track = hTrackRef.current
             if (!wrapper || !track) return
+
+            // Track handles all sizes now
+
             const rect = wrapper.getBoundingClientRect()
             const totalScrollable = wrapper.offsetHeight - window.innerHeight
             const scrolled = -rect.top
@@ -447,6 +450,7 @@ function Home() {
         window.addEventListener('scroll', handleScroll, { passive: true })
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
 
     // Timeline scroll-fill animation
     useEffect(() => {
@@ -964,7 +968,7 @@ function Home() {
                     <div className="section-header" data-animate="fade-up">
                         <span className="section-tag">¿Cuándo Viajar?</span>
                         <h2 className="section-title">Cada estación tiene su <span className="text-accent">magia</span></h2>
-                        <p className="section-subtitle">Pasá el cursor sobre una estación para descubrir lo que te espera.</p>
+                        <p className="section-subtitle">{window.innerWidth <= 768 ? 'Tocá una estación para descubrir lo que te espera.' : 'Pasá el cursor sobre una estación para descubrir lo que te espera.'}</p>
                     </div>
                     <div className="seasons-panels" data-animate="fade-up">
                         {[

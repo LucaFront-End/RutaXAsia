@@ -15,11 +15,11 @@ const STATS = [
 
 const VALUES = [
     { icon: <LuFlag size={24} />, title: 'Auténtico', desc: 'Cada ruta está diseñada por nosotros, con experiencias que solo un local conoce. Nada genérico, todo curado.', accent: '#DC2626' },
-    { icon: <LuUsers size={24} />, title: 'Grupos pequeños', desc: 'Máximo 15 personas. Experiencia personalizada, flexible y con atención real a cada viajero.', accent: '#2563EB' },
+    { icon: <LuUsers size={24} />, title: 'Grupos pequeños', desc: 'Máximo 20 personas. Experiencia personalizada, flexible y con atención real a cada viajero.', accent: '#2563EB' },
     { icon: <LuLanguages size={24} />, title: 'En español', desc: 'Guía hispanohablante durante todo el viaje. Sin barreras de idioma, todo resuelto en tu lengua.', accent: '#059669' },
-    { icon: <LuPlane size={24} />, title: 'Todo incluido', desc: 'Vuelos, hospedaje, transporte, seguro y experiencias. Solo preocupate por disfrutar.', accent: '#D97706' },
+    { icon: <LuPlane size={24} />, title: 'Todo incluido', desc: 'Vuelos, hospedaje, transporte, seguro y experiencias. Solo preocúpate por disfrutar.', accent: '#D97706' },
     { icon: <LuShieldCheck size={24} />, title: 'Seguridad total', desc: 'Seguro incluido, asistencia 24/7 y respaldo de una agencia formalmente establecida en México.', accent: '#7C3AED' },
-    { icon: <LuCreditCard size={24} />, title: 'Pagos flexibles', desc: 'Apartá tu lugar con un anticipo y pagá en cuotas sin intereses. Viajá sin estrés financiero.', accent: '#DB2777' },
+    { icon: <LuCreditCard size={24} />, title: 'Pagos flexibles', desc: 'Aparta tu lugar con un anticipo y paga en cuotas sin intereses. Viaja sin estrés financiero.', accent: '#DB2777' },
 ]
 
 const GALLERY = [
@@ -32,9 +32,9 @@ const GALLERY = [
 ]
 
 const PROCESS = [
-    { step: '01', title: 'Elegí tu viaje', desc: 'Explorá nuestros tours. Sakura, Verano, Otoño o Corea — cada temporada es única.', icon: <LuSearch size={22} /> },
-    { step: '02', title: 'Contactanos', desc: 'Escribinos por WhatsApp o email. Respondemos en menos de 2 horas, sin compromiso.', icon: <LuMessageCircle size={22} /> },
-    { step: '03', title: 'Reservá tu lugar', desc: 'Con un anticipo asegurás tu plaza. El resto se paga en cuotas cómodas.', icon: <LuCircleCheck size={22} /> },
+    { step: '01', title: 'Elige tu viaje', desc: 'Explora nuestros tours. Sakura, Verano, Otoño o Corea — cada temporada es única.', icon: <LuSearch size={22} /> },
+    { step: '02', title: 'Contáctanos', desc: 'Escríbenos por WhatsApp o email. Respondemos en menos de 2 horas, sin compromiso.', icon: <LuMessageCircle size={22} /> },
+    { step: '03', title: 'Reserva tu lugar', desc: 'Con un anticipo aseguras tu plaza. El resto se paga en cuotas cómodas.', icon: <LuCircleCheck size={22} /> },
     { step: '04', title: 'Kit pre-viaje', desc: 'Te enviamos qué llevar, apps útiles, frases básicas y tips de cada ciudad.', icon: <LuPackage size={22} /> },
     { step: '05', title: '¡A volar!', desc: 'Nos encontramos en el aeropuerto y desde ahí nos encargamos de todo.', icon: <LuPlaneTakeoff size={22} /> },
 ]
@@ -171,7 +171,7 @@ export default function AboutUs() {
                     <div className="au-story-block au-story-block--wide reveal">
                         <div className="au-story-wide-inner">
                             <p className="au-story-lead">Desde 2022, llevamos a <strong>más de 500 viajeros</strong> a vivir Asia como nadie más.</p>
-                            <p>No somos un intermediario. Somos los guías, los planificadores y los que viajamos con vos. Cada viaje lo lideramos personalmente, porque creemos que la diferencia está en los detalles y en la pasión que ponemos en cada experiencia.</p>
+                            <p>No somos un intermediario. Somos los guías, los planificadores y los que viajamos contigo. Cada viaje lo lideramos personalmente, porque creemos que la diferencia está en los detalles y en la pasión que ponemos en cada experiencia.</p>
                         </div>
                     </div>
                 </div>
@@ -249,7 +249,7 @@ export default function AboutUs() {
             <section className="au-trust">
                 <div className="container">
                     <span className="au-label reveal">Respaldo y seguridad</span>
-                    <h2 className="au-section-h2 reveal" style={{"--delay":"0.05s"}}>Viajá con tranquilidad</h2>
+                    <h2 className="au-section-h2 reveal" style={{"--delay":"0.05s"}}>Viaja con tranquilidad</h2>
                     <div className="au-trust-grid">
                         {TRUST.map((t, i) => (
                             <div key={i} className="au-trust-item reveal" style={{"--delay":`${i * 0.07}s`}}>

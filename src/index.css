@@ -3160,6 +3160,7 @@ a {
     letter-spacing: 0.1em;
     box-shadow: none;
 }
+
 .td-hero-btn--sold:hover {
     transform: none;
     box-shadow: none;
@@ -3179,8 +3180,13 @@ a {
     color: var(--td-text);
 }
 
-.td-hospedaje-icon { font-size: 1.3rem; }
-.td-hospedaje-text strong { color: var(--accent); }
+.td-hospedaje-icon {
+    font-size: 1.3rem;
+}
+
+.td-hospedaje-text strong {
+    color: var(--accent);
+}
 
 .td-bottom-price-alt {
     color: rgba(255, 255, 255, 0.85);
@@ -3451,8 +3457,15 @@ a {
 }
 
 @keyframes dotPulse {
-    0%, 100% { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2), 0 4px 16px rgba(220, 38, 38, 0.35); }
-    50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0), 0 4px 16px rgba(220, 38, 38, 0.2); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2), 0 4px 16px rgba(220, 38, 38, 0.35);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(220, 38, 38, 0), 0 4px 16px rgba(220, 38, 38, 0.2);
+    }
 }
 
 /* -- Tooltips -- */
@@ -3501,8 +3514,15 @@ a {
 }
 
 @keyframes detailFadeIn {
-    from { opacity: 0; transform: translateX(10px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .td-detail-img {
@@ -3675,8 +3695,13 @@ a {
 
 /* -- Leaflet overrides -- */
 .td-itinerary-map .leaflet-control-attribution,
-.td-itinerary-map .leaflet-control-zoom { display: none !important; }
-.td-itinerary-map .leaflet-tooltip-pane { z-index: 650 !important; }
+.td-itinerary-map .leaflet-control-zoom {
+    display: none !important;
+}
+
+.td-itinerary-map .leaflet-tooltip-pane {
+    z-index: 650 !important;
+}
 
 /* -- Responsive -- */
 @media (max-width: 900px) {
@@ -3684,13 +3709,16 @@ a {
         flex-direction: column;
         min-height: auto;
     }
+
     .td-itinerary-map {
         min-height: 350px;
     }
+
     .td-itinerary-detail {
         flex: unset;
         max-width: 100%;
     }
+
     .td-detail-img {
         height: 180px;
     }
@@ -4271,7 +4299,7 @@ a {
     opacity: 0;
     transform: translateY(32px);
     transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: var(--delay, 0s);
 }
 
@@ -4284,7 +4312,7 @@ a {
     opacity: 0;
     transform: translateX(-40px);
     transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: var(--delay, 0s);
 }
 
@@ -4297,7 +4325,7 @@ a {
     opacity: 0;
     transform: translateX(40px);
     transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: var(--delay, 0s);
 }
 
@@ -4310,11 +4338,617 @@ a {
     opacity: 0;
     transform: scale(0.92);
     transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: var(--delay, 0s);
 }
 
 .reveal-scale.revealed {
     opacity: 1;
     transform: scale(1);
+}
+
+
+/* ============================================================
+   COMPREHENSIVE MOBILE FIX  900px and below
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    /* ---- DAY JOURNEY: Keep horizontal JS scroll but wide cards ---- */
+    .hscroll-wrapper {
+        height: 500vh !important; /* give enough vertical space to scroll the wide track */
+    }
+
+    .hscroll-track {
+        gap: 1.5rem !important;
+        padding: 0 1rem !important;
+    }
+
+
+
+    /* Scale SVG decorations on mobile */
+    .dj-svg-wrap {
+        width: 40vw !important;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dj-svg-wrap svg {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 150px;
+    }
+
+    /* Title panel */
+    .dj-title-panel {
+        flex: 0 0 92vw;
+        min-width: auto;
+    }
+
+    .dj-title-text {
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+        padding-left: 1.2rem;
+    }
+
+    /* Items */
+    .dj-content-group {
+        flex: 0 0 92vw;
+        min-width: auto;
+    }
+    
+    .dj-content-group--vertical {
+        flex: 0 0 82vw;
+    }
+
+    .dj-item {
+        flex-shrink: 1;
+        min-width: auto !important;
+    }
+
+    .dj-item--horizontal,
+    .dj-item--vertical {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+
+    .dj-item--horizontal .dj-item-img-wrap {
+        height: 45vw;
+        min-height: 200px;
+    }
+
+    .dj-item--vertical .dj-item-img-wrap {
+        height: 55vw;
+        min-height: 240px;
+    }
+
+    .dj-heading {
+        font-size: 1.2rem;
+        max-width: 100%;
+    }
+
+    /* CTA panel  full width */
+    .dj-cta-panel {
+        flex: 0 0 92vw;
+        width: 92vw !important;
+        min-width: auto !important;
+        height: 60vh !important;
+        min-height: 400px !important;
+        padding: 2rem !important;
+    }
+    
+    .dj-cta-heading {
+        font-size: 1.6rem;
+        line-height: 1.25;
+        margin-bottom: 2rem;
+    }
+
+    /* ---- SEASONS: Vertical stack with visible details ---- */
+    .seasons-panels {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .season-panel {
+        height: 300px !important;
+        flex: none !important;
+    }
+
+    .season-panel:hover {
+        height: 300px !important;
+        flex: none !important;
+    }
+
+    .season-label {
+        position: absolute !important;
+        top: 1rem !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        text-align: center;
+    }
+
+    .season-panel:hover .season-label {
+        transform: translateX(-50%) !important;
+    }
+
+    .season-details {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        position: absolute !important;
+        bottom: 1rem !important;
+        left: 1rem !important;
+        right: 1rem !important;
+    }
+
+    .season-panel:hover .season-details {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+
+    .season-temp {
+        font-size: 0.72rem;
+        padding: 0.3rem 0.8rem;
+    }
+
+    .season-highlights {
+        margin-bottom: 0.5rem;
+    }
+
+    .season-highlights li {
+        font-size: 0.72rem;
+    }
+
+    .season-name {
+        font-size: 1.1rem;
+    }
+
+    .season-emoji {
+        font-size: 1.8rem;
+    }
+
+    .season-cta {
+        font-size: 0.72rem;
+        padding: 0.35rem 0.9rem;
+    }
+
+    /* ---- NAVBAR: Logo smaller, center everything ---- */
+    .navbar-logo {
+        height: 60px;
+    }
+
+    .navbar--scrolled .navbar-logo {
+        height: 50px;
+    }
+
+    .nav-dropdown-trigger {
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* ---- TOUR DETAIL: Fix logo/title overlap ---- */
+    .td-hero {
+        min-height: auto !important;
+        height: auto !important;
+        align-items: flex-start;
+    }
+
+    .td-hero-inner {
+        padding-top: 5.3rem;
+        padding-bottom: 5.5rem;
+        padding-left: 1.2rem;
+        padding-right: 1.2rem;
+    }
+
+    .td-hero-vignette {
+        background: linear-gradient(0deg,
+                rgba(0, 0, 0, 0.92) 0%,
+                rgba(0, 0, 0, 0.55) 35%,
+                rgba(0, 0, 0, 0.35) 60%,
+                rgba(0, 0, 0, 0.45) 100%) !important;
+    }
+
+    .td-crumb {
+        margin-bottom: 1.2rem;
+        font-size: 0.65rem;
+    }
+
+    .td-pill {
+        margin-bottom: 1rem;
+    }
+
+    .td-hero-h1 {
+        font-size: 1.7rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .td-hero-sub {
+        font-size: 0.85rem;
+        margin-bottom: 1.2rem;
+        line-height: 1.5;
+    }
+
+    .td-hero-chips {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .td-chip {
+        font-size: 0.72rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .td-hero-cta-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+    }
+
+    .td-hero-pricing-details {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.8rem;
+    }
+
+    .td-pricing-tag {
+        font-size: 0.72rem;
+        padding: 0.3rem 0.7rem;
+    }
+
+    /* ---- MAP: Stack vertically on mobile ---- */
+    .td-itinerary-split {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .td-itinerary-map {
+        flex: none !important;
+        width: 100% !important;
+        min-height: 300px !important;
+        height: 300px !important;
+    }
+
+    .td-itinerary-map .leaflet-container {
+        height: 300px !important;
+        width: 100% !important;
+    }
+
+    .td-itinerary-detail {
+        width: 100%;
+    }
+
+    /* ---- FLOATING BAR + WHATSAPP: avoid overlap ---- */
+    .td-float--show~.whatsapp-float,
+    .td-float--show+.whatsapp-float {
+        bottom: 4.5rem;
+    }
+
+    .td-float {
+        padding: 0.6rem 0;
+    }
+
+    .td-float-inner {
+        gap: 0.5rem;
+    }
+
+    .td-float-right {
+        gap: 0.5rem;
+    }
+
+    .td-float-btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.6rem;
+    }
+
+    .td-float-left strong {
+        font-size: 0.8rem;
+    }
+
+    /* Tour sidebar stacks below content */
+    .td-two-col {
+        grid-template-columns: 1fr;
+    }
+
+    .td-sticky-sidebar {
+        position: static;
+    }
+
+    /* ---- BOARDING PASS: visible actions ---- */
+    .bp-card-actions {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .bp-card-includes {
+        flex-wrap: wrap;
+    }
+
+    .bp-include-tag {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    /* ---- HERO: center chips ---- */
+    .hero-meta-chips {
+        justify-content: center;
+    }
+}
+
+/* ============================================================
+   SMALLER MOBILE FIX  480px and below
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+    :root {
+        --section-padding: 3rem 0;
+    }
+
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.82rem;
+    }
+
+    .hero-layout {
+        padding-top: 5.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .hero-destination-label {
+        justify-content: center;
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .hero-excerpt {
+        font-size: 0.82rem;
+        line-height: 1.6;
+    }
+
+    .hero-meta-chips {
+        gap: 0.35rem;
+    }
+
+    .hero-chip {
+        font-size: 0.68rem;
+        padding: 0.25rem 0.55rem;
+    }
+
+    .hero-gallery {
+        gap: 0.5rem;
+    }
+
+    .hero-gcard {
+        width: 130px !important;
+    }
+
+    .hero-gcard:nth-child(2) {
+        width: 115px !important;
+    }
+
+    .hero-gcard-imgbox,
+    .hero-gcard:nth-child(2) .hero-gcard-imgbox {
+        height: 170px !important;
+    }
+
+    .hero-btn-explore {
+        font-size: 0.85rem;
+        padding: 0.6rem 1.3rem;
+    }
+
+    .dj-title-panel {
+        height: 40vh;
+        min-height: 250px;
+    }
+
+    .dj-title-text {
+        font-size: 2rem;
+    }
+
+    .dj-item--horizontal .dj-item-img-wrap {
+        height: 55vw;
+    }
+
+    .dj-item--vertical .dj-item-img-wrap {
+        height: 65vw;
+    }
+
+    .dj-heading {
+        font-size: 1.05rem;
+    }
+
+    .bp-card-body {
+        padding: 1.2rem;
+    }
+
+    .bp-card-title {
+        font-size: 1.05rem;
+    }
+
+    .bp-card-excerpt {
+        font-size: 0.78rem;
+    }
+
+    .bp-include-tag {
+        font-size: 0.62rem;
+        padding: 0.2rem 0.45rem;
+    }
+
+    .bp-detail-label {
+        font-size: 0.58rem;
+    }
+
+    .bp-detail-value {
+        font-size: 0.72rem;
+    }
+
+    .bp-card-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .bp-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .tl-node {
+        grid-template-columns: 40px 1fr;
+        gap: 0 0.8rem;
+    }
+
+    .tl-year-badge {
+        width: 38px;
+        height: 38px;
+        font-size: 0.62rem;
+    }
+
+    .tl-card {
+        padding: 1rem;
+    }
+
+    .tl-card-title {
+        font-size: 0.95rem;
+    }
+
+    .tl-card-desc {
+        font-size: 0.78rem;
+    }
+
+    .wu-title {
+        font-size: 1.4rem;
+    }
+
+    .wu-card {
+        padding: 1.2rem;
+    }
+
+    .wu-card-title {
+        font-size: 0.9rem;
+    }
+
+    .wu-card-desc {
+        font-size: 0.78rem;
+    }
+
+    .polaroid-grid {
+        max-width: 100%;
+    }
+
+    .polaroid-quote {
+        font-size: 0.76rem;
+    }
+
+    .season-panel {
+        height: 240px !important;
+    }
+
+    .season-panel:hover {
+        height: 240px !important;
+    }
+
+    .season-label {
+        transform: translateY(-85px) !important;
+    }
+
+    .season-panel:hover .season-label {
+        transform: translateY(-85px) !important;
+    }
+
+    .season-name {
+        font-size: 1rem;
+    }
+
+    .season-emoji {
+        font-size: 1.5rem;
+    }
+
+    .season-highlights li {
+        font-size: 0.7rem;
+    }
+
+    .season-cta {
+        font-size: 0.72rem;
+        padding: 0.4rem 1rem;
+    }
+
+    .td-hero {
+        height: 60vh;
+        min-height: 400px;
+    }
+
+    .td-hero-title {
+        font-size: 1.8rem;
+    }
+
+    .td-hero-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .td-quick-info {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .td-chapter-card {
+        padding: 1.2rem;
+    }
+
+    .td-chapter-title {
+        font-size: 1.1rem;
+    }
+
+    .td-sticky-sidebar {
+        padding: 1.2rem;
+    }
+
+    .contact-hero-h1 {
+        font-size: 1.8rem;
+    }
+
+    .contact-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-method-card {
+        padding: 1rem;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .navbar-logo {
+        height: 50px;
+    }
+
+    .navbar--scrolled .navbar-logo {
+        height: 42px;
+    }
+
+    .navbar-container {
+        padding: 0 1rem;
+    }
 }

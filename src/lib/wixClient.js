@@ -20,7 +20,10 @@ export async function submitFormToCMS(data) {
             dataItem: {
                 data: {
                     nombre: data.nombre,
+                    telefono: data.telefono,
                     email: data.email,
+                    ciudad: data.ciudad,
+                    estado: data.estado,
                     fuente: 'SW - Popup Descuento',
                     fecha: new Date().toISOString(),
                 },

@@ -36,6 +36,11 @@ function makeDotIcon(num, isActive) {
 function FitAndLock({ hasJapan, hasKorea }) {
     const map = useMap()
     useEffect(() => {
+        // Force Leaflet to recalculate container size (fixes blank map on mobile)
+        setTimeout(() => {
+            map.invalidateSize()
+        }, 200)
+
         let bounds
         if (hasJapan && hasKorea) {
             bounds = L.latLngBounds([[30, 125], [44, 146]])
@@ -53,6 +58,12 @@ function FitAndLock({ hasJapan, hasKorea }) {
         map.boxZoom.disable()
         map.keyboard.disable()
         if (map.tap) map.tap.disable()
+
+        // Re-fit bounds after invalidateSize settles
+        setTimeout(() => {
+            map.invalidateSize()
+            map.fitBounds(bounds, { padding: [30, 30] })
+        }, 400)
     }, [map, hasJapan, hasKorea])
     return null
 }
