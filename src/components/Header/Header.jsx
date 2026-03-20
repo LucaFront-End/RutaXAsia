@@ -22,16 +22,25 @@ const TOUR_LINKS = [
 
 function Header() {
     const [scrolled, setScrolled] = useState(false)
+    const [hidden, setHidden] = useState(false)
     const [menuOpen, setMenuOpen] = useState(false)
     const [toursOpen, setToursOpen] = useState(false)
     const location = useLocation()
     const isHome = location.pathname === '/'
+    const lastScrollY = { current: 0 }
 
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 60)
+        const onScroll = () => {
+            const y = window.scrollY
+            setScrolled(y > 60)
+            if (!menuOpen) {
+                setHidden(y > 100 && y > lastScrollY.current)
+            }
+            lastScrollY.current = y
+        }
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
-    }, [])
+    }, [menuOpen])
 
     useEffect(() => {
         document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -44,7 +53,7 @@ function Header() {
     const homeLink = (hash) => isHome ? hash : `/${hash}`
 
     return (
-        <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--open' : ''}`}>
+        <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--open' : ''}${hidden ? ' navbar--hidden' : ''}`}>
             <div className="navbar-container">
                 <Link to="/" className="navbar-brand" onClick={closeMenu}>
                     <img src="/logo.png" alt="RutaXAsia" className="navbar-logo" />

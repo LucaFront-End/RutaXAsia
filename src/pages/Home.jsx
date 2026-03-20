@@ -24,7 +24,7 @@ const TRIPS = [
         gallery: [
             { title: 'Fushimi Inari, Kyoto', img: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=400&h=500&fit=crop' },
             { title: 'Monte Fuji', img: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=400&h=500&fit=crop' },
-            { title: 'Sakura Park', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&h=500&fit=crop' },
+            { title: 'Parque Maruyama', img: '/images/tours/maruyama-sakura.jpg' },
         ],
         includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass incluido', 'Guía hispanohablante'],
     },
@@ -53,8 +53,8 @@ const TRIPS = [
         id: 'corea-junio-2026',
         title: 'Corea',
         heroTagline: 'Corea del Sur',
-        heroHeading: 'COREA',
-        heroSubheading: 'del Sur',
+        heroHeading: 'SEÚL',
+        heroSubheading: '& Busan',
         excerpt: 'Palacios, K-culture, playas y la isla de Jeju. 12 días por Seúl, Busan y Jeju.',
         date: '1 – 12 junio',
         duration: '12 días',
@@ -93,8 +93,8 @@ const TRIPS = [
         id: 'corea-septiembre-2026',
         title: 'Corea',
         heroTagline: 'Corea del Sur',
-        heroHeading: 'COREA',
-        heroSubheading: 'del Sur',
+        heroHeading: 'SEÚL',
+        heroSubheading: '& Jeju',
         excerpt: 'Seúl, Busan y Jeju en septiembre. El clima perfecto para explorar Corea del Sur.',
         date: '18 – 29 septiembre',
         duration: '12 días',
@@ -112,8 +112,8 @@ const TRIPS = [
         id: 'octubre-japon-2026',
         title: 'Japón Octubre',
         heroTagline: 'Japón',
-        heroHeading: 'JAPÓN',
-        heroSubheading: 'Octubre',
+        heroHeading: 'KYOTO',
+        heroSubheading: '& Osaka',
         excerpt: '12 días descubriendo Japón en la mejor época. Clima perfecto y los primeros colores otoñales.',
         date: '2 – 13 octubre',
         duration: '12 días',
@@ -122,9 +122,9 @@ const TRIPS = [
         image: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=600&h=400&fit=crop',
         heroImage: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=1920&h=1080&fit=crop&q=85',
         gallery: [
-            { title: 'Kinkaku-ji, Kyoto', img: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=400&h=500&fit=crop' },
-            { title: 'Ciervos de Nara', img: 'https://images.unsplash.com/photo-1570459027562-4a916cc6113f?w=400&h=500&fit=crop' },
-            { title: 'Monte Fuji', img: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=400&h=500&fit=crop' },
+            { title: 'Kinkaku-ji, Kyoto', img: '/images/tours/kinkakuji.jpg' },
+            { title: 'Ciervos de Nara', img: '/images/tours/nara-ciervos.jpg' },
+            { title: 'Universal Studios Japan', img: '/images/tours/usj.jpg' },
         ],
         includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass incluido', 'Guía hispanohablante'],
     },
@@ -263,7 +263,7 @@ const DAY_JOURNEY = [
         time: '08:00 AM',
         activity: 'Río Sumida',
         heading: 'Caminata matutina por el río Sumida y fotos del amanecer sobre Tokyo',
-        image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1600&h=1000&fit=crop&q=80',
+        image: '/images/journey/rio-sumida.jpg',
         type: 'image',
         layout: 'horizontal',
     },
@@ -271,15 +271,15 @@ const DAY_JOURNEY = [
         time: '10:00 AM',
         activity: 'Senso-ji & Asakusa',
         heading: 'Visita el templo Senso-ji y recorre el histórico barrio de Asakusa',
-        image: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1000&h=1400&fit=crop&q=80',
+        image: '/images/journey/sensoji.jpeg',
         type: 'image',
         layout: 'vertical',
     },
     {
         time: '12:00 PM',
         activity: 'Kimono en Asakusa',
-        heading: 'Vestí un kimono tradicional y recorré las calles históricas de Asakusa',
-        image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1600&h=1000&fit=crop&q=80',
+        heading: 'Vestite de kimono y recorré las calles históricas de Asakusa',
+        image: '/images/journey/kimono-asakusa.jpg',
         type: 'image',
         layout: 'horizontal',
     },
@@ -287,7 +287,7 @@ const DAY_JOURNEY = [
         time: '02:00 PM',
         activity: 'Ramen japonés',
         heading: 'Saborea un auténtico ramen japonés en uno de los mejores restaurantes locales',
-        image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=1600&h=1000&fit=crop&q=80',
+        image: '/images/journey/ramen.jpg',
         type: 'image',
         layout: 'horizontal',
     },
@@ -295,7 +295,7 @@ const DAY_JOURNEY = [
         time: '08:00 PM',
         activity: 'Neón nocturno',
         heading: 'Piérdete en la magia de las calles de neón de Shinjuku y Shibuya',
-        image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=1000&h=1400&fit=crop&q=80',
+        image: '/images/journey/shibuya-noche.jpg',
         type: 'image',
         layout: 'vertical',
     },
@@ -711,6 +711,28 @@ function Home() {
                                         <span className="dj-activity">{DAY_JOURNEY[3].activity}</span>
                                     </div>
                                     <h2 className="dj-heading">{DAY_JOURNEY[3].heading}</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ---- Item 4 (vertical) ---- */}
+                        <div className="dj-content-group dj-content-group--vertical">
+                            <div className={`dj-item dj-item--${DAY_JOURNEY[4].layout}`}>
+                                <div className="dj-item-img-wrap">
+                                    {DAY_JOURNEY[4].type === 'video' ? (
+                                        <video src={DAY_JOURNEY[4].video} poster={DAY_JOURNEY[4].image} className="dj-item-img" autoPlay loop muted playsInline />
+                                    ) : (
+                                        <img src={DAY_JOURNEY[4].image} alt={DAY_JOURNEY[4].activity} className="dj-item-img" loading="lazy" />
+                                    )}
+                                    <div className="dj-reveal-mask" />
+                                </div>
+                                <div className="dj-item-content">
+                                    <div className="dj-time-row">
+                                        <span className="dj-time">{DAY_JOURNEY[4].time}</span>
+                                        <span className="dj-time-line" />
+                                        <span className="dj-activity">{DAY_JOURNEY[4].activity}</span>
+                                    </div>
+                                    <h2 className="dj-heading">{DAY_JOURNEY[4].heading}</h2>
                                 </div>
                             </div>
                         </div>

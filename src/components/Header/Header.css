@@ -17,6 +17,10 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
+.navbar--hidden {
+  transform: translateY(-100%);
+}
+
 .navbar-container {
   max-width: 1320px;
   margin: 0 auto;
