@@ -11,7 +11,6 @@ const wixClient = createClient({
 
 /**
  * Submit a form entry to Wix CMS collection "cmsformulario"
- * @param {{ nombre: string, email: string }} data
  */
 export async function submitFormToCMS(data) {
     try {
@@ -37,3 +36,34 @@ export async function submitFormToCMS(data) {
 }
 
 export default wixClient
+
+/**
+ * Fetch all published blog posts via our server-side API (avoids CORS).
+ */
+export async function fetchBlogPosts() {
+    try {
+        const res = await fetch('/api/blog')
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const data = await res.json()
+        return data.posts || []
+    } catch (error) {
+        console.error('[Blog] Error fetching posts:', error.message)
+        return []
+    }
+}
+
+/**
+ * Fetch a single blog post by slug via our server-side API (avoids CORS).
+ */
+export async function fetchBlogPostBySlug(slug) {
+    try {
+        const res = await fetch(`/api/blog-post?slug=${encodeURIComponent(slug)}`)
+        if (res.status === 404) return null
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const data = await res.json()
+        return data.post || null
+    } catch (error) {
+        console.error('[Blog] Error fetching post:', error.message)
+        return null
+    }
+}
