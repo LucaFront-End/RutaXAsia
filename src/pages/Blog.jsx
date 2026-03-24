@@ -69,11 +69,12 @@ const FALLBACK_POSTS = [
     },
 ]
 
-const CATEGORIES = ['Todos', 'Guías', 'Tips', 'Experiencias', 'Gastronomía', 'General']
+const FALLBACK_CATEGORIES = ['Todos', 'Guías', 'Tips', 'Viajes Internacionales', 'RutaXAsia']
 
 export default function Blog() {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(true)
+    const [categories, setCategories] = useState(FALLBACK_CATEGORIES)
     const [activeCategory, setActiveCategory] = useState('Todos')
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -83,9 +84,17 @@ export default function Blog() {
         let cancelled = false
         setLoading(true)
 
-        fetchBlogPosts().then(blogPosts => {
+        fetchBlogPosts().then(data => {
             if (cancelled) return
-            setPosts(blogPosts.length > 0 ? blogPosts : FALLBACK_POSTS)
+            // data comes as { posts, categories } from our API
+            if (data.posts?.length > 0) {
+                setPosts(data.posts)
+            } else {
+                setPosts(FALLBACK_POSTS)
+            }
+            if (data.categories?.length > 0) {
+                setCategories(['Todos', ...data.categories.map(c => c.label)])
+            }
             setLoading(false)
         })
 
@@ -93,7 +102,9 @@ export default function Blog() {
     }, [])
 
     const filtered = posts.filter(p => {
-        const matchCat = activeCategory === 'Todos' || p.categoryLabel === activeCategory
+        const matchCat = activeCategory === 'Todos' ||
+            p.categoryLabel === activeCategory ||
+            p.categoryLabels?.includes(activeCategory)
         const matchSearch = !searchTerm ||
             p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (p.excerpt && p.excerpt.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -138,7 +149,7 @@ export default function Blog() {
                     />
                 </div>
                 <div className="blog-categories">
-                    {CATEGORIES.map(cat => (
+                    {categories.map(cat => (
                         <button
                             key={cat}
                             className={`blog-cat-btn ${activeCategory === cat ? 'active' : ''}`}

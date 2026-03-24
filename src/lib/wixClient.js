@@ -45,10 +45,11 @@ export async function fetchBlogPosts() {
         const res = await fetch('/api/blog')
         if (!res.ok) throw new Error(`API returned ${res.status}`)
         const data = await res.json()
-        return data.posts || []
+        // Return the full response: { posts: [...], categories: [...] }
+        return { posts: data.posts || [], categories: data.categories || [] }
     } catch (error) {
         console.error('[Blog] Error fetching posts:', error.message)
-        return []
+        return { posts: [], categories: [] }
     }
 }
 

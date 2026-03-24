@@ -1,6 +1,6 @@
 import express from 'express';
 import { createClient, ApiKeyStrategy } from '@wix/sdk';
-import { posts } from '@wix/blog';
+import { posts, categories } from '@wix/blog';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -10,12 +10,35 @@ const PORT = 3001;
 
 function makeWixClient() {
     return createClient({
-        modules: { posts },
+        modules: { posts, categories },
         auth: ApiKeyStrategy({
             siteId: process.env.VITE_WIX_SITE_ID,
             apiKey: process.env.VITE_WIX_API_KEY,
         }),
     });
+}
+
+// Category cache — maps category ID to label
+let categoryCache = {};
+
+async function loadCategories(wixClient) {
+    if (Object.keys(categoryCache).length > 0) return categoryCache;
+    try {
+        const result = await wixClient.categories.listCategories();
+        categoryCache = {};
+        for (const cat of (result?.categories || [])) {
+            categoryCache[cat._id] = cat.label;
+        }
+        console.log('[API] Loaded categories:', Object.values(categoryCache).join(', '));
+    } catch (e) {
+        console.error('[API] Failed to load categories:', e.message);
+    }
+    return categoryCache;
+}
+
+function resolveCategoryLabels(post, catMap) {
+    if (!post.categoryIds?.length) return ['General'];
+    return post.categoryIds.map(id => catMap[id] || 'General').filter(Boolean);
 }
 
 /**
@@ -121,14 +144,16 @@ function extractText(node) {
     }).join('');
 }
 
-function mapPost(post, includeContent = false) {
+function mapPost(post, includeContent = false, catMap = {}) {
+    const labels = resolveCategoryLabels(post, catMap);
     const result = {
         id: post._id,
         slug: post.slug,
         title: post.title,
         excerpt: post.excerpt || '',
         coverImage: extractCoverImage(post),
-        categoryLabel: post.categories?.[0]?.label || 'General',
+        categoryLabel: labels[0],
+        categoryLabels: labels,
         date: post.firstPublishedDate || post.lastPublishedDate || post._createdDate,
         readTime: `${post.minutesToRead || 3} min`,
         featured: post.featured || false,
@@ -141,17 +166,37 @@ function mapPost(post, includeContent = false) {
     return result;
 }
 
+// ---- List categories ----
+app.get('/api/blog-categories', async (req, res) => {
+    try {
+        const wixClient = makeWixClient();
+        // Force refresh cache
+        categoryCache = {};
+        const catMap = await loadCategories(wixClient);
+        const cats = Object.entries(catMap).map(([id, label]) => ({ id, label }));
+        res.json({ categories: cats });
+    } catch (error) {
+        console.error('[API] Error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ---- List all blog posts ----
 app.get('/api/blog', async (req, res) => {
     try {
         const wixClient = makeWixClient();
         console.log('[API] Fetching blog posts...');
-        const result = await wixClient.posts.listPosts({
-            fieldsets: ['RICH_CONTENT', 'URL'],
-        });
-        const blogPosts = (result?.posts || []).map(p => mapPost(p, false));
-        console.log(`[API] Found ${blogPosts.length} posts`);
-        res.json({ posts: blogPosts });
+
+        // Load categories and posts in parallel
+        const [catMap, postsResult] = await Promise.all([
+            loadCategories(wixClient),
+            wixClient.posts.listPosts({ fieldsets: ['RICH_CONTENT', 'URL'] }),
+        ]);
+
+        const blogPosts = (postsResult?.posts || []).map(p => mapPost(p, false, catMap));
+        const cats = Object.entries(catMap).map(([id, label]) => ({ id, label }));
+        console.log(`[API] Found ${blogPosts.length} posts, ${cats.length} categories`);
+        res.json({ posts: blogPosts, categories: cats });
     } catch (error) {
         console.error('[API] Error:', error.message);
         res.status(500).json({ error: error.message });
@@ -166,11 +211,14 @@ app.get('/api/blog-post', async (req, res) => {
     try {
         const wixClient = makeWixClient();
         console.log(`[API] Fetching post: ${slug}`);
-        const result = await wixClient.posts.getPostBySlug(slug, {
-            fieldsets: ['RICH_CONTENT', 'URL'],
-        });
+
+        const [catMap, result] = await Promise.all([
+            loadCategories(wixClient),
+            wixClient.posts.getPostBySlug(slug, { fieldsets: ['RICH_CONTENT', 'URL'] }),
+        ]);
+
         if (!result?.post) return res.status(404).json({ error: 'Not found' });
-        const mapped = mapPost(result.post, true);
+        const mapped = mapPost(result.post, true, catMap);
         console.log(`[API] Post "${mapped.title}" — coverImage: ${mapped.coverImage ? 'YES' : 'NO'}, contentHtml: ${mapped.contentHtml?.length || 0} chars`);
         res.json({ post: mapped });
     } catch (error) {
