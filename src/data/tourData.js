@@ -648,7 +648,6 @@ export const TOUR_ORDER = [
     'corea-septiembre-2026',
     'octubre-japon-2026',
     'japon-corea-2026',
-    'otono-japon-2026',
 ]
 
 export default TOURS
