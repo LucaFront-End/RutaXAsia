@@ -148,26 +148,7 @@ const TRIPS = [
         ],
         includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass + KTX', 'Guía hispanohablante'],
     },
-    {
-        id: 'otono-japon-2026',
-        title: 'Otoño en Japón',
-        heroTagline: 'Japón',
-        heroHeading: 'KYOTO',
-        heroSubheading: '& Nara',
-        excerpt: 'Los colores del momiji tiñen Japón de rojo y dorado. Ryokan y onsen incluidos.',
-        date: '3 – 14 noviembre',
-        duration: '12 días',
-        flagIcons: [{ code: 'jp', name: 'Japón' }],
-        badge: '🍁 Otoño',
-        image: '/images/tours/otono-japon.jpg',
-        heroImage: '/images/tours/otono-japon.jpg',
-        gallery: [
-            { title: 'Bambú de Arashiyama', img: 'https://images.unsplash.com/photo-1632923754832-60642c12a7ed?w=400&h=500&fit=crop' },
-            { title: 'Momiji Otoño', img: '/images/tours/otono-japon.jpg' },
-            { title: 'Kinkaku-ji', img: '/images/tours/kinkakuji.jpg' },
-        ],
-        includes: ['Vuelos desde CDMX', 'Ryokan incluido', 'JR Pass incluido', 'Onsen incluido'],
-    },
+
 ]
 
 // Deterministic star field (no re-render flicker)

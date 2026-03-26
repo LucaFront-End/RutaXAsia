@@ -17,7 +17,6 @@ const TOUR_LINKS = [
     { slug: 'verano-japon-2026', title: 'Verano en Japón', flag: 'jp', sub: 'Japón · Julio 2026 · 2 fechas' },
     { slug: 'octubre-japon-2026', title: 'Japón Octubre', flag: 'jp', sub: 'Japón · Octubre 2026 · Trilogía Otoño' },
     { slug: 'japon-corea-2026', title: 'Japón y Corea', flag: 'jp', sub: 'Japón & Corea · Octubre 2026' },
-    { slug: 'otono-japon-2026', title: 'Otoño en Japón', flag: 'jp', sub: 'Japón · Noviembre 2026' },
 ]
 
 function Header() {

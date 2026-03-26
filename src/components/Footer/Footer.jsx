@@ -36,7 +36,6 @@ function Footer() {
                             <li><Link to="/tours/corea-septiembre-2026">Corea (Septiembre)</Link></li>
                             <li><Link to="/tours/octubre-japon-2026">Japón Octubre</Link></li>
                             <li><Link to="/tours/japon-corea-2026">Japón y Corea (Octubre)</Link></li>
-                            <li><Link to="/tours/otono-japon-2026">Otoño en Japón</Link></li>
                         </ul>
                     </div>
 
