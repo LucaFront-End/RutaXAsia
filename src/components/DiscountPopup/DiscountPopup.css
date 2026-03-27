@@ -93,7 +93,8 @@
     gap: 0.8rem;
 }
 
-.popup-form input {
+.popup-form input,
+.popup-form select {
     padding: 0.85rem 1.2rem;
     border: 2px solid #eee;
     border-radius: 12px;
@@ -101,9 +102,29 @@
     font-family: var(--font-body);
     transition: border-color 0.3s;
     outline: none;
+    background-color: #fff;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.popup-form input:focus {
+/* Add custom appearance for select if desired, but this is the minimum */
+.popup-form select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+.popup-form select:invalid,
+.popup-form select:disabled,
+.popup-form select[value=""] {
+    color: #757575; /* match placeholder color */
+}
+
+.popup-form input:focus,
+.popup-form select:focus {
     border-color: var(--color-primary);
 }
 
