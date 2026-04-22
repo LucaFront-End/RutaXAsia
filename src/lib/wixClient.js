@@ -14,23 +14,18 @@ const wixClient = createClient({
  */
 export async function submitFormToCMS(data) {
     try {
-        const result = await wixClient.items.insertDataItem({
-            dataCollectionId: 'cmsformulario',
-            dataItem: {
-                data: {
-                    nombre: data.nombre,
-                    telefono: data.telefono,
-                    email: data.email,
-                    estado: data.estado,
-                    viaje: data.viaje,
-                    mensaje: data.mensaje,
-                    origen: data.origen,
-                    fuente: 'SW - Contacto',
-                    fecha: new Date().toISOString(),
-                },
-            },
+        const result = await wixClient.items.insert('cmsformulario', {
+            nombre: data.nombre,
+            telefono: data.telefono,
+            email: data.email,
+            estado: data.estado,
+            viaje: data.viaje,
+            mensaje: data.mensaje,
+            origen: data.origen,
+            fuente: 'SW - Contacto',
+            fecha: new Date().toISOString(),
         })
-        return { success: true, id: result?.dataItem?._id }
+        return { success: true, id: result?._id }
     } catch (error) {
         console.error('Error submitting to Wix CMS:', error)
         return { success: false, error: error.message }
@@ -91,12 +86,13 @@ export async function submitPopupToCMS(data) {
  */
 export async function fetchCityLanding(slug) {
     try {
-        const result = await wixClient.items.queryDataItems({
-            dataCollectionId: 'LandingsdeCiudad',
-        }).eq('slug', slug).find()
+        const result = await wixClient.items
+            .query('LandingsdeCiudad')
+            .eq('slug', slug)
+            .find()
 
         if (!result.items || result.items.length === 0) return null
-        return result.items[0].data
+        return result.items[0]
     } catch (error) {
         console.error('Error fetching city landing:', error)
         return null

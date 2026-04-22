@@ -41,12 +41,12 @@ function getWixClient() {
 /* ── Fetch tour slugs from Wix CMS "tours" collection ──────────── */
 async function fetchTourSlugs(wixClient) {
     try {
-        const result = await wixClient.items.queryDataItems({
-            dataCollectionId: 'tours',
-        }).find();
+        const result = await wixClient.items
+            .query('tours')
+            .find();
 
         const cmsSlugs = (result.items || [])
-            .map(item => item.data?.slug)
+            .map(item => item?.slug)
             .filter(Boolean);
 
         if (cmsSlugs.length > 0) {
@@ -100,12 +100,12 @@ async function fetchBlogSlugs(wixClient) {
 /* ── Fetch city landing slugs from Wix CMS ─────────────────────── */
 async function fetchCityLandingSlugs(wixClient) {
     try {
-        const result = await wixClient.items.queryDataItems({
-            dataCollectionId: 'LandingsdeCiudad',
-        }).find();
+        const result = await wixClient.items
+            .query('LandingsdeCiudad')
+            .find();
 
         return (result.items || [])
-            .map(item => item.data?.slug)
+            .map(item => item?.slug)
             .filter(Boolean);
     } catch (error) {
         console.error('[Sitemap] Error fetching city landings:', error.message);

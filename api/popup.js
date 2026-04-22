@@ -45,16 +45,13 @@ export default async function handler(req, res) {
 
         console.log('[Popup API] Inserting into Popup collection:', dataToInsert);
 
-        const result = await wixClient.items.insertDataItem({
-            dataCollectionId: 'Popup',
-            dataItem: { data: dataToInsert },
-        });
+        const result = await wixClient.items.insert('Popup', dataToInsert);
 
-        console.log('[Popup API] Success! ID:', result?.dataItem?._id);
+        console.log('[Popup API] Success! ID:', result?._id);
 
         res.status(200).json({
             success: true,
-            id: result?.dataItem?._id,
+            id: result?._id,
         });
     } catch (error) {
         console.error('[Popup API] Error:', error.message, error.details || '');

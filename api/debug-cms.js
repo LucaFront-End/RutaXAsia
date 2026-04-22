@@ -15,40 +15,38 @@ export default async function handler(req, res) {
 
         const results = {};
 
-        // Test Popup collection
+        // Test Popup collection — read
         try {
             const popupResult = await wixClient.items
-                .queryDataItems({ dataCollectionId: 'Popup' })
+                .query('Popup')
                 .limit(1)
                 .find();
             
             results.popup = {
-                totalCount: popupResult.totalCount || 0,
-                hasItems: (popupResult.items || []).length > 0,
-                sampleFieldKeys: popupResult.items?.[0]?.data 
-                    ? Object.keys(popupResult.items[0].data)
-                    : 'No items found — cannot determine field keys',
-                sampleData: popupResult.items?.[0]?.data || null,
+                totalCount: popupResult.totalCount || popupResult.items?.length || 0,
+                sampleFieldKeys: popupResult.items?.[0] 
+                    ? Object.keys(popupResult.items[0])
+                    : 'No items',
+                sampleData: popupResult.items?.[0] || null,
             };
         } catch (e) {
             results.popup = { error: e.message };
         }
 
-        // Test LandingsdeCiudad collection
+        // Test LandingsdeCiudad collection — read
         try {
             const landingsResult = await wixClient.items
-                .queryDataItems({ dataCollectionId: 'LandingsdeCiudad' })
+                .query('LandingsdeCiudad')
                 .limit(2)
                 .find();
             
             results.landings = {
-                totalCount: landingsResult.totalCount || 0,
-                hasItems: (landingsResult.items || []).length > 0,
-                sampleFieldKeys: landingsResult.items?.[0]?.data 
-                    ? Object.keys(landingsResult.items[0].data)
-                    : 'No items found — cannot determine field keys',
-                sampleData: landingsResult.items?.[0]?.data || null,
-                allSlugs: (landingsResult.items || []).map(i => i.data?.slug).filter(Boolean),
+                totalCount: landingsResult.totalCount || landingsResult.items?.length || 0,
+                sampleFieldKeys: landingsResult.items?.[0]
+                    ? Object.keys(landingsResult.items[0])
+                    : 'No items',
+                sampleData: landingsResult.items?.[0] || null,
+                allSlugs: (landingsResult.items || []).map(i => i?.slug).filter(Boolean),
             };
         } catch (e) {
             results.landings = { error: e.message };
@@ -56,24 +54,19 @@ export default async function handler(req, res) {
 
         // Test write to Popup
         try {
-            const testWrite = await wixClient.items.insertDataItem({
-                dataCollectionId: 'Popup',
-                dataItem: {
-                    data: {
-                        nombre: 'TEST - Borrar',
-                        correo: 'test@test.com',
-                        telefono: '0000000000',
-                        estado: 'Test',
-                        viajeDeInteres: 'Test',
-                        fuente: 'TEST - API Debug',
-                        fecha: new Date().toISOString(),
-                    },
-                },
-            });
+            const testData = {
+                title_fld: 'debug-test@test.com',
+                nombre: 'DEBUG TEST - Borrar',
+                telfono: '0000000000',
+                ciudad: 'Test',
+                viajeDeInteres: 'Test',
+                mensaje: 'Automated debug test',
+            };
+            const result = await wixClient.items.insert('Popup', testData);
             results.popupWrite = {
                 success: true,
-                insertedId: testWrite?.dataItem?._id,
-                returnedData: testWrite?.dataItem?.data || null,
+                insertedId: result?._id,
+                returnedData: result || null,
             };
         } catch (e) {
             results.popupWrite = { error: e.message, details: e.details || null };
