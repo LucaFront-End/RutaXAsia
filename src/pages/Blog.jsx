@@ -1,80 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import { LuCalendar, LuClock, LuArrowRight, LuSearch, LuLoader } from 'react-icons/lu'
+import { LuCalendar, LuClock, LuArrowRight, LuSearch, LuLoader, LuInfo } from 'react-icons/lu'
 import { fetchBlogPosts } from '../lib/wixClient'
 import './Blog.css'
-
-// Fallback posts shown while Wix Blog loads or if it returns empty
-const FALLBACK_POSTS = [
-    {
-        id: 'preparar-viaje-japon',
-        slug: 'preparar-viaje-japon',
-        title: 'Guía completa: Cómo preparar tu primer viaje a Japón',
-        excerpt: 'Todo lo que necesitas saber antes de tu primer viaje al país del sol naciente. Desde el pasaporte hasta los mejores tips de viaje.',
-        coverImage: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=500&fit=crop&q=80',
-        categoryLabel: 'Guías',
-        date: '2026-03-10',
-        readTime: '8 min',
-    },
-    {
-        id: 'mejor-epoca-japon',
-        slug: 'mejor-epoca-japon',
-        title: '¿Cuál es la mejor época para viajar a Japón?',
-        excerpt: 'Sakura en primavera, festivales en verano, hojas rojas en otoño... Cada temporada tiene su magia. Te ayudamos a elegir.',
-        coverImage: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=500&fit=crop&q=80',
-        categoryLabel: 'Tips',
-        date: '2026-03-05',
-        readTime: '5 min',
-    },
-    {
-        id: 'experiencia-tren-bala',
-        slug: 'experiencia-tren-bala',
-        title: 'Viajar en el Shinkansen: La experiencia del tren bala',
-        excerpt: 'El tren bala de Japón no es solo transporte, es una experiencia. Te contamos todo sobre el JR Pass y cómo aprovechar al máximo.',
-        coverImage: 'https://images.unsplash.com/photo-1565618754154-c8986b5e81a8?w=800&h=500&fit=crop&q=80',
-        categoryLabel: 'Experiencias',
-        date: '2026-02-28',
-        readTime: '6 min',
-    },
-    {
-        id: 'comida-japon-imperdible',
-        slug: 'comida-japon-imperdible',
-        title: '10 comidas que no puedes perderte en Japón',
-        excerpt: 'Ramen, sushi, takoyaki, matcha y mucho más. Una guía gastronómica para el viajero hambriento.',
-        coverImage: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=500&fit=crop&q=80',
-        categoryLabel: 'Gastronomía',
-        date: '2026-02-20',
-        readTime: '7 min',
-    },
-    {
-        id: 'corea-del-sur-guia',
-        slug: 'corea-del-sur-guia',
-        title: 'Corea del Sur: Más allá del K-pop',
-        excerpt: 'Descubre templos milenarios, mercados callejeros, y la increíble hospitalidad coreana en esta guía completa.',
-        coverImage: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=500&fit=crop&q=80',
-        categoryLabel: 'Guías',
-        date: '2026-02-15',
-        readTime: '9 min',
-    },
-    {
-        id: 'que-llevar-viaje-asia',
-        slug: 'que-llevar-viaje-asia',
-        title: 'Qué llevar en tu maleta para un viaje a Asia',
-        excerpt: 'La lista definitiva de empaque para tu viaje. Qué SÍ llevar, qué NO llevar, y los mejores tips de equipaje.',
-        coverImage: 'https://images.unsplash.com/photo-1553913861-c0fddf2619ee?w=800&h=500&fit=crop&q=80',
-        categoryLabel: 'Tips',
-        date: '2026-02-10',
-        readTime: '5 min',
-    },
-]
-
-const FALLBACK_CATEGORIES = ['Todos', 'Guías', 'Tips', 'Viajes Internacionales', 'RutaXAsia']
 
 export default function Blog() {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(true)
-    const [categories, setCategories] = useState(FALLBACK_CATEGORIES)
+    const [error, setError] = useState(false)
+    const [categories, setCategories] = useState(['Todos'])
     const [activeCategory, setActiveCategory] = useState('Todos')
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -83,18 +18,22 @@ export default function Blog() {
     useEffect(() => {
         let cancelled = false
         setLoading(true)
+        setError(false)
 
         fetchBlogPosts().then(data => {
             if (cancelled) return
-            // data comes as { posts, categories } from our API
             if (data.posts?.length > 0) {
                 setPosts(data.posts)
             } else {
-                setPosts(FALLBACK_POSTS)
+                setPosts([])
             }
             if (data.categories?.length > 0) {
                 setCategories(['Todos', ...data.categories.map(c => c.label)])
             }
+            setLoading(false)
+        }).catch(() => {
+            if (cancelled) return
+            setError(true)
             setLoading(false)
         })
 
@@ -148,17 +87,19 @@ export default function Blog() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="blog-categories">
-                    {categories.map(cat => (
-                        <button
-                            key={cat}
-                            className={`blog-cat-btn ${activeCategory === cat ? 'active' : ''}`}
-                            onClick={() => setActiveCategory(cat)}
-                        >
-                            {cat}
-                        </button>
-                    ))}
-                </div>
+                {categories.length > 1 && (
+                    <div className="blog-categories">
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                className={`blog-cat-btn ${activeCategory === cat ? 'active' : ''}`}
+                                onClick={() => setActiveCategory(cat)}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </section>
 
             {/* Posts Grid */}
@@ -167,6 +108,11 @@ export default function Blog() {
                     <div className="blog-loading">
                         <LuLoader size={32} className="blog-spinner" />
                         <p>Cargando artículos...</p>
+                    </div>
+                ) : error ? (
+                    <div className="blog-empty">
+                        <LuInfo size={32} style={{ color: 'var(--color-primary)', marginBottom: '0.5rem' }} />
+                        <p>No pudimos cargar los artículos. Intentá de nuevo más tarde.</p>
                     </div>
                 ) : filtered.length === 0 ? (
                     <div className="blog-empty">

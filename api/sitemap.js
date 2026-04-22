@@ -97,8 +97,24 @@ async function fetchBlogSlugs(wixClient) {
     }
 }
 
+/* ── Fetch city landing slugs from Wix CMS ─────────────────────── */
+async function fetchCityLandingSlugs(wixClient) {
+    try {
+        const result = await wixClient.items.queryDataItems({
+            dataCollectionId: 'LandingsdeCiudad',
+        }).find();
+
+        return (result.items || [])
+            .map(item => item.data?.slug)
+            .filter(Boolean);
+    } catch (error) {
+        console.error('[Sitemap] Error fetching city landings:', error.message);
+        return [];
+    }
+}
+
 /* ── Build XML ─────────────────────────────────────────────────── */
-function buildSitemap(tourSlugs, blogEntries) {
+function buildSitemap(tourSlugs, blogEntries, cityLandings) {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -141,6 +157,17 @@ function buildSitemap(tourSlugs, blogEntries) {
 `;
     }
 
+    // 4) City landings (dynamic from CMS)
+    for (const slug of cityLandings) {
+        xml += `  <url>
+    <loc>${SITE_URL}/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+    }
+
     xml += `</urlset>`;
     return xml;
 }
@@ -150,13 +177,14 @@ export default async function handler(req, res) {
     try {
         const wixClient = getWixClient();
 
-        // Fetch tours + blog posts in parallel for speed
-        const [tourSlugs, blogEntries] = await Promise.all([
+        // Fetch tours + blog posts + city landings in parallel for speed
+        const [tourSlugs, blogEntries, cityLandings] = await Promise.all([
             fetchTourSlugs(wixClient),
             fetchBlogSlugs(wixClient),
+            fetchCityLandingSlugs(wixClient),
         ]);
 
-        const xml = buildSitemap(tourSlugs, blogEntries);
+        const xml = buildSitemap(tourSlugs, blogEntries, cityLandings);
 
         // Cache for 1 hour, serve stale while revalidating
         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');

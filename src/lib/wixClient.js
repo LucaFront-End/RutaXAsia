@@ -10,7 +10,7 @@ const wixClient = createClient({
 })
 
 /**
- * Submit a form entry to Wix CMS collection "cmsformulario"
+ * Submit a form entry to Wix CMS collection "cmsformulario" (Contact page)
  */
 export async function submitFormToCMS(data) {
     try {
@@ -21,9 +21,11 @@ export async function submitFormToCMS(data) {
                     nombre: data.nombre,
                     telefono: data.telefono,
                     email: data.email,
-                    ciudad: data.ciudad,
                     estado: data.estado,
-                    fuente: 'SW - Popup Descuento',
+                    viaje: data.viaje,
+                    mensaje: data.mensaje,
+                    origen: data.origen,
+                    fuente: 'SW - Contacto',
                     fecha: new Date().toISOString(),
                 },
             },
@@ -32,6 +34,49 @@ export async function submitFormToCMS(data) {
     } catch (error) {
         console.error('Error submitting to Wix CMS:', error)
         return { success: false, error: error.message }
+    }
+}
+
+/**
+ * Submit popup lead to Wix CMS collection "Popup"
+ */
+export async function submitPopupToCMS(data) {
+    try {
+        const result = await wixClient.items.insertDataItem({
+            dataCollectionId: 'Popup',
+            dataItem: {
+                data: {
+                    nombre: data.nombre,
+                    correo: data.correo,
+                    telefono: data.telefono,
+                    estado: data.estado,
+                    viajeDeInteres: data.viajeDeInteres,
+                    fuente: 'SW - Popup Descuento',
+                    fecha: new Date().toISOString(),
+                },
+            },
+        })
+        return { success: true, id: result?.dataItem?._id }
+    } catch (error) {
+        console.error('Error submitting popup to Wix CMS:', error)
+        return { success: false, error: error.message }
+    }
+}
+
+/**
+ * Fetch a city landing page from Wix CMS collection "LandingsdeCiudad" by slug
+ */
+export async function fetchCityLanding(slug) {
+    try {
+        const result = await wixClient.items.queryDataItems({
+            dataCollectionId: 'LandingsdeCiudad',
+        }).eq('slug', slug).find()
+
+        if (!result.items || result.items.length === 0) return null
+        return result.items[0].data
+    } catch (error) {
+        console.error('Error fetching city landing:', error)
+        return null
     }
 }
 

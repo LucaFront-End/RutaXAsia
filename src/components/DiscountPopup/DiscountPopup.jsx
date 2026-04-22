@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react'
-import { submitFormToCMS } from '../../lib/wixClient'
+import { submitPopupToCMS } from '../../lib/wixClient'
 import './DiscountPopup.css'
 
 const ESTADOS_MEXICO = [
-    "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", 
-    "Chiapas", "Chihuahua", "Ciudad de México", "Coahuila", "Colima", 
-    "Durango", "Estado de México", "Guanajuato", "Guerrero", "Hidalgo", 
-    "Jalisco", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", 
-    "Puebla", "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", 
+    "Aguascalientes", "Baja California", "Baja California Sur", "Campeche",
+    "Chiapas", "Chihuahua", "Ciudad de México", "Coahuila", "Colima",
+    "Durango", "Estado de México", "Guanajuato", "Guerrero", "Hidalgo",
+    "Jalisco", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca",
+    "Puebla", "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa",
     "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"
 ];
+
+const VIAJES_OPTIONS = [
+    'Sakura 2026',
+    'Corea Junio 2026',
+    'Verano Japón 2026',
+    'Corea Septiembre 2026',
+    'Japón Octubre 2026',
+    'Japón y Corea Octubre 2026',
+    'Otoño Japón 2026',
+    'Otro / No sé todavía',
+]
+
 function DiscountPopup() {
     const [visible, setVisible] = useState(false)
     const [closing, setClosing] = useState(false)
@@ -39,20 +51,19 @@ function DiscountPopup() {
         const data = {
             nombre: formData.get('nombre'),
             telefono: formData.get('telefono'),
-            email: formData.get('email'),
-            ciudad: formData.get('ciudad'),
-            estado: formData.get('estado')
+            correo: formData.get('email'),
+            estado: formData.get('estado'),
+            viajeDeInteres: formData.get('viaje'),
         }
 
         setSubmitting(true)
 
         try {
-            await submitFormToCMS(data)
+            await submitPopupToCMS(data)
             setSubmitted(true)
             setTimeout(() => handleClose(), 2500)
         } catch (err) {
             console.error('Form submission error:', err)
-            // Close anyway so user isn't stuck
             handleClose()
         } finally {
             setSubmitting(false)
@@ -80,11 +91,16 @@ function DiscountPopup() {
                             <input type="text" name="nombre" placeholder="Nombre completo" required disabled={submitting} />
                             <input type="tel" name="telefono" placeholder="WhatsApp / Teléfono" required disabled={submitting} />
                             <input type="email" name="email" placeholder="Correo electrónico" required disabled={submitting} />
-                            <input type="text" name="ciudad" placeholder="Ciudad" required disabled={submitting} />
                             <select name="estado" required disabled={submitting} defaultValue="">
                                 <option value="" disabled>Estado de la República</option>
                                 {ESTADOS_MEXICO.map(estado => (
                                     <option key={estado} value={estado}>{estado}</option>
+                                ))}
+                            </select>
+                            <select name="viaje" required disabled={submitting} defaultValue="">
+                                <option value="" disabled>Viaje de interés</option>
+                                {VIAJES_OPTIONS.map(v => (
+                                    <option key={v} value={v}>{v}</option>
                                 ))}
                             </select>
                             <button type="submit" className="btn btn-primary btn-full" disabled={submitting}>

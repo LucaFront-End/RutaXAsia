@@ -5,6 +5,7 @@ import { FaTiktok } from 'react-icons/fa6'
 import { submitFormToCMS } from '../lib/wixClient'
 
 const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20viajes'
+const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/reservas@rutaxasia.com'
 
 const CONTACT_METHODS = [
     { icon: <LuMessageCircle size={28} />, title: 'WhatsApp', desc: 'Respuesta en menos de 2 horas', value: '55 13 61 00 83', href: WHATSAPP_URL, cta: 'Escribir por WhatsApp', external: true },
@@ -18,8 +19,27 @@ const SOCIAL_LINKS = [
     { name: 'TikTok', url: 'https://www.tiktok.com/@rutaxasia', icon: <FaTiktok size={14} /> },
 ]
 
+const ESTADOS_MEXICO = [
+    "Aguascalientes", "Baja California", "Baja California Sur", "Campeche",
+    "Chiapas", "Chihuahua", "Ciudad de México", "Coahuila", "Colima",
+    "Durango", "Estado de México", "Guanajuato", "Guerrero", "Hidalgo",
+    "Jalisco", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca",
+    "Puebla", "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa",
+    "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"
+]
+
+const ORIGENES = [
+    'Google',
+    'Instagram',
+    'Facebook',
+    'TikTok',
+    'YouTube',
+    'Recomendación de un amigo',
+    'Otro',
+]
+
 export default function Contact() {
-    const [formData, setFormData] = useState({ nombre: '', email: '', tel: '', estado: '', viaje: '', mensaje: '' })
+    const [formData, setFormData] = useState({ nombre: '', email: '', tel: '', estado: '', viaje: '', mensaje: '', origen: '' })
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
 
@@ -42,7 +62,36 @@ export default function Contact() {
         e.preventDefault()
         setSubmitting(true)
         try {
-            await submitFormToCMS({ nombre: formData.nombre, email: formData.email, telefono: formData.tel, estado: formData.estado, viaje: formData.viaje, mensaje: formData.mensaje })
+            // 1) Save to Wix CMS
+            await submitFormToCMS({
+                nombre: formData.nombre,
+                email: formData.email,
+                telefono: formData.tel,
+                estado: formData.estado,
+                viaje: formData.viaje,
+                mensaje: formData.mensaje,
+                origen: formData.origen,
+            })
+
+            // 2) Send email via FormSubmit.co
+            await fetch(FORMSUBMIT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    _subject: `Nuevo contacto RutaXAsia — ${formData.nombre}`,
+                    _template: 'table',
+                    _captcha: 'false',
+                    'Nombre': formData.nombre,
+                    'Email': formData.email,
+                    'Teléfono': formData.tel,
+                    'Estado': formData.estado,
+                    'Viaje de interés': formData.viaje,
+                    'Mensaje': formData.mensaje,
+                    'Origen': formData.origen,
+                    'Fecha': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+                }),
+            })
+
             setSubmitted(true)
         } catch (err) {
             console.error('Form error:', err)
@@ -121,53 +170,36 @@ export default function Contact() {
                                         <label>Estado de la República</label>
                                         <select name="estado" value={formData.estado} onChange={handleChange}>
                                             <option value="">Seleccionar estado</option>
-                                            <option value="Aguascalientes">Aguascalientes</option>
-                                            <option value="Baja California">Baja California</option>
-                                            <option value="Baja California Sur">Baja California Sur</option>
-                                            <option value="Campeche">Campeche</option>
-                                            <option value="Chiapas">Chiapas</option>
-                                            <option value="Chihuahua">Chihuahua</option>
-                                            <option value="Ciudad de México">Ciudad de México</option>
-                                            <option value="Coahuila">Coahuila</option>
-                                            <option value="Colima">Colima</option>
-                                            <option value="Durango">Durango</option>
-                                            <option value="Estado de México">Estado de México</option>
-                                            <option value="Guanajuato">Guanajuato</option>
-                                            <option value="Guerrero">Guerrero</option>
-                                            <option value="Hidalgo">Hidalgo</option>
-                                            <option value="Jalisco">Jalisco</option>
-                                            <option value="Michoacán">Michoacán</option>
-                                            <option value="Morelos">Morelos</option>
-                                            <option value="Nayarit">Nayarit</option>
-                                            <option value="Nuevo León">Nuevo León</option>
-                                            <option value="Oaxaca">Oaxaca</option>
-                                            <option value="Puebla">Puebla</option>
-                                            <option value="Querétaro">Querétaro</option>
-                                            <option value="Quintana Roo">Quintana Roo</option>
-                                            <option value="San Luis Potosí">San Luis Potosí</option>
-                                            <option value="Sinaloa">Sinaloa</option>
-                                            <option value="Sonora">Sonora</option>
-                                            <option value="Tabasco">Tabasco</option>
-                                            <option value="Tamaulipas">Tamaulipas</option>
-                                            <option value="Tlaxcala">Tlaxcala</option>
-                                            <option value="Veracruz">Veracruz</option>
-                                            <option value="Yucatán">Yucatán</option>
-                                            <option value="Zacatecas">Zacatecas</option>
+                                            {ESTADOS_MEXICO.map(e => (
+                                                <option key={e} value={e}>{e}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
-                                <div className="contact-field">
-                                    <label>Viaje de interés</label>
-                                    <select name="viaje" value={formData.viaje} onChange={handleChange}>
-                                        <option value="">Seleccionar viaje</option>
-                                        <option value="Sakura I 2026">Sakura I 2026 — Mayo</option>
-                                        <option value="Verano Japón 2026">Verano Japón 2026 — Julio</option>
-                                        <option value="Japón Octubre 2026">Japón Octubre 2026</option>
-                                        <option value="Corea 2026">Corea 2026</option>
-                                        <option value="Otoño Japón 2026">Otoño Japón 2026 — Noviembre</option>
-                                        <option value="Japón y Corea 2026">Japón y Corea 2026</option>
-                                        <option value="Otro">Otro / No sé todavía</option>
-                                    </select>
+                                <div className="contact-form-row">
+                                    <div className="contact-field">
+                                        <label>Viaje de interés</label>
+                                        <select name="viaje" value={formData.viaje} onChange={handleChange}>
+                                            <option value="">Seleccionar viaje</option>
+                                            <option value="Sakura 2026">Sakura 2026</option>
+                                            <option value="Corea Junio 2026">Corea Junio 2026</option>
+                                            <option value="Verano Japón 2026">Verano Japón 2026</option>
+                                            <option value="Corea Septiembre 2026">Corea Septiembre 2026</option>
+                                            <option value="Japón Octubre 2026">Japón Octubre 2026</option>
+                                            <option value="Japón y Corea Octubre 2026">Japón y Corea Octubre 2026</option>
+                                            <option value="Otoño Japón 2026">Otoño Japón 2026</option>
+                                            <option value="Otro">Otro / No sé todavía</option>
+                                        </select>
+                                    </div>
+                                    <div className="contact-field">
+                                        <label>¿Cómo nos encontraste?</label>
+                                        <select name="origen" value={formData.origen} onChange={handleChange}>
+                                            <option value="">Seleccionar origen</option>
+                                            {ORIGENES.map(o => (
+                                                <option key={o} value={o}>{o}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="contact-field">
                                     <label>Mensaje</label>

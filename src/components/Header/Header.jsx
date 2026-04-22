@@ -14,7 +14,13 @@ const TOUR_LINKS = [
             { slug: 'corea-septiembre-2026', label: 'Septiembre 2026', sub: '18 – 29 de septiembre' },
         ],
     },
-    { slug: 'verano-japon-2026', title: 'Verano en Japón', flag: 'jp', sub: 'Japón · Julio 2026 · 2 fechas' },
+    {
+        title: 'Verano en Japón', flag: 'jp', sub: '2 fechas disponibles',
+        children: [
+            { slug: 'verano-japon-2026', label: 'Julio 2026 — Fecha 1', sub: '3 – 16 de julio' },
+            { slug: 'verano-japon-2026', label: 'Julio 2026 — Fecha 2', sub: '19 de julio – 1 de agosto' },
+        ],
+    },
     { slug: 'octubre-japon-2026', title: 'Japón Octubre', flag: 'jp', sub: 'Japón · Octubre 2026 · Trilogía Otoño' },
     { slug: 'japon-corea-2026', title: 'Japón y Corea', flag: 'jp', sub: 'Japón & Corea · Octubre 2026' },
 ]

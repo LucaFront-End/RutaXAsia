@@ -13,6 +13,7 @@ import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import AvisoPrivacidad from './pages/AvisoPrivacidad'
 import TerminosCondiciones from './pages/TerminosCondiciones'
+import CityLanding from './pages/CityLanding'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')).render(
                         <Route path="blog/:slug" element={<BlogPost />} />
                         <Route path="aviso-de-privacidad" element={<AvisoPrivacidad />} />
                         <Route path="terminos-y-condiciones" element={<TerminosCondiciones />} />
+                        <Route path=":citySlug" element={<CityLanding />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

@@ -292,7 +292,10 @@ const TESTIMONIALS = [
 ]
 
 /* ===== COMPONENT ===== */
-function Home() {
+function Home({ cityOverride } = {}) {
+    const whatsappBase = cityOverride?.whatsapp
+        ? cityOverride.whatsapp + (cityOverride.whatsapp.includes('?') ? '&text=' : '?text=')
+        : WHATSAPP_BASE
     const [activeSlide, setActiveSlide] = useState(0)
     const [isTransitioning, setIsTransitioning] = useState(false)
     const timerRef = useRef(null)
@@ -734,7 +737,7 @@ function Home() {
                             <span className="dj-cta-tag">Empieza tu aventura</span>
                             <h2 className="dj-cta-heading">Diseñemos tu viaje perfecto a Asia. Habla hoy con nuestros expertos.</h2>
                             <a
-                                href={`${WHATSAPP_BASE}SW-Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`}
+                                href={`${whatsappBase}SW-Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`}
                                 className="btn btn-primary dj-cta-btn"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -849,7 +852,7 @@ function Home() {
                                     </div>
 
                                     <div className="bp-card-actions">
-                                        <a href={`${WHATSAPP_BASE}SW-Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}`} className="btn btn-primary bp-btn" target="_blank" rel="noopener noreferrer">Cotizar Ahora</a>
+                                        <a href={`${whatsappBase}SW-Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}`} className="btn btn-primary bp-btn" target="_blank" rel="noopener noreferrer">Cotizar Ahora</a>
                                         <Link to={`/tours/${trip.id}`} className="btn btn-outline bp-btn">Ver Itinerario</Link>
                                     </div>
                                 </div>
@@ -1003,7 +1006,7 @@ function Home() {
                                     <ul className="season-highlights">
                                         {s.highlights.map((h, j) => <li key={j}>{h}</li>)}
                                     </ul>
-                                    <a href={`${WHATSAPP_BASE}SW-Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
+                                    <a href={`${whatsappBase}SW-Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
                                         Ver salidas →
                                     </a>
                                 </div>
@@ -1089,7 +1092,7 @@ function Home() {
                             <div className="bp-ticket-cta">
                                 <p className="bp-cta-headline">¿Listo para despegar?</p>
                                 <a
-                                    href={`${WHATSAPP_BASE}SW-Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20🎫✈️`}
+                                    href={`${whatsappBase}SW-Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20🎫✈️`}
                                     className="bp-cta-button bp-cta-pulse"
                                     target="_blank"
                                     rel="noopener noreferrer"
