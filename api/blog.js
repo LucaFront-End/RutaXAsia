@@ -1,4 +1,5 @@
 import { createClient, ApiKeyStrategy } from '@wix/sdk';
+import { items } from '@wix/data';
 
 const SITE_ID = process.env.VITE_WIX_SITE_ID;
 const API_KEY = process.env.VITE_WIX_API_KEY;
@@ -9,38 +10,60 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
+    const errors = [];
+
+    // --- Strategy 1: Query blog posts via Wix Data API (CMS collection) ---
     try {
-        // --- Strategy 1: Try the Wix REST API directly ---
-        const restResult = await fetchPostsViaREST();
-        if (restResult && restResult.length > 0) {
-            console.log('[Blog] REST API returned', restResult.length, 'posts');
-            return res.status(200).json({ posts: restResult, categories: [] });
-        }
+        const wixClient = createClient({
+            modules: { items },
+            auth: ApiKeyStrategy({ siteId: SITE_ID, apiKey: API_KEY }),
+        });
 
-        // --- Strategy 2: Try the Wix SDK ---
-        console.log('[Blog] REST API returned 0 posts, trying SDK...');
-        const sdkResult = await fetchPostsViaSDK();
-        if (sdkResult && sdkResult.posts.length > 0) {
-            console.log('[Blog] SDK returned', sdkResult.posts.length, 'posts');
-            return res.status(200).json(sdkResult);
-        }
+        // Try the blog/posts CMS collection (Wix stores blog data here)
+        const collectionNames = ['Blog/Posts', 'blog/posts', 'BlogPosts', 'blog'];
+        
+        for (const collectionId of collectionNames) {
+            try {
+                console.log(`[Blog] Trying CMS collection: "${collectionId}"`);
+                const result = await wixClient.items.queryDataItems({
+                    dataCollectionId: collectionId,
+                }).limit(50).find();
 
-        console.log('[Blog] Both strategies returned 0 posts');
-        res.status(200).json({ posts: [], categories: [] });
-    } catch (error) {
-        console.error('[Blog] Fatal error:', error.message);
-        res.status(200).json({ posts: [], categories: [] });
+                if (result.items && result.items.length > 0) {
+                    console.log(`[Blog] Found ${result.items.length} posts in "${collectionId}"`);
+                    
+                    const blogPosts = result.items.map(item => {
+                        const d = item.data;
+                        return {
+                            id: d._id || item._id,
+                            slug: d.slug || d.postPageUrl || d._id,
+                            title: d.title || d.name || 'Sin título',
+                            excerpt: d.excerpt || d.description || '',
+                            coverImage: extractCoverImageFromData(d),
+                            categoryLabel: d.categoryLabel || d.category || 'General',
+                            categoryLabels: [d.categoryLabel || d.category || 'General'],
+                            date: d.firstPublishedDate || d.publishedDate || d._createdDate || d.date,
+                            readTime: `${d.minutesToRead || d.readTime || 3} min`,
+                            featured: d.featured || false,
+                        };
+                    });
+
+                    return res.status(200).json({ posts: blogPosts, categories: [], _source: collectionId });
+                }
+            } catch (collErr) {
+                errors.push(`${collectionId}: ${collErr.message}`);
+                console.log(`[Blog] Collection "${collectionId}" failed:`, collErr.message);
+            }
+        }
+    } catch (dataErr) {
+        errors.push(`Data API: ${dataErr.message}`);
     }
-}
 
-/**
- * Fetch blog posts via Wix REST API (v3) directly.
- * This avoids SDK version issues.
- */
-async function fetchPostsViaREST() {
+    // --- Strategy 2: Direct Wix REST API for Blog ---
     try {
+        console.log('[Blog] Trying REST API...');
         const response = await fetch(
-            `https://www.wixapis.com/blog/v3/posts?fieldsets=RICH_CONTENT&fieldsets=URL&paging.limit=50`,
+            `https://www.wixapis.com/blog/v3/posts?paging.limit=50`,
             {
                 method: 'GET',
                 headers: {
@@ -51,84 +74,67 @@ async function fetchPostsViaREST() {
             }
         );
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('[Blog REST] Error:', response.status, errorText);
-            return [];
+        const responseText = await response.text();
+        console.log('[Blog REST] Status:', response.status, 'Body:', responseText.substring(0, 500));
+
+        if (response.ok) {
+            const data = JSON.parse(responseText);
+            if (data.posts && data.posts.length > 0) {
+                const blogPosts = data.posts.map(post => ({
+                    id: post._id || post.id,
+                    slug: post.slug,
+                    title: post.title,
+                    excerpt: post.excerpt || '',
+                    coverImage: extractCoverImage(post),
+                    categoryLabel: 'General',
+                    categoryLabels: ['General'],
+                    date: post.firstPublishedDate || post.lastPublishedDate,
+                    readTime: `${post.minutesToRead || 3} min`,
+                    featured: post.featured || false,
+                }));
+                return res.status(200).json({ posts: blogPosts, categories: [], _source: 'REST' });
+            }
         }
-
-        const data = await response.json();
-        console.log('[Blog REST] Raw response keys:', Object.keys(data));
-        console.log('[Blog REST] Posts count:', data.posts?.length || 0);
-
-        return (data.posts || []).map(post => ({
-            id: post._id || post.id,
-            slug: post.slug,
-            title: post.title,
-            excerpt: post.excerpt || '',
-            coverImage: extractCoverImage(post),
-            categoryLabel: 'General',
-            categoryLabels: ['General'],
-            date: post.firstPublishedDate || post.lastPublishedDate || post._createdDate,
-            readTime: `${post.minutesToRead || 3} min`,
-            featured: post.featured || false,
-        }));
-    } catch (error) {
-        console.error('[Blog REST] Fetch error:', error.message);
-        return [];
+        errors.push(`REST: ${response.status} - ${responseText.substring(0, 200)}`);
+    } catch (restErr) {
+        errors.push(`REST fetch: ${restErr.message}`);
     }
-}
 
-/**
- * Fetch blog posts via Wix SDK (fallback).
- */
-async function fetchPostsViaSDK() {
+    // --- Strategy 3: Try Wix Blog SDK ---
     try {
-        const { posts, categories } = await import('@wix/blog');
-
+        console.log('[Blog] Trying SDK...');
+        const { posts } = await import('@wix/blog');
         const wixClient = createClient({
-            modules: { posts, categories },
-            auth: ApiKeyStrategy({
-                siteId: SITE_ID,
-                apiKey: API_KEY,
-            }),
+            modules: { posts },
+            auth: ApiKeyStrategy({ siteId: SITE_ID, apiKey: API_KEY }),
         });
 
-        // Fetch categories (non-blocking)
-        let catMap = {};
-        try {
-            const catsResult = await wixClient.categories.listCategories();
-            for (const cat of (catsResult?.categories || [])) {
-                catMap[cat._id] = cat.label;
-            }
-        } catch (e) {
-            console.warn('[Blog SDK] Categories failed:', e.message);
-        }
+        const postsResult = await wixClient.posts.listPosts();
+        console.log('[Blog SDK] Result:', JSON.stringify(postsResult).substring(0, 300));
 
-        // Fetch posts
-        const postsResult = await wixClient.posts.listPosts({ fieldsets: ['RICH_CONTENT', 'URL'] });
-        const blogPosts = (postsResult?.posts || []).map(post => {
-            const labels = (post.categoryIds || []).map(id => catMap[id]).filter(Boolean);
-            return {
+        if (postsResult?.posts?.length > 0) {
+            const blogPosts = postsResult.posts.map(post => ({
                 id: post._id,
                 slug: post.slug,
                 title: post.title,
                 excerpt: post.excerpt || '',
                 coverImage: extractCoverImage(post),
-                categoryLabel: labels[0] || 'General',
-                categoryLabels: labels.length > 0 ? labels : ['General'],
-                date: post.firstPublishedDate || post.lastPublishedDate || post._createdDate,
+                categoryLabel: 'General',
+                categoryLabels: ['General'],
+                date: post.firstPublishedDate || post.lastPublishedDate,
                 readTime: `${post.minutesToRead || 3} min`,
                 featured: post.featured || false,
-            };
-        });
-
-        const cats = Object.entries(catMap).map(([id, label]) => ({ id, label }));
-        return { posts: blogPosts, categories: cats };
-    } catch (error) {
-        console.error('[Blog SDK] Error:', error.message);
-        return { posts: [], categories: [] };
+            }));
+            return res.status(200).json({ posts: blogPosts, categories: [], _source: 'SDK' });
+        }
+        errors.push(`SDK: returned ${postsResult?.posts?.length || 0} posts`);
+    } catch (sdkErr) {
+        errors.push(`SDK: ${sdkErr.message}`);
     }
+
+    // All strategies failed
+    console.error('[Blog] All strategies failed:', errors);
+    res.status(200).json({ posts: [], categories: [], _errors: errors });
 }
 
 function wixMediaUrl(mediaId) {
@@ -137,11 +143,20 @@ function wixMediaUrl(mediaId) {
     return `https://static.wixstatic.com/media/${mediaId}`;
 }
 
+function extractCoverImageFromData(d) {
+    if (d.coverImage && typeof d.coverImage === 'string') {
+        return d.coverImage.startsWith('http') ? d.coverImage : wixMediaUrl(d.coverImage);
+    }
+    if (d.coverImage?.url) return d.coverImage.url;
+    if (d.coverImage?.image?.url) return d.coverImage.image.url;
+    if (d.image) return typeof d.image === 'string' ? wixMediaUrl(d.image) : (d.image?.url || '');
+    return 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=500&fit=crop&q=80';
+}
+
 function extractCoverImage(post) {
     if (post.coverImage?.image?.url) return post.coverImage.image.url;
     if (post.coverImage?.url) return post.coverImage.url;
     if (post.coverMedia?.image?.url) return post.coverMedia.image.url;
-    // Try heroImage (REST API format)
     if (post.heroImage) return wixMediaUrl(post.heroImage);
     if (post.richContent?.nodes) {
         for (const node of post.richContent.nodes) {
