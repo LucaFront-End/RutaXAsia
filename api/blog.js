@@ -31,14 +31,20 @@ export default async function handler(req, res) {
         let postsResult;
         try {
             postsResult = await wixClient.posts.listPosts({ fieldsets: ['RICH_CONTENT', 'URL'] });
+            console.log('[Blog] listPosts result keys:', Object.keys(postsResult || {}));
+            console.log('[Blog] posts count:', postsResult?.posts?.length || 0);
+            if (postsResult?.posts?.length > 0) {
+                console.log('[Blog] First post title:', postsResult.posts[0]?.title);
+            }
         } catch (postsError) {
-            console.error('[Blog] Posts fetch failed:', postsError.message);
-            // Try a simpler fetch without RICH_CONTENT
+            console.error('[Blog] Posts fetch with RICH_CONTENT failed:', postsError.message);
+            // Try without fieldsets
             try {
                 postsResult = await wixClient.posts.listPosts();
+                console.log('[Blog] Fallback listPosts result:', postsResult?.posts?.length || 0);
             } catch (fallbackError) {
                 console.error('[Blog] Posts fallback fetch also failed:', fallbackError.message);
-                return res.status(200).json({ posts: [], categories: [] });
+                return res.status(200).json({ posts: [], categories: [], _debug: 'Both post fetches failed' });
             }
         }
 
@@ -60,11 +66,12 @@ export default async function handler(req, res) {
 
         const cats = Object.entries(catMap).map(([id, label]) => ({ id, label }));
 
+        console.log('[Blog] Returning', blogPosts.length, 'posts and', cats.length, 'categories');
         res.status(200).json({ posts: blogPosts, categories: cats });
     } catch (error) {
-        console.error('Blog API error:', error);
+        console.error('Blog API error:', error?.message, error?.details || '');
         // Return empty instead of 500 so frontend doesn't break
-        res.status(200).json({ posts: [], categories: [], error: error.message });
+        res.status(200).json({ posts: [], categories: [], _debug: error.message });
     }
 }
 
