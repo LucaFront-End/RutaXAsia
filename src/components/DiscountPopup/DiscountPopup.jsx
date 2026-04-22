@@ -2,15 +2,6 @@ import { useState, useEffect } from 'react'
 import { submitPopupToCMS } from '../../lib/wixClient'
 import './DiscountPopup.css'
 
-const ESTADOS_MEXICO = [
-    "Aguascalientes", "Baja California", "Baja California Sur", "Campeche",
-    "Chiapas", "Chihuahua", "Ciudad de México", "Coahuila", "Colima",
-    "Durango", "Estado de México", "Guanajuato", "Guerrero", "Hidalgo",
-    "Jalisco", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca",
-    "Puebla", "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa",
-    "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"
-];
-
 const VIAJES_OPTIONS = [
     'Sakura 2026',
     'Corea Junio 2026',
@@ -52,14 +43,14 @@ function DiscountPopup() {
             nombre: formData.get('nombre'),
             telefono: formData.get('telefono'),
             correo: formData.get('email'),
-            estado: formData.get('estado'),
             viajeDeInteres: formData.get('viaje'),
         }
 
         setSubmitting(true)
 
         try {
-            await submitPopupToCMS(data)
+            const result = await submitPopupToCMS(data)
+            console.log('[Popup] CMS submission result:', result)
             setSubmitted(true)
             setTimeout(() => handleClose(), 2500)
         } catch (err) {
@@ -91,12 +82,6 @@ function DiscountPopup() {
                             <input type="text" name="nombre" placeholder="Nombre completo" required disabled={submitting} />
                             <input type="tel" name="telefono" placeholder="WhatsApp / Teléfono" required disabled={submitting} />
                             <input type="email" name="email" placeholder="Correo electrónico" required disabled={submitting} />
-                            <select name="estado" required disabled={submitting} defaultValue="">
-                                <option value="" disabled>Estado de la República</option>
-                                {ESTADOS_MEXICO.map(estado => (
-                                    <option key={estado} value={estado}>{estado}</option>
-                                ))}
-                            </select>
                             <select name="viaje" required disabled={submitting} defaultValue="">
                                 <option value="" disabled>Viaje de interés</option>
                                 {VIAJES_OPTIONS.map(v => (
@@ -117,3 +102,4 @@ function DiscountPopup() {
 }
 
 export default DiscountPopup
+

@@ -10,14 +10,14 @@ import Home from './Home'
  *
  * URL pattern: /viajes-japon-desde-guadalajara (slug from CMS)
  *
- * CMS fields used:
- * - tituloDePagina       → page heading
- * - excerptDePagina      → page excerpt/subtitle
- * - ciudad               → city name
- * - slug                 → URL slug
- * - whatsappPersonalizado → custom WhatsApp link
- * - tituloDeSeo          → SEO <title>
- * - metadescripcion      → SEO <meta description>
+ * CMS field keys (exact):
+ * - title_fld              → page heading (Titulo de pagina)
+ * - excerptDePgina         → page excerpt/subtitle
+ * - ciudad                 → city name
+ * - slug                   → URL slug
+ * - whatsappPersonalizado  → custom WhatsApp link
+ * - tituloDeSeo            → SEO <title>
+ * - metadescripcin         → SEO <meta description>
  */
 export default function CityLanding() {
     const { citySlug } = useParams()
@@ -52,22 +52,23 @@ export default function CityLanding() {
         return <Navigate to="/" replace />
     }
 
-    // Render Home with SEO overrides
+    // Render Home with SEO overrides using exact CMS field keys
     return (
         <>
             <Helmet>
-                <title>{landing.tituloDeSeo || landing.tituloDePagina || `Viajes a Japón desde ${landing.ciudad} | RutaXAsia`}</title>
-                <meta name="description" content={landing.metadescripcion || landing.excerptDePagina || `RutaXAsia, la agencia #1 de viajes a Japón desde ${landing.ciudad}. Tours a Japón y Corea del Sur con los mejores precios.`} />
+                <title>{landing.tituloDeSeo || landing.title_fld || `Viajes a Japón desde ${landing.ciudad} | RutaXAsia`}</title>
+                <meta name="description" content={landing.metadescripcin || landing.excerptDePgina || `RutaXAsia, la agencia #1 de viajes a Japón desde ${landing.ciudad}. Tours a Japón y Corea del Sur con los mejores precios.`} />
                 <link rel="canonical" href={`https://rutaxasia.com/${landing.slug}`} />
             </Helmet>
             <Home
                 cityOverride={{
                     city: landing.ciudad,
-                    title: landing.tituloDePagina,
-                    excerpt: landing.excerptDePagina,
+                    title: landing.title_fld,
+                    excerpt: landing.excerptDePgina,
                     whatsapp: landing.whatsappPersonalizado,
                 }}
             />
         </>
     )
 }
+

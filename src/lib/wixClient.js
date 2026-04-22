@@ -39,6 +39,7 @@ export async function submitFormToCMS(data) {
 
 /**
  * Submit popup lead to Wix CMS collection "Popup"
+ * CMS field keys: title_fld (correo), nombre, telfono, ciudad, viajeDeInteres, mensaje
  */
 export async function submitPopupToCMS(data) {
     try {
@@ -46,13 +47,11 @@ export async function submitPopupToCMS(data) {
             dataCollectionId: 'Popup',
             dataItem: {
                 data: {
+                    title_fld: data.correo,
                     nombre: data.nombre,
-                    correo: data.correo,
-                    telefono: data.telefono,
-                    estado: data.estado,
+                    telfono: data.telefono,
                     viajeDeInteres: data.viajeDeInteres,
-                    fuente: 'SW - Popup Descuento',
-                    fecha: new Date().toISOString(),
+                    mensaje: data.mensaje || '',
                 },
             },
         })
