@@ -16,16 +16,30 @@ export default async function handler(req, res) {
             }),
         });
 
-        // Fetch categories and posts in parallel
-        const [catsResult, postsResult] = await Promise.all([
-            wixClient.categories.listCategories(),
-            wixClient.posts.listPosts({ fieldsets: ['RICH_CONTENT', 'URL'] }),
-        ]);
+        // Fetch categories first (non-blocking — if it fails, continue without them)
+        let catMap = {};
+        try {
+            const catsResult = await wixClient.categories.listCategories();
+            for (const cat of (catsResult?.categories || [])) {
+                catMap[cat._id] = cat.label;
+            }
+        } catch (catError) {
+            console.warn('[Blog] Categories fetch failed (non-critical):', catError.message);
+        }
 
-        // Build category ID -> label lookup
-        const catMap = {};
-        for (const cat of (catsResult?.categories || [])) {
-            catMap[cat._id] = cat.label;
+        // Fetch posts — this is the critical call
+        let postsResult;
+        try {
+            postsResult = await wixClient.posts.listPosts({ fieldsets: ['RICH_CONTENT', 'URL'] });
+        } catch (postsError) {
+            console.error('[Blog] Posts fetch failed:', postsError.message);
+            // Try a simpler fetch without RICH_CONTENT
+            try {
+                postsResult = await wixClient.posts.listPosts();
+            } catch (fallbackError) {
+                console.error('[Blog] Posts fallback fetch also failed:', fallbackError.message);
+                return res.status(200).json({ posts: [], categories: [] });
+            }
         }
 
         const blogPosts = (postsResult?.posts || []).map(post => {
@@ -49,7 +63,8 @@ export default async function handler(req, res) {
         res.status(200).json({ posts: blogPosts, categories: cats });
     } catch (error) {
         console.error('Blog API error:', error);
-        res.status(500).json({ error: error.message || 'Failed to fetch posts' });
+        // Return empty instead of 500 so frontend doesn't break
+        res.status(200).json({ posts: [], categories: [], error: error.message });
     }
 }
 
