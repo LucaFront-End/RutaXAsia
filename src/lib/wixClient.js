@@ -38,32 +38,56 @@ export async function submitFormToCMS(data) {
 }
 
 /**
- * Submit popup lead to Wix CMS collection "Popup"
- * CMS field keys: title_fld (correo), nombre, telfono, ciudad, viajeDeInteres, mensaje
+ * Submit popup lead via server-side API (more reliable than client-side).
+ * POST /api/popup
+ *
+ * CMS Collection: "Popup"
+ * Field mapping (CSV column → field key):
+ *   Correo           → title_fld
+ *   Nombre           → nombre
+ *   Teléfono         → telfono
+ *   Estado           → ciudad
+ *   Viaje de interes → viajeDeInteres
+ *   Mensaje          → mensaje
  */
 export async function submitPopupToCMS(data) {
     try {
-        const result = await wixClient.items.insertDataItem({
-            dataCollectionId: 'Popup',
-            dataItem: {
-                data: {
-                    title_fld: data.correo,
-                    nombre: data.nombre,
-                    telfono: data.telefono,
-                    viajeDeInteres: data.viajeDeInteres,
-                    mensaje: data.mensaje || '',
-                },
-            },
+        const response = await fetch('/api/popup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: data.nombre,
+                telefono: data.telefono,
+                correo: data.correo,
+                estado: data.estado || '',
+                viaje: data.viajeDeInteres,
+                mensaje: data.mensaje || '',
+            }),
         })
-        return { success: true, id: result?.dataItem?._id }
+        const result = await response.json()
+        if (!result.success) {
+            console.error('[Popup] Server returned error:', result.error)
+        }
+        return result
     } catch (error) {
-        console.error('Error submitting popup to Wix CMS:', error)
+        console.error('Error submitting popup:', error)
         return { success: false, error: error.message }
     }
 }
 
 /**
  * Fetch a city landing page from Wix CMS collection "LandingsdeCiudad" by slug
+ *
+ * CMS Collection: "LandingsdeCiudad"
+ * Field mapping (CSV column → field key):
+ *   Titulo de pagina      → title_fld
+ *   Excerpt de página     → excerptDePgina
+ *   ciudad                → ciudad
+ *   Estado                → estado
+ *   Slug                  → slug
+ *   Whatsapp personalizado → whatsappPersonalizado
+ *   Titulo de SEO         → tituloDeSeo
+ *   Metadescripción       → metadescripcin
  */
 export async function fetchCityLanding(slug) {
     try {
@@ -89,7 +113,6 @@ export async function fetchBlogPosts() {
         const res = await fetch('/api/blog')
         if (!res.ok) throw new Error(`API returned ${res.status}`)
         const data = await res.json()
-        // Return the full response: { posts: [...], categories: [...] }
         return { posts: data.posts || [], categories: data.categories || [] }
     } catch (error) {
         console.error('[Blog] Error fetching posts:', error.message)
