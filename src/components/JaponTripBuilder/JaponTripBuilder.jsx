@@ -24,17 +24,19 @@ export default function JaponTripBuilder() {
     const [step, setStep] = useState(1)
     const [selectedSeason, setSelectedSeason] = useState(null)
     const [selectedStyle, setSelectedStyle] = useState(null)
-    const [progressScrolled, setProgressScrolled] = useState(false)
 
     const step2Ref = useRef(null)
     const step3Ref = useRef(null)
     const builderRef = useRef(null)
 
-    // Track scroll for progress bar shadow
-    useEffect(() => {
-        const onScroll = () => setProgressScrolled(window.scrollY > 200)
-        window.addEventListener('scroll', onScroll, { passive: true })
-        return () => window.removeEventListener('scroll', onScroll)
+    // Smooth scroll to a ref after a short delay — accounts for navbar height
+    const scrollToRef = useCallback((ref) => {
+        setTimeout(() => {
+            if (!ref.current) return
+            const navbarH = 120
+            const y = ref.current.getBoundingClientRect().top + window.scrollY - navbarH
+            window.scrollTo({ top: y, behavior: 'smooth' })
+        }, 250)
     }, [])
 
     // Re-observe [data-animate] elements when step changes (fixes opacity: 0 on dynamic content)
@@ -66,12 +68,7 @@ export default function JaponTripBuilder() {
         }
     }, [step])
 
-    // Smooth scroll to a ref after a short delay for DOM to render
-    const scrollToRef = useCallback((ref) => {
-        setTimeout(() => {
-            ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }, 250)
-    }, [])
+
 
     // STEP 1: Select season
     const handleSeasonSelect = useCallback((key) => {
@@ -112,44 +109,47 @@ export default function JaponTripBuilder() {
 
     return (
         <div className="jtb-wrapper" style={cssVars} ref={builderRef}>
-            {/* ===== PROGRESS BAR ===== */}
-            <div className={`jtb-progress${progressScrolled ? ' jtb-progress--scrolled' : ''}`}>
-                <div className="jtb-progress-inner">
+            {/* ===== PROGRESS STEPPER ===== */}
+            <div className="jtb-stepper">
+                <div className="jtb-stepper-inner">
                     {/* Step 1 */}
-                    <div
-                        className={`jtb-progress-step${step === 1 ? ' jtb-progress-step--active' : ''}${step > 1 ? ' jtb-progress-step--done' : ''}`}
+                    <button
+                        className={`jtb-stepper-item${step === 1 ? ' jtb-stepper-item--active' : ''}${step > 1 ? ' jtb-stepper-item--done' : ''}`}
                         onClick={() => goToStep(1)}
+                        disabled={step < 1}
                     >
-                        <span className="jtb-progress-num">{step > 1 ? '✓' : '1'}</span>
-                        <span>Temporada</span>
+                        <span className="jtb-stepper-dot">{step > 1 ? '✓' : '1'}</span>
+                        <span className="jtb-stepper-label">Temporada</span>
                         {step > 1 && season && (
-                            <span className="jtb-progress-selection">{season.emoji} {season.name}</span>
+                            <span className="jtb-stepper-badge">{season.emoji} {season.name}</span>
                         )}
-                    </div>
+                    </button>
 
-                    <div className={`jtb-progress-connector${step > 1 ? ' jtb-progress-connector--filled' : ''}`} />
+                    <div className={`jtb-stepper-line${step > 1 ? ' jtb-stepper-line--filled' : ''}`} />
 
                     {/* Step 2 */}
-                    <div
-                        className={`jtb-progress-step${step === 2 ? ' jtb-progress-step--active' : ''}${step > 2 ? ' jtb-progress-step--done' : ''}${step < 2 ? '' : ''}`}
+                    <button
+                        className={`jtb-stepper-item${step === 2 ? ' jtb-stepper-item--active' : ''}${step > 2 ? ' jtb-stepper-item--done' : ''}`}
                         onClick={() => goToStep(2)}
+                        disabled={step < 2}
                     >
-                        <span className="jtb-progress-num">{step > 2 ? '✓' : '2'}</span>
-                        <span>Estilo</span>
+                        <span className="jtb-stepper-dot">{step > 2 ? '✓' : '2'}</span>
+                        <span className="jtb-stepper-label">Estilo</span>
                         {step > 2 && style && (
-                            <span className="jtb-progress-selection">{style.icon} {style.name}</span>
+                            <span className="jtb-stepper-badge">{style.icon} {style.name}</span>
                         )}
-                    </div>
+                    </button>
 
-                    <div className={`jtb-progress-connector${step > 2 ? ' jtb-progress-connector--filled' : ''}`} />
+                    <div className={`jtb-stepper-line${step > 2 ? ' jtb-stepper-line--filled' : ''}`} />
 
                     {/* Step 3 */}
-                    <div
-                        className={`jtb-progress-step${step === 3 ? ' jtb-progress-step--active' : ''}`}
+                    <button
+                        className={`jtb-stepper-item${step === 3 ? ' jtb-stepper-item--active' : ''}`}
+                        disabled={step < 3}
                     >
-                        <span className="jtb-progress-num">3</span>
-                        <span>Tu Viaje</span>
-                    </div>
+                        <span className="jtb-stepper-dot">3</span>
+                        <span className="jtb-stepper-label">Tu Viaje</span>
+                    </button>
                 </div>
             </div>
 

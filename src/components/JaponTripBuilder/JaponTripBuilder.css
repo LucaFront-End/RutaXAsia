@@ -2,122 +2,124 @@
    JAPÓN TRIP BUILDER — Interactive Multi-Step Selector
    ======================================================== */
 
-/* ---- Progress Bar (Floating Top) ---- */
-.jtb-progress {
-    position: sticky;
-    top: 0;
-    z-index: 999;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(24px) saturate(190%);
-    -webkit-backdrop-filter: blur(24px) saturate(190%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 18px 0;
-    transition: box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease;
-}
-
-.jtb-progress.jtb-progress--scrolled {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06), inset 0 -1px 0 rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.85);
-}
-
-.jtb-progress-inner {
+/* ---- Progress Stepper (Inline, no sticky) ---- */
+.jtb-stepper {
+    padding: 32px 24px 0;
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 0;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 20px;
 }
 
-.jtb-progress-step {
+.jtb-stepper-inner {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 24px;
-    border-radius: 100px;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: rgba(12, 14, 22, 0.35);
-    cursor: default;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    white-space: nowrap;
-    position: relative;
-    user-select: none;
-    border: 1px solid transparent;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 60px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 }
 
-.jtb-progress-step--active {
+.jtb-stepper-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(12, 14, 22, 0.3);
+    cursor: default;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    border: none;
+    background: none;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+.jtb-stepper-item:not(:disabled) {
+    cursor: pointer;
+}
+
+.jtb-stepper-item--active {
     color: var(--jtb-primary, #2d6a4f);
     background: var(--jtb-bg, #f0faf4);
-    border-color: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
-.jtb-progress-step--done {
+.jtb-stepper-item--done {
     color: var(--jtb-primary, #2d6a4f);
     cursor: pointer;
 }
 
-.jtb-progress-step--done:hover {
+.jtb-stepper-item--done:hover {
     background: var(--jtb-bg, #f0faf4);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
-.jtb-progress-num {
-    width: 30px;
-    height: 30px;
+.jtb-stepper-dot {
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 800;
-    border: 2px solid rgba(12, 14, 22, 0.12);
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 2px solid rgba(12, 14, 22, 0.1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     flex-shrink: 0;
 }
 
-.jtb-progress-step--active .jtb-progress-num {
+.jtb-stepper-item--active .jtb-stepper-dot {
     border-color: var(--jtb-primary, #2d6a4f);
     background: var(--jtb-primary, #2d6a4f);
     color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--jtb-primary, #2d6a4f) 15%, transparent);
 }
 
-.jtb-progress-step--done .jtb-progress-num {
+.jtb-stepper-item--done .jtb-stepper-dot {
     border-color: var(--jtb-primary, #2d6a4f);
     background: var(--jtb-primary, #2d6a4f);
     color: #fff;
 }
 
-.jtb-progress-connector {
-    width: 50px;
+.jtb-stepper-label {
+    font-size: 0.82rem;
+}
+
+.jtb-stepper-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--jtb-primary, #2d6a4f);
+    opacity: 0.75;
+    margin-left: -4px;
+}
+
+.jtb-stepper-line {
+    width: 40px;
     height: 2px;
-    background: rgba(12, 14, 22, 0.08);
+    background: rgba(12, 14, 22, 0.06);
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
+    border-radius: 2px;
 }
 
-.jtb-progress-connector::after {
+.jtb-stepper-line::after {
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 0;
     background: var(--jtb-primary, #2d6a4f);
-    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 2px;
 }
 
-.jtb-progress-connector--filled::after {
+.jtb-stepper-line--filled::after {
     width: 100%;
-}
-
-.jtb-progress-selection {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--jtb-primary, #2d6a4f);
-    opacity: 0.8;
 }
 
 /* ---- Step Containers ---- */
@@ -1027,11 +1029,18 @@
     .jtb-pass-fields {
         grid-template-columns: repeat(2, 1fr);
     }
-    .jtb-progress-step span:not(.jtb-progress-num) {
+    .jtb-stepper-label,
+    .jtb-stepper-badge {
         display: none;
     }
-    .jtb-progress-step {
+    .jtb-stepper-item {
         padding: 8px 12px;
+    }
+    .jtb-stepper-inner {
+        padding: 6px 10px;
+    }
+    .jtb-stepper-line {
+        width: 28px;
     }
 }
 
