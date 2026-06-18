@@ -12,6 +12,7 @@ import {
     WHATSAPP_BASE,
     WHATSAPP_PHONE,
 } from '../data/japonData'
+import FallingElements from '../components/FallingElements'
 import './pages.css'
 
 /**
@@ -47,6 +48,7 @@ export default function JaponExperiencia() {
                 <div className="jac-hero-bg">
                     <img src={season.heroImage} alt={`${season.name} ${exp.name}`} />
                     <div className="jac-hero-overlay" />
+                    <FallingElements type={temporada} />
                 </div>
                 <div className="jac-hero-content container">
                     <Link to={`/viajes/japon/${temporada}`} className="jac-hero-breadcrumb">
@@ -62,6 +64,23 @@ export default function JaponExperiencia() {
                     <p className="jac-hero-subtitle-large">Tú eliges cómo vivir Japón.</p>
                 </div>
             </section>
+
+            {/* ===== STICKY SELECTION PATH ===== */}
+            <div className="jac-selection-path">
+                <div className="container jac-path-container">
+                    <Link to="/viajes/japon" className="jac-path-step">
+                        🇯🇵 Japón a la Carta
+                    </Link>
+                    <span className="jac-path-divider">/</span>
+                    <Link to={`/viajes/japon/${temporada}`} className="jac-path-step">
+                        {season.emoji} {season.name}
+                    </Link>
+                    <span className="jac-path-divider">/</span>
+                    <span className="jac-path-step jac-path-step--active">
+                        {exp.icon} {exp.name}
+                    </span>
+                </div>
+            </div>
 
             {/* ===== EXPERIENCE HEADER ===== */}
             <section
@@ -111,12 +130,27 @@ export default function JaponExperiencia() {
 
                         <div className="jac-packages-grid" data-animate="fade-up">
                             <div className="jac-packages-table">
-                                <div className="jac-packages-table-header">
-                                    <span>Paquetes Disponibles</span>
+                                <div className="jac-packages-table-header" style={{ background: season.colors.primary }}>
+                                    <span>Pase de Abordar / Paquetes Disponibles</span>
                                 </div>
                                 {pricing.packages.map((pkg, i) => (
-                                    <div className="jac-package-row" key={i}>
+                                    <div className="jac-package-row" key={i} style={{ borderLeftColor: season.colors.primary }}>
                                         <span className="jac-package-days">{pkg.days}</span>
+                                        
+                                        {/* CSS Simulated Barcode */}
+                                        <div className="jac-ticket-barcode-wrap">
+                                            <div className="jac-ticket-barcode">
+                                                <div className="jac-barcode-line" />
+                                                <div className="jac-barcode-line jac-barcode-line--wide" />
+                                                <div className="jac-barcode-line jac-barcode-line--narrow" />
+                                                <div className="jac-barcode-line" />
+                                                <div className="jac-barcode-line jac-barcode-line--wide" />
+                                                <div className="jac-barcode-line jac-barcode-line--narrow" />
+                                                <div className="jac-barcode-line" />
+                                            </div>
+                                            <span className="jac-barcode-num">JAC-{temporada.substring(0,3).toUpperCase()}-{i+1}</span>
+                                        </div>
+
                                         <div className="jac-package-price-wrap">
                                             <span className="jac-package-price" style={{ color: season.colors.primary }}>
                                                 {pkg.price}

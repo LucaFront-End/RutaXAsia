@@ -30,6 +30,7 @@ function Header() {
     const [hidden, setHidden] = useState(false)
     const [menuOpen, setMenuOpen] = useState(false)
     const [toursOpen, setToursOpen] = useState(false)
+    const [japonOpen, setJaponOpen] = useState(false)
     const location = useLocation()
     const isHome = location.pathname === '/'
     const lastScrollY = { current: 0 }
@@ -90,8 +91,8 @@ function Header() {
                                         </div>
                                     </div>
                                     <div className="nav-dropdown-group-dates">
-                                        {t.children.map(c => (
-                                            <Link key={c.slug} to={`/tours/${c.slug}`} className="nav-dropdown-date" onClick={closeMenu}>
+                                        {t.children.map((c, idx) => (
+                                            <Link key={`${c.slug}-${idx}`} to={`/tours/${c.slug}`} className="nav-dropdown-date" onClick={closeMenu}>
                                                 <span className="nav-dropdown-date-label">📅 {c.label}</span>
                                                 <span className="nav-dropdown-date-range">{c.sub}</span>
                                             </Link>
@@ -109,7 +110,36 @@ function Header() {
                             ))}
                         </div>
                     </li>
-                    <li><Link to="/viajes" onClick={closeMenu}>Viajes</Link></li>
+                    {/* Japón a la Carta dropdown */}
+                    <li className={`nav-dropdown${japonOpen ? ' nav-dropdown--open' : ''}`}
+                        onMouseEnter={() => setJaponOpen(true)}
+                        onMouseLeave={() => setJaponOpen(false)}
+                    >
+                        <button
+                            className="nav-dropdown-trigger"
+                            onClick={() => setJaponOpen(!japonOpen)}
+                        >
+                            Japón a la Carta ⛩️
+                            <svg className="nav-dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                        <div className="nav-dropdown-panel" style={{ minWidth: '240px' }}>
+                            <Link to="/viajes/japon" className="nav-dropdown-item" onClick={closeMenu}>
+                                🇯🇵 Ver Todo Japón (Inicio)
+                            </Link>
+                            <Link to="/viajes/japon/sakura" className="nav-dropdown-item" onClick={closeMenu}>
+                                🌸 Sakura (Primavera)
+                            </Link>
+                            <Link to="/viajes/japon/verano" className="nav-dropdown-item" onClick={closeMenu}>
+                                ☀️ Verano en Japón
+                            </Link>
+                            <Link to="/viajes/japon/momiji" className="nav-dropdown-item" onClick={closeMenu}>
+                                🍁 Momiji (Otoño)
+                            </Link>
+                        </div>
+                    </li>
+                    <li><Link to="/viajes" onClick={closeMenu}>Destinos</Link></li>
                     <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
                     <li><Link to="/blog" onClick={closeMenu}>Blog</Link></li>
                     <li><Link to="/faq" onClick={closeMenu}>Preguntas Frecuentes</Link></li>

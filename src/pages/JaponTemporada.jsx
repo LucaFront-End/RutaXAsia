@@ -12,6 +12,7 @@ import {
     WHATSAPP_BASE,
     WHATSAPP_PHONE,
 } from '../data/japonData'
+import FallingElements from '../components/FallingElements'
 import './pages.css'
 
 /**
@@ -42,6 +43,7 @@ export default function JaponTemporada() {
                 <div className="jac-hero-bg">
                     <img src={season.heroImage} alt={season.name} />
                     <div className="jac-hero-overlay" />
+                    <FallingElements type={temporada} />
                 </div>
                 <div className="jac-hero-content container">
                     <Link to="/viajes/japon" className="jac-hero-breadcrumb">

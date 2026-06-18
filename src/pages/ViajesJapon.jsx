@@ -45,9 +45,50 @@ export default function ViajesJapon() {
                     <p className="jac-hero-subtitle">
                         Tú eliges cómo vivir Japón, nosotros hacemos que suceda.
                     </p>
-                    <a href="#temporadas" className="jac-hero-scroll-btn">
+                    <a href="#pasos" className="jac-hero-scroll-btn">
                         Elige tu temporada <span className="jac-hero-scroll-arrow">↓</span>
                     </a>
+                </div>
+            </section>
+
+            {/* ===== CÓMO FUNCIONA (PASO A PASO) ===== */}
+            <section className="jac-steps-section" id="pasos">
+                <div className="container">
+                    <div className="section-header" data-animate="fade-up">
+                        <span className="section-tag">Japón a la Carta</span>
+                        <h2 className="section-title">
+                            Tu viaje en <span className="text-accent">3 sencillos pasos</span>
+                        </h2>
+                        <p className="section-subtitle">
+                            Diseñar el viaje de tus sueños a Japón es más fácil que nunca.
+                        </p>
+                    </div>
+
+                    <div className="jac-steps-grid" data-animate="fade-up">
+                        <div className="jac-step-card">
+                            <div className="jac-step-num">1</div>
+                            <h3 className="jac-step-title">Elige tu Temporada</h3>
+                            <p className="jac-step-desc">
+                                Disfruta los cerezos en flor de Sakura 🌸, los festivales en Verano ☀️ o el follaje de Momiji 🍁.
+                            </p>
+                        </div>
+                        <div className="jac-step-arrow">→</div>
+                        <div className="jac-step-card">
+                            <div className="jac-step-num">2</div>
+                            <h3 className="jac-step-title">Elige tu Estilo</h3>
+                            <p className="jac-step-desc">
+                                Desde la libertad del viaje Libre 🗺️ hasta el acompañamiento premium y de lujo de Signature 👑.
+                            </p>
+                        </div>
+                        <div className="jac-step-arrow">→</div>
+                        <div className="jac-step-card">
+                            <div className="jac-step-num">3</div>
+                            <h3 className="jac-step-title">Arma tu Experiencia</h3>
+                            <p className="jac-step-desc">
+                                Complementa con traslados, días asistidos locales y actividades tradicionales de nuestro catálogo.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </section>
 

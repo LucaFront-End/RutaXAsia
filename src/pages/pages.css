@@ -332,6 +332,13 @@
     letter-spacing: 0.05em;
 }
 
+.viajes-card-badge--carta {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #a82020 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
 .viajes-card-flag {
     position: absolute;
     bottom: 16px; left: 16px;
@@ -619,16 +626,16 @@
 /* ===== JAC HERO ===== */
 .jac-hero {
     position: relative;
-    min-height: 65vh;
+    min-height: 70vh;
     display: flex;
     align-items: flex-end;
-    padding: 0 0 4rem;
+    padding: 0 0 5rem;
     overflow: hidden;
 }
 
 .jac-hero--season,
 .jac-hero--exp {
-    min-height: 55vh;
+    min-height: 60vh;
 }
 
 .jac-hero-bg img {
@@ -636,20 +643,26 @@
     top: 0; left: 0;
     width: 100%; height: 100%;
     object-fit: cover;
+    animation: jac-kenburns 36s ease-in-out infinite alternate;
+}
+
+@keyframes jac-kenburns {
+    0% { transform: scale(1.02) translate(0, 0); }
+    100% { transform: scale(1.12) translate(-1%, -0.5%); }
 }
 
 .jac-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.5) 40%, rgba(10,10,10,0.2) 100%);
+    background: linear-gradient(to top, rgba(12, 14, 22, 0.98) 0%, rgba(12, 14, 22, 0.6) 45%, rgba(12, 14, 22, 0.2) 100%);
     z-index: 1;
 }
 
 .jac-hero-content {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     text-align: center;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -657,98 +670,119 @@
     display: inline-block;
     font-size: 0.8rem;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-    padding: 6px 16px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+    margin-bottom: 1.25rem;
+    padding: 6px 18px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 100px;
 }
 
 .jac-hero-torii {
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin-bottom: 0.75rem;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.4));
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.jac-hero:hover .jac-hero-torii {
+    transform: rotateY(180deg) scale(1.08);
 }
 
 .jac-hero-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 700;
+    font-size: clamp(2.8rem, 6.5vw, 5rem);
+    font-weight: 800;
     color: #fff;
     line-height: 1.1;
     margin: 0 0 0.5rem;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .jac-hero-title-accent {
     display: block;
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    font-weight: 400;
-    color: rgba(255,255,255,0.6);
-    letter-spacing: 0.3em;
-    margin-top: 0.25rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.35em;
+    margin-top: 0.4rem;
+    text-transform: uppercase;
 }
 
 .jac-hero-season-badge {
     display: inline-block;
-    padding: 8px 24px;
+    padding: 8px 28px;
     border-radius: 100px;
     color: #fff;
     font-size: 0.9rem;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    margin-bottom: 1rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .jac-hero-subtitle {
-    font-size: 1.1rem;
-    color: rgba(255,255,255,0.65);
-    max-width: 550px;
-    margin: 0 auto 1.5rem;
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 600px;
+    margin: 0 auto 2rem;
     line-height: 1.65;
 }
 
 .jac-hero-subtitle-large {
-    font-size: 1.2rem;
-    color: rgba(255,255,255,0.7);
+    font-size: 1.35rem;
+    color: rgba(255, 255, 255, 0.8);
     margin: 0 auto;
     line-height: 1.65;
+    font-weight: 300;
+    letter-spacing: 0.02em;
 }
 
 .jac-hero-breadcrumb {
     display: inline-block;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255, 255, 255, 0.5);
     font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
     text-decoration: none;
-    margin-bottom: 1.5rem;
-    transition: color 0.3s;
+    margin-bottom: 1.75rem;
+    padding: 6px 16px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 100px;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .jac-hero-breadcrumb:hover {
     color: #fff;
+    background: rgba(255,255,255,0.12);
+    transform: translateX(-4px);
 }
 
 .jac-hero-scroll-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255,255,255,0.7);
+    gap: 0.6rem;
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     text-decoration: none;
-    padding: 10px 24px;
-    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px 28px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 100px;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    backdrop-filter: blur(4px);
 }
 
 .jac-hero-scroll-btn:hover {
     color: #fff;
-    border-color: rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.08);
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(3px);
 }
 
 .jac-hero-scroll-arrow {
@@ -757,12 +791,82 @@
 
 @keyframes jac-bounce {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(4px); }
+    50% { transform: translateY(6px); }
+}
+
+/* ===== HOW IT WORKS (PASO A PASO) ===== */
+.jac-steps-section {
+    padding: 5rem 0 3rem;
+    background: #faf5f0;
+}
+
+.jac-steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 12px 1fr 12px 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.jac-step-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 2.25rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.jac-step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+    background: #fff;
+}
+
+.jac-step-num {
+    width: 44px;
+    height: 44px;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+}
+
+.jac-step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 0.5rem;
+}
+
+.jac-step-desc {
+    font-size: 0.88rem;
+    color: var(--color-gray-600);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.jac-step-arrow {
+    font-size: 1.5rem;
+    color: var(--color-gray-300);
+    text-align: center;
+    font-weight: 300;
 }
 
 /* ===== JAC SEASONS GRID ===== */
 .jac-seasons {
-    padding: 5rem 0;
+    padding: 4rem 0 6rem;
     background: #faf5f0;
 }
 
@@ -773,155 +877,194 @@
 }
 
 .jac-season-card {
-    background: #fff;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 24px;
     overflow: hidden;
     text-decoration: none;
-    border: 1px solid rgba(0,0,0,0.06);
-    transition: transform 0.4s, box-shadow 0.4s;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
 }
 
 .jac-season-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(12, 14, 22, 0.12);
+    border-color: var(--season-primary);
+    background: #fff;
 }
 
 .jac-season-card-img {
     position: relative;
-    height: 280px;
+    height: 300px;
     overflow: hidden;
 }
 
 .jac-season-card-img img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .jac-season-card:hover .jac-season-card-img img {
-    transform: scale(1.06);
+    transform: scale(1.08);
 }
 
 .jac-season-card-img-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 60%);
+    background: linear-gradient(to top, rgba(12,14,22,0.5) 0%, transparent 60%);
+    opacity: 0.8;
 }
 
 .jac-season-card-emoji {
     position: absolute;
-    top: 16px; right: 16px;
-    font-size: 2rem;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    top: 20px; right: 20px;
+    font-size: 2.2rem;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.jac-season-card:hover .jac-season-card-emoji {
+    transform: scale(1.2) rotate(15deg);
 }
 
 .jac-season-card-body {
-    padding: 1.75rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .jac-season-card-months {
     display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--season-primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
 }
 
 .jac-season-card-name {
     font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.8rem;
 }
 
 .jac-season-card-desc {
     color: var(--color-gray-600);
     font-size: 0.9rem;
     line-height: 1.6;
-    margin: 0 0 1rem;
+    margin: 0 0 1.5rem;
+    flex: 1;
 }
 
 .jac-season-card-highlights {
     list-style: none;
     padding: 0;
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.75rem;
 }
 
 .jac-season-card-highlights li {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-gray-600);
-    padding: 3px 0;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .jac-season-card-highlights li::before {
-    content: '✦ ';
+    content: '✦';
     color: var(--season-primary);
-    font-size: 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 .jac-season-card-cta {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.9rem;
-    font-weight: 600;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--season-primary);
-    transition: gap 0.3s;
+    transition: gap 0.3s, transform 0.3s;
 }
 
 .jac-season-card:hover .jac-season-card-cta {
     gap: 0.8rem;
+    transform: translateX(4px);
 }
 
 /* ===== JAC STYLES PREVIEW (4 travel types) ===== */
 .jac-styles-preview {
-    padding: 5rem 0;
+    padding: 6rem 0;
     background: #fff;
 }
 
 .jac-styles-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 
 .jac-style-card {
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.08);
-    border-radius: 16px;
-    padding: 2rem 1.5rem;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    padding: 2.5rem 1.75rem;
     text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
 
 .jac-style-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
-    border-color: rgba(0,0,0,0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border-color: rgba(0,0,0,0.12);
+}
+
+/* Luxury gold pulse for Signature Card */
+@keyframes goldGlow {
+    0%, 100% {
+        border-color: #c9a84c;
+        box-shadow: 0 4px 20px rgba(201, 168, 76, 0.15), inset 0 0 10px rgba(201, 168, 76, 0.05);
+    }
+    50% {
+        border-color: #f5d77f;
+        box-shadow: 0 4px 30px rgba(245, 215, 127, 0.4), inset 0 0 20px rgba(245, 215, 127, 0.15);
+    }
 }
 
 .jac-style-card--signature {
-    background: #1a1a1a;
+    background: #121416;
     border-color: #c9a84c;
     position: relative;
     overflow: hidden;
+    animation: goldGlow 6s ease-in-out infinite;
 }
 
 .jac-style-card--signature::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #c9a84c, #f0d78c, #c9a84c);
+    height: 4px;
+    background: linear-gradient(90deg, #c9a84c, #f5d77f, #c9a84c);
 }
 
-.jac-style-card--signature .jac-style-card-name,
-.jac-style-card--signature .jac-style-card-tagline {
+.jac-style-card--signature .jac-style-card-name {
     color: #fff;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.jac-style-card--signature .jac-style-card-tagline {
+    color: rgba(255,255,255,0.6);
 }
 
 .jac-style-card--signature .jac-style-card-features li {
@@ -933,23 +1076,29 @@
 }
 
 .jac-style-card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 2.8rem;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.jac-style-card:hover .jac-style-card-icon {
+    transform: scale(1.15) rotate(5deg);
 }
 
 .jac-style-card-name {
     font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.6rem;
 }
 
 .jac-style-card-tagline {
     font-size: 0.85rem;
     color: var(--color-gray-600);
     line-height: 1.5;
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.5rem;
 }
 
 .jac-style-card-features {
@@ -960,24 +1109,24 @@
 }
 
 .jac-style-card-features li {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--color-gray-600);
-    padding: 4px 0;
+    padding: 6px 0;
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
 .jac-style-check {
     color: var(--color-primary);
     font-weight: 700;
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: 2px;
 }
 
 /* ===== JAC EXPERIENCE CARDS (Season page) ===== */
 .jac-experiences {
-    padding: 5rem 0;
+    padding: 6rem 0;
     background: #faf5f0;
 }
 
@@ -990,32 +1139,37 @@
 .jac-exp-card {
     background: #fff;
     border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 20px;
-    padding: 2rem 1.5rem 1.5rem;
+    border-radius: 24px;
+    padding: 2.5rem 1.75rem 1.75rem;
     display: flex;
     flex-direction: column;
-    transition: transform 0.4s, box-shadow 0.4s;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
 
 .jac-exp-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 50px rgba(0,0,0,0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(12,14,22,0.08);
+}
+
+.jac-exp-card:not(.jac-exp-card--signature):hover {
+    border-color: var(--season-primary);
 }
 
 .jac-exp-card--signature {
-    background: #1a1a1a;
+    background: #121416;
     border-color: #c9a84c;
     position: relative;
+    animation: goldGlow 6s ease-in-out infinite;
 }
 
 .jac-exp-card--signature::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 20px 20px 0 0;
-    background: linear-gradient(90deg, #c9a84c, #f0d78c, #c9a84c);
+    height: 4px;
+    border-radius: 24px 24px 0 0;
+    background: linear-gradient(90deg, #c9a84c, #f5d77f, #c9a84c);
 }
 
 .jac-exp-card--signature .jac-exp-card-header .jac-exp-card-season-name {
@@ -1024,6 +1178,7 @@
 
 .jac-exp-card--signature .jac-exp-card-name {
     color: #fff;
+    font-weight: 800;
 }
 
 .jac-exp-card--signature .jac-exp-card-tagline {
@@ -1039,24 +1194,30 @@
 }
 
 .jac-exp-card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 2.8rem;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.jac-exp-card:hover .jac-exp-card-icon {
+    transform: scale(1.15) rotate(5deg);
 }
 
 .jac-exp-card-header {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.8rem;
 }
 
 .jac-exp-card-season-name {
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
 }
 
 .jac-exp-card-name {
     font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--color-dark);
     margin: 0.25rem 0 0;
@@ -1068,7 +1229,7 @@
     font-size: 0.88rem;
     color: var(--color-gray-600);
     line-height: 1.55;
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.5rem;
 }
 
 .jac-exp-card-features {
@@ -1079,73 +1240,77 @@
 }
 
 .jac-exp-card-features li {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--color-gray-600);
-    padding: 5px 0;
+    padding: 6px 0;
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
-    line-height: 1.4;
+    gap: 0.6rem;
+    line-height: 1.45;
 }
 
 .jac-exp-check {
-    font-size: 0.5rem;
+    font-size: 0.55rem;
     flex-shrink: 0;
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 .jac-exp-card-cta-wrap {
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
 }
 
 .jac-exp-card-cta {
     display: block;
     text-align: center;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 
 .jac-exp-card:hover .jac-exp-card-cta {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
 }
 
 /* ===== JAC DESTINOS (Circular images grid) ===== */
 .jac-destinos {
-    padding: 4rem 0;
+    padding: 5rem 0;
 }
 
 .jac-destinos-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 2rem;
-    margin-top: 1rem;
+    gap: 2.5rem;
+    margin-top: 2rem;
 }
 
 .jac-destino-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    width: 100px;
+    gap: 0.6rem;
+    width: 120px;
+    transition: transform 0.3s;
 }
 
 .jac-destino-img {
-    width: 80px;
-    height: 80px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid rgba(0,0,0,0.06);
-    transition: transform 0.3s, box-shadow 0.3s;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .jac-destino-item:hover .jac-destino-img {
-    transform: scale(1.08);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    transform: scale(1.1) translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+    border-color: var(--season-primary, var(--color-primary));
 }
 
 .jac-destino-img img {
@@ -1154,56 +1319,65 @@
 }
 
 .jac-destino-name {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--color-gray-600);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-dark);
     text-align: center;
     line-height: 1.3;
 }
 
 .jac-destinos-note {
     text-align: center;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 2rem;
 }
 
 /* ===== JAC FLEX & EXTENSIONS ===== */
 .jac-flex-ext {
-    padding: 4rem 0;
+    padding: 5rem 0;
     background: #fff;
 }
 
 .jac-flex-ext-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 .jac-flex-box {
     background: #faf5f0;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 16px;
-    padding: 1.75rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+    transition: transform 0.3s;
+}
+
+.jac-flex-box:hover {
+    transform: translateY(-4px);
 }
 
 .jac-flex-box--pago {
-    background: #f0faf4;
+    background: rgba(240, 250, 244, 0.7);
+    border-color: rgba(45, 106, 79, 0.15);
 }
 
 .jac-flex-box-title {
     font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin: 0 0 1rem;
+    margin: 0 0 1.25rem;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.04);
+    padding-bottom: 0.5rem;
 }
 
 .jac-flex-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
+    gap: 0.85rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.06);
 }
 
 .jac-flex-item:last-child {
@@ -1211,30 +1385,30 @@
 }
 
 .jac-flex-item h4 {
-    font-size: 0.88rem;
-    font-weight: 600;
+    font-size: 0.92rem;
+    font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 0.15rem;
+    margin: 0 0 0.2rem;
 }
 
 .jac-flex-item p {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--color-gray-600);
     margin: 0;
     line-height: 1.5;
 }
 
 .jac-ext-icon {
-    font-size: 1.2rem;
+    font-size: 1.35rem;
     flex-shrink: 0;
     margin-top: 2px;
 }
 
 .jac-pago-text {
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 1rem;
+    margin: 0 0 1.25rem;
 }
 
 .jac-pago-list {
@@ -1244,88 +1418,158 @@
 }
 
 .jac-pago-list li {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-gray-600);
-    padding: 4px 0;
-    line-height: 1.5;
+    padding: 6px 0;
+    line-height: 1.55;
 }
 
 .jac-pago-list li::before {
     content: '✓ ';
     color: var(--color-primary);
+    font-weight: 800;
+    margin-right: 4px;
+}
+
+/* ===== JAC SELECTION PATH (Breadcrumbs) ===== */
+.jac-selection-path {
+    background: rgba(12, 14, 22, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 0;
+    position: sticky;
+    top: 79px; /* Heights of main navbar */
+    z-index: 10;
+}
+
+.jac-path-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.jac-path-step {
+    font-size: 0.75rem;
     font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.jac-path-step:hover:not(.jac-path-step--active) {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.jac-path-step--active {
+    color: #fff;
+    cursor: default;
+}
+
+.jac-path-divider {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.2);
 }
 
 /* ===== JAC HIGHLIGHTS STRIP ===== */
 .jac-highlights-strip {
-    padding: 1.5rem 0;
-    background: #1a1a1a;
+    padding: 1.75rem 0;
+    background: #121416;
+    border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .jac-highlights-row {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 .jac-highlight-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     white-space: nowrap;
 }
 
 .jac-highlight-icon {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
 }
 
 .jac-highlight-text {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: rgba(255,255,255,0.9);
-    letter-spacing: 0.02em;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 /* ===== JAC CTA ===== */
 .jac-cta {
-    padding: 5rem 0;
-    background: #0c0e16;
+    padding: 6rem 0;
+    background: #090b11;
+    position: relative;
+    overflow: hidden;
+}
+
+.jac-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at center, rgba(220, 38, 38, 0.08) 0%, transparent 60%);
+    z-index: 1;
+}
+
+.jac-cta .container {
+    position: relative;
+    z-index: 2;
 }
 
 .jac-cta-torii {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 4px 15px rgba(220,38,38,0.35));
 }
 
 .jac-cta-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
     color: #fff;
-    margin: 0 0 0.75rem;
+    margin: 0 0 1rem;
+    letter-spacing: -0.5px;
 }
 
 .jac-cta-subtitle {
-    color: rgba(255,255,255,0.5);
-    font-size: 1.05rem;
-    margin: 0 0 2rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    margin: 0 0 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .jac-cta-actions {
     display: flex;
-    gap: 1rem;
+    gap: 1.25rem;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .jac-cta-btn {
-    font-size: 1rem;
-    padding: 14px 32px;
+    font-size: 1.05rem;
+    padding: 16px 36px;
+    font-weight: 700;
 }
 
 /* ===== JAC EXPERIENCE HEADER ===== */
 .jac-exp-header {
-    padding: 4rem 0 3rem;
+    padding: 5rem 0 4rem;
 }
 
 .jac-exp-header-content {
@@ -1333,25 +1577,26 @@
 }
 
 .jac-exp-header-icon {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
+    font-size: 4rem;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
 }
 
 .jac-exp-header-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 700;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 800;
     color: var(--color-dark);
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.8rem;
     text-transform: uppercase;
     letter-spacing: -1px;
 }
 
 .jac-exp-header-tagline {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--color-gray-600);
-    max-width: 500px;
-    margin: 0 auto 2rem;
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
     line-height: 1.6;
 }
 
@@ -1359,89 +1604,122 @@
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    padding: 1.5rem 2.5rem;
+    padding: 1.75rem 3.5rem;
     border: 2px solid;
-    border-radius: 16px;
+    border-radius: 20px;
     background: #fff;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
 .jac-price-from {
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--color-gray-400);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
 }
 
 .jac-price-amount {
     font-family: 'Playfair Display', serif;
-    font-size: 2.8rem;
-    font-weight: 700;
+    font-size: 3.2rem;
+    font-weight: 800;
     line-height: 1;
-    margin: 0.25rem 0;
+    margin: 0.3rem 0;
 }
 
 .jac-price-currency {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     color: var(--color-gray-400);
 }
 
 .jac-price-per {
     font-size: 0.8rem;
     color: var(--color-gray-400);
+    margin-top: 0.2rem;
 }
 
-/* ===== JAC PACKAGES TABLE ===== */
+/* ===== JAC BOARDING PASS PACKAGES ===== */
 .jac-packages {
-    padding: 4rem 0;
-    background: #fff;
+    padding: 6rem 0;
+    background: #f5f0e8; /* Warm beige behind boarding passes */
 }
 
 .jac-packages-grid {
-    max-width: 680px;
+    max-width: 760px;
     margin: 0 auto;
 }
 
 .jac-packages-table {
-    background: #fff;
-    border: 1px solid rgba(0,0,0,0.08);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
 .jac-packages-table-header {
     background: var(--season-primary);
     color: #fff;
-    padding: 1rem 1.5rem;
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    padding: 1.25rem 2rem;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
+/* Interactive Ticket Shape Row */
 .jac-package-row {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    transition: background 0.2s;
+    background: #fff;
+    padding: 1.5rem 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    border-left: 5px solid var(--season-primary);
 }
 
 .jac-package-row:hover {
-    background: rgba(0,0,0,0.015);
+    transform: scale(1.02);
+    box-shadow: 0 15px 35px rgba(12, 14, 22, 0.06);
 }
 
-.jac-package-row:last-of-type {
-    border-bottom: none;
+/* Boarding Pass cutouts */
+.jac-package-row::before,
+.jac-package-row::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    background: #f5f0e8; /* Matches section bg */
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: inset 2px 0 3px rgba(0,0,0,0.02);
+}
+
+.jac-package-row::before {
+    left: -11px;
+}
+
+.jac-package-row::after {
+    right: -11px;
 }
 
 .jac-package-days {
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--color-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.jac-package-days::before {
+    content: '🎫';
 }
 
 .jac-package-price-wrap {
@@ -1450,72 +1728,105 @@
     gap: 0.4rem;
 }
 
+/* CSS simulated barcode */
+.jac-ticket-barcode-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.jac-ticket-barcode {
+    display: flex;
+    height: 28px;
+    opacity: 0.25;
+    gap: 2px;
+}
+
+.jac-barcode-line {
+    background: #000;
+    width: 2px;
+}
+
+.jac-barcode-line--wide { width: 4px; }
+.jac-barcode-line--narrow { width: 1px; }
+
+.jac-barcode-num {
+    font-size: 0.55rem;
+    font-family: monospace;
+    letter-spacing: 0.2em;
+    color: var(--color-gray-400);
+}
+
 .jac-package-price {
     font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 850;
 }
 
 .jac-package-currency {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     color: var(--color-gray-400);
 }
 
 .jac-package-per {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: var(--color-gray-400);
 }
 
 .jac-packages-note {
-    padding: 1rem 1.5rem;
-    font-size: 0.78rem;
-    color: var(--color-gray-400);
-    line-height: 1.5;
-    border-top: 1px solid rgba(0,0,0,0.05);
+    text-align: center;
+    padding: 1rem 2rem 0;
+    font-size: 0.82rem;
+    color: var(--color-gray-500);
+    line-height: 1.6;
     margin: 0;
 }
 
 /* ===== JAC INCLUDES ===== */
 .jac-includes {
-    padding: 4rem 0;
+    padding: 6rem 0;
     background: #faf5f0;
 }
 
 .jac-includes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
 }
 
 .jac-include-card {
     background: #fff;
     border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 16px;
-    padding: 2rem;
-    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
 
 .jac-include-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 35px rgba(12,14,22,0.06);
+    border-color: var(--season-primary);
 }
 
 .jac-include-icon {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
 }
 
 .jac-include-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0 0 0.6rem;
     text-transform: uppercase;
     letter-spacing: -0.3px;
 }
 
 .jac-include-desc {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--color-gray-600);
     line-height: 1.6;
     margin: 0;
@@ -1523,46 +1834,49 @@
 
 /* ===== JAC EXTRAS / COMPLEMENTOS ===== */
 .jac-extras {
-    padding: 4rem 0;
+    padding: 6rem 0;
     background: #fff;
 }
 
 .jac-extras-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    gap: 2rem;
+    margin-bottom: 3.5rem;
 }
 
 .jac-extra-card {
     background: #faf5f0;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 16px;
-    padding: 1.75rem;
-    transition: transform 0.3s;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 20px;
+    padding: 2.25rem 2rem;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .jac-extra-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    background: #fff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+    border-color: var(--season-primary);
 }
 
 .jac-extra-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
     display: block;
 }
 
 .jac-extra-title {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 800;
     color: var(--color-dark);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.6rem;
     text-transform: uppercase;
     letter-spacing: -0.3px;
 }
 
 .jac-extra-desc {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-gray-600);
     line-height: 1.55;
     margin: 0;
@@ -1573,77 +1887,89 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1.5rem;
-    padding: 2rem 0;
-    border-top: 1px solid rgba(0,0,0,0.06);
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    margin-bottom: 2rem;
+    gap: 2.5rem;
+    padding: 2.5rem 0;
+    border-top: 1px dashed rgba(0,0,0,0.12);
+    border-bottom: 1px dashed rgba(0,0,0,0.12);
+    margin-bottom: 2.5rem;
 }
 
 .jac-activity-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
+    transition: transform 0.3s;
+}
+
+.jac-activity-item:hover {
+    transform: translateY(-3px);
 }
 
 .jac-activity-icon {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
 }
 
 .jac-activity-name {
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     color: var(--color-gray-600);
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
 }
 
 .jac-extras-catalog {
     font-size: 0.9rem;
     color: var(--color-gray-600);
-    line-height: 1.6;
+    line-height: 1.65;
     text-align: center;
-    max-width: 700px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 1rem 2rem;
-    background: var(--season-primary, var(--color-primary));
-    background: rgba(0,0,0,0.03);
-    border-radius: 12px;
+    padding: 1.25rem 2.5rem;
+    background: rgba(0,0,0,0.02);
+    border-radius: 16px;
+    border-left: 4px solid var(--season-primary);
 }
 
 /* ===== JAC PAGO SECTION ===== */
 .jac-pago-section {
-    padding: 3rem 0;
+    padding: 4rem 0;
 }
 
 .jac-pago-cards {
     display: flex;
-    gap: 1.5rem;
+    gap: 2rem;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .jac-pago-card {
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.08);
-    border-radius: 16px;
-    padding: 2rem 2.5rem;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    padding: 2.25rem 2.5rem;
     text-align: center;
-    max-width: 340px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    max-width: 380px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    transition: transform 0.3s;
+}
+
+.jac-pago-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.05);
 }
 
 .jac-pago-card-icon {
-    font-size: 2rem;
+    font-size: 2.2rem;
     display: block;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.8rem;
 }
 
 .jac-pago-card h4 {
     font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--color-dark);
     margin: 0 0 0.5rem;
@@ -1651,10 +1977,172 @@
 }
 
 .jac-pago-card p {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--color-gray-600);
     margin: 0;
     line-height: 1.5;
+}
+
+/* ===== NEW MODALITY SHOWCASE ON HOME ===== */
+.home-modality-showcase {
+    padding: 6rem 0;
+    background: #faf5f0;
+}
+
+.hm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.hm-left-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(220,38,38,0.06);
+    border: 1px solid rgba(220,38,38,0.15);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    margin-bottom: 1.25rem;
+}
+
+.hm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--color-dark);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 1rem;
+}
+
+.hm-title span {
+    color: var(--color-primary);
+}
+
+.hm-subtitle {
+    font-size: 1.05rem;
+    color: var(--color-gray-600);
+    line-height: 1.6;
+    margin: 0 0 2rem;
+}
+
+.hm-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.hm-step {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.hm-step-circle {
+    width: 36px;
+    height: 36px;
+    background: #fff;
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    flex-shrink: 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+}
+
+.hm-step-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 0.25rem;
+}
+
+.hm-step-desc {
+    font-size: 0.88rem;
+    color: var(--color-gray-600);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.hm-right {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.hm-season-shortcuts {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+}
+
+.hm-season-shortcuts-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem;
+    text-align: center;
+}
+
+.hm-season-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.hm-season-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border-radius: 16px;
+    text-decoration: none;
+    background: #faf5f0;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.hm-season-link:hover {
+    transform: translateX(6px);
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    border-color: var(--season-primary);
+}
+
+.hm-season-link-label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.hm-season-link-emoji {
+    font-size: 1.5rem;
+}
+
+.hm-season-link-name {
+    font-weight: 700;
+    color: var(--color-dark);
+}
+
+.hm-season-link-arrow {
+    font-weight: 700;
+    color: var(--season-primary);
+    transition: transform 0.3s;
+}
+
+.hm-season-link:hover .hm-season-link-arrow {
+    transform: translateX(4px);
 }
 
 /* ===== JAC RESPONSIVE ===== */
@@ -1665,6 +2153,18 @@
     }
     .jac-flex-ext-grid {
         grid-template-columns: 1fr;
+    }
+    .jac-steps-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .jac-step-arrow {
+        transform: rotate(90deg);
+        margin: 0.25rem 0;
+    }
+    .hm-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
     }
 }
 
@@ -1680,11 +2180,11 @@
 
 @media (max-width: 600px) {
     .jac-hero {
-        min-height: 55vh;
+        min-height: 60vh;
         padding-bottom: 3rem;
     }
     .jac-hero-title {
-        font-size: 2.2rem;
+        font-size: 2.4rem;
     }
     .jac-hero-title-accent {
         font-size: 1rem;
@@ -1694,10 +2194,10 @@
         grid-template-columns: 1fr;
     }
     .jac-exp-header-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
     .jac-price-amount {
-        font-size: 2rem;
+        font-size: 2.4rem;
     }
     .jac-highlights-row {
         gap: 1rem;
@@ -1714,5 +2214,18 @@
         flex-direction: column;
         align-items: center;
     }
+    .jac-package-row {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .jac-ticket-barcode-wrap {
+        align-items: center;
+    }
+    .jac-selection-path {
+        top: 69px; /* Adjust to small mobile navbar height */
+    }
 }
+
 

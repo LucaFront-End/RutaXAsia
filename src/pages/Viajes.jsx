@@ -10,13 +10,14 @@ import './pages.css'
 
 const DESTINATIONS = [
     {
-        title: 'Japón',
+        title: 'Japón a la Carta',
         flag: '🇯🇵',
         slug: '/viajes/japon',
         image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=500&fit=crop&q=85',
-        excerpt: 'Templos milenarios, cerezos en flor, gastronomía única y la mezcla perfecta entre tradición y modernidad. Descubrí Japón con nosotros.',
-        seasons: ['🌸 Sakura', '☀️ Verano', '🍁 Otoño'],
+        excerpt: 'Diseña tu viaje a Japón a tu medida. Elige tu estación preferida (Sakura, Verano u Otoño) y el estilo de viaje que más te guste (Libre, Guiado, Acompañado o Signature).',
+        seasons: ['🌸 Sakura', '☀️ Verano', '🍁 Momiji'],
         available: true,
+        isCarta: true,
     },
     {
         title: 'Corea del Sur',
@@ -72,6 +73,9 @@ export default function Viajes() {
                                     <div className="viajes-card-img-overlay" />
                                     {!dest.available && (
                                         <div className="viajes-card-badge">Próximamente</div>
+                                    )}
+                                    {dest.isCarta && (
+                                        <div className="viajes-card-badge viajes-card-badge--carta">NUEVA MODALIDAD</div>
                                     )}
                                     <div className="viajes-card-flag">{dest.flag}</div>
                                 </div>

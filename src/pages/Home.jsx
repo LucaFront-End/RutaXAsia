@@ -532,7 +532,7 @@ function Home({ cityOverride } = {}) {
                     <div className="hero-gallery-wrapper">
                         <div className="hero-gallery" key={`gallery-${currentTrip.id}`}>
                             {[
-                                { title: 'Japón', flag: '🇯🇵', img: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=400&h=500&fit=crop', link: '/viajes/japon' },
+                                { title: 'Japón a la Carta', flag: '🇯🇵', img: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=400&h=500&fit=crop', link: '/viajes/japon', badge: 'NUEVA MODALIDAD ✨' },
                                 { title: 'Corea', flag: '🇰🇷', img: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=400&h=500&fit=crop', link: '/viajes/corea' },
                                 { title: 'China', flag: '🇨🇳', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=400&h=500&fit=crop', link: '/viajes/china', badge: 'Próximamente' },
                             ].map((card, j) => (
@@ -588,6 +588,82 @@ function Home({ cityOverride } = {}) {
                             <div className="hero-progress-fill" style={{ width: `${((activeSlide + 1) / TRIPS.length) * 100}%` }} />
                         </div>
                         <span className="hero-progress-num">{String(TRIPS.length).padStart(2, '0')}</span>
+                    </div>
+                </div>
+            </section>
+
+            {/* ===== JAPÓN A LA CARTA SHOWCASE SECTION ===== */}
+            <section className="home-modality-showcase">
+                <div className="container">
+                    <div className="hm-grid">
+                        <div className="hm-left" data-animate="fade-right">
+                            <span className="hm-left-tag">Nueva Forma de Viajar</span>
+                            <h2 className="hm-title">
+                                Diseña tu aventura con <br /><span>Japón a la Carta</span>
+                            </h2>
+                            <p className="hm-subtitle">
+                                Elige tu temporada preferida, selecciona el estilo de viaje que se adapte a tu ritmo y complementa con actividades a tu medida. Vivir Japón nunca fue tan flexible y personalizado.
+                            </p>
+                            
+                            <div className="hm-steps">
+                                <div className="hm-step">
+                                    <div className="hm-step-circle">1</div>
+                                    <div>
+                                        <h4 className="hm-step-title">Elige tu Temporada 🌸</h4>
+                                        <p className="hm-step-desc">Sakura en primavera, Verano de festivales o los colores del Momiji en otoño.</p>
+                                    </div>
+                                </div>
+                                <div className="hm-step">
+                                    <div className="hm-step-circle">2</div>
+                                    <div>
+                                        <h4 className="hm-step-title">Elige tu Estilo de Viaje ⛩️</h4>
+                                        <p className="hm-step-desc">Desde Libre (viaje a tu ritmo) hasta Signature (acompañamiento premium completo).</p>
+                                    </div>
+                                </div>
+                                <div className="hm-step">
+                                    <div className="hm-step-circle">3</div>
+                                    <div>
+                                        <h4 className="hm-step-title">Personaliza y Disfruta ✈️</h4>
+                                        <p className="hm-step-desc">Agrega extensiones, upgrades de hoteles y actividades tradicionales exclusivas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <Link to="/viajes/japon" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                                ¡Crea tu Japón a la Carta! <span>→</span>
+                            </Link>
+                        </div>
+                        
+                        <div className="hm-right" data-animate="fade-left">
+                            <div className="hm-season-shortcuts">
+                                <h3 className="hm-season-shortcuts-title">Explorar por Temporada</h3>
+                                <div className="hm-season-links">
+                                    <Link to="/viajes/japon/sakura" className="hm-season-link" style={{ '--season-primary': '#e91e7a' }}>
+                                        <div className="hm-season-link-label">
+                                            <span className="hm-season-link-emoji">🌸</span>
+                                            <span className="hm-season-link-name">Sakura — Cerezos en Flor</span>
+                                        </div>
+                                        <span className="hm-season-link-arrow">→</span>
+                                    </Link>
+                                    
+                                    <Link to="/viajes/japon/verano" className="hm-season-link" style={{ '--season-primary': '#2d6a4f' }}>
+                                        <div className="hm-season-link-label">
+                                            <span className="hm-season-link-emoji">☀️</span>
+                                            <span className="hm-season-link-name">Verano — Festivales y Neón</span>
+                                        </div>
+                                        <span className="hm-season-link-arrow">→</span>
+                                    </Link>
+                                    
+                                    <Link to="/viajes/japon/momiji" className="hm-season-link" style={{ '--season-primary': '#c44900' }}>
+                                        <div className="hm-season-link-label">
+                                            <span className="hm-season-link-emoji">🍁</span>
+                                            <span className="hm-season-link-name">Momiji — Hojas de Otoño</span>
+                                        </div>
+                                        <span className="hm-season-link-arrow">→</span>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
