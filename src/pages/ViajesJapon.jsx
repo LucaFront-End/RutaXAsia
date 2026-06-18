@@ -1,19 +1,15 @@
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import {
-    TEMPORADAS,
-    TEMPORADA_ORDER,
-    EXPERIENCIA_ORDER,
-    EXPERIENCIAS,
     HIGHLIGHTS_STRIP,
     WHATSAPP_BASE,
 } from '../data/japonData'
+import JaponTripBuilder from '../components/JaponTripBuilder/JaponTripBuilder'
 import './pages.css'
 
 /**
  * ViajesJapon — Japan "À la Carte" country page.
- * Shows the 3 seasons (Sakura, Verano, Momiji) as premium cards.
+ * Features an interactive multi-step trip builder.
  * Route: /viajes/japon
  */
 
@@ -43,165 +39,18 @@ export default function ViajesJapon() {
                         JAPÓN <span className="jac-hero-title-accent">A LA CARTA</span>
                     </h1>
                     <p className="jac-hero-subtitle">
-                        Tú eliges cómo vivir Japón, nosotros hacemos que suceda.
+                        Diseña tu viaje ideal a Japón en 3 pasos. Tú eliges la temporada, el estilo y nosotros hacemos que suceda.
                     </p>
-                    <a href="#pasos" className="jac-hero-scroll-btn">
-                        Elige tu temporada <span className="jac-hero-scroll-arrow">↓</span>
+                    <a href="#jtb-step-1" className="jac-hero-scroll-btn">
+                        Empieza a diseñar tu viaje <span className="jac-hero-scroll-arrow">↓</span>
                     </a>
                 </div>
             </section>
 
-            {/* ===== CÓMO FUNCIONA (PASO A PASO) ===== */}
-            <section className="jac-steps-section" id="pasos">
-                <div className="container">
-                    <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag">Japón a la Carta</span>
-                        <h2 className="section-title">
-                            Tu viaje en <span className="text-accent">3 sencillos pasos</span>
-                        </h2>
-                        <p className="section-subtitle">
-                            Diseñar el viaje de tus sueños a Japón es más fácil que nunca.
-                        </p>
-                    </div>
+            {/* ===== INTERACTIVE TRIP BUILDER ===== */}
+            <JaponTripBuilder />
 
-                    <div className="jac-steps-grid" data-animate="fade-up">
-                        <div className="jac-step-card">
-                            <div className="jac-step-num">1</div>
-                            <h3 className="jac-step-title">Elige tu Temporada</h3>
-                            <p className="jac-step-desc">
-                                Disfruta los cerezos en flor de Sakura 🌸, los festivales en Verano ☀️ o el follaje de Momiji 🍁.
-                            </p>
-                        </div>
-                        <div className="jac-step-arrow">→</div>
-                        <div className="jac-step-card">
-                            <div className="jac-step-num">2</div>
-                            <h3 className="jac-step-title">Elige tu Estilo</h3>
-                            <p className="jac-step-desc">
-                                Desde la libertad del viaje Libre 🗺️ hasta el acompañamiento premium y de lujo de Signature 👑.
-                            </p>
-                        </div>
-                        <div className="jac-step-arrow">→</div>
-                        <div className="jac-step-card">
-                            <div className="jac-step-num">3</div>
-                            <h3 className="jac-step-title">Arma tu Experiencia</h3>
-                            <p className="jac-step-desc">
-                                Complementa con traslados, días asistidos locales y actividades tradicionales de nuestro catálogo.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== TEMPORADAS ===== */}
-            <section className="jac-seasons" id="temporadas">
-                <div className="container">
-                    <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag">Elige tu Temporada</span>
-                        <h2 className="section-title">
-                            Cada estación tiene su <span className="text-accent">magia</span>
-                        </h2>
-                        <p className="section-subtitle">
-                            Japón se transforma con cada temporada. Elige la que más te llame y vive una experiencia única.
-                        </p>
-                    </div>
-
-                    <div className="jac-seasons-grid" data-animate="fade-up">
-                        {TEMPORADA_ORDER.map((key, i) => {
-                            const season = TEMPORADAS[key]
-                            return (
-                                <Link
-                                    to={`/viajes/japon/${key}`}
-                                    className="jac-season-card"
-                                    key={key}
-                                    style={{
-                                        '--season-primary': season.colors.primary,
-                                        '--season-secondary': season.colors.secondary,
-                                        '--season-bg': season.colors.bg,
-                                    }}
-                                    data-animate="fade-up"
-                                    data-delay={String(i * 150)}
-                                >
-                                    <div className="jac-season-card-img">
-                                        <img src={season.cardImage} alt={season.name} loading="lazy" />
-                                        <div className="jac-season-card-img-overlay" />
-                                        <div className="jac-season-card-emoji">{season.emoji}</div>
-                                    </div>
-                                    <div className="jac-season-card-body">
-                                        <span className="jac-season-card-months">{season.months}</span>
-                                        <h3 className="jac-season-card-name">{season.name}</h3>
-                                        <p className="jac-season-card-desc">{season.description}</p>
-                                        <ul className="jac-season-card-highlights">
-                                            {season.highlights.map((h, j) => (
-                                                <li key={j}>{h}</li>
-                                            ))}
-                                        </ul>
-                                        <span className="jac-season-card-cta">
-                                            Explorar {season.name} <span>→</span>
-                                        </span>
-                                    </div>
-                                </Link>
-                            )
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== 4 ESTILOS DE VIAJE (Preview) ===== */}
-            <section className="jac-styles-preview">
-                <div className="container">
-                    <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag">Tu Forma de Viajar</span>
-                        <h2 className="section-title">
-                            <span className="text-accent">4 experiencias</span>, un mismo destino
-                        </h2>
-                        <p className="section-subtitle">
-                            Desde viajes flexibles a tu ritmo hasta la experiencia premium Signature. Tú decides cómo vivir Japón.
-                        </p>
-                    </div>
-
-                    <div className="jac-styles-grid" data-animate="fade-up">
-                        {EXPERIENCIA_ORDER.map((key, i) => {
-                            const exp = EXPERIENCIAS[key]
-                            return (
-                                <div
-                                    className={`jac-style-card${exp.isSignature ? ' jac-style-card--signature' : ''}`}
-                                    key={key}
-                                    data-animate="fade-up"
-                                    data-delay={String(i * 120)}
-                                >
-                                    <div className="jac-style-card-icon">{exp.icon}</div>
-                                    <h3 className="jac-style-card-name">{exp.name}</h3>
-                                    <p className="jac-style-card-tagline">{exp.tagline}</p>
-                                    <ul className="jac-style-card-features">
-                                        {exp.includes.slice(0, 5).map((item, j) => (
-                                            <li key={j}>
-                                                <span className="jac-style-check">✓</span>
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== HIGHLIGHTS STRIP ===== */}
-            <section className="jac-highlights-strip" data-animate="fade-up">
-                <div className="container">
-                    <div className="jac-highlights-row">
-                        {HIGHLIGHTS_STRIP.map((h, i) => (
-                            <div className="jac-highlight-item" key={i}>
-                                <span className="jac-highlight-icon">{h.icon}</span>
-                                <span className="jac-highlight-text">{h.text}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== CTA ===== */}
+            {/* ===== FINAL CTA ===== */}
             <section className="jac-cta">
                 <div className="container" style={{ textAlign: 'center' }}>
                     <div className="jac-cta-torii">⛩️</div>
