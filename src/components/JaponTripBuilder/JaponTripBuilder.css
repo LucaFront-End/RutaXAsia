@@ -2,11 +2,18 @@
    JAPÓN TRIP BUILDER — Interactive Multi-Step Selector
    ======================================================== */
 
-/* ---- Progress Stepper (Inline, no sticky) ---- */
+/* ---- Progress Stepper (Sticky below navbar) ---- */
 .jtb-stepper {
-    padding: 32px 24px 0;
+    position: sticky;
+    top: 90px;
+    z-index: 900;
+    padding: 16px 24px;
     display: flex;
     justify-content: center;
+    background: rgba(250, 249, 246, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: box-shadow 0.4s ease;
 }
 
 .jtb-stepper-inner {
@@ -1028,6 +1035,10 @@
     }
     .jtb-pass-fields {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .jtb-stepper {
+        top: 65px;
+        padding: 10px 12px;
     }
     .jtb-stepper-label,
     .jtb-stepper-badge {
