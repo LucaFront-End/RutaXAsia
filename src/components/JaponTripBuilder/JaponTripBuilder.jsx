@@ -51,6 +51,35 @@ export default function JaponTripBuilder() {
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
 
+    // Re-observe [data-animate] elements when step changes (fixes opacity: 0 on dynamic content)
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const delay = parseInt(entry.target.dataset.delay || '0', 10)
+                        setTimeout(() => entry.target.classList.add('animated'), delay)
+                        observer.unobserve(entry.target)
+                    }
+                })
+            },
+            { threshold: 0.1 }
+        )
+
+        const timer = setTimeout(() => {
+            const wrapper = builderRef.current
+            if (!wrapper) return
+            wrapper.querySelectorAll('[data-animate]:not(.animated)').forEach((el) => {
+                observer.observe(el)
+            })
+        }, 150)
+
+        return () => {
+            clearTimeout(timer)
+            observer.disconnect()
+        }
+    }, [step])
+
     // Smooth scroll to a ref after a short delay for DOM to render
     const scrollToRef = useCallback((ref) => {
         setTimeout(() => {
