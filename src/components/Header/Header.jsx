@@ -124,19 +124,61 @@ function Header() {
                                 <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </button>
-                        <div className="nav-dropdown-panel" style={{ minWidth: '240px' }}>
-                            <Link to="/viajes/japon" className="nav-dropdown-item" onClick={closeMenu}>
-                                🇯🇵 Ver Todo Japón (Inicio)
+                        <div className="nav-dropdown-panel nav-jac-panel">
+                            <Link to="/viajes/japon" className="nav-dropdown-item nav-jac-main" onClick={closeMenu}>
+                                <span className="nav-jac-main-icon">⛩️</span>
+                                <div>
+                                    <span className="nav-dropdown-title">Diseña Tu Viaje</span>
+                                    <span className="nav-dropdown-sub">Paso a paso con el Trip Builder</span>
+                                </div>
                             </Link>
-                            <Link to="/viajes/japon/sakura" className="nav-dropdown-item" onClick={closeMenu}>
-                                🌸 Sakura (Primavera)
-                            </Link>
-                            <Link to="/viajes/japon/verano" className="nav-dropdown-item" onClick={closeMenu}>
-                                ☀️ Verano en Japón
-                            </Link>
-                            <Link to="/viajes/japon/momiji" className="nav-dropdown-item" onClick={closeMenu}>
-                                🍁 Momiji (Otoño)
-                            </Link>
+
+                            <div className="nav-jac-divider" />
+
+                            {/* Sakura */}
+                            <div className="nav-jac-season-group">
+                                <Link to="/viajes/japon/sakura" className="nav-jac-season-header" onClick={closeMenu}>
+                                    <span className="nav-jac-season-emoji">🌸</span>
+                                    <span className="nav-jac-season-name">Sakura</span>
+                                    <span className="nav-jac-season-dates">Mar — Abr</span>
+                                </Link>
+                                <div className="nav-jac-exp-row">
+                                    <Link to="/viajes/japon/sakura/libre" onClick={closeMenu}>🌿 Libre</Link>
+                                    <Link to="/viajes/japon/sakura/guiado" onClick={closeMenu}>⛩️ Guiado</Link>
+                                    <Link to="/viajes/japon/sakura/acompanado" onClick={closeMenu}>🏯 Acompañado</Link>
+                                    <Link to="/viajes/japon/sakura/signature" onClick={closeMenu}>👑 Signature</Link>
+                                </div>
+                            </div>
+
+                            {/* Verano */}
+                            <div className="nav-jac-season-group">
+                                <Link to="/viajes/japon/verano" className="nav-jac-season-header" onClick={closeMenu}>
+                                    <span className="nav-jac-season-emoji">☀️</span>
+                                    <span className="nav-jac-season-name">Verano</span>
+                                    <span className="nav-jac-season-dates">Jun — Ago</span>
+                                </Link>
+                                <div className="nav-jac-exp-row">
+                                    <Link to="/viajes/japon/verano/libre" onClick={closeMenu}>🌿 Libre</Link>
+                                    <Link to="/viajes/japon/verano/guiado" onClick={closeMenu}>⛩️ Guiado</Link>
+                                    <Link to="/viajes/japon/verano/acompanado" onClick={closeMenu}>🏯 Acompañado</Link>
+                                    <Link to="/viajes/japon/verano/signature" onClick={closeMenu}>👑 Signature</Link>
+                                </div>
+                            </div>
+
+                            {/* Momiji */}
+                            <div className="nav-jac-season-group">
+                                <Link to="/viajes/japon/momiji" className="nav-jac-season-header" onClick={closeMenu}>
+                                    <span className="nav-jac-season-emoji">🍁</span>
+                                    <span className="nav-jac-season-name">Momiji</span>
+                                    <span className="nav-jac-season-dates">Oct — Nov</span>
+                                </Link>
+                                <div className="nav-jac-exp-row">
+                                    <Link to="/viajes/japon/momiji/libre" onClick={closeMenu}>🌿 Libre</Link>
+                                    <Link to="/viajes/japon/momiji/guiado" onClick={closeMenu}>⛩️ Guiado</Link>
+                                    <Link to="/viajes/japon/momiji/acompanado" onClick={closeMenu}>🏯 Acompañado</Link>
+                                    <Link to="/viajes/japon/momiji/signature" onClick={closeMenu}>👑 Signature</Link>
+                                </div>
+                            </div>
                         </div>
                     </li>
                     <li><Link to="/viajes" onClick={closeMenu}>Destinos</Link></li>

@@ -1,6 +1,8 @@
 import {
     ITINERARIO_ACOMPANADO,
+    ITINERARIO_ACOMPANADO_MOMIJI,
     ACOMPANADO_TODO_INCLUIDO,
+    ACOMPANADO_TODO_INCLUIDO_MOMIJI,
     ACOMPANADO_UPSELL,
     EXP_HEROES,
     WHATSAPP_BASE,
@@ -15,13 +17,15 @@ import './StepStyles.css'
 export default function StepAcompanado({ season }) {
     const hero = EXP_HEROES.acompanado
     const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Acompañado`
+    const itinerario = season.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : ITINERARIO_ACOMPANADO
+    const todoIncluido = season.key === 'momiji' ? ACOMPANADO_TODO_INCLUIDO_MOMIJI : ACOMPANADO_TODO_INCLUIDO
 
     return (
         <>
             {/* Hero */}
             <div className="step3-hero">
                 <div className="step3-hero-bg">
-                    <img src={hero.heroImg} alt={`${season.name} Acompañado`} />
+                    <img src={season.heroImage} alt={`${season.name} Acompañado`} />
                 </div>
                 <div className="step3-hero-content container">
                     <div className="step3-hero-badge">
@@ -33,35 +37,41 @@ export default function StepAcompanado({ season }) {
                 </div>
             </div>
 
-            {/* Todo Incluido */}
+            {/* Todo Incluido Checklist Board */}
             <section className="step3-section" style={{ background: season.colors.bg }}>
                 <div className="container">
-                    <div className="step3-section-title">✅ Todo Incluido</div>
-                    <div className="acomp-todo-grid">
-                        {ACOMPANADO_TODO_INCLUIDO.map((item, i) => (
-                            <div className="acomp-todo-item" key={i}>
-                                <span className="acomp-todo-icon">{item.icon}</span>
-                                <span>{item.item}</span>
+                    <div className="step3-section-title">✅ Todo Incluido — Tu Pase de Abordar Todo en Uno</div>
+                    <div className="acomp-todo-checklist-board">
+                        {todoIncluido.map((item, i) => (
+                            <div className="acomp-todo-checklist-item" key={i}>
+                                <div className="acomp-todo-chk-box">
+                                    <span className="acomp-todo-chk-check">✓</span>
+                                </div>
+                                <span className="acomp-todo-chk-icon">{item.icon}</span>
+                                <span className="acomp-todo-chk-text">{item.item}</span>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Timeline */}
+            {/* Timeline Shinkansen Rail JR Line */}
             <section className="step3-section">
                 <div className="container">
-                    <div className="step3-section-title">📅 Itinerario Día por Día</div>
-                    <div className="acomp-timeline">
-                        {ITINERARIO_ACOMPANADO.map((item) => (
-                            <div className="acomp-timeline-item" key={item.day}>
-                                <div className="acomp-timeline-dot">{item.day}</div>
-                                <div className="acomp-timeline-content">
-                                    <div className="acomp-timeline-title">
-                                        <span className="acomp-timeline-icon">{item.icon}</span>
-                                        Día {item.day}: {item.title}
+                    <div className="step3-section-title">🚄 Ruta JR Line — Itinerario Completo Día a Día</div>
+                    <div className="acomp-shinkansen-timeline">
+                        <div className="acomp-railway-track" style={{ '--rail-color': season.colors.primary }} />
+                        {itinerario.map((item) => (
+                            <div className="acomp-station-item" key={item.day}>
+                                <div className="acomp-station-marker" style={{ backgroundColor: season.colors.primary }}>
+                                    <span className="acomp-station-number">{item.day}</span>
+                                </div>
+                                <div className="acomp-station-card">
+                                    <div className="acomp-station-header">
+                                        <span className="acomp-station-icon">{item.icon}</span>
+                                        <h4 className="acomp-station-title">Día {item.day}: {item.title}</h4>
                                     </div>
-                                    <div className="acomp-timeline-desc">{item.desc}</div>
+                                    <p className="acomp-station-desc">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -69,32 +79,54 @@ export default function StepAcompanado({ season }) {
                 </div>
             </section>
 
-            {/* Why */}
-            <section className="step3-section" style={{ background: '#faf9f7' }}>
+            {/* Why Choose Us */}
+            <section className="step3-section" style={{ background: '#faf9f6' }}>
                 <div className="container">
-                    <div className="step3-section-title">💡 ¿Por qué elegir esta experiencia?</div>
-                    <div className="acomp-why-grid">
-                        <div className="acomp-why-card">
-                            <div className="acomp-why-icon">🎯</div>
-                            <h4 className="acomp-why-title">Sin planeación</h4>
-                            <p className="acomp-why-desc">Todo está organizado para ti. Solo disfruta.</p>
+                    <div className="step3-section-title">💡 ¿Por qué viajar en esta modalidad?</div>
+                    <div className="acomp-why-magazine-grid">
+                        <div className="acomp-why-card-large">
+                            <span className="acomp-why-badge">Atención 24/7</span>
+                            <div className="acomp-why-large-icon">😌</div>
+                            <h4>Acompañamiento Constante</h4>
+                            <p>Un coordinador experto de RutaXAsia estará a tu lado durante todo el recorrido en Japón. Olvídate de la barrera del idioma, de ubicar andenes de trenes bala o de perderte en las estaciones gigantescas. Estás en manos de profesionales.</p>
                         </div>
-                        <div className="acomp-why-card">
-                            <div className="acomp-why-icon">😌</div>
-                            <h4 className="acomp-why-title">Sin estrés</h4>
-                            <p className="acomp-why-desc">Un coordinador te acompaña 24/7 durante todo el viaje.</p>
+                        <div className="acomp-why-card-small">
+                            <div className="acomp-why-small-icon">🎯</div>
+                            <h4>Cero Planificación</h4>
+                            <p>Tours, reservaciones, trenes bala, accesos especiales. Todo ha sido calendarizado meticulosamente.</p>
                         </div>
-                        <div className="acomp-why-card">
-                            <div className="acomp-why-icon">🤝</div>
-                            <h4 className="acomp-why-title">Grupo reducido</h4>
-                            <p className="acomp-why-desc">Viaja en un grupo pequeño con atención personalizada.</p>
+                        <div className="acomp-why-card-small">
+                            <div className="acomp-why-small-icon">👥</div>
+                            <h4>Grupos Pequeños</h4>
+                            <p>Limitamos el cupo de participantes para asegurar traslados rápidos, ágiles y con trato personalizado.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Testimonial / Acompañantes Spotlights */}
+            <section className="step3-section" style={{ background: '#fff' }}>
+                <div className="container">
+                    <div className="step3-section-title">👥 Tus Coordinadores de Viaje</div>
+                    <div className="acomp-coordinators-spotlight">
+                        <div className="acomp-coord-card">
+                            <div className="acomp-coord-badge">🎌 Guía Experto</div>
+                            <h3>Juan Santiago</h3>
+                            <span className="acomp-coord-title">Especialista en Cultura y Logística</span>
+                            <p>"Japón tiene una de las culturas más bellas del mundo, pero su logística puede ser abrumadora. Mi trabajo es hacer que cada traslado en tren bala y cada visita a un templo sagrado sea suave, mágico y lleno de anécdotas locales."</p>
+                        </div>
+                        <div className="acomp-coord-card">
+                            <div className="acomp-coord-badge">✨ Experiencia Local</div>
+                            <h3>Alejandra Torres</h3>
+                            <span className="acomp-coord-title">Especialista en Gastronomía y Compras</span>
+                            <p>"Japón a la Carta es para disfrutar sin prisas. Te acompañaré a descubrir los rincones de comida callejera más deliciosos de Osaka, los callejones escondidos de Tokio y las mejores tiendas tradicionales."</p>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Upsell */}
-            <section className="step3-section">
+            <section className="step3-section" style={{ background: '#faf9f6' }}>
                 <div className="container">
                     <div className="step3-section-title">✨ Experiencias opcionales premium</div>
                     <div className="jtb-extras-grid">

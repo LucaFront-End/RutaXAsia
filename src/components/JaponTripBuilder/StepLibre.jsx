@@ -39,15 +39,18 @@ export default function StepLibre({ season, temporadaKey }) {
 
     const formatPrice = (n) => `$${n.toLocaleString('es-MX')}`
 
+    const passNames = ['Pase Express', 'Pase Clásico', 'Pase Explorador', 'Pase Gran Tour']
+    const passBadges = ['', 'Más Popular 🌟', '', 'Recomendado 🔥']
+
     // Build WhatsApp message
-    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Libre${selectedPkg ? ` (${selectedPkg.days})` : ''}${addedItems.length ? ` con: ${addedItems.map(e => e.name).join(', ')}` : ''}`
+    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Libre${selectedPkg ? ` con el ${passNames[selectedDuration]} (${selectedPkg.days})` : ''}${addedItems.length ? ` agregando: ${addedItems.map(e => e.name).join(', ')}` : ''}`
 
     return (
         <>
             {/* Hero */}
             <div className="step3-hero">
                 <div className="step3-hero-bg">
-                    <img src={hero.heroImg} alt={`${season.name} Libre`} />
+                    <img src={season.heroImage} alt={`${season.name} Libre`} />
                 </div>
                 <div className="step3-hero-content container">
                     <div className="step3-hero-badge">
@@ -65,11 +68,11 @@ export default function StepLibre({ season, temporadaKey }) {
                     <div className="step3-section-title">✅ ¿Qué incluye tu viaje?</div>
                     <div className="jtb-pass-includes-grid">
                         {[
-                            { icon: '🏨', title: 'Hospedaje y Desayuno', desc: 'Habitaciones dobles en APA hoteles de 3 y 4 estrellas con desayuno buffet.' },
-                            { icon: '🚄', title: 'Transporte Base', desc: 'Tren bala, IC card y traslado hotel-aeropuerto incluidos.' },
-                            { icon: '🗺️', title: 'Asesoría Personalizada', desc: 'Organiza tu itinerario con ayuda de nuestros expertos y guía digital completa.' },
-                            { icon: '📶', title: 'Wi-Fi Ilimitado', desc: 'eSIM de Hola Fly incluida para todo tu viaje.' },
-                            { icon: '🎁', title: 'Asistencia Remota', desc: 'Asesoría y asistencia remota antes y durante tu viaje.' },
+                            { icon: '🏨', title: 'Hospedaje y Desayuno', desc: 'Habitaciones dobles en APA hoteles de 3 y 4 estrellas con desayuno buffet de cortesía.' },
+                            { icon: '🚄', title: 'Transporte Base', desc: 'Tren bala Shinkansen, tarjetas IC pre-cargadas y traslados de llegada y salida.' },
+                            { icon: '🗺️', title: 'Asesoría de Expertos', desc: 'Organización integral y una guía digital personalizada de navegación.' },
+                            { icon: '📶', title: 'Wi-Fi de Alta Velocidad', desc: 'Tarjeta eSIM con datos móviles ilimitados para mantenerte conectado.' },
+                            { icon: '🎁', title: 'Soporte y Respaldo', desc: 'Asistencia y soporte remoto permanente en español durante tu estancia.' },
                         ].map((item, i) => (
                             <div className="jtb-pass-include-item" key={i}>
                                 <span className="jtb-pass-include-icon">{item.icon}</span>
@@ -91,8 +94,8 @@ export default function StepLibre({ season, temporadaKey }) {
                         <div>
                             {/* Duration Selector */}
                             {packages.length > 0 && (
-                                <div style={{ marginBottom: 50 }}>
-                                    <div className="step3-section-title">🎋 Elige la duración de tu experiencia</div>
+                                <div style={{ marginBottom: 60 }}>
+                                    <div className="step3-section-title">🎋 Elige tu Pase de Viaje</div>
                                     <div className="libre-duration-grid">
                                         {packages.map((pkg, i) => (
                                             <div
@@ -100,7 +103,11 @@ export default function StepLibre({ season, temporadaKey }) {
                                                 className={`libre-duration-card${selectedDuration === i ? ' libre-duration-card--selected' : ''}`}
                                                 onClick={() => setSelectedDuration(i)}
                                             >
+                                                {passBadges[i] && (
+                                                    <span className="libre-duration-card-badge">{passBadges[i]}</span>
+                                                )}
                                                 <div className="libre-duration-check">✓</div>
+                                                <span className="libre-duration-pass-name">{passNames[i]}</span>
                                                 <div className="libre-duration-days">{pkg.days.split(' ')[0]} días</div>
                                                 <div className="libre-duration-nights">{pkg.days.split(' ').slice(1).join(' ')}</div>
                                                 <div className="libre-duration-price">{pkg.price}</div>
@@ -112,8 +119,8 @@ export default function StepLibre({ season, temporadaKey }) {
                             )}
 
                             {/* Experiences Grid */}
-                            <div style={{ marginBottom: 50 }}>
-                                <div className="step3-section-title">🌸 Experiencias Disponibles — Agrega a tu viaje</div>
+                            <div style={{ marginBottom: 60 }}>
+                                <div className="step3-section-title">🌸 Experiencias recomendadas para {season.name}</div>
                                 <div className="libre-exp-grid">
                                     {EXPERIENCIAS_DISPONIBLES.map(exp => {
                                         const added = addedExperiences.includes(exp.id)
@@ -142,7 +149,7 @@ export default function StepLibre({ season, temporadaKey }) {
 
                             {/* Complementos */}
                             <div>
-                                <div className="step3-section-title">✨ Complementa tu experiencia</div>
+                                <div className="step3-section-title">✨ Completa tu experiencia</div>
                                 <div className="jtb-extras-grid">
                                     {COMPLEMENTOS.map((item, i) => (
                                         <div className="jtb-extra-card" key={i}>
@@ -155,51 +162,79 @@ export default function StepLibre({ season, temporadaKey }) {
                             </div>
                         </div>
 
-                        {/* Right column: Calculator */}
+                        {/* Right column: Calculator Ticket */}
                         <div className="libre-calculator">
-                            <div className="libre-calc-title">🧮 Calcula tu viaje</div>
-
-                            {selectedPkg ? (
-                                <div className="libre-calc-line">
-                                    <span className="libre-calc-line-name">Base ({selectedPkg.days})</span>
-                                    <span className="libre-calc-line-price">{formatPrice(basePrice)}</span>
-                                </div>
-                            ) : (
-                                <div className="libre-calc-line">
-                                    <span className="libre-calc-line-name" style={{ fontStyle: 'italic', opacity: 0.5 }}>Selecciona una duración ↑</span>
-                                    <span className="libre-calc-line-price">—</span>
-                                </div>
-                            )}
-
-                            {addedItems.map(exp => (
-                                <div className="libre-calc-line" key={exp.id}>
-                                    <span className="libre-calc-line-name">{exp.name}</span>
-                                    <span className="libre-calc-line-price">{formatPrice(exp.price)}</span>
-                                </div>
-                            ))}
-
-                            <div className="libre-calc-total">
-                                <span className="libre-calc-total-label">Total estimado</span>
-                                <div>
-                                    <span className="libre-calc-total-price">
-                                        {totalPrice > 0 ? formatPrice(totalPrice) : '—'}
-                                    </span>
-                                    {totalPrice > 0 && <span className="libre-calc-total-currency">MXN</span>}
+                            <div className="libre-calc-ticket-top">
+                                <div className="libre-calc-title">🎫 Pase de Abordar</div>
+                                <div className="libre-calc-ticket-status">
+                                    {selectedPkg ? 'CONFIGURADO' : 'INCOMPLETO'}
                                 </div>
                             </div>
 
-                            <p className="libre-calc-note">
-                                Precios por persona en base a ocupación doble. Los precios pueden variar según fechas y disponibilidad.
-                            </p>
+                            <div className="libre-calc-ticket-divider">
+                                <div className="libre-calc-notch libre-calc-notch--left" />
+                                <div className="libre-calc-dashed-line" />
+                                <div className="libre-calc-notch libre-calc-notch--right" />
+                            </div>
 
-                            <a
-                                href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
-                                className="libre-calc-cta"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                💬 Cotiza tu Viaje Libre
-                            </a>
+                            <div className="libre-calc-ticket-body">
+                                {selectedPkg ? (
+                                    <div className="libre-calc-line">
+                                        <span className="libre-calc-line-name">{passNames[selectedDuration]} ({selectedPkg.days.split(' ')[0]} días)</span>
+                                        <span className="libre-calc-line-price">{formatPrice(basePrice)}</span>
+                                    </div>
+                                ) : (
+                                    <div className="libre-calc-line">
+                                        <span className="libre-calc-line-name" style={{ fontStyle: 'italic', opacity: 0.5 }}>Selecciona una duración ↑</span>
+                                        <span className="libre-calc-line-price">—</span>
+                                    </div>
+                                )}
+
+                                {addedItems.map(exp => (
+                                    <div className="libre-calc-line animate-slide-in" key={exp.id}>
+                                        <span className="libre-calc-line-name">➕ {exp.name}</span>
+                                        <span className="libre-calc-line-price">{formatPrice(exp.price)}</span>
+                                    </div>
+                                ))}
+
+                                <div className="libre-calc-total">
+                                    <span className="libre-calc-total-label">Total estimado</span>
+                                    <div>
+                                        <span className="libre-calc-total-price">
+                                            {totalPrice > 0 ? formatPrice(totalPrice) : '—'}
+                                        </span>
+                                        {totalPrice > 0 && <span className="libre-calc-total-currency">MXN</span>}
+                                    </div>
+                                </div>
+
+                                <p className="libre-calc-note">
+                                    Tarifas por persona en base a habitación doble. Impuestos incluidos. El precio total de las experiencias adicionales se integra al presupuesto final.
+                                </p>
+
+                                <div className="libre-calc-barcode-wrapper">
+                                    <div className="libre-calc-barcode">
+                                        <div className="bar-line bar-line--w3" />
+                                        <div className="bar-line bar-line--w1" />
+                                        <div className="bar-line bar-line--w2" />
+                                        <div className="bar-line bar-line--w1" />
+                                        <div className="bar-line bar-line--w4" />
+                                        <div className="bar-line bar-line--w1" />
+                                        <div className="bar-line bar-line--w2" />
+                                        <div className="bar-line bar-line--w3" />
+                                        <div className="bar-line bar-line--w1" />
+                                    </div>
+                                    <span className="libre-calc-barcode-num">JAC-{temporadaKey.toUpperCase()}-LIBRE</span>
+                                </div>
+
+                                <a
+                                    href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
+                                    className="libre-calc-cta"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    💬 Cotizar mi Viaje Libre
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

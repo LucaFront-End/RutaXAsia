@@ -256,13 +256,31 @@ export const PRECIOS = {
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
     sakura: {
-        libre: { startingPrice: 'Cotizar', packages: [] },
+        libre: {
+            packages: [
+                { days: '8 días 6 noches', price: '$24,790', priceNum: 24790 },
+                { days: '10 días 8 noches', price: '$31,490', priceNum: 31490 },
+                { days: '12 días 10 noches', price: '$37,790', priceNum: 37790 },
+                { days: '14 días 12 noches', price: '$41,490', priceNum: 41490 },
+            ],
+            note: 'Precios por persona en base a ocupación doble durante temporada alta de Sakura. Todos los impuestos incluidos.',
+            startingPrice: '$24,790',
+        },
         guiado: { startingPrice: 'Cotizar', packages: [] },
         acompanado: { startingPrice: 'Cotizar', packages: [] },
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
     momiji: {
-        libre: { startingPrice: 'Cotizar', packages: [] },
+        libre: {
+            packages: [
+                { days: '8 días 6 noches', price: '$22,490', priceNum: 22490 },
+                { days: '10 días 8 noches', price: '$29,190', priceNum: 29190 },
+                { days: '12 días 10 noches', price: '$35,490', priceNum: 35490 },
+                { days: '14 días 12 noches', price: '$39,190', priceNum: 39190 },
+            ],
+            note: 'Precios por persona en base a ocupación doble durante temporada de otoño Momiji. Todos los impuestos incluidos.',
+            startingPrice: '$22,490',
+        },
         guiado: { startingPrice: 'Cotizar', packages: [] },
         acompanado: { startingPrice: 'Cotizar', packages: [] },
         signature: { startingPrice: 'Cotizar', packages: [] },
@@ -370,37 +388,72 @@ export const GUIADO_ASISTENCIA = [
 
 /* ==========================================
    ACOMPAÑADO — Itinerario Día por Día
+   Verano: Based on "VERANO JAPÓN 2026" PDF
    ========================================== */
 export const ITINERARIO_ACOMPANADO = [
-    { day: 1, title: 'Salida desde México', desc: 'Vuelo internacional desde CDMX hacia Japón.', icon: '✈️' },
-    { day: 2, title: 'Llegada a Osaka', desc: 'Bienvenida, traslado al hotel y tiempo libre para explorar.', icon: '🛬' },
-    { day: 3, title: 'Castillo de Osaka & Dotonbori', desc: 'Visita al Castillo de Osaka, paseo por Dotonbori y street food.', icon: '🏯' },
-    { day: 4, title: 'Universal Studios Japan', desc: 'Día completo en Universal Studios con Nintendo World.', icon: '🎢' },
-    { day: 5, title: 'Nara & Templo Todaiji', desc: 'Parque de ciervos, Gran Buda y santuarios milenarios.', icon: '🦌' },
-    { day: 6, title: 'Kioto: Templos & Geishas', desc: 'Fushimi Inari, Kinkaku-ji, barrio de Gion.', icon: '⛩️' },
-    { day: 7, title: 'Kioto: Arashiyama', desc: 'Bambú de Arashiyama, templo Tenryu-ji y paseo en bote.', icon: '🎋' },
-    { day: 8, title: 'Traslado a Tokio (Tren Bala)', desc: 'Viaje en Shinkansen a Tokio. Tarde libre en Shibuya.', icon: '🚄' },
-    { day: 9, title: 'Monte Fuji & Hakone', desc: 'Excursión al Monte Fuji, lago Ashi y teleférico en Hakone.', icon: '🗻' },
-    { day: 10, title: 'Tokio: Asakusa & Akihabara', desc: 'Templo Senso-ji, Nakamise-dori y cultura otaku.', icon: '🏙️' },
-    { day: 11, title: 'Disneyland o Disney Sea', desc: 'Día mágico en Tokyo Disneyland o DisneySea.', icon: '🏰' },
-    { day: 12, title: 'Kamakura & Gran Buda', desc: 'Gran Buda de Kamakura, templo Hasedera y playa.', icon: '🙏' },
-    { day: 13, title: 'Día libre en Tokio', desc: 'Compras, exploración libre o actividades opcionales.', icon: '🗼' },
-    { day: 14, title: 'Regreso a México', desc: 'Traslado al aeropuerto y vuelo de regreso.', icon: '🛫' },
+    { day: 1, title: 'Salida y vuelo a Japón', desc: 'Vuelo internacional desde CDMX hacia Japón.', icon: '✈️' },
+    { day: 2, title: 'Llegada a Shin Osaka', desc: 'Llegada al aeropuerto de Narita, trámites y tren bala hacia Shin Osaka. Resto de la tarde libre.', icon: '🛬' },
+    { day: 3, title: 'Parque y Castillo de Osaka', desc: 'Visita al Castillo de Osaka, una de las joyas de Japón. Por la tarde, el fabuloso barrio de Dotonbori con sus luminosas calles y restaurantes.', icon: '🏯' },
+    { day: 4, title: 'Universal Studios Japan', desc: 'Día completo de diversión en Universal Studios Japan, Nintendo World, Mario Bros y Harry Potter.', icon: '🎢' },
+    { day: 5, title: 'Parque Nacional de Nara', desc: 'Recorrido al Parque Nacional de Nara, visitando el majestuoso Templo Todaiji. Convivir con los ciervos al aire libre será parte de la experiencia.', icon: '🦌' },
+    { day: 6, title: 'Fushimi Inari y Kioto', desc: 'Exploramos Kioto visitando el Santuario de Inari, recorremos el barrio de Higashiyama hasta llegar al majestuoso templo de Kiyomizudera al atardecer.', icon: '⛩️' },
+    { day: 7, title: 'Traslado a Tokio — Shinjuku', desc: 'Tren bala a Tokio. Al llegar, visitamos Shinjuku, uno de los barrios más icónicos de la ciudad.', icon: '🚄' },
+    { day: 8, title: 'Kamakura', desc: 'Viajamos a la costa de Kamakura para visitar el templo con un Buda sentado al aire libre de más de 13 metros. Tiempo para explorar sus calles, tiendas y restaurantes.', icon: '🙏' },
+    { day: 9, title: 'Tokio: Palacio Imperial, Ginza y Shibuya', desc: 'Recorrido a la zona contemporánea de Tokio: Estación Central, Jardines del Palacio Imperial, barrio de la moda Ginza, estatua de Hachiko y el gran cruce de Shibuya.', icon: '🏙️' },
+    { day: 10, title: 'Asakusa, Sky Tree y Akihabara', desc: 'Caminamos junto al Río Sumida hasta el antiguo barrio de Asakusa y el templo Senso-ji. Después al Sky Tree y Akihabara, ideal para las compras.', icon: '🗼' },
+    { day: 11, title: 'Disneyland Tokio', desc: 'Día completo en Tokyo Disneyland, uno de los parques más famosos del mundo.', icon: '🏰' },
+    { day: 12, title: 'Disney Sea Tokio', desc: 'Disney Sea Tokio, fabuloso por su estilo único a la orilla del mar. Un parque único en el mundo.', icon: '🎡' },
+    { day: 13, title: 'Día libre', desc: 'Diseña el día a tu gusto: compras, visitas opcionales o simplemente disfrutar Tokio a tu ritmo.', icon: '🗺️' },
+    { day: 14, title: 'Regreso a México', desc: 'Check out del hotel y traslado al aeropuerto de Narita. Vuelo de regreso a la Ciudad de México.', icon: '🛫' },
+]
+
+/* ==========================================
+   ACOMPAÑADO — Itinerario Momiji (Ruta Dorada)
+   Based on "OTOÑO EN JAPÓN 2026" PDF
+   12 días, 10 noches
+   ========================================== */
+export const ITINERARIO_ACOMPANADO_MOMIJI = [
+    { day: 1, title: 'Salida y vuelo a Japón', desc: 'Vuelo internacional desde CDMX hacia Japón.', icon: '✈️' },
+    { day: 2, title: 'Llegada a Shin Osaka', desc: 'Recepción en el aeropuerto, trámites necesarios y primer tren bala a Shin Osaka.', icon: '🛬' },
+    { day: 3, title: 'Osaka: Castillo y Dotonbori', desc: 'Visita al Parque y Castillo de Osaka, uno de los más representativos en la unificación de Japón. Por la tarde, el tradicional barrio de Dotonbori.', icon: '🏯' },
+    { day: 4, title: 'Nara', desc: 'Recorrido al Parque Nacional de Nara, visitando el majestuoso Templo Todaiji y su complejo. Convivir con los ciervos al aire libre será parte de la experiencia.', icon: '🦌' },
+    { day: 5, title: 'Kioto Clásico', desc: 'Recorrido por la capital cultural de Japón: mercado Nishiki, templo Kiyomizudera, barrio de Higashiyama y todos sus atractivos.', icon: '⛩️' },
+    { day: 6, title: 'Hiroshima y Miyajima', desc: 'Parque y Museo de la Paz de Hiroshima. Visita al Santuario de Miyajima con su Torii Flotante y el Monte Misen.', icon: '🕊️' },
+    { day: 7, title: 'Uji — Capital del Té Verde', desc: 'Visita a Uji, la capital del té verde japonés. Check out y resguardo de equipaje. Preparación para el traslado.', icon: '🍵' },
+    { day: 8, title: 'Traslado a Tokio — Shibuya y Shinjuku', desc: 'Tren bala a Tokio. Visitamos Shibuya y Shinjuku, barrios modernos llenos de actividades.', icon: '🚄' },
+    { day: 9, title: 'Tokio Clásico: Asakusa, Sky Tree y Akihabara', desc: 'Caminamos junto al río Sumida hacia Asakusa, Templo Senso-ji, Sky Tree y el barrio de la electrónica Akihabara.', icon: '🗼' },
+    { day: 10, title: 'Hakone, Monte Fuji y Lago Ashi', desc: 'Ruta por Hakone con el Free Pass: teleférico, Monte Fuji, Lago Ashi y los paisajes otoñales más espectaculares.', icon: '🗻' },
+    { day: 11, title: 'Día libre en Tokio', desc: 'Elige entre Disney, algún tour adicional, Monte Fuji extra o ir de últimas compras.', icon: '🗺️' },
+    { day: 12, title: 'Regreso a México', desc: 'Check out del hotel y traslado al aeropuerto. Vuelo de regreso a la Ciudad de México.', icon: '🛫' },
 ]
 
 export const ACOMPANADO_TODO_INCLUIDO = [
     { item: 'Vuelo redondo desde CDMX', icon: '✈️' },
-    { item: '12 noches de hospedaje', icon: '🏨' },
-    { item: 'Desayuno buffet diario', icon: '🍳' },
-    { item: 'Todos los tours del itinerario', icon: '🗺️' },
+    { item: '12 noches de hospedaje con desayuno buffet', icon: '🏨' },
+    { item: 'Todos los tours con entradas y transportación', icon: '🗺️' },
     { item: 'Universal Studios Japan', icon: '🎢' },
-    { item: 'Disneyland o Disney Sea', icon: '🏰' },
-    { item: 'JR Pass (tren bala)', icon: '🚄' },
-    { item: 'Seguro de viaje', icon: '🛡️' },
-    { item: 'Traslados aeropuerto-hotel', icon: '🚌' },
-    { item: 'Coordinador de viaje 24/7', icon: '👤' },
-    { item: 'eSIM Wi-Fi ilimitado', icon: '📶' },
-    { item: 'Guía digital completa', icon: '📱' },
+    { item: 'Disneyland Tokio', icon: '🏰' },
+    { item: 'Disney Sea Tokio', icon: '🎡' },
+    { item: 'JR Pass 7 días — Tren bala', icon: '🚄' },
+    { item: 'Guía y atención personalizada en español', icon: '🗣️' },
+    { item: 'Envío de equipaje (aplican condiciones)', icon: '🧳' },
+    { item: 'Seguro de viajero', icon: '🛡️' },
+    { item: 'Traslados aeropuerto — hotel — aeropuerto', icon: '🚌' },
+    { item: 'Todos los impuestos incluidos', icon: '📋' },
+]
+
+export const ACOMPANADO_TODO_INCLUIDO_MOMIJI = [
+    { item: 'Vuelo internacional redondo', icon: '✈️' },
+    { item: '10 noches de hospedaje con desayuno', icon: '🏨' },
+    { item: 'Todos los tours con entradas y transportación', icon: '🗺️' },
+    { item: 'Un parque Disney de tu elección (Disneyland o Disney Sea)', icon: '🏰' },
+    { item: 'JR Pass 7 días — Tren bala', icon: '🚄' },
+    { item: 'Free Pass Hakone', icon: '🗻' },
+    { item: 'Guía y atención personalizada en español', icon: '🗣️' },
+    { item: 'Envío de equipaje (aplican condiciones)', icon: '🧳' },
+    { item: 'Seguro de viajero', icon: '🛡️' },
+    { item: 'Traslados aeropuerto — hotel — aeropuerto', icon: '🚌' },
+    { item: 'Todos los impuestos incluidos', icon: '📋' },
 ]
 
 export const ACOMPANADO_UPSELL = [

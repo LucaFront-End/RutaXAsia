@@ -241,6 +241,90 @@
   font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.45);
 }
+/* ===== Japón a la Carta Mega Dropdown ===== */
+.nav-jac-panel {
+  min-width: 360px !important;
+}
+
+.nav-jac-main {
+  margin-bottom: 4px;
+}
+
+.nav-jac-main-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.nav-jac-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 8px;
+}
+
+.nav-jac-season-group {
+  padding: 4px 0;
+}
+
+.nav-jac-season-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.nav-jac-season-header:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-jac-season-emoji {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.nav-jac-season-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.nav-jac-season-dates {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-left: auto;
+  font-weight: 500;
+}
+
+.nav-jac-exp-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 2px 6px 6px;
+}
+
+.nav-jac-exp-row a {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  padding: 5px 6px;
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-jac-exp-row a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.nav-jac-exp-row a::after {
+  display: none;
+}
+
 /* Hamburger */
 .navbar-toggle {
   display: none;
@@ -349,7 +433,24 @@
   .nav-dropdown--open .nav-dropdown-panel {
     opacity: 1;
     visibility: visible;
-    max-height: 400px;
+    max-height: 600px;
     transform: none;
+  }
+
+  .nav-jac-panel {
+    min-width: auto !important;
+  }
+
+  .nav-jac-exp-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+
+  .nav-jac-season-header {
+    justify-content: center;
+  }
+
+  .nav-jac-season-dates {
+    margin-left: 0;
   }
 }
