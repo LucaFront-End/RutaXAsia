@@ -611,3 +611,1108 @@
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
 }
+
+/* ===================================================
+   JAPÓN À LA CARTE — All pages
+   =================================================== */
+
+/* ===== JAC HERO ===== */
+.jac-hero {
+    position: relative;
+    min-height: 65vh;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 0 4rem;
+    overflow: hidden;
+}
+
+.jac-hero--season,
+.jac-hero--exp {
+    min-height: 55vh;
+}
+
+.jac-hero-bg img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+}
+
+.jac-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.5) 40%, rgba(10,10,10,0.2) 100%);
+    z-index: 1;
+}
+
+.jac-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.jac-hero-tag {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    padding: 6px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 100px;
+}
+
+.jac-hero-torii {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+
+.jac-hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+    letter-spacing: -1px;
+}
+
+.jac-hero-title-accent {
+    display: block;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.3em;
+    margin-top: 0.25rem;
+}
+
+.jac-hero-season-badge {
+    display: inline-block;
+    padding: 8px 24px;
+    border-radius: 100px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.jac-hero-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.65);
+    max-width: 550px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.65;
+}
+
+.jac-hero-subtitle-large {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    margin: 0 auto;
+    line-height: 1.65;
+}
+
+.jac-hero-breadcrumb {
+    display: inline-block;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 0.3s;
+}
+
+.jac-hero-breadcrumb:hover {
+    color: #fff;
+}
+
+.jac-hero-scroll-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 10px 24px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 100px;
+    transition: all 0.3s;
+}
+
+.jac-hero-scroll-btn:hover {
+    color: #fff;
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.08);
+}
+
+.jac-hero-scroll-arrow {
+    animation: jac-bounce 2s ease-in-out infinite;
+}
+
+@keyframes jac-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+}
+
+/* ===== JAC SEASONS GRID ===== */
+.jac-seasons {
+    padding: 5rem 0;
+    background: #faf5f0;
+}
+
+.jac-seasons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.jac-season-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: transform 0.4s, box-shadow 0.4s;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+}
+
+.jac-season-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+}
+
+.jac-season-card-img {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+}
+
+.jac-season-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.jac-season-card:hover .jac-season-card-img img {
+    transform: scale(1.06);
+}
+
+.jac-season-card-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 60%);
+}
+
+.jac-season-card-emoji {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 2rem;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+}
+
+.jac-season-card-body {
+    padding: 1.75rem;
+}
+
+.jac-season-card-months {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--season-primary);
+    margin-bottom: 0.5rem;
+}
+
+.jac-season-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 0.75rem;
+}
+
+.jac-season-card-desc {
+    color: var(--color-gray-600);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+}
+
+.jac-season-card-highlights {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+}
+
+.jac-season-card-highlights li {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+    padding: 3px 0;
+}
+
+.jac-season-card-highlights li::before {
+    content: '✦ ';
+    color: var(--season-primary);
+    font-size: 0.7rem;
+}
+
+.jac-season-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--season-primary);
+    transition: gap 0.3s;
+}
+
+.jac-season-card:hover .jac-season-card-cta {
+    gap: 0.8rem;
+}
+
+/* ===== JAC STYLES PREVIEW (4 travel types) ===== */
+.jac-styles-preview {
+    padding: 5rem 0;
+    background: #fff;
+}
+
+.jac-styles-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+.jac-style-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.jac-style-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    border-color: rgba(0,0,0,0.15);
+}
+
+.jac-style-card--signature {
+    background: #1a1a1a;
+    border-color: #c9a84c;
+    position: relative;
+    overflow: hidden;
+}
+
+.jac-style-card--signature::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #c9a84c, #f0d78c, #c9a84c);
+}
+
+.jac-style-card--signature .jac-style-card-name,
+.jac-style-card--signature .jac-style-card-tagline {
+    color: #fff;
+}
+
+.jac-style-card--signature .jac-style-card-features li {
+    color: rgba(255,255,255,0.7);
+}
+
+.jac-style-card--signature .jac-style-check {
+    color: #c9a84c !important;
+}
+
+.jac-style-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.jac-style-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 0.5rem;
+}
+
+.jac-style-card-tagline {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+    line-height: 1.5;
+    margin: 0 0 1.25rem;
+}
+
+.jac-style-card-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.jac-style-card-features li {
+    font-size: 0.82rem;
+    color: var(--color-gray-600);
+    padding: 4px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.jac-style-check {
+    color: var(--color-primary);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* ===== JAC EXPERIENCE CARDS (Season page) ===== */
+.jac-experiences {
+    padding: 5rem 0;
+    background: #faf5f0;
+}
+
+.jac-exp-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.jac-exp-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    padding: 2rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s, box-shadow 0.4s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+}
+
+.jac-exp-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 50px rgba(0,0,0,0.1);
+}
+
+.jac-exp-card--signature {
+    background: #1a1a1a;
+    border-color: #c9a84c;
+    position: relative;
+}
+
+.jac-exp-card--signature::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+    background: linear-gradient(90deg, #c9a84c, #f0d78c, #c9a84c);
+}
+
+.jac-exp-card--signature .jac-exp-card-header .jac-exp-card-season-name {
+    color: #c9a84c !important;
+}
+
+.jac-exp-card--signature .jac-exp-card-name {
+    color: #fff;
+}
+
+.jac-exp-card--signature .jac-exp-card-tagline {
+    color: rgba(255,255,255,0.6);
+}
+
+.jac-exp-card--signature .jac-exp-card-features li {
+    color: rgba(255,255,255,0.7);
+}
+
+.jac-exp-card--signature .jac-exp-check {
+    color: #c9a84c !important;
+}
+
+.jac-exp-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.jac-exp-card-header {
+    margin-bottom: 0.75rem;
+}
+
+.jac-exp-card-season-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.jac-exp-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0.25rem 0 0;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+}
+
+.jac-exp-card-tagline {
+    font-size: 0.88rem;
+    color: var(--color-gray-600);
+    line-height: 1.55;
+    margin: 0 0 1.25rem;
+}
+
+.jac-exp-card-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 auto;
+    flex: 1;
+}
+
+.jac-exp-card-features li {
+    font-size: 0.82rem;
+    color: var(--color-gray-600);
+    padding: 5px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.4;
+}
+
+.jac-exp-check {
+    font-size: 0.5rem;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.jac-exp-card-cta-wrap {
+    margin-top: 1.5rem;
+}
+
+.jac-exp-card-cta {
+    display: block;
+    text-align: center;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.jac-exp-card:hover .jac-exp-card-cta {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* ===== JAC DESTINOS (Circular images grid) ===== */
+.jac-destinos {
+    padding: 4rem 0;
+}
+
+.jac-destinos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.jac-destino-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100px;
+}
+
+.jac-destino-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(0,0,0,0.06);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.jac-destino-item:hover .jac-destino-img {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.jac-destino-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+}
+
+.jac-destino-name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-gray-600);
+    text-align: center;
+    line-height: 1.3;
+}
+
+.jac-destinos-note {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 1.5rem;
+}
+
+/* ===== JAC FLEX & EXTENSIONS ===== */
+.jac-flex-ext {
+    padding: 4rem 0;
+    background: #fff;
+}
+
+.jac-flex-ext-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.jac-flex-box {
+    background: #faf5f0;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 16px;
+    padding: 1.75rem;
+}
+
+.jac-flex-box--pago {
+    background: #f0faf4;
+}
+
+.jac-flex-box-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+}
+
+.jac-flex-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.jac-flex-item:last-child {
+    border-bottom: none;
+}
+
+.jac-flex-item h4 {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin: 0 0 0.15rem;
+}
+
+.jac-flex-item p {
+    font-size: 0.82rem;
+    color: var(--color-gray-600);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.jac-ext-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.jac-pago-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin: 0 0 1rem;
+}
+
+.jac-pago-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.jac-pago-list li {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+    padding: 4px 0;
+    line-height: 1.5;
+}
+
+.jac-pago-list li::before {
+    content: '✓ ';
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* ===== JAC HIGHLIGHTS STRIP ===== */
+.jac-highlights-strip {
+    padding: 1.5rem 0;
+    background: #1a1a1a;
+}
+
+.jac-highlights-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.jac-highlight-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.jac-highlight-icon {
+    font-size: 1.1rem;
+}
+
+.jac-highlight-text {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.02em;
+}
+
+/* ===== JAC CTA ===== */
+.jac-cta {
+    padding: 5rem 0;
+    background: #0c0e16;
+}
+
+.jac-cta-torii {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.jac-cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    color: #fff;
+    margin: 0 0 0.75rem;
+}
+
+.jac-cta-subtitle {
+    color: rgba(255,255,255,0.5);
+    font-size: 1.05rem;
+    margin: 0 0 2rem;
+}
+
+.jac-cta-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.jac-cta-btn {
+    font-size: 1rem;
+    padding: 14px 32px;
+}
+
+/* ===== JAC EXPERIENCE HEADER ===== */
+.jac-exp-header {
+    padding: 4rem 0 3rem;
+}
+
+.jac-exp-header-content {
+    text-align: center;
+}
+
+.jac-exp-header-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.jac-exp-header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+.jac-exp-header-tagline {
+    font-size: 1.1rem;
+    color: var(--color-gray-600);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+.jac-price-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 2.5rem;
+    border: 2px solid;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.jac-price-from {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.jac-price-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0.25rem 0;
+}
+
+.jac-price-currency {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-gray-400);
+}
+
+.jac-price-per {
+    font-size: 0.8rem;
+    color: var(--color-gray-400);
+}
+
+/* ===== JAC PACKAGES TABLE ===== */
+.jac-packages {
+    padding: 4rem 0;
+    background: #fff;
+}
+
+.jac-packages-grid {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.jac-packages-table {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+
+.jac-packages-table-header {
+    background: var(--season-primary);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.jac-package-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: background 0.2s;
+}
+
+.jac-package-row:hover {
+    background: rgba(0,0,0,0.015);
+}
+
+.jac-package-row:last-of-type {
+    border-bottom: none;
+}
+
+.jac-package-days {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-dark);
+}
+
+.jac-package-price-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.jac-package-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.jac-package-currency {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-gray-400);
+}
+
+.jac-package-per {
+    font-size: 0.75rem;
+    color: var(--color-gray-400);
+}
+
+.jac-packages-note {
+    padding: 1rem 1.5rem;
+    font-size: 0.78rem;
+    color: var(--color-gray-400);
+    line-height: 1.5;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    margin: 0;
+}
+
+/* ===== JAC INCLUDES ===== */
+.jac-includes {
+    padding: 4rem 0;
+    background: #faf5f0;
+}
+
+.jac-includes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.jac-include-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.jac-include-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.jac-include-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.jac-include-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+}
+
+.jac-include-desc {
+    font-size: 0.88rem;
+    color: var(--color-gray-600);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ===== JAC EXTRAS / COMPLEMENTOS ===== */
+.jac-extras {
+    padding: 4rem 0;
+    background: #fff;
+}
+
+.jac-extras-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.jac-extra-card {
+    background: #faf5f0;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 16px;
+    padding: 1.75rem;
+    transition: transform 0.3s;
+}
+
+.jac-extra-card:hover {
+    transform: translateY(-3px);
+}
+
+.jac-extra-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.jac-extra-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+}
+
+.jac-extra-desc {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* Activities strip */
+.jac-activities-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    margin-bottom: 2rem;
+}
+
+.jac-activity-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.jac-activity-icon {
+    font-size: 1.5rem;
+}
+
+.jac-activity-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-gray-600);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.jac-extras-catalog {
+    font-size: 0.9rem;
+    color: var(--color-gray-600);
+    line-height: 1.6;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    background: var(--season-primary, var(--color-primary));
+    background: rgba(0,0,0,0.03);
+    border-radius: 12px;
+}
+
+/* ===== JAC PAGO SECTION ===== */
+.jac-pago-section {
+    padding: 3rem 0;
+}
+
+.jac-pago-cards {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.jac-pago-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    text-align: center;
+    max-width: 340px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+}
+
+.jac-pago-card-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.jac-pago-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+}
+
+.jac-pago-card p {
+    font-size: 0.88rem;
+    color: var(--color-gray-600);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ===== JAC RESPONSIVE ===== */
+@media (max-width: 1100px) {
+    .jac-styles-grid,
+    .jac-exp-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .jac-flex-ext-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .jac-seasons-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .jac-extras-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .jac-hero {
+        min-height: 55vh;
+        padding-bottom: 3rem;
+    }
+    .jac-hero-title {
+        font-size: 2.2rem;
+    }
+    .jac-hero-title-accent {
+        font-size: 1rem;
+    }
+    .jac-styles-grid,
+    .jac-exp-grid {
+        grid-template-columns: 1fr;
+    }
+    .jac-exp-header-title {
+        font-size: 2rem;
+    }
+    .jac-price-amount {
+        font-size: 2rem;
+    }
+    .jac-highlights-row {
+        gap: 1rem;
+    }
+    .jac-highlight-item {
+        flex: 0 0 calc(50% - 0.5rem);
+        justify-content: center;
+    }
+    .jac-cta-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    .jac-pago-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+

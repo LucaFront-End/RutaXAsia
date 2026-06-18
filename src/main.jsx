@@ -16,6 +16,8 @@ import TerminosCondiciones from './pages/TerminosCondiciones'
 import CityLanding from './pages/CityLanding'
 import Viajes from './pages/Viajes'
 import ViajesJapon from './pages/ViajesJapon'
+import JaponTemporada from './pages/JaponTemporada'
+import JaponExperiencia from './pages/JaponExperiencia'
 import ViajesCorea from './pages/ViajesCorea'
 import ViajesChina from './pages/ViajesChina'
 import Zonas from './pages/Zonas'
@@ -37,6 +39,8 @@ createRoot(document.getElementById('root')).render(
                         <Route path="terminos-y-condiciones" element={<TerminosCondiciones />} />
                         <Route path="viajes" element={<Viajes />} />
                         <Route path="viajes/japon" element={<ViajesJapon />} />
+                        <Route path="viajes/japon/:temporada" element={<JaponTemporada />} />
+                        <Route path="viajes/japon/:temporada/:experiencia" element={<JaponExperiencia />} />
                         <Route path="viajes/corea" element={<ViajesCorea />} />
                         <Route path="viajes/china" element={<ViajesChina />} />
                         <Route path="zonas" element={<Zonas />} />
