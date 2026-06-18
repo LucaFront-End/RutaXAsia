@@ -167,8 +167,8 @@ export default function JaponTripBuilder() {
                             </p>
                         </div>
 
-                        <div className="jtb-seasons-grid" data-animate="fade-up">
-                            {TEMPORADA_ORDER.map((key) => {
+                        <div className="jtb-seasons-grid">
+                            {TEMPORADA_ORDER.map((key, i) => {
                                 const s = TEMPORADAS[key]
                                 const isSelected = selectedSeason === key
                                 const isDimmed = selectedSeason && !isSelected
@@ -178,6 +178,8 @@ export default function JaponTripBuilder() {
                                         className={`jtb-season-card${isSelected ? ' jtb-season-card--selected' : ''}${isDimmed ? ' jtb-season-card--dimmed' : ''}`}
                                         style={{ '--season-primary': s.colors.primary }}
                                         onClick={() => handleSeasonSelect(key)}
+                                        data-animate="fade-up"
+                                        data-delay={String(i * 150)}
                                     >
                                         <div className="jtb-season-card-img">
                                             <img src={s.cardImage} alt={s.name} loading="lazy" />
@@ -221,8 +223,8 @@ export default function JaponTripBuilder() {
                                 </p>
                             </div>
 
-                            <div className="jtb-styles-grid" data-animate="fade-up">
-                                {EXPERIENCIA_ORDER.map((key) => {
+                            <div className="jtb-styles-grid">
+                                {EXPERIENCIA_ORDER.map((key, i) => {
                                     const exp = EXPERIENCIAS[key]
                                     const isSelected = selectedStyle === key
                                     const isDimmed = selectedStyle && !isSelected
@@ -231,6 +233,8 @@ export default function JaponTripBuilder() {
                                             key={key}
                                             className={`jtb-style-card${exp.isSignature ? ' jtb-style-card--signature' : ''}${isSelected ? ' jtb-style-card--selected' : ''}${isDimmed ? ' jtb-style-card--dimmed' : ''}`}
                                             onClick={() => handleStyleSelect(key)}
+                                            data-animate="fade-up"
+                                            data-delay={String(i * 120)}
                                         >
                                             <div className="jtb-style-card-check">✓</div>
                                             <div className="jtb-style-card-icon">{exp.icon}</div>

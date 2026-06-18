@@ -33,15 +33,15 @@ export default function ViajesJapon() {
                     <div className="jac-hero-overlay" />
                 </div>
                 <div className="jac-hero-content container">
-                    <span className="jac-hero-tag">🇯🇵 Japón</span>
-                    <div className="jac-hero-torii">⛩️</div>
-                    <h1 className="jac-hero-title">
+                    <span className="jac-hero-tag" data-animate="fade-up" data-delay="100">🇯🇵 Japón</span>
+                    <div className="jac-hero-torii" data-animate="fade-up" data-delay="250">⛩️</div>
+                    <h1 className="jac-hero-title" data-animate="fade-up" data-delay="400">
                         JAPÓN <span className="jac-hero-title-accent">A LA CARTA</span>
                     </h1>
-                    <p className="jac-hero-subtitle">
+                    <p className="jac-hero-subtitle" data-animate="fade-up" data-delay="550">
                         Diseña tu viaje ideal a Japón en 3 pasos. Tú eliges la temporada, el estilo y nosotros hacemos que suceda.
                     </p>
-                    <a href="#jtb-step-1" className="jac-hero-scroll-btn">
+                    <a href="#jtb-step-1" className="jac-hero-scroll-btn" data-animate="fade-up" data-delay="700">
                         Empieza a diseñar tu viaje <span className="jac-hero-scroll-arrow">↓</span>
                     </a>
                 </div>

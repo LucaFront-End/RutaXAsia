@@ -626,16 +626,23 @@
 /* ===== JAC HERO ===== */
 .jac-hero {
     position: relative;
-    min-height: 70vh;
+    min-height: 80vh;
     display: flex;
     align-items: flex-end;
-    padding: 0 0 5rem;
+    padding: 0 0 6rem;
     overflow: hidden;
+    background: #0c0e16;
 }
 
 .jac-hero--season,
 .jac-hero--exp {
-    min-height: 60vh;
+    min-height: 65vh;
+}
+
+.jac-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
 }
 
 .jac-hero-bg img {
@@ -643,18 +650,20 @@
     top: 0; left: 0;
     width: 100%; height: 100%;
     object-fit: cover;
-    animation: jac-kenburns 36s ease-in-out infinite alternate;
+    filter: brightness(0.85) saturate(1.1);
+    animation: jac-kenburns 45s cubic-bezier(0.25, 1, 0.5, 1) infinite alternate;
 }
 
 @keyframes jac-kenburns {
-    0% { transform: scale(1.02) translate(0, 0); }
-    100% { transform: scale(1.12) translate(-1%, -0.5%); }
+    0% { transform: scale(1.02) rotate(0.1deg); }
+    100% { transform: scale(1.12) translate(-1.5%, -1%); }
 }
 
 .jac-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(12, 14, 22, 0.98) 0%, rgba(12, 14, 22, 0.6) 45%, rgba(12, 14, 22, 0.2) 100%);
+    background: radial-gradient(circle at 50% 50%, rgba(12, 14, 22, 0.1) 0%, rgba(12, 14, 22, 0.6) 60%, rgba(12, 14, 22, 0.98) 100%),
+                linear-gradient(to top, rgba(12, 14, 22, 1) 0%, rgba(12, 14, 22, 0.4) 50%, rgba(12, 14, 22, 0.1) 100%);
     z-index: 1;
 }
 
@@ -662,81 +671,102 @@
     position: relative;
     z-index: 3;
     text-align: center;
-    max-width: 900px;
+    max-width: 950px;
     margin: 0 auto;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: jac-fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s;
+}
+
+@keyframes jac-fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .jac-hero-tag {
     display: inline-block;
     font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
+    font-weight: 700;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: #fff;
-    margin-bottom: 1.25rem;
-    padding: 6px 18px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
+    margin-bottom: 1.5rem;
+    padding: 8px 24px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 100px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.15);
 }
 
 .jac-hero-torii {
-    font-size: 3rem;
-    margin-bottom: 0.75rem;
-    filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.4));
-    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 0 20px rgba(220, 38, 38, 0.6));
+    animation: jac-float Torii 4s ease-in-out infinite;
 }
 
-.jac-hero:hover .jac-hero-torii {
-    transform: rotateY(180deg) scale(1.08);
+@keyframes jac-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
 }
 
 .jac-hero-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2.8rem, 6.5vw, 5rem);
-    font-weight: 800;
+    font-family: var(--font-heading);
+    font-size: clamp(3rem, 7.5vw, 5.8rem);
+    font-weight: 900;
     color: #fff;
-    line-height: 1.1;
+    line-height: 1.05;
     margin: 0 0 0.5rem;
-    letter-spacing: -1.5px;
-    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #ffffff 40%, rgba(255, 255, 255, 0.65) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .jac-hero-title-accent {
     display: block;
-    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.7);
-    letter-spacing: 0.35em;
-    margin-top: 0.4rem;
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 0.4em;
+    margin-top: 0.5rem;
     text-transform: uppercase;
+    background: linear-gradient(90deg, #d4af37, #f5d77f, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .jac-hero-season-badge {
     display: inline-block;
-    padding: 8px 28px;
+    padding: 10px 32px;
     border-radius: 100px;
     color: #fff;
     font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
 }
 
 .jac-hero-subtitle {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.75);
-    max-width: 600px;
-    margin: 0 auto 2rem;
+    font-size: 1.35rem;
+    color: rgba(255, 255, 255, 0.82);
+    max-width: 650px;
+    margin: 0 auto 2.5rem;
     line-height: 1.65;
+    font-weight: 300;
 }
 
 .jac-hero-subtitle-large {
-    font-size: 1.35rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.45rem;
+    color: rgba(255, 255, 255, 0.85);
     margin: 0 auto;
     line-height: 1.65;
     font-weight: 300;
@@ -744,60 +774,69 @@
 }
 
 .jac-hero-breadcrumb {
-    display: inline-block;
-    color: rgba(255, 255, 255, 0.5);
+    display: inline-flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.6);
     font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-decoration: none;
-    margin-bottom: 1.75rem;
-    padding: 6px 16px;
-    background: rgba(255,255,255,0.05);
+    margin-bottom: 2rem;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 100px;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-hero-breadcrumb:hover {
     color: #fff;
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
     transform: translateX(-4px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .jac-hero-scroll-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    font-weight: 600;
+    gap: 0.8rem;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
     text-decoration: none;
-    padding: 12px 28px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 16px 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 100px;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    backdrop-filter: blur(4px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
 }
 
 .jac-hero-scroll-btn:hover {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateY(3px);
+    border-color: #fff;
+    background: #fff;
+    color: #0c0e16;
+    transform: translateY(4px);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
 }
 
 .jac-hero-scroll-arrow {
-    animation: jac-bounce 2s ease-in-out infinite;
+    display: inline-block;
+    animation: jac-bounce 2s infinite;
 }
 
 @keyframes jac-bounce {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
+    50% { transform: translateY(5px); }
 }
 
 /* ===== HOW IT WORKS (PASO A PASO) ===== */
 .jac-steps-section {
-    padding: 5rem 0 3rem;
-    background: #faf5f0;
+    padding: 6rem 0 4rem;
+    background: #faf9f6;
+    border-top: 1px solid rgba(0,0,0,0.02);
 }
 
 .jac-steps-grid {
@@ -805,134 +844,141 @@
     grid-template-columns: 1fr 12px 1fr 12px 1fr;
     align-items: center;
     gap: 1.5rem;
-    margin-top: 3rem;
+    margin-top: 4rem;
 }
 
 .jac-step-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.5);
-    border-radius: 20px;
-    padding: 2.25rem 2rem;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    padding: 3rem 2.25rem;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    z-index: 1;
 }
 
 .jac-step-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+    transform: translateY(-8px);
+    box-shadow: 0 30px 70px rgba(12, 14, 22, 0.08);
     background: #fff;
+    border-color: var(--color-primary);
 }
 
 .jac-step-num {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     background: var(--color-primary);
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
 }
 
 .jac-step-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.5px;
 }
 
 .jac-step-desc {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--color-gray-600);
-    line-height: 1.55;
+    line-height: 1.6;
     margin: 0;
 }
 
 .jac-step-arrow {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: var(--color-gray-300);
     text-align: center;
     font-weight: 300;
+    animation: jac-pulseArrow 2.5s infinite;
+}
+
+@keyframes jac-pulseArrow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.1); }
 }
 
 /* ===== JAC SEASONS GRID ===== */
 .jac-seasons {
-    padding: 4rem 0 6rem;
-    background: #faf5f0;
+    padding: 6rem 0 8rem;
+    background: #faf9f6;
 }
 
 .jac-seasons-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 .jac-season-card {
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 30px;
     overflow: hidden;
     text-decoration: none;
-    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 40px rgba(12, 14, 22, 0.03);
     display: flex;
     flex-direction: column;
 }
 
 .jac-season-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 30px 60px rgba(12, 14, 22, 0.12);
+    transform: translateY(-12px) scale(1.01);
+    box-shadow: 0 40px 90px rgba(12, 14, 22, 0.15);
     border-color: var(--season-primary);
     background: #fff;
 }
 
 .jac-season-card-img {
     position: relative;
-    height: 300px;
+    height: 320px;
     overflow: hidden;
 }
 
 .jac-season-card-img img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-season-card:hover .jac-season-card-img img {
-    transform: scale(1.08);
+    transform: scale(1.1);
 }
 
 .jac-season-card-img-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(12,14,22,0.5) 0%, transparent 60%);
-    opacity: 0.8;
+    background: linear-gradient(to top, rgba(12,14,22,0.6) 0%, transparent 60%);
 }
 
 .jac-season-card-emoji {
     position: absolute;
-    top: 20px; right: 20px;
-    font-size: 2.2rem;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    top: 24px; right: 24px;
+    font-size: 2.5rem;
+    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2;
 }
 
 .jac-season-card:hover .jac-season-card-emoji {
-    transform: scale(1.2) rotate(15deg);
+    transform: scale(1.25) rotate(12deg);
 }
 
 .jac-season-card-body {
-    padding: 2rem;
+    padding: 2.5rem;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -940,112 +986,113 @@
 
 .jac-season-card-months {
     display: inline-block;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--season-primary);
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.8rem;
 }
 
 .jac-season-card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
     font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 0.8rem;
+    margin: 0 0 1rem;
+    letter-spacing: -0.5px;
 }
 
 .jac-season-card-desc {
     color: var(--color-gray-600);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 2rem;
     flex: 1;
 }
 
 .jac-season-card-highlights {
     list-style: none;
     padding: 0;
-    margin: 0 0 1.75rem;
+    margin: 0 0 2.25rem;
 }
 
 .jac-season-card-highlights li {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--color-gray-600);
-    padding: 4px 0;
+    padding: 6px 0;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
 .jac-season-card-highlights li::before {
     content: '✦';
     color: var(--season-primary);
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 800;
 }
 
 .jac-season-card-cta {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.95rem;
+    gap: 0.6rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--season-primary);
-    transition: gap 0.3s, transform 0.3s;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-season-card:hover .jac-season-card-cta {
-    gap: 0.8rem;
-    transform: translateX(4px);
+    gap: 0.9rem;
+    transform: translateX(6px);
 }
 
 /* ===== JAC STYLES PREVIEW (4 travel types) ===== */
 .jac-styles-preview {
-    padding: 6rem 0;
+    padding: 8rem 0;
     background: #fff;
 }
 
 .jac-styles-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 .jac-style-card {
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 20px;
-    padding: 2.5rem 1.75rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 24px;
+    padding: 3rem 2rem;
     text-align: center;
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
 }
 
 .jac-style-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border-color: rgba(0,0,0,0.12);
+    transform: translateY(-10px);
+    box-shadow: 0 30px 70px rgba(12, 14, 22, 0.1);
+    border-color: rgba(0,0,0,0.1);
 }
 
 /* Luxury gold pulse for Signature Card */
 @keyframes goldGlow {
     0%, 100% {
-        border-color: #c9a84c;
-        box-shadow: 0 4px 20px rgba(201, 168, 76, 0.15), inset 0 0 10px rgba(201, 168, 76, 0.05);
+        border-color: rgba(212, 175, 55, 0.4);
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15), inset 0 0 15px rgba(212, 175, 55, 0.05);
     }
     50% {
-        border-color: #f5d77f;
-        box-shadow: 0 4px 30px rgba(245, 215, 127, 0.4), inset 0 0 20px rgba(245, 215, 127, 0.15);
+        border-color: rgba(245, 215, 127, 0.9);
+        box-shadow: 0 15px 45px rgba(245, 215, 127, 0.35), inset 0 0 25px rgba(245, 215, 127, 0.15);
     }
 }
 
 .jac-style-card--signature {
-    background: #121416;
-    border-color: #c9a84c;
-    position: relative;
-    overflow: hidden;
+    background: #0d0f11;
+    border-color: #d4af37;
     animation: goldGlow 6s ease-in-out infinite;
 }
 
@@ -1054,7 +1101,7 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #c9a84c, #f5d77f, #c9a84c);
+    background: linear-gradient(90deg, #d4af37, #f5d97e, #d4af37);
 }
 
 .jac-style-card--signature .jac-style-card-name {
@@ -1064,41 +1111,41 @@
 }
 
 .jac-style-card--signature .jac-style-card-tagline {
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.65);
 }
 
 .jac-style-card--signature .jac-style-card-features li {
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.72);
 }
 
 .jac-style-card--signature .jac-style-check {
-    color: #c9a84c !important;
+    color: #d4af37 !important;
 }
 
 .jac-style-card-icon {
-    font-size: 2.8rem;
-    margin-bottom: 1.25rem;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .jac-style-card:hover .jac-style-card-icon {
-    transform: scale(1.15) rotate(5deg);
+    transform: scale(1.2) rotate(6deg);
 }
 
 .jac-style-card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
+    font-family: var(--font-heading);
+    font-size: 1.55rem;
     font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 0.6rem;
+    margin: 0 0 0.8rem;
 }
 
 .jac-style-card-tagline {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-gray-600);
-    line-height: 1.5;
-    margin: 0 0 1.5rem;
+    line-height: 1.6;
+    margin: 0 0 1.75rem;
 }
 
 .jac-style-card-features {
@@ -1109,47 +1156,48 @@
 }
 
 .jac-style-card-features li {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-gray-600);
-    padding: 6px 0;
+    padding: 7px 0;
     display: flex;
     align-items: flex-start;
-    gap: 0.6rem;
+    gap: 0.75rem;
+    line-height: 1.5;
 }
 
 .jac-style-check {
     color: var(--color-primary);
     font-weight: 700;
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 3px;
 }
 
 /* ===== JAC EXPERIENCE CARDS (Season page) ===== */
 .jac-experiences {
-    padding: 6rem 0;
-    background: #faf5f0;
+    padding: 8rem 0;
+    background: #faf9f6;
 }
 
 .jac-exp-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 .jac-exp-card {
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 24px;
-    padding: 2.5rem 1.75rem 1.75rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 28px;
+    padding: 3rem 2rem 2rem;
     display: flex;
     flex-direction: column;
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.02);
 }
 
 .jac-exp-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(12,14,22,0.08);
+    transform: translateY(-10px);
+    box-shadow: 0 35px 80px rgba(12,14,22,0.08);
 }
 
 .jac-exp-card:not(.jac-exp-card--signature):hover {
@@ -1157,8 +1205,8 @@
 }
 
 .jac-exp-card--signature {
-    background: #121416;
-    border-color: #c9a84c;
+    background: #0d0f11;
+    border-color: #d4af37;
     position: relative;
     animation: goldGlow 6s ease-in-out infinite;
 }
@@ -1168,12 +1216,12 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    border-radius: 24px 24px 0 0;
-    background: linear-gradient(90deg, #c9a84c, #f5d77f, #c9a84c);
+    border-radius: 28px 28px 0 0;
+    background: linear-gradient(90deg, #d4af37, #f5d97e, #d4af37);
 }
 
 .jac-exp-card--signature .jac-exp-card-header .jac-exp-card-season-name {
-    color: #c9a84c !important;
+    color: #d4af37 !important;
 }
 
 .jac-exp-card--signature .jac-exp-card-name {
@@ -1182,54 +1230,54 @@
 }
 
 .jac-exp-card--signature .jac-exp-card-tagline {
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.65);
 }
 
 .jac-exp-card--signature .jac-exp-card-features li {
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.72);
 }
 
 .jac-exp-card--signature .jac-exp-check {
-    color: #c9a84c !important;
+    color: #d4af37 !important;
 }
 
 .jac-exp-card-icon {
-    font-size: 2.8rem;
-    margin-bottom: 1.25rem;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08));
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .jac-exp-card:hover .jac-exp-card-icon {
-    transform: scale(1.15) rotate(5deg);
+    transform: scale(1.2) rotate(6deg);
 }
 
 .jac-exp-card-header {
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 .jac-exp-card-season-name {
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
 }
 
 .jac-exp-card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.75rem;
+    font-family: var(--font-heading);
+    font-size: 1.85rem;
     font-weight: 700;
     color: var(--color-dark);
-    margin: 0.25rem 0 0;
+    margin: 0.35rem 0 0;
     text-transform: uppercase;
     letter-spacing: -0.5px;
 }
 
 .jac-exp-card-tagline {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--color-gray-600);
-    line-height: 1.55;
-    margin: 0 0 1.5rem;
+    line-height: 1.6;
+    margin: 0 0 2rem;
 }
 
 .jac-exp-card-features {
@@ -1240,76 +1288,77 @@
 }
 
 .jac-exp-card-features li {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-gray-600);
-    padding: 6px 0;
+    padding: 7px 0;
     display: flex;
     align-items: flex-start;
-    gap: 0.6rem;
-    line-height: 1.45;
+    gap: 0.75rem;
+    line-height: 1.5;
 }
 
 .jac-exp-check {
-    font-size: 0.55rem;
+    font-size: 0.6rem;
     flex-shrink: 0;
-    margin-top: 5px;
+    margin-top: 6px;
 }
 
 .jac-exp-card-cta-wrap {
-    margin-top: 1.75rem;
+    margin-top: 2rem;
 }
 
 .jac-exp-card-cta {
     display: block;
     text-align: center;
-    padding: 14px 24px;
-    border-radius: 14px;
-    font-size: 0.88rem;
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-size: 0.9rem;
     font-weight: 700;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    text-decoration: none;
 }
 
 .jac-exp-card:hover .jac-exp-card-cta {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
 }
 
 /* ===== JAC DESTINOS (Circular images grid) ===== */
 .jac-destinos {
-    padding: 5rem 0;
+    padding: 7rem 0;
 }
 
 .jac-destinos-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 2.5rem;
-    margin-top: 2rem;
+    gap: 3rem;
+    margin-top: 3rem;
 }
 
 .jac-destino-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
-    width: 120px;
-    transition: transform 0.3s;
+    gap: 0.75rem;
+    width: 130px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-destino-img {
-    width: 96px;
-    height: 96px;
+    width: 108px;
+    height: 108px;
     border-radius: 50%;
     overflow: hidden;
     border: 4px solid #fff;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-destino-item:hover .jac-destino-img {
-    transform: scale(1.1) translateY(-4px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+    transform: scale(1.12) translateY(-6px);
+    box-shadow: 0 20px 40px rgba(12, 14, 22, 0.15);
     border-color: var(--season-primary, var(--color-primary));
 }
 
@@ -1319,65 +1368,74 @@
 }
 
 .jac-destino-name {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: var(--color-dark);
     text-align: center;
-    line-height: 1.3;
+    line-height: 1.4;
 }
 
 .jac-destinos-note {
     text-align: center;
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-top: 2rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 3rem;
+    font-family: var(--font-heading);
 }
 
 /* ===== JAC FLEX & EXTENSIONS ===== */
 .jac-flex-ext {
-    padding: 5rem 0;
+    padding: 7rem 0;
     background: #fff;
 }
 
 .jac-flex-ext-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 .jac-flex-box {
-    background: #faf5f0;
-    border: 1px solid rgba(0,0,0,0.05);
-    border-radius: 24px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.01);
-    transition: transform 0.3s;
+    background: rgba(250, 249, 246, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,0,0,0.04);
+    border-radius: 28px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.01);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-flex-box:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+    background: #fff;
 }
 
 .jac-flex-box--pago {
-    background: rgba(240, 250, 244, 0.7);
+    background: rgba(240, 250, 244, 0.75);
     border-color: rgba(45, 106, 79, 0.15);
 }
 
+.jac-flex-box--pago:hover {
+    background: rgba(240, 250, 244, 0.95);
+    border-color: rgba(45, 106, 79, 0.3);
+}
+
 .jac-flex-box-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.25rem;
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
     font-weight: 700;
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.5rem;
     border-bottom: 2px solid rgba(0, 0, 0, 0.04);
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
 }
 
 .jac-flex-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.85rem;
-    padding: 0.8rem 0;
-    border-bottom: 1px dashed rgba(0,0,0,0.06);
+    gap: 0.95rem;
+    padding: 1rem 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.08);
 }
 
 .jac-flex-item:last-child {
@@ -1385,30 +1443,30 @@
 }
 
 .jac-flex-item h4 {
-    font-size: 0.92rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: var(--color-dark);
-    margin: 0 0 0.2rem;
+    margin: 0 0 0.3rem;
 }
 
 .jac-flex-item p {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--color-gray-600);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .jac-ext-icon {
-    font-size: 1.35rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
     margin-top: 2px;
 }
 
 .jac-pago-text {
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     color: var(--color-dark);
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.5rem;
 }
 
 .jac-pago-list {
@@ -1418,26 +1476,27 @@
 }
 
 .jac-pago-list li {
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     color: var(--color-gray-600);
-    padding: 6px 0;
-    line-height: 1.55;
+    padding: 8px 0;
+    line-height: 1.6;
 }
 
 .jac-pago-list li::before {
-    content: '✓ ';
-    color: var(--color-primary);
-    font-weight: 800;
-    margin-right: 4px;
+    content: '✓  ';
+    color: var(--season-primary, var(--color-primary));
+    font-weight: 900;
+    margin-right: 6px;
 }
 
 /* ===== JAC SELECTION PATH (Breadcrumbs) ===== */
 .jac-selection-path {
-    background: rgba(12, 14, 22, 0.95);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.75rem 0;
+    background: rgba(12, 14, 22, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem 0;
     position: sticky;
-    top: 79px; /* Heights of main navbar */
+    top: 79px;
     z-index: 10;
 }
 
@@ -1450,68 +1509,72 @@
 }
 
 .jac-path-step {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.45);
     text-decoration: none;
-    transition: color 0.3s;
+    transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     align-items: center;
     gap: 0.4rem;
 }
 
 .jac-path-step:hover:not(.jac-path-step--active) {
-    color: rgba(255, 255, 255, 0.8);
+    color: #fff;
 }
 
 .jac-path-step--active {
     color: #fff;
     cursor: default;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 100px;
 }
 
 .jac-path-divider {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.25);
 }
 
 /* ===== JAC HIGHLIGHTS STRIP ===== */
 .jac-highlights-strip {
-    padding: 1.75rem 0;
-    background: #121416;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 2.25rem 0;
+    background: #0d0f12;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .jac-highlights-row {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 2.5rem;
+    gap: 3rem;
 }
 
 .jac-highlight-item {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.8rem;
     white-space: nowrap;
 }
 
 .jac-highlight-icon {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
 }
 
 .jac-highlight-text {
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     color: rgba(255, 255, 255, 0.95);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 /* ===== JAC CTA ===== */
 .jac-cta {
-    padding: 6rem 0;
+    padding: 8rem 0;
     background: #090b11;
     position: relative;
     overflow: hidden;
@@ -1521,7 +1584,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle at center, rgba(220, 38, 38, 0.08) 0%, transparent 60%);
+    background-image: radial-gradient(circle at center, rgba(220, 38, 38, 0.12) 0%, transparent 65%);
     z-index: 1;
 }
 
@@ -1531,45 +1594,49 @@
 }
 
 .jac-cta-torii {
-    font-size: 3.5rem;
-    margin-bottom: 1.25rem;
-    filter: drop-shadow(0 4px 15px rgba(220,38,38,0.35));
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 30px rgba(220,38,38,0.5));
+    animation: jac-float 4s ease-in-out infinite;
 }
 
 .jac-cta-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-family: var(--font-heading);
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
     font-weight: 700;
     color: #fff;
     margin: 0 0 1rem;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
 }
 
 .jac-cta-subtitle {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 1.1rem;
-    margin: 0 0 2.5rem;
-    max-width: 600px;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 1.2rem;
+    margin: 0 0 3rem;
+    max-width: 650px;
     margin-left: auto;
     margin-right: auto;
+    font-weight: 300;
 }
 
 .jac-cta-actions {
     display: flex;
-    gap: 1.25rem;
+    gap: 1.5rem;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .jac-cta-btn {
-    font-size: 1.05rem;
-    padding: 16px 36px;
+    font-size: 1.1rem;
+    padding: 18px 40px;
     font-weight: 700;
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ===== JAC EXPERIENCE HEADER ===== */
 .jac-exp-header {
-    padding: 5rem 0 4rem;
+    padding: 7rem 0 5rem;
 }
 
 .jac-exp-header-content {
@@ -1577,114 +1644,122 @@
 }
 
 .jac-exp-header-icon {
-    font-size: 4rem;
-    margin-bottom: 1.25rem;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.15));
 }
 
 .jac-exp-header-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
     font-weight: 800;
     color: var(--color-dark);
-    margin: 0 0 0.8rem;
+    margin: 0 0 1rem;
     text-transform: uppercase;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
 }
 
 .jac-exp-header-tagline {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     color: var(--color-gray-600);
-    max-width: 600px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.6;
+    max-width: 650px;
+    margin: 0 auto 3rem;
+    line-height: 1.65;
+    font-weight: 300;
 }
 
 .jac-price-badge {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    padding: 1.75rem 3.5rem;
+    padding: 2rem 4rem;
     border: 2px solid;
-    border-radius: 20px;
+    border-radius: 24px;
     background: #fff;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.jac-price-badge:hover {
+    transform: scale(1.03);
 }
 
 .jac-price-from {
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--color-gray-400);
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
 }
 
 .jac-price-amount {
-    font-family: 'Playfair Display', serif;
-    font-size: 3.2rem;
+    font-family: var(--font-heading);
+    font-size: 3.6rem;
     font-weight: 800;
     line-height: 1;
-    margin: 0.3rem 0;
+    margin: 0.4rem 0;
 }
 
 .jac-price-currency {
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: var(--color-gray-400);
 }
 
 .jac-price-per {
     font-size: 0.8rem;
     color: var(--color-gray-400);
-    margin-top: 0.2rem;
+    margin-top: 0.3rem;
 }
 
 /* ===== JAC BOARDING PASS PACKAGES ===== */
 .jac-packages {
-    padding: 6rem 0;
-    background: #f5f0e8; /* Warm beige behind boarding passes */
+    padding: 8rem 0;
+    background: #faf8f5;
 }
 
 .jac-packages-grid {
-    max-width: 760px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
 .jac-packages-table {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 
 .jac-packages-table-header {
     background: var(--season-primary);
     color: #fff;
-    padding: 1.25rem 2rem;
-    font-size: 1rem;
+    padding: 1.5rem 2.5rem;
+    font-size: 1.1rem;
     font-weight: 800;
-    letter-spacing: 0.08em;
-    border-radius: 16px;
+    letter-spacing: 0.1em;
+    border-radius: 20px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    text-transform: uppercase;
 }
 
-/* Interactive Ticket Shape Row */
+/* Boarding Pass Ticket Component */
 .jac-package-row {
     position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #fff;
-    padding: 1.5rem 2.5rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    border-left: 5px solid var(--season-primary);
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 6px solid var(--season-primary);
+    overflow: hidden;
 }
 
 .jac-package-row:hover {
-    transform: scale(1.02);
-    box-shadow: 0 15px 35px rgba(12, 14, 22, 0.06);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 25px 60px rgba(12, 14, 22, 0.08);
 }
 
 /* Boarding Pass cutouts */
@@ -1693,33 +1768,36 @@
     content: '';
     position: absolute;
     top: 50%;
-    width: 20px;
-    height: 20px;
-    background: #f5f0e8; /* Matches section bg */
+    width: 24px;
+    height: 24px;
+    background: #faf8f5; /* Matches section bg */
     border-radius: 50%;
     transform: translateY(-50%);
-    box-shadow: inset 2px 0 3px rgba(0,0,0,0.02);
+    z-index: 2;
 }
 
 .jac-package-row::before {
-    left: -11px;
+    left: -13px;
+    box-shadow: inset -3px 0 5px rgba(0,0,0,0.03);
 }
 
 .jac-package-row::after {
-    right: -11px;
+    right: -13px;
+    box-shadow: inset 3px 0 5px rgba(0,0,0,0.03);
 }
 
 .jac-package-days {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
     color: var(--color-dark);
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.75rem;
+    letter-spacing: -0.2px;
 }
 
 .jac-package-days::before {
-    content: '🎫';
+    content: '✈️';
 }
 
 .jac-package-price-wrap {
@@ -1732,153 +1810,154 @@
 .jac-ticket-barcode-wrap {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
     gap: 4px;
 }
 
 .jac-ticket-barcode {
     display: flex;
-    height: 28px;
-    opacity: 0.25;
+    height: 32px;
+    opacity: 0.35;
     gap: 2px;
 }
 
 .jac-barcode-line {
     background: #000;
     width: 2px;
+    height: 100%;
 }
 
-.jac-barcode-line--wide { width: 4px; }
+.jac-barcode-line--wide { width: 5px; }
 .jac-barcode-line--narrow { width: 1px; }
 
 .jac-barcode-num {
-    font-size: 0.55rem;
+    font-size: 0.6rem;
     font-family: monospace;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     color: var(--color-gray-400);
 }
 
 .jac-package-price {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
+    font-family: var(--font-heading);
+    font-size: 2.1rem;
     font-weight: 850;
 }
 
 .jac-package-currency {
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: var(--color-gray-400);
 }
 
 .jac-package-per {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--color-gray-400);
 }
 
 .jac-packages-note {
     text-align: center;
-    padding: 1rem 2rem 0;
-    font-size: 0.82rem;
+    padding: 1.5rem 2rem 0;
+    font-size: 0.88rem;
     color: var(--color-gray-500);
-    line-height: 1.6;
+    line-height: 1.65;
     margin: 0;
 }
 
 /* ===== JAC INCLUDES ===== */
 .jac-includes {
-    padding: 6rem 0;
-    background: #faf5f0;
+    padding: 8rem 0;
+    background: #faf9f6;
 }
 
 .jac-includes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
 }
 
 .jac-include-card {
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.04);
+    border-radius: 24px;
+    padding: 3rem 2.25rem;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.02);
 }
 
 .jac-include-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 35px rgba(12,14,22,0.06);
+    transform: translateY(-8px);
+    box-shadow: 0 25px 60px rgba(12,14,22,0.07);
     border-color: var(--season-primary);
 }
 
 .jac-include-icon {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
+    font-size: 2.5rem;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
 }
 
 .jac-include-title {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 800;
-    margin: 0 0 0.6rem;
+    margin: 0 0 0.75rem;
     text-transform: uppercase;
     letter-spacing: -0.3px;
 }
 
 .jac-include-desc {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: var(--color-gray-600);
-    line-height: 1.6;
+    line-height: 1.65;
     margin: 0;
 }
 
 /* ===== JAC EXTRAS / COMPLEMENTOS ===== */
 .jac-extras {
-    padding: 6rem 0;
+    padding: 8rem 0;
     background: #fff;
 }
 
 .jac-extras-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    margin-bottom: 3.5rem;
+    gap: 2.5rem;
+    margin-bottom: 4rem;
 }
 
 .jac-extra-card {
-    background: #faf5f0;
-    border: 1px solid rgba(0,0,0,0.05);
-    border-radius: 20px;
-    padding: 2.25rem 2rem;
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    background: rgba(250, 249, 246, 0.75);
+    border: 1px solid rgba(0,0,0,0.04);
+    border-radius: 24px;
+    padding: 2.5rem 2.25rem;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-extra-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     background: #fff;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
     border-color: var(--season-primary);
 }
 
 .jac-extra-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.8rem;
+    font-size: 2rem;
+    margin-bottom: 1rem;
     display: block;
 }
 
 .jac-extra-title {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: var(--color-dark);
-    margin: 0 0 0.6rem;
+    margin: 0 0 0.75rem;
     text-transform: uppercase;
     letter-spacing: -0.3px;
 }
 
 .jac-extra-desc {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--color-gray-600);
-    line-height: 1.55;
+    line-height: 1.6;
     margin: 0;
 }
 
@@ -1887,100 +1966,101 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 2.5rem;
-    padding: 2.5rem 0;
+    gap: 3rem;
+    padding: 3rem 0;
     border-top: 1px dashed rgba(0,0,0,0.12);
     border-bottom: 1px dashed rgba(0,0,0,0.12);
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
 }
 
 .jac-activity-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    transition: transform 0.3s;
+    gap: 0.6rem;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-activity-item:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
 }
 
 .jac-activity-icon {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+    font-size: 2.2rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
 }
 
 .jac-activity-name {
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 0.75rem;
+    font-weight: 800;
     color: var(--color-gray-600);
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
 }
 
 .jac-extras-catalog {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--color-gray-600);
-    line-height: 1.65;
+    line-height: 1.7;
     text-align: center;
-    max-width: 760px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 1.25rem 2.5rem;
+    padding: 1.5rem 3rem;
     background: rgba(0,0,0,0.02);
-    border-radius: 16px;
-    border-left: 4px solid var(--season-primary);
+    border-radius: 20px;
+    border-left: 5px solid var(--season-primary);
 }
 
 /* ===== JAC PAGO SECTION ===== */
 .jac-pago-section {
-    padding: 4rem 0;
+    padding: 5rem 0;
 }
 
 .jac-pago-cards {
     display: flex;
-    gap: 2rem;
+    gap: 2.5rem;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .jac-pago-card {
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 20px;
-    padding: 2.25rem 2.5rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 24px;
+    padding: 2.5rem 3rem;
     text-align: center;
-    max-width: 380px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-    transition: transform 0.3s;
+    max-width: 400px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.02);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .jac-pago-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.05);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.1);
 }
 
 .jac-pago-card-icon {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     display: block;
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 .jac-pago-card h4 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--color-dark);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.6rem;
     text-transform: uppercase;
 }
 
 .jac-pago-card p {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: var(--color-gray-600);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 /* ===== NEW MODALITY SHOWCASE ON HOME ===== */
