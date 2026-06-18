@@ -1,23 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { fetchCityLanding } from '../lib/wixClient'
-import Home from './Home'
+import { fetchAllLandings } from '../lib/wixClient'
+import LandingHome from './LandingHome'
 
 /**
- * CityLanding — Dynamic clone of the Home page that overrides SEO + WhatsApp
- * based on CMS data from "LandingsdeCiudad" collection.
+ * CityLanding — 100% dynamic landing page powered by Wix CMS.
  *
- * URL pattern: /viajes-japon-desde-guadalajara (slug from CMS)
+ * URL pattern: /:citySlug (e.g., /viajes-japon-desde-guadalajara)
+ * Uses the server-side /api/landings endpoint to fetch data.
  *
- * CMS field keys (exact):
- * - title_fld              → page heading (Titulo de pagina)
- * - excerptDePgina         → page excerpt/subtitle
- * - ciudad                 → city name
- * - slug                   → URL slug
- * - whatsappPersonalizado  → custom WhatsApp link
- * - tituloDeSeo            → SEO <title>
- * - metadescripcin         → SEO <meta description>
+ * Shows a loading skeleton while fetching — NO flash of default content.
+ * All SEO tags (title, meta description, canonical) come from CMS.
  */
 export default function CityLanding() {
     const { citySlug } = useParams()
@@ -29,12 +23,13 @@ export default function CityLanding() {
         window.scrollTo(0, 0)
         let cancelled = false
 
-        fetchCityLanding(citySlug).then(data => {
+        fetchAllLandings().then(landings => {
             if (cancelled) return
-            if (!data) {
+            const found = landings.find(l => l.slug === citySlug)
+            if (!found) {
                 setNotFound(true)
             } else {
-                setLanding(data)
+                setLanding(found)
             }
             setLoading(false)
         })
@@ -42,9 +37,13 @@ export default function CityLanding() {
         return () => { cancelled = true }
     }, [citySlug])
 
-    // While loading, show the normal Home page (instant UX)
+    // Loading state — show a dark skeleton matching the hero aesthetic
     if (loading) {
-        return <Home />
+        return (
+            <div className="landing-loading">
+                <div className="landing-loading-spinner" />
+            </div>
+        )
     }
 
     // Slug doesn't match any CMS landing → redirect to home
@@ -52,23 +51,33 @@ export default function CityLanding() {
         return <Navigate to="/" replace />
     }
 
-    // Render Home with SEO overrides using exact CMS field keys
+    // 100% dynamic SEO from CMS
+    const seoTitle = landing.seoTitle || landing.title || `Viajes a Japón desde ${landing.city} | RutaXAsia`
+    const seoDesc = landing.seoDescription || landing.excerpt || `RutaXAsia, la agencia #1 de viajes a Japón desde ${landing.city}. Tours a Japón y Corea del Sur con los mejores precios.`
+
     return (
         <>
             <Helmet>
-                <title>{landing.tituloDeSeo || landing.title_fld || `Viajes a Japón desde ${landing.ciudad} | RutaXAsia`}</title>
-                <meta name="description" content={landing.metadescripcin || landing.excerptDePgina || `RutaXAsia, la agencia #1 de viajes a Japón desde ${landing.ciudad}. Tours a Japón y Corea del Sur con los mejores precios.`} />
+                <title>{seoTitle}</title>
+                <meta name="description" content={seoDesc} />
                 <link rel="canonical" href={`https://rutaxasia.com/${landing.slug}`} />
+                {/* Open Graph */}
+                <meta property="og:title" content={seoTitle} />
+                <meta property="og:description" content={seoDesc} />
+                <meta property="og:url" content={`https://rutaxasia.com/${landing.slug}`} />
+                <meta property="og:type" content="website" />
+                {/* Twitter Card */}
+                <meta name="twitter:title" content={seoTitle} />
+                <meta name="twitter:description" content={seoDesc} />
             </Helmet>
-            <Home
-                cityOverride={{
-                    city: landing.ciudad,
-                    title: landing.title_fld,
-                    excerpt: landing.excerptDePgina,
-                    whatsapp: landing.whatsappPersonalizado,
+            <LandingHome
+                landingData={{
+                    title: landing.title,
+                    excerpt: landing.excerpt,
+                    city: landing.city,
+                    whatsapp: landing.whatsapp,
                 }}
             />
         </>
     )
 }
-

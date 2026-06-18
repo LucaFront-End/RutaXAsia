@@ -394,6 +394,14 @@ a {
     letter-spacing: -0.5px;
 }
 
+/* Smaller title for dynamic CMS landings (long titles like "Viajes Baratos a Japón en Playa del Carmen") */
+.landing-hero-title {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    max-width: 500px;
+}
+
 .hero-excerpt {
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.95rem;

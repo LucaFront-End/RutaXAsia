@@ -29,13 +29,14 @@ function Footer() {
                     <div className="footer-links">
                         <h4>Viajes</h4>
                         <ul>
+                            <li><Link to="/viajes">Todos los Viajes</Link></li>
+                            <li><Link to="/viajes/japon">Viajes a Japón</Link></li>
+                            <li><Link to="/viajes/corea">Viajes a Corea</Link></li>
+                            <li><Link to="/viajes/china">Viajes a China</Link></li>
                             <li><Link to="/tours/sakura-2026">Sakura 2026</Link></li>
-                            <li><Link to="/tours/japon-corea-mayo-2026">Japón y Corea (Mayo)</Link></li>
-                            <li><Link to="/tours/corea-junio-2026">Corea (Junio)</Link></li>
                             <li><Link to="/tours/verano-japon-2026">Verano en Japón</Link></li>
-                            <li><Link to="/tours/corea-septiembre-2026">Corea (Septiembre)</Link></li>
+                            <li><Link to="/tours/corea-junio-2026">Corea (Junio)</Link></li>
                             <li><Link to="/tours/octubre-japon-2026">Japón Octubre</Link></li>
-                            <li><Link to="/tours/japon-corea-2026">Japón y Corea (Octubre)</Link></li>
                         </ul>
                     </div>
 
@@ -46,6 +47,7 @@ function Footer() {
                             <li><Link to="/blog">Blog</Link></li>
                             <li><Link to="/faq">Preguntas Frecuentes</Link></li>
                             <li><Link to="/contacto">Contacto</Link></li>
+                            <li><Link to="/zonas">Zonas</Link></li>
                             <li><Link to="/terminos-y-condiciones">Términos y Condiciones</Link></li>
                             <li><Link to="/aviso-de-privacidad">Aviso de Privacidad</Link></li>
                         </ul>

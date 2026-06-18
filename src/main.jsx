@@ -14,6 +14,11 @@ import BlogPost from './pages/BlogPost'
 import AvisoPrivacidad from './pages/AvisoPrivacidad'
 import TerminosCondiciones from './pages/TerminosCondiciones'
 import CityLanding from './pages/CityLanding'
+import Viajes from './pages/Viajes'
+import ViajesJapon from './pages/ViajesJapon'
+import ViajesCorea from './pages/ViajesCorea'
+import ViajesChina from './pages/ViajesChina'
+import Zonas from './pages/Zonas'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -30,6 +35,11 @@ createRoot(document.getElementById('root')).render(
                         <Route path="blog/:slug" element={<BlogPost />} />
                         <Route path="aviso-de-privacidad" element={<AvisoPrivacidad />} />
                         <Route path="terminos-y-condiciones" element={<TerminosCondiciones />} />
+                        <Route path="viajes" element={<Viajes />} />
+                        <Route path="viajes/japon" element={<ViajesJapon />} />
+                        <Route path="viajes/corea" element={<ViajesCorea />} />
+                        <Route path="viajes/china" element={<ViajesChina />} />
+                        <Route path="zonas" element={<Zonas />} />
                         <Route path=":citySlug" element={<CityLanding />} />
                     </Route>
                 </Routes>

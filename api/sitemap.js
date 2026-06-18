@@ -11,11 +11,16 @@ const STATIC_PAGES = [
     { loc: '/blog',                   priority: '0.8',  changefreq: 'daily'   },
     { loc: '/faq',                    priority: '0.6',  changefreq: 'monthly' },
     { loc: '/contacto',               priority: '0.7',  changefreq: 'monthly' },
+    { loc: '/viajes',                 priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/japon',           priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/corea',           priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/china',           priority: '0.5',  changefreq: 'monthly' },
+    { loc: '/zonas',                  priority: '0.8',  changefreq: 'weekly'  },
     { loc: '/aviso-de-privacidad',    priority: '0.3',  changefreq: 'yearly'  },
     { loc: '/terminos-y-condiciones', priority: '0.3',  changefreq: 'yearly'  },
 ];
 
-/* ── Hardcoded tour slugs as fallback (from tourData.js) ───────── */
+/* ── Hardcoded tour slugs as fallback ───────── */
 const STATIC_TOUR_SLUGS = [
     'sakura-2026',
     'japon-corea-mayo-2026',
@@ -27,7 +32,7 @@ const STATIC_TOUR_SLUGS = [
     'otono-japon-2026',
 ];
 
-/* ── Create Wix client (server-side, uses process.env) ─────────── */
+/* ── Create Wix client ─────────── */
 function getWixClient() {
     return createClient({
         modules: { posts, items },
@@ -38,32 +43,23 @@ function getWixClient() {
     });
 }
 
-/* ── Fetch tour slugs from Wix CMS "tours" collection ──────────── */
+/* ── Fetch tour slugs ──────────── */
 async function fetchTourSlugs(wixClient) {
     try {
-        const result = await wixClient.items
-            .query('tours')
-            .find();
-
-        const cmsSlugs = (result.items || [])
-            .map(item => item?.slug)
-            .filter(Boolean);
-
+        const result = await wixClient.items.query('tours').find();
+        const cmsSlugs = (result.items || []).map(item => item?.slug).filter(Boolean);
         if (cmsSlugs.length > 0) {
-            // Merge: CMS slugs + any static slugs not yet in CMS (belt & suspenders)
             const merged = new Set([...cmsSlugs, ...STATIC_TOUR_SLUGS]);
             return [...merged];
         }
-
-        // CMS collection is empty → use static fallback
         return STATIC_TOUR_SLUGS;
     } catch (error) {
-        console.error('[Sitemap] Error fetching tours from CMS:', error.message);
+        console.error('[Sitemap] Error fetching tours:', error.message);
         return STATIC_TOUR_SLUGS;
     }
 }
 
-/* ── Fetch blog post slugs from Wix Blog ───────────────────────── */
+/* ── Fetch blog post slugs ───────────────────────── */
 async function fetchBlogSlugs(wixClient) {
     try {
         const allSlugs = [];
@@ -97,31 +93,32 @@ async function fetchBlogSlugs(wixClient) {
     }
 }
 
-/* ── Fetch city landing slugs from Wix CMS ─────────────────────── */
-async function fetchCityLandingSlugs(wixClient) {
-    try {
-        const result = await wixClient.items
-            .query('LandingsdeCiudad')
-            .find();
+/* ── Build sitemap index XML ─────────────────────────────────────── */
+function buildSitemapIndex() {
+    const today = new Date().toISOString().split('T')[0];
 
-        return (result.items || [])
-            .map(item => item?.slug)
-            .filter(Boolean);
-    } catch (error) {
-        console.error('[Sitemap] Error fetching city landings:', error.message);
-        return [];
-    }
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${SITE_URL}/sitemap.xml?type=main</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-landings.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+</sitemapindex>`;
 }
 
-/* ── Build XML ─────────────────────────────────────────────────── */
-function buildSitemap(tourSlugs, blogEntries, cityLandings) {
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+/* ── Build main sitemap (static + tours + blog) ──────────────────── */
+function buildMainSitemap(tourSlugs, blogEntries) {
+    const today = new Date().toISOString().split('T')[0];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `;
 
-    // 1) Static pages
+    // Static pages
     for (const page of STATIC_PAGES) {
         xml += `  <url>
     <loc>${SITE_URL}${page.loc}</loc>
@@ -132,7 +129,7 @@ function buildSitemap(tourSlugs, blogEntries, cityLandings) {
 `;
     }
 
-    // 2) Tours (dynamic from CMS + static fallback)
+    // Tours
     for (const slug of tourSlugs) {
         xml += `  <url>
     <loc>${SITE_URL}/tours/${slug}</loc>
@@ -143,7 +140,7 @@ function buildSitemap(tourSlugs, blogEntries, cityLandings) {
 `;
     }
 
-    // 3) Blog posts (dynamic from Wix Blog CMS)
+    // Blog posts
     for (const entry of blogEntries) {
         const lastmod = entry.lastmod
             ? new Date(entry.lastmod).toISOString().split('T')[0]
@@ -157,17 +154,6 @@ function buildSitemap(tourSlugs, blogEntries, cityLandings) {
 `;
     }
 
-    // 4) City landings (dynamic from CMS)
-    for (const slug of cityLandings) {
-        xml += `  <url>
-    <loc>${SITE_URL}/${slug}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-`;
-    }
-
     xml += `</urlset>`;
     return xml;
 }
@@ -175,18 +161,25 @@ function buildSitemap(tourSlugs, blogEntries, cityLandings) {
 /* ── Vercel Serverless Handler ─────────────────────────────────── */
 export default async function handler(req, res) {
     try {
-        const wixClient = getWixClient();
+        const type = req.query?.type;
 
-        // Fetch tours + blog posts + city landings in parallel for speed
-        const [tourSlugs, blogEntries, cityLandings] = await Promise.all([
+        // If no ?type= parameter → return sitemap index
+        if (!type) {
+            const xml = buildSitemapIndex();
+            res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
+            res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+            return res.status(200).send(xml);
+        }
+
+        // ?type=main → return main sitemap (static + tours + blog)
+        const wixClient = getWixClient();
+        const [tourSlugs, blogEntries] = await Promise.all([
             fetchTourSlugs(wixClient),
             fetchBlogSlugs(wixClient),
-            fetchCityLandingSlugs(wixClient),
         ]);
 
-        const xml = buildSitemap(tourSlugs, blogEntries, cityLandings);
+        const xml = buildMainSitemap(tourSlugs, blogEntries);
 
-        // Cache for 1 hour, serve stale while revalidating
         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
         res.setHeader('Content-Type', 'application/xml; charset=utf-8');
         res.status(200).send(xml);

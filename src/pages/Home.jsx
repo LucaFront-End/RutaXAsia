@@ -528,22 +528,29 @@ function Home({ cityOverride } = {}) {
                         </Link>
                     </div>
 
-                    {/* Gallery Carousel */}
+                    {/* Country Gallery Cards (Japón, Corea, China) */}
                     <div className="hero-gallery-wrapper">
                         <div className="hero-gallery" key={`gallery-${currentTrip.id}`}>
-                            {currentTrip.gallery.map((item, j) => (
-                                <div className="hero-gcard" key={j} style={{ animationDelay: `${j * 0.15}s` }}>
+                            {[
+                                { title: 'Japón', flag: '🇯🇵', img: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=400&h=500&fit=crop', link: '/viajes/japon' },
+                                { title: 'Corea', flag: '🇰🇷', img: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=400&h=500&fit=crop', link: '/viajes/corea' },
+                                { title: 'China', flag: '🇨🇳', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=400&h=500&fit=crop', link: '/viajes/china', badge: 'Próximamente' },
+                            ].map((card, j) => (
+                                <Link
+                                    to={card.link}
+                                    className="hero-gcard"
+                                    key={j}
+                                    style={{ animationDelay: `${j * 0.15}s`, textDecoration: 'none', position: 'relative' }}
+                                >
                                     <div className="hero-gcard-header">
-                                        <span className="hero-gcard-title">{item.title}</span>
-                                        <span className="hero-gcard-stars">⭐⭐⭐⭐⭐</span>
+                                        <span className="hero-gcard-title">{card.flag} {card.title}</span>
+                                        {card.badge && <span className="hero-gcard-stars" style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.15)', padding: '2px 8px', borderRadius: '4px' }}>{card.badge}</span>}
+                                        {!card.badge && <span className="hero-gcard-stars">⭐⭐⭐⭐⭐</span>}
                                     </div>
                                     <div className="hero-gcard-imgbox">
-                                        <img src={item.img} alt={item.title} />
-                                        <button className="hero-gcard-bookmark" aria-label="Guardar">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z" /></svg>
-                                        </button>
+                                        <img src={card.img} alt={card.title} />
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     </div>

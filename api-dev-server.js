@@ -227,6 +227,142 @@ app.get('/api/blog-post', async (req, res) => {
     }
 });
 
+// ---- List all published landings from CMS ----
+app.get('/api/landings', async (req, res) => {
+    try {
+        const { items } = await import('@wix/data');
+        const wixClient = createClient({
+            modules: { items },
+            auth: ApiKeyStrategy({
+                siteId: process.env.VITE_WIX_SITE_ID,
+                apiKey: process.env.VITE_WIX_API_KEY,
+            }),
+        });
+
+        console.log('[API] Fetching landings from LandingsdeCiudad...');
+
+        // Paginate through ALL landings (Wix limits to 100 per page)
+        let allItems = [];
+        let result = await wixClient.items
+            .query('LandingsdeCiudad')
+            .limit(100)
+            .find();
+
+        allItems.push(...(result.items || []));
+
+        while (result.hasNext && result.hasNext()) {
+            result = await result.next();
+            allItems.push(...(result.items || []));
+        }
+
+        const landings = allItems
+            .filter(item => item.slug)
+            .map(item => ({
+                id: item._id,
+                title: item.title_fld || '',
+                excerpt: item.excerptDePgina || '',
+                city: item.ciudad || '',
+                state: item.estado || '',
+                slug: item.slug || '',
+                whatsapp: item.whatsappPersonalizado || '',
+                seoTitle: item.tituloDeSeo || '',
+                seoDescription: item.metadescripcin || '',
+            }));
+
+        console.log(`[API] Found ${landings.length} landings (from ${allItems.length} raw items)`);
+        res.json({ landings });
+    } catch (error) {
+        console.error('[API] Landings error:', error.message);
+        res.status(500).json({ landings: [], error: error.message });
+    }
+});
+
+// ---- Sitemap Index ----
+app.get('/api/sitemap.xml', async (req, res) => {
+    const today = new Date().toISOString().split('T')[0];
+    const SITE_URL = 'https://rutaxasia.com';
+
+    if (!req.query.type) {
+        // Return sitemap index
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${SITE_URL}/sitemap.xml?type=main</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-landings.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+        res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+        return res.send(xml);
+    }
+
+    // ?type=main → static + tours + blog (simplified for dev)
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${SITE_URL}/</loc><lastmod>${today}</lastmod><priority>1.0</priority></url>
+  <url><loc>${SITE_URL}/viajes</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/zonas</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/blog</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/nosotros</loc><lastmod>${today}</lastmod><priority>0.7</priority></url>
+  <url><loc>${SITE_URL}/contacto</loc><lastmod>${today}</lastmod><priority>0.7</priority></url>
+  <url><loc>${SITE_URL}/faq</loc><lastmod>${today}</lastmod><priority>0.6</priority></url>
+</urlset>`;
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.send(xml);
+});
+
+// ---- Sitemap Landings (100% dynamic) ----
+app.get('/api/sitemap-landings.xml', async (req, res) => {
+    try {
+        const { items } = await import('@wix/data');
+        const wixClient = createClient({
+            modules: { items },
+            auth: ApiKeyStrategy({
+                siteId: process.env.VITE_WIX_SITE_ID,
+                apiKey: process.env.VITE_WIX_API_KEY,
+            }),
+        });
+
+        const SITE_URL = 'https://rutaxasia.com';
+        const allItems = [];
+        let result = await wixClient.items.query('LandingsdeCiudad').limit(100).find();
+        allItems.push(...(result.items || []));
+        while (result.hasNext && result.hasNext()) {
+            result = await result.next();
+            allItems.push(...(result.items || []));
+        }
+
+        const landings = allItems.filter(item => item.slug);
+        console.log(`[API] Sitemap-landings: ${landings.length} URLs`);
+
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+`;
+        for (const item of landings) {
+            const lastmod = item._updatedDate
+                ? new Date(item._updatedDate).toISOString().split('T')[0]
+                : new Date().toISOString().split('T')[0];
+            xml += `  <url>
+    <loc>${SITE_URL}/${item.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+        }
+        xml += `</urlset>`;
+
+        res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+        res.send(xml);
+    } catch (error) {
+        console.error('[API] Sitemap-landings error:', error.message);
+        res.status(500).send('Error generating landings sitemap');
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`[API] Blog API dev server running on http://localhost:${PORT}`);
     console.log(`[API] Site ID: ${process.env.VITE_WIX_SITE_ID?.substring(0, 8)}...`);

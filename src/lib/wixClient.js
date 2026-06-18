@@ -102,6 +102,22 @@ export async function fetchCityLanding(slug) {
 export default wixClient
 
 /**
+ * Fetch all published landings from our server-side API.
+ * Used by Zonas hub, Footer, and dynamic navigation.
+ */
+export async function fetchAllLandings() {
+    try {
+        const res = await fetch('/api/landings')
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const data = await res.json()
+        return data.landings || []
+    } catch (error) {
+        console.error('[Landings] Error fetching landings:', error.message)
+        return []
+    }
+}
+
+/**
  * Fetch all published blog posts via our server-side API (avoids CORS).
  */
 export async function fetchBlogPosts() {
