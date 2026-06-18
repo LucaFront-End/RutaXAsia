@@ -271,17 +271,25 @@ export const PRECIOS = {
 
 /* ==========================================
    DESTINOS / EXPERIENCIAS DISPONIBLES
+   (with prices for Libre calculator)
    ========================================== */
-export const DESTINOS_DISPONIBLES = [
-    { name: 'Monte Fuji & Hakone', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=200&h=200&fit=crop' },
-    { name: 'Kamakura', img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=200&h=200&fit=crop' },
-    { name: 'Kioto Tradicional', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=200&h=200&fit=crop' },
-    { name: 'Nara', img: 'https://images.unsplash.com/photo-1624601573012-1f65b1b9504f?w=200&h=200&fit=crop' },
-    { name: 'Anime & Akihabara', img: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=200&h=200&fit=crop' },
-    { name: 'Parques (Disney / USJ)', img: 'https://images.unsplash.com/photo-1624601573012-1f65b1b9504f?w=200&h=200&fit=crop' },
-    { name: 'Compras en Tokio', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=200&h=200&fit=crop' },
-    { name: 'Osaka', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?w=200&h=200&fit=crop' },
+export const EXPERIENCIAS_DISPONIBLES = [
+    { id: 'fuji', name: 'Monte Fuji & Hakone', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&h=400&fit=crop', price: 3500, desc: 'Excursión al icónico Monte Fuji con parada en Hakone.' },
+    { id: 'kamakura', name: 'Kamakura', img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&h=400&fit=crop', price: 2800, desc: 'Templos y el Gran Buda de Kamakura.' },
+    { id: 'kioto', name: 'Kioto Tradicional', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=400&fit=crop', price: 4000, desc: 'Templos dorados, geishas y jardines zen.' },
+    { id: 'nara', name: 'Nara', img: 'https://images.unsplash.com/photo-1624601573012-1f65b1b9504f?w=400&h=400&fit=crop', price: 2500, desc: 'Parque de ciervos y templos milenarios.' },
+    { id: 'osaka', name: 'Osaka', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?w=400&h=400&fit=crop', price: 3200, desc: 'Street food, Dotonbori y castillo de Osaka.' },
+    { id: 'universal', name: 'Universal Studios', img: 'https://images.unsplash.com/photo-1565402170291-8491f14678db?w=400&h=400&fit=crop', price: 4500, desc: 'Universal Studios Japan con Nintendo World.' },
+    { id: 'disney', name: 'Disneyland & Disney Sea', img: 'https://images.unsplash.com/photo-1613823839451-1d5a7a6a1b31?w=400&h=400&fit=crop', price: 4800, desc: 'Tokyo Disneyland y DisneySea en un día mágico.' },
+    { id: 'hiroshima', name: 'Hiroshima & Miyajima', img: 'https://images.unsplash.com/photo-1576675466969-38eeae4b41f6?w=400&h=400&fit=crop', price: 5200, desc: 'Memorial de la Paz y el Torii flotante de Miyajima.' },
+    { id: 'akihabara', name: 'Anime & Akihabara', img: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=400&h=400&fit=crop', price: 1800, desc: 'El paraíso otaku: tiendas, arcades y cafés temáticos.' },
+    { id: 'tokio', name: 'Tokio Imprescindible', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=400&fit=crop', price: 3000, desc: 'Shibuya, Shinjuku, Asakusa y más.' },
+    { id: 'takayama', name: 'Takayama', img: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&h=400&fit=crop', price: 4200, desc: 'Los Alpes japoneses y pueblos tradicionales.' },
+    { id: 'inari', name: 'Fushimi Inari', img: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=400&h=400&fit=crop', price: 2000, desc: 'Miles de torii rojos en el famoso santuario.' },
 ]
+
+// Backward-compat alias for components that still use this
+export const DESTINOS_DISPONIBLES = EXPERIENCIAS_DISPONIBLES.map(e => ({ name: e.name, img: e.img }))
 
 /* ==========================================
    EXTRAS / COMPLEMENTOS
@@ -291,11 +299,12 @@ export const COMPLEMENTOS = [
     { title: 'Vuelos Internacionales', icon: '✈️', desc: 'Con la ayuda de nuestros expertos, elige la mejor opción para tu vuelo internacional.' },
     { title: 'Concierge / Servicios Especiales', icon: '🎩', desc: 'Transporte privado, reservaciones a eventos y actividades especiales.' },
     { title: 'Upgrade de Hospedaje', icon: '🏯', desc: 'Complementa tu viaje con una estancia en un ryokan tradicional o un hospedaje más exclusivo.' },
+    { title: 'Accesos VIP', icon: '⭐', desc: 'Acceso prioritario a atracciones, eventos y lugares exclusivos.' },
 ]
 
 export const ACTIVIDADES_EXTRAS = [
     { name: 'Renta Kimono', icon: '👘' },
-    { name: 'Ceremonia de Té', icon: '🍵' },
+    { name: 'Ceremonia de Té', icon: '🍵', price: 2500 },
     { name: 'Show de Geisha', icon: '🎭' },
     { name: 'Miradores', icon: '🏙️' },
     { name: 'Accesos VIP', icon: '⭐' },
@@ -317,6 +326,125 @@ export const FLEXIBILIDAD = [
 ]
 
 /* ==========================================
+   SIGNATURE — Experiencias Premium
+   ========================================== */
+export const SIGNATURE_EXPERIENCIAS = [
+    { title: 'Ryokan Tradicional', icon: '🏯', desc: 'Hospédate en un ryokan auténtico con tatami, onsen y cena kaiseki.' },
+    { title: 'Cena Kaiseki', icon: '🍱', desc: 'Gastronomía japonesa de alta cocina con múltiples tiempos y presentación artística.' },
+    { title: 'Onsen Privado', icon: '♨️', desc: 'Baños termales privados en entornos naturales espectaculares.' },
+    { title: 'Helicóptero', icon: '🚁', desc: 'Sobrevuela el Monte Fuji o la bahía de Tokio en helicóptero privado.' },
+    { title: 'Chef Privado', icon: '👨‍🍳', desc: 'Un chef preparará una experiencia gastronómica exclusiva para ti.' },
+    { title: 'Transporte Ejecutivo', icon: '🚗', desc: 'Traslados en vehículos premium con chofer privado.' },
+    { title: 'Guía Privado', icon: '🎌', desc: 'Un guía exclusivo dedicado a tu grupo durante todo el viaje.' },
+    { title: 'Reservas Exclusivas', icon: '🎫', desc: 'Acceso a restaurantes, eventos y lugares que no están abiertos al público general.' },
+]
+
+export const SIGNATURE_HOSPEDAJE = [
+    { category: '4 Estrellas Superior', stars: 4, icon: '🏨', desc: 'Hoteles de categoría superior con servicios premium.' },
+    { category: '5 Estrellas', stars: 5, icon: '🌟', desc: 'Los mejores hoteles de Japón con servicio excepcional.' },
+    { category: 'Boutique Hotels', stars: 5, icon: '🎨', desc: 'Hoteles boutique con diseño único y atención personalizada.' },
+    { category: 'Ryokan Premium', stars: 5, icon: '🏯', desc: 'La experiencia tradicional japonesa al más alto nivel.' },
+]
+
+export const SIGNATURE_JUAN = {
+    name: 'Juan Santiago',
+    title: 'Fundador de RutaXAsia',
+    experience: '+20 años creando experiencias únicas en Japón',
+    desc: 'Con más de dos décadas de experiencia viajando y organizando viajes a Japón, Juan Santiago diseña personalmente cada experiencia Signature, combinando su profundo conocimiento del país con un servicio excepcional.',
+    highlights: [
+        'Más de 20 años de experiencia en Japón',
+        'Cientos de viajes realizados',
+        'Conexiones locales exclusivas',
+        'Diseño personalizado de cada experiencia',
+    ],
+}
+
+/* ==========================================
+   GUIADO — Asistencia Features
+   ========================================== */
+export const GUIADO_ASISTENCIA = [
+    { title: 'Soporte durante el viaje', icon: '🛡️', desc: 'Nuestro equipo estará disponible para ayudarte en cualquier momento.' },
+    { title: 'Recomendaciones locales', icon: '📍', desc: 'Te compartimos nuestras mejores recomendaciones de restaurantes, tiendas y lugares secretos.' },
+    { title: 'Ayuda logística', icon: '🗂️', desc: 'Coordinamos tus traslados, reservaciones y tiempos para que todo fluya perfecto.' },
+]
+
+/* ==========================================
+   ACOMPAÑADO — Itinerario Día por Día
+   ========================================== */
+export const ITINERARIO_ACOMPANADO = [
+    { day: 1, title: 'Salida desde México', desc: 'Vuelo internacional desde CDMX hacia Japón.', icon: '✈️' },
+    { day: 2, title: 'Llegada a Osaka', desc: 'Bienvenida, traslado al hotel y tiempo libre para explorar.', icon: '🛬' },
+    { day: 3, title: 'Castillo de Osaka & Dotonbori', desc: 'Visita al Castillo de Osaka, paseo por Dotonbori y street food.', icon: '🏯' },
+    { day: 4, title: 'Universal Studios Japan', desc: 'Día completo en Universal Studios con Nintendo World.', icon: '🎢' },
+    { day: 5, title: 'Nara & Templo Todaiji', desc: 'Parque de ciervos, Gran Buda y santuarios milenarios.', icon: '🦌' },
+    { day: 6, title: 'Kioto: Templos & Geishas', desc: 'Fushimi Inari, Kinkaku-ji, barrio de Gion.', icon: '⛩️' },
+    { day: 7, title: 'Kioto: Arashiyama', desc: 'Bambú de Arashiyama, templo Tenryu-ji y paseo en bote.', icon: '🎋' },
+    { day: 8, title: 'Traslado a Tokio (Tren Bala)', desc: 'Viaje en Shinkansen a Tokio. Tarde libre en Shibuya.', icon: '🚄' },
+    { day: 9, title: 'Monte Fuji & Hakone', desc: 'Excursión al Monte Fuji, lago Ashi y teleférico en Hakone.', icon: '🗻' },
+    { day: 10, title: 'Tokio: Asakusa & Akihabara', desc: 'Templo Senso-ji, Nakamise-dori y cultura otaku.', icon: '🏙️' },
+    { day: 11, title: 'Disneyland o Disney Sea', desc: 'Día mágico en Tokyo Disneyland o DisneySea.', icon: '🏰' },
+    { day: 12, title: 'Kamakura & Gran Buda', desc: 'Gran Buda de Kamakura, templo Hasedera y playa.', icon: '🙏' },
+    { day: 13, title: 'Día libre en Tokio', desc: 'Compras, exploración libre o actividades opcionales.', icon: '🗼' },
+    { day: 14, title: 'Regreso a México', desc: 'Traslado al aeropuerto y vuelo de regreso.', icon: '🛫' },
+]
+
+export const ACOMPANADO_TODO_INCLUIDO = [
+    { item: 'Vuelo redondo desde CDMX', icon: '✈️' },
+    { item: '12 noches de hospedaje', icon: '🏨' },
+    { item: 'Desayuno buffet diario', icon: '🍳' },
+    { item: 'Todos los tours del itinerario', icon: '🗺️' },
+    { item: 'Universal Studios Japan', icon: '🎢' },
+    { item: 'Disneyland o Disney Sea', icon: '🏰' },
+    { item: 'JR Pass (tren bala)', icon: '🚄' },
+    { item: 'Seguro de viaje', icon: '🛡️' },
+    { item: 'Traslados aeropuerto-hotel', icon: '🚌' },
+    { item: 'Coordinador de viaje 24/7', icon: '👤' },
+    { item: 'eSIM Wi-Fi ilimitado', icon: '📶' },
+    { item: 'Guía digital completa', icon: '📱' },
+]
+
+export const ACOMPANADO_UPSELL = [
+    { title: 'Ceremonia del Té', icon: '🍵', desc: 'Participa en una auténtica ceremonia del té japonesa.' },
+    { title: 'Renta de Kimono', icon: '👘', desc: 'Viste un kimono tradicional y pasea por Kioto.' },
+    { title: 'Concierge Premium', icon: '🎩', desc: 'Servicios especiales, restaurantes y reservaciones exclusivas.' },
+    { title: 'Restaurantes Seleccionados', icon: '🍣', desc: 'Cenas en restaurantes de alta cocina japonesa.' },
+]
+
+/* ==========================================
+   EXPERIENCE HERO — Content per style
+   ========================================== */
+export const EXP_HEROES = {
+    libre: {
+        headline: 'Diseña tu propia aventura en Japón',
+        subheadline: 'Elige la duración de tu viaje y agrega únicamente las experiencias que realmente quieres vivir.',
+        cta: 'Arma tu viaje',
+        message: 'Tú decides cómo vivir Japón.',
+        heroImg: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=1920&h=900&fit=crop&q=85',
+    },
+    guiado: {
+        headline: 'Japón con libertad y acompañamiento',
+        subheadline: 'Disfruta Japón con una experiencia flexible que incluye acompañamiento y dos experiencias seleccionadas por ti.',
+        cta: 'Elige tus experiencias',
+        message: 'Viaja con libertad, pero nunca solo.',
+        heroImg: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&h=900&fit=crop&q=85',
+    },
+    acompanado: {
+        headline: 'Todo resuelto. Llegas y disfrutas.',
+        subheadline: 'Nuestro itinerario más completo para quienes desean descubrir Japón sin preocuparse por la planeación.',
+        cta: 'Ver itinerario completo',
+        message: 'Solo preocúpate por disfrutar Japón.',
+        heroImg: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=1920&h=900&fit=crop&q=85',
+    },
+    signature: {
+        headline: 'Un viaje diseñado personalmente para ti',
+        subheadline: 'Combinando más de 20 años de experiencia creando experiencias únicas en Japón. No se vende un paquete, se vende una experiencia.',
+        cta: 'Solicitar diseño personalizado',
+        message: 'La experiencia original de Juan Santiago.',
+        heroImg: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&h=900&fit=crop&q=85',
+    },
+}
+
+/* ==========================================
    HIGHLIGHTS STRIP (Bottom bar)
    ========================================== */
 export const HIGHLIGHTS_STRIP = [
@@ -327,3 +455,4 @@ export const HIGHLIGHTS_STRIP = [
     { icon: '💖', text: 'Seguridad y Respaldo' },
     { icon: '✨', text: 'Experiencias que Enamoran' },
 ]
+
