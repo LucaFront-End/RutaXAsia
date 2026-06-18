@@ -181,7 +181,6 @@ function Header() {
                             </div>
                         </div>
                     </li>
-                    <li><Link to="/viajes" onClick={closeMenu}>Destinos</Link></li>
                     <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
                     <li><Link to="/blog" onClick={closeMenu}>Blog</Link></li>
                     <li><Link to="/faq" onClick={closeMenu}>Preguntas Frecuentes</Link></li>
