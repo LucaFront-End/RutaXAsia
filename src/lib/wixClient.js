@@ -70,35 +70,6 @@ export async function submitPopupToCMS(data) {
     }
 }
 
-/**
- * Fetch a city landing page from Wix CMS collection "LandingsdeCiudad" by slug
- *
- * CMS Collection: "LandingsdeCiudad"
- * Field mapping (CSV column → field key):
- *   Titulo de pagina      → title_fld
- *   Excerpt de página     → excerptDePgina
- *   ciudad                → ciudad
- *   Estado                → estado
- *   Slug                  → slug
- *   Whatsapp personalizado → whatsappPersonalizado
- *   Titulo de SEO         → tituloDeSeo
- *   Metadescripción       → metadescripcin
- */
-export async function fetchCityLanding(slug) {
-    try {
-        const result = await wixClient.items
-            .query('LandingsdeCiudad')
-            .eq('slug', slug)
-            .find()
-
-        if (!result.items || result.items.length === 0) return null
-        return result.items[0]
-    } catch (error) {
-        console.error('Error fetching city landing:', error)
-        return null
-    }
-}
-
 export default wixClient
 
 /**
