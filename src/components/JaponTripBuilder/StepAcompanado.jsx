@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
     ITINERARIO_ACOMPANADO,
     ITINERARIO_ACOMPANADO_MOMIJI,
@@ -16,7 +17,15 @@ import './StepStyles.css'
  */
 export default function StepAcompanado({ season }) {
     const hero = EXP_HEROES.acompanado
-    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Acompañado`
+    const [selectedComps, setSelectedComps] = useState([])
+
+    const toggleComp = (title) => {
+        setSelectedComps(prev =>
+            prev.includes(title) ? prev.filter(x => x !== title) : [...prev, title]
+        )
+    }
+
+    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Acompañado${selectedComps.length ? ` + Extras: ${selectedComps.join(', ')}` : ''}`
     const itinerario = season.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : ITINERARIO_ACOMPANADO
     const todoIncluido = season.key === 'momiji' ? ACOMPANADO_TODO_INCLUIDO_MOMIJI : ACOMPANADO_TODO_INCLUIDO
 
@@ -128,15 +137,23 @@ export default function StepAcompanado({ season }) {
             {/* Upsell */}
             <section className="step3-section" style={{ background: '#faf9f6' }}>
                 <div className="container">
-                    <div className="step3-section-title">✨ Experiencias opcionales premium</div>
+                    <div className="step3-section-title">✨ Experiencias opcionales premium (selecciona para agregar)</div>
                     <div className="jtb-extras-grid">
-                        {ACOMPANADO_UPSELL.map((item, i) => (
-                            <div className="jtb-extra-card" key={i}>
-                                <div className="jtb-extra-icon">{item.icon}</div>
-                                <h4 className="jtb-extra-title">{item.title}</h4>
-                                <p className="jtb-extra-desc">{item.desc}</p>
-                            </div>
-                        ))}
+                        {ACOMPANADO_UPSELL.map((item, i) => {
+                            const isSelected = selectedComps.includes(item.title)
+                            return (
+                                <div
+                                    className={`jtb-extra-card${isSelected ? ' jtb-extra-card--selected' : ''}`}
+                                    key={i}
+                                    onClick={() => toggleComp(item.title)}
+                                >
+                                    {isSelected && <span className="jtb-extra-card-badge">✓</span>}
+                                    <div className="jtb-extra-icon">{item.icon}</div>
+                                    <h4 className="jtb-extra-title">{item.title}</h4>
+                                    <p className="jtb-extra-desc">{item.desc}</p>
+                                </div>
+                            )
+                        })}
                     </div>
                 </div>
             </section>

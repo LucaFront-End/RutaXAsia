@@ -1634,26 +1634,70 @@
 }
 
 /* Juan Santiago Editorial Section */
-.sig-juan-section {
-    padding: 140px 0;
+/* Juan y Ale — Anfitriones Signature Section */
+.sig-hosts-section {
+    padding: 120px 0;
     background: linear-gradient(180deg, #030305 0%, rgba(212, 175, 55, 0.03) 50%, #030305 100%);
     border-top: 1px solid rgba(212, 175, 55, 0.1);
     border-bottom: 1px solid rgba(212, 175, 55, 0.1);
     position: relative;
 }
 
-.sig-juan-content {
+.sig-hosts-content {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1fr 1.2fr;
     gap: 80px;
     align-items: center;
+    margin-bottom: 80px;
 }
 
-.sig-juan-text {
+.sig-hosts-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sig-hosts-photo-frame {
+    width: 100%;
+    max-width: 380px;
+    border-radius: 24px;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    background: rgba(13, 15, 17, 0.6);
+    padding: 16px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(212, 175, 55, 0.05);
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sig-hosts-photo-frame:hover {
+    transform: translateY(-8px) rotate(-1deg);
+    border-color: rgba(212, 175, 55, 0.5);
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.75), 0 0 50px rgba(212, 175, 55, 0.1);
+}
+
+.sig-hosts-main-img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 16px;
+    filter: brightness(0.95) saturate(1.1);
+}
+
+.sig-hosts-photo-caption {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(212, 175, 55, 0.6);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.sig-hosts-text {
     position: relative;
 }
 
-.sig-juan-subtitle {
+.sig-hosts-subtitle {
     font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 700;
@@ -1664,28 +1708,19 @@
     display: block;
 }
 
-.sig-juan-text h3 {
+.sig-hosts-text h3 {
     font-family: var(--font-heading);
-    font-size: 2.8rem;
+    font-size: 3.5rem;
     font-weight: 400;
     color: #f4efe0;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    letter-spacing: -0.02em;
 }
 
-.sig-juan-title {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: rgba(240, 230, 200, 0.6);
-    letter-spacing: 0.05em;
-    margin-bottom: 30px;
-    display: block;
-}
-
-.sig-juan-quote {
+.sig-hosts-lead-quote {
     font-family: var(--font-heading);
     font-style: italic;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     line-height: 1.6;
     color: #d4af37;
     margin-bottom: 30px;
@@ -1693,123 +1728,110 @@
     padding-left: 24px;
 }
 
-.sig-juan-desc {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: rgba(240, 230, 200, 0.7);
-    line-height: 1.8;
-    margin-bottom: 30px;
-}
-
-.sig-juan-highlights {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-}
-
-.sig-juan-highlights li {
-    font-family: var(--font-body);
-    font-size: 0.92rem;
-    color: rgba(240, 230, 200, 0.85);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.sig-juan-highlights li::before {
-    content: '✓';
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: rgba(212, 175, 55, 0.15);
-    color: #d4af37;
-    font-size: 0.75rem;
-    font-weight: 900;
-    flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
-}
-
-.sig-juan-visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-/* Framed museum monograms visual */
-.sig-juan-museum-frame {
-    width: 320px;
-    height: 380px;
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px solid rgba(212, 175, 55, 0.15);
-    border-radius: 12px;
-    padding: 24px;
-    position: relative;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+.sig-hosts-bios {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 20px;
 }
 
-.sig-juan-museum-frame::before {
-    content: '';
-    position: absolute;
-    inset: 12px;
-    border: 1px solid rgba(212, 175, 55, 0.05);
-    border-radius: 8px;
-    pointer-events: none;
+.sig-host-bio-card {
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(212, 175, 55, 0.06);
+    border-radius: 18px;
+    padding: 20px 24px;
+    transition: all 0.4s ease;
 }
 
-.sig-museum-corner-tl { position: absolute; top: 12px; left: 12px; width: 12px; height: 12px; border-top: 1.5px solid #d4af37; border-left: 1.5px solid #d4af37; }
-.sig-museum-corner-tr { position: absolute; top: 12px; right: 12px; width: 12px; height: 12px; border-top: 1.5px solid #d4af37; border-right: 1.5px solid #d4af37; }
-.sig-museum-corner-bl { position: absolute; bottom: 12px; left: 12px; width: 12px; height: 12px; border-bottom: 1.5px solid #d4af37; border-left: 1.5px solid #d4af37; }
-.sig-museum-corner-br { position: absolute; bottom: 12px; right: 12px; width: 12px; height: 12px; border-bottom: 1.5px solid #d4af37; border-right: 1.5px solid #d4af37; }
-
-.sig-juan-museum-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: rgba(212, 175, 55, 0.4);
-    letter-spacing: 0.15em;
-    padding: 0 4px;
+.sig-host-bio-card:hover {
+    background: rgba(212, 175, 55, 0.02);
+    border-color: rgba(212, 175, 55, 0.15);
+    transform: translateX(4px);
 }
 
-.sig-juan-badge {
-    align-self: center;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: 2px solid rgba(212, 175, 55, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4.5rem;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 70%);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(212, 175, 55, 0.05);
-    position: relative;
-    z-index: 2;
-    transition: transform 0.5s var(--ease-out);
-}
-
-.sig-juan-museum-frame:hover .sig-juan-badge {
-    transform: scale(1.06) rotate(3deg);
-}
-
-.sig-juan-museum-footer {
-    text-align: center;
+.sig-host-bio-card h4 {
     font-family: var(--font-heading);
-    font-style: italic;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
+    font-weight: 500;
     color: #f4efe0;
-    padding-bottom: 4px;
+    margin: 0 0 8px 0;
+}
+
+.sig-host-bio-card p {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: rgba(240, 230, 200, 0.65);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Gallery Section */
+.sig-gallery-container {
+    margin-top: 60px;
+    border-top: 1px dashed rgba(212, 175, 55, 0.15);
+    padding-top: 60px;
+}
+
+.sig-gallery-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #f4efe0;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sig-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.sig-gallery-item {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+.sig-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sig-gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.sig-gallery-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(3, 3, 5, 0.8) 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sig-gallery-item:hover .sig-gallery-item-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.sig-gallery-item-overlay span {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #d4af37;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
 /* Invitation CTA Section */
@@ -1990,9 +2012,10 @@
     .sig-intro-grid { grid-template-columns: 1fr; gap: 30px; }
     .sig-pass-includes-grid { grid-template-columns: repeat(2, 1fr); }
     .sig-hosp-grid { grid-template-columns: repeat(2, 1fr); }
-    .sig-juan-content { grid-template-columns: 1fr; gap: 40px; }
+    .sig-hosts-content { grid-template-columns: 1fr; gap: 40px; }
     .sig-interest-grid { grid-template-columns: 1fr; }
     .sig-exp-grid { grid-template-columns: repeat(2, 1fr); }
+    .sig-gallery-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 600px) {
@@ -2003,13 +2026,13 @@
     .sig-pass-includes-grid { grid-template-columns: 1fr; }
     .sig-hosp-grid { grid-template-columns: 1fr; }
     .sig-exp-grid { grid-template-columns: 1fr; }
-    .sig-juan-museum-frame { width: 100%; max-width: 320px; }
+    .sig-gallery-grid { grid-template-columns: 1fr; }
     .sig-cta-invitation { padding: 40px 20px; }
     .sig-hero-title { font-size: 2.4rem; }
     .sig-hero-title span { font-size: 2rem; }
     
     .step3-hero-headline { font-size: 1.85rem; }
-    .sig-juan-text h3 { font-size: 1.6rem; }
+    .sig-hosts-text h3 { font-size: 2.2rem; }
     .sig-cta-headline { font-size: 1.8rem; }
     .step3-cta-headline { font-size: 1.8rem; }
     .acomp-shinkansen-timeline { padding-left: 48px; }
@@ -2017,4 +2040,553 @@
     .acomp-railway-track { left: 17px; }
     .acomp-station-card { padding: 18px 22px; }
 }
+
+/* ==================================
+   GUIADO — Summary Ticket & Pricing
+   ================================== */
+.guiado-summary-ticket {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(12, 14, 22, 0.08);
+    border-radius: 24px;
+    padding: 24px 30px;
+    max-width: 500px;
+    width: 100%;
+    margin: 20px auto 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    text-align: left;
+    backdrop-filter: blur(10px);
+    border-top: 3px solid var(--jtb-primary);
+}
+
+.guiado-summary-header h4 {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    text-align: center;
+    letter-spacing: -0.2px;
+}
+
+.guiado-summary-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.guiado-summary-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(12, 14, 22, 0.08);
+}
+
+.guiado-summary-line:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.guiado-summary-line-dot {
+    margin-right: 8px;
+    font-size: 0.85rem;
+}
+
+.guiado-summary-line-name {
+    flex: 1;
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.guiado-summary-line-status {
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.guiado-summary-line-status--free {
+    background: rgba(45, 106, 79, 0.08);
+    color: #2d6a4f;
+}
+
+.guiado-summary-line-status--paid {
+    background: rgba(214, 51, 108, 0.08);
+    color: var(--jtb-primary);
+}
+
+.guiado-summary-total {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px solid var(--jtb-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.guiado-summary-total strong {
+    color: var(--jtb-primary);
+    font-size: 1.15rem;
+}
+
+/* Clickable extras / complementos styling */
+.jtb-extra-card {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.jtb-extra-card--selected {
+    border-color: var(--jtb-primary) !important;
+    background: #fff !important;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06) !important;
+    transform: translateY(-5px);
+}
+
+.jtb-extra-card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--jtb-primary);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    animation: jtbBadgePulse 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes jtbBadgePulse {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ==================================
+   CHECKOUT MODAL & BUTTONS
+   ================================== */
+.libre-calc-checkout-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 16px 20px;
+    background: #000;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border-radius: 16px;
+    border: 2px solid var(--jtb-primary);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.libre-calc-checkout-btn:hover {
+    transform: translateY(-3px);
+    background: var(--jtb-primary);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    border-color: transparent;
+}
+
+.step3-cta-checkout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 48px;
+    background: #000;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 16px;
+    border: 2px solid var(--jtb-primary);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    cursor: pointer;
+}
+
+.step3-cta-checkout-btn:hover {
+    transform: translateY(-4px) scale(1.02);
+    background: var(--jtb-primary);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.22);
+    border-color: transparent;
+}
+
+/* Modal Layout */
+.jtb-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 14, 22, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.jtb-modal-card {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(12, 14, 22, 0.08);
+    border-radius: 28px;
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 40px;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5);
+    animation: jtbModalEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes jtbModalEntry {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.jtb-modal-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: rgba(12, 14, 22, 0.4);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s;
+}
+
+.jtb-modal-close:hover {
+    color: var(--jtb-primary);
+}
+
+.jtb-modal-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.jtb-modal-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin: 0 0 6px 0;
+    letter-spacing: -0.3px;
+}
+
+.jtb-modal-header p {
+    font-size: 0.9rem;
+    color: rgba(12, 14, 22, 0.5);
+    margin: 0;
+}
+
+/* Pricing summary card inside modal */
+.jtb-checkout-summary {
+    background: #faf9f6;
+    border-radius: 20px;
+    padding: 22px 24px;
+    margin-bottom: 30px;
+    border: 1px dashed rgba(12, 14, 22, 0.08);
+}
+
+.jtb-checkout-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    padding: 4px 0;
+    color: rgba(12, 14, 22, 0.6);
+}
+
+.jtb-checkout-summary-row strong {
+    color: var(--color-dark);
+    font-weight: 700;
+}
+
+.jtb-checkout-summary-divider {
+    height: 1px;
+    border-bottom: 1px dashed rgba(12, 14, 22, 0.08);
+    margin: 10px 0;
+}
+
+.jtb-checkout-summary-row.highlight {
+    font-size: 1rem;
+    font-weight: 850;
+    color: var(--jtb-primary);
+}
+
+.jtb-checkout-summary-row.installment {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #2d6a4f;
+    background: rgba(45, 106, 79, 0.06);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+/* Form sections */
+.jtb-form-section {
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(12, 14, 22, 0.06);
+    padding-bottom: 24px;
+}
+
+.jtb-form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 16px;
+}
+
+.jtb-form-section h4 {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--jtb-primary);
+    margin: 0 0 16px 0;
+}
+
+.jtb-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex: 1;
+}
+
+.jtb-input-group label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-dark);
+}
+
+.jtb-input-group input {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(12, 14, 22, 0.12);
+    font-size: 0.92rem;
+    background: #fff;
+    color: var(--color-dark);
+    transition: all 0.3s;
+}
+
+.jtb-input-group input:focus {
+    outline: none;
+    border-color: var(--jtb-primary);
+    box-shadow: 0 0 0 3px rgba(214, 51, 108, 0.1);
+}
+
+.jtb-input-group input.input-error {
+    border-color: #d6336c;
+    background: rgba(214, 51, 108, 0.02);
+}
+
+.jtb-input-row {
+    display: flex;
+    gap: 16px;
+}
+
+.error-text {
+    font-size: 0.72rem;
+    color: #d6336c;
+    font-weight: 600;
+}
+
+.jtb-checkout-disclaimer {
+    font-size: 0.75rem;
+    color: rgba(12, 14, 22, 0.45);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.jtb-checkout-submit-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 18px;
+    background: var(--jtb-primary);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.jtb-checkout-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.16);
+    filter: brightness(1.08);
+}
+
+/* Status views: Processing, Success, Error */
+.jtb-modal-status-view {
+    text-align: center;
+    padding: 30px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.jtb-modal-status-view h3 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin: 24px 0 10px;
+}
+
+.jtb-modal-status-view p {
+    font-size: 0.95rem;
+    color: rgba(12, 14, 22, 0.6);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 0 20px;
+}
+
+.jtb-checkout-loader {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(12, 14, 22, 0.08);
+    border-top-color: var(--jtb-primary);
+    border-radius: 50%;
+    animation: jtbSpin 1s linear infinite;
+}
+
+@keyframes jtbSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Success Checkmark Circle */
+.jtb-success-checkmark {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(45, 106, 79, 0.1);
+    color: #2d6a4f;
+    font-size: 2.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: jtbPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Error Cross Circle */
+.jtb-error-cross {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(214, 51, 108, 0.1);
+    color: #d6336c;
+    font-size: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 300;
+    line-height: 1;
+    animation: jtbPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes jtbPopIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.jtb-success-ticket {
+    background: #fff;
+    border: 1px solid rgba(12, 14, 22, 0.08);
+    border-radius: 20px;
+    padding: 20px 24px;
+    width: 100%;
+    max-width: 440px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    text-align: left;
+}
+
+.ticket-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(12, 14, 22, 0.06);
+    font-size: 0.88rem;
+}
+
+.ticket-line:last-child {
+    border-bottom: none;
+}
+
+.ticket-line span:first-child {
+    color: rgba(12, 14, 22, 0.45);
+    font-weight: 600;
+}
+
+.ticket-line span:last-child {
+    font-weight: 700;
+    color: var(--color-dark);
+}
+
+.ticket-line .status-badge {
+    background: rgba(45, 106, 79, 0.08);
+    color: #2d6a4f;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+}
+
+.ticket-line .status-highlight {
+    color: #2d6a4f !important;
+}
+
+.success-note {
+    font-size: 0.82rem !important;
+    color: rgba(12, 14, 22, 0.4) !important;
+}
+
+.jtb-success-close-btn, .jtb-error-retry-btn {
+    padding: 14px 28px;
+    background: var(--color-dark);
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.jtb-success-close-btn:hover, .jtb-error-retry-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* Tablet & Mobile responsive overrides */
+@media (max-width: 600px) {
+    .jtb-modal-card {
+        padding: 30px 20px;
+    }
+    .jtb-input-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .step3-cta-checkout-btn {
+        width: 100%;
+        padding: 16px 20px;
+    }
+}
+
 

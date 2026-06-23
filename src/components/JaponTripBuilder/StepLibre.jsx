@@ -8,6 +8,7 @@ import {
     WHATSAPP_PHONE,
 } from '../../data/japonData'
 import './StepStyles.css'
+import CheckoutModal from './CheckoutModal'
 
 /**
  * StepLibre — Step 3 for "Libre" experience.
@@ -16,6 +17,14 @@ import './StepStyles.css'
 export default function StepLibre({ season, temporadaKey }) {
     const [selectedDuration, setSelectedDuration] = useState(null)
     const [addedExperiences, setAddedExperiences] = useState([])
+    const [selectedComps, setSelectedComps] = useState([])
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
+    const toggleComp = (title) => {
+        setSelectedComps(prev =>
+            prev.includes(title) ? prev.filter(x => x !== title) : [...prev, title]
+        )
+    }
 
     const hero = EXP_HEROES.libre
     const pricing = PRECIOS[temporadaKey]?.libre
@@ -43,7 +52,7 @@ export default function StepLibre({ season, temporadaKey }) {
     const passBadges = ['', 'Más Popular 🌟', '', 'Recomendado 🔥']
 
     // Build WhatsApp message
-    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Libre${selectedPkg ? ` con el ${passNames[selectedDuration]} (${selectedPkg.days})` : ''}${addedItems.length ? ` agregando: ${addedItems.map(e => e.name).join(', ')}` : ''}`
+    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Libre${selectedPkg ? ` con el ${passNames[selectedDuration]} (${selectedPkg.days})` : ''}${addedItems.length ? ` agregando: ${addedItems.map(e => e.name).join(', ')}` : ''}${selectedComps.length ? ` + Extras: ${selectedComps.join(', ')}` : ''}`
 
     return (
         <>
@@ -149,15 +158,23 @@ export default function StepLibre({ season, temporadaKey }) {
 
                             {/* Complementos */}
                             <div>
-                                <div className="step3-section-title">✨ Completa tu experiencia</div>
+                                <div className="step3-section-title">✨ Completa tu experiencia (opcionales)</div>
                                 <div className="jtb-extras-grid">
-                                    {COMPLEMENTOS.map((item, i) => (
-                                        <div className="jtb-extra-card" key={i}>
-                                            <div className="jtb-extra-icon">{item.icon}</div>
-                                            <h4 className="jtb-extra-title">{item.title}</h4>
-                                            <p className="jtb-extra-desc">{item.desc}</p>
-                                        </div>
-                                    ))}
+                                    {COMPLEMENTOS.map((item, i) => {
+                                        const isSelected = selectedComps.includes(item.title)
+                                        return (
+                                            <div
+                                                className={`jtb-extra-card${isSelected ? ' jtb-extra-card--selected' : ''}`}
+                                                key={i}
+                                                onClick={() => toggleComp(item.title)}
+                                            >
+                                                {isSelected && <span className="jtb-extra-card-badge">✓</span>}
+                                                <div className="jtb-extra-icon">{item.icon}</div>
+                                                <h4 className="jtb-extra-title">{item.title}</h4>
+                                                <p className="jtb-extra-desc">{item.desc}</p>
+                                            </div>
+                                        )
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -226,19 +243,43 @@ export default function StepLibre({ season, temporadaKey }) {
                                     <span className="libre-calc-barcode-num">JAC-{temporadaKey.toUpperCase()}-LIBRE</span>
                                 </div>
 
-                                <a
-                                    href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
-                                    className="libre-calc-cta"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    💬 Cotizar mi Viaje Libre
-                                </a>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+                                    <a
+                                        href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
+                                        className="libre-calc-cta"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        💬 Cotizar por WhatsApp
+                                    </a>
+                                    {totalPrice > 0 && (
+                                        <button
+                                            type="button"
+                                            className="libre-calc-checkout-btn"
+                                            onClick={() => setIsCheckoutOpen(true)}
+                                        >
+                                            💳 Apartar y Pagar Anticipo
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+            
+            <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                season={season}
+                estilo="Libre"
+                totalPrice={totalPrice}
+                desglose={
+                    `Pase: ${selectedPkg ? selectedPkg.days : ''}. ` +
+                    `Experiencias: ${addedItems.map(e => e.name).join(', ')}. ` +
+                    `Extras: ${selectedComps.join(', ')}.`
+                }
+            />
         </>
     )
 }

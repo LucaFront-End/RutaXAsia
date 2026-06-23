@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import {
+    PRECIOS,
     EXPERIENCIAS_DISPONIBLES,
     GUIADO_ASISTENCIA,
     COMPLEMENTOS,
@@ -8,6 +9,7 @@ import {
     WHATSAPP_PHONE,
 } from '../../data/japonData'
 import './StepStyles.css'
+import CheckoutModal from './CheckoutModal'
 
 /**
  * StepGuiado — Step 3 for "Guiado" experience.
@@ -15,21 +17,43 @@ import './StepStyles.css'
  */
 export default function StepGuiado({ season, temporadaKey }) {
     const [selectedExps, setSelectedExps] = useState([])
+    const [selectedComps, setSelectedComps] = useState([])
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
+    const toggleComp = (title) => {
+        setSelectedComps(prev =>
+            prev.includes(title) ? prev.filter(x => x !== title) : [...prev, title]
+        )
+    }
 
     const hero = EXP_HEROES.guiado
 
     const toggleExp = (id) => {
         setSelectedExps(prev => {
             if (prev.includes(id)) return prev.filter(x => x !== id)
-            if (prev.length >= 2) return prev // Max 2
             return [...prev, id]
         })
     }
 
-    const canSelect = selectedExps.length < 2
-    const selectedNames = selectedExps.map(id => EXPERIENCIAS_DISPONIBLES.find(e => e.id === id)?.name).filter(Boolean)
+    const formatPrice = (n) => `$${n.toLocaleString('es-MX')}`
 
-    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Guiado${selectedNames.length ? ` con experiencias: ${selectedNames.join(', ')}` : ''}`
+    const includedNames = selectedExps.slice(0, 2).map(id => EXPERIENCIAS_DISPONIBLES.find(e => e.id === id)?.name).filter(Boolean)
+    const extraNames = selectedExps.slice(2).map(id => EXPERIENCIAS_DISPONIBLES.find(e => e.id === id)?.name).filter(Boolean)
+    const extraItems = selectedExps.slice(2).map(id => EXPERIENCIAS_DISPONIBLES.find(e => e.id === id)).filter(Boolean)
+    const extraTotal = extraItems.reduce((sum, item) => sum + item.price, 0)
+
+    let experiencesDetail = ''
+    if (includedNames.length) {
+        experiencesDetail += ` con experiencias incluidas: ${includedNames.join(', ')}`
+    }
+    if (extraNames.length) {
+        experiencesDetail += ` y experiencias adicionales: ${extraNames.join(', ')} (Costo extra estimado: ${formatPrice(extraTotal)} MXN)`
+    }
+    if (selectedComps.length) {
+        experiencesDetail += ` + Extras: ${selectedComps.join(', ')}`
+    }
+
+    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Guiado${experiencesDetail}`
 
     // Experiencias recomendadas/badged
     const badgesMap = {
@@ -85,42 +109,97 @@ export default function StepGuiado({ season, temporadaKey }) {
             {/* 2 Experience Selector */}
             <section className="step3-section">
                 <div className="container">
-                    <div className="step3-section-title">🌸 Elige tus 2 experiencias incluidas</div>
+                    <div className="step3-section-title">🌸 Elige tus experiencias incluidas y adicionales</div>
 
                     <div className="guiado-selector-info-wrapper">
-                        <div className={`guiado-selector-ring-dashboard${selectedExps.length === 2 ? ' guiado-selector-ring-dashboard--complete' : ''}`}>
-                            <div className="guiado-selector-ring-value">{selectedExps.length} / 2</div>
-                            <div className="guiado-selector-ring-text">EXPERIENCIAS</div>
+                        <div className={`guiado-selector-ring-dashboard${selectedExps.length >= 2 ? ' guiado-selector-ring-dashboard--complete' : ''}`}>
+                            <div className="guiado-selector-ring-value">
+                                {selectedExps.length > 2 ? `${selectedExps.length}` : `${selectedExps.length} / 2`}
+                            </div>
+                            <div className="guiado-selector-ring-text">
+                                {selectedExps.length === 1 ? 'EXPERIENCIA' : 'EXPERIENCIAS'}
+                            </div>
                         </div>
                         <div className="guiado-selector-status-text">
-                            {selectedExps.length === 2
-                                ? `¡Listo! Has seleccionado: ${selectedNames.join(' y ')}`
+                            {selectedExps.length === 0
+                                ? 'Haz clic en las fotos del catálogo para incluir experiencias en tu pase (2 incluidas sin costo extra)'
                                 : selectedExps.length === 1
-                                    ? `Excelente. Selecciona 1 experiencia más. Activa: ${selectedNames[0]}`
-                                    : 'Haz clic en las fotos del catálogo para incluir 2 experiencias en tu pase'
+                                    ? `Excelente. Tienes 1 experiencia seleccionada. Elige 1 más gratis. Activa: ${includedNames[0]}`
+                                    : selectedExps.length === 2
+                                        ? `¡Perfecto! Tus 2 experiencias incluidas: ${includedNames.join(' y ')}`
+                                        : `¡Excelente! 2 incluidas gratis y ${extraNames.length} adicional(es) con costo extra.`
                             }
                         </div>
+
+                        {/* Summary Ticket */}
+                        {selectedExps.length > 0 && (
+                            <div className="guiado-summary-ticket animate-slide-in">
+                                <div className="guiado-summary-header">
+                                    <h4>📋 Resumen de tu Selección</h4>
+                                </div>
+                                <div className="guiado-summary-lines">
+                                    {selectedExps.map((id, index) => {
+                                        const exp = EXPERIENCIAS_DISPONIBLES.find(e => e.id === id)
+                                        if (!exp) return null
+                                        const isFree = index < 2
+                                        return (
+                                            <div className="guiado-summary-line" key={id}>
+                                                <span className="guiado-summary-line-dot">🌸</span>
+                                                <span className="guiado-summary-line-name">{exp.name}</span>
+                                                <span className={`guiado-summary-line-status ${isFree ? 'guiado-summary-line-status--free' : 'guiado-summary-line-status--paid'}`}>
+                                                    {isFree ? 'Incluida (Gratis)' : `+ ${formatPrice(exp.price)}`}
+                                                </span>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                {extraTotal > 0 && (
+                                    <div className="guiado-summary-total">
+                                        <span>Total Adicional Estimado:</span>
+                                        <strong>{formatPrice(extraTotal)} MXN</strong>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     <div className="guiado-exp-grid">
                         {EXPERIENCIAS_DISPONIBLES.map(exp => {
                             const isSelected = selectedExps.includes(exp.id)
-                            const isDisabled = !canSelect && !isSelected
+                            const selIndex = selectedExps.indexOf(exp.id)
+                            const isIncluded = isSelected && selIndex < 2
+                            const isAdditional = isSelected && selIndex >= 2
                             return (
                                 <div
                                     key={exp.id}
-                                    className={`guiado-exp-card${isSelected ? ' guiado-exp-card--selected' : ''}${isDisabled ? ' guiado-exp-card--disabled' : ''}`}
+                                    className={`guiado-exp-card${isSelected ? ' guiado-exp-card--selected' : ''}`}
                                     onClick={() => toggleExp(exp.id)}
                                 >
                                     {badgesMap[exp.id] && (
                                         <span className="guiado-exp-badge-tag">{badgesMap[exp.id]}</span>
                                     )}
-                                    <div className="guiado-exp-card-badge">✓ Incluida</div>
+                                    {isSelected && (
+                                        <div className="guiado-exp-card-badge" style={isAdditional ? { background: '#222' } : {}}>
+                                            {isIncluded ? '✓ Incluida' : `✓ Adicional (+${formatPrice(exp.price)})`}
+                                        </div>
+                                    )}
                                     <div className="guiado-exp-card-img">
                                         <img src={exp.img} alt={exp.name} loading="lazy" />
                                     </div>
                                     <div className="guiado-exp-card-body">
                                         <div className="guiado-exp-card-name">{exp.name}</div>
+                                        <div className="guiado-exp-card-price" style={{
+                                            fontSize: '0.9rem',
+                                            fontWeight: '800',
+                                            color: isIncluded ? '#2d6a4f' : 'var(--jtb-primary)',
+                                            marginBottom: '6px'
+                                        }}>
+                                            {isIncluded ? (
+                                                <span className="guiado-price-included">✨ Incluida gratis</span>
+                                            ) : (
+                                                <span className="guiado-price-additional">{formatPrice(exp.price)} MXN</span>
+                                            )}
+                                        </div>
                                         <div className="guiado-exp-card-desc">{exp.desc}</div>
                                     </div>
                                 </div>
@@ -149,15 +228,23 @@ export default function StepGuiado({ season, temporadaKey }) {
             {/* Extras */}
             <section className="step3-section">
                 <div className="container">
-                    <div className="step3-section-title">✨ Agrega experiencias adicionales (con costo extra)</div>
+                    <div className="step3-section-title">✨ Completa tu experiencia (opcionales)</div>
                     <div className="jtb-extras-grid">
-                        {COMPLEMENTOS.map((item, i) => (
-                            <div className="jtb-extra-card" key={i}>
-                                <div className="jtb-extra-icon">{item.icon}</div>
-                                <h4 className="jtb-extra-title">{item.title}</h4>
-                                <p className="jtb-extra-desc">{item.desc}</p>
-                            </div>
-                        ))}
+                        {COMPLEMENTOS.map((item, i) => {
+                            const isSelected = selectedComps.includes(item.title)
+                            return (
+                                <div
+                                    className={`jtb-extra-card${isSelected ? ' jtb-extra-card--selected' : ''}`}
+                                    key={i}
+                                    onClick={() => toggleComp(item.title)}
+                                >
+                                    {isSelected && <span className="jtb-extra-card-badge">✓</span>}
+                                    <div className="jtb-extra-icon">{item.icon}</div>
+                                    <h4 className="jtb-extra-title">{item.title}</h4>
+                                    <p className="jtb-extra-desc">{item.desc}</p>
+                                </div>
+                            )
+                        })}
                     </div>
                 </div>
             </section>
@@ -166,20 +253,46 @@ export default function StepGuiado({ season, temporadaKey }) {
             <section className="step3-cta-section">
                 <div className="container">
                     <h3 className="step3-cta-headline">¿Listo para vivir {season.name} Guiado?</h3>
-                    <p className="step3-cta-sub">Escríbenos y armamos tu experiencia contigo.</p>
-                    <a
-                        href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
-                        className="step3-cta-btn"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        💬 Cotizar tu Viaje Guiado
-                    </a>
-                    <div className="step3-cta-phone">
+                    <p className="step3-cta-sub">Escríbenos para armar tu cotización o aparta tu lugar ahora mismo.</p>
+                    
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px', marginTop: '24px' }}>
+                        <a
+                            href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
+                            className="step3-cta-btn"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ margin: 0 }}
+                        >
+                            💬 Cotizar por WhatsApp
+                        </a>
+                        
+                        <button
+                            type="button"
+                            className="step3-cta-checkout-btn"
+                            onClick={() => setIsCheckoutOpen(true)}
+                        >
+                            💳 Apartar y Pagar Anticipo
+                        </button>
+                    </div>
+                    
+                    <div className="step3-cta-phone" style={{ marginTop: '24px' }}>
                         o llámanos al <a href={`tel:+52${WHATSAPP_PHONE.replace(/\s/g, '')}`}>{WHATSAPP_PHONE}</a>
                     </div>
                 </div>
             </section>
+
+            <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                season={season}
+                estilo="Guiado"
+                totalPrice={(PRECIOS[temporadaKey]?.libre?.packages?.[0]?.priceNum || 22000) + extraTotal}
+                desglose={
+                    `Incluidas: ${includedNames.join(', ')}. ` +
+                    `Adicionales: ${extraNames.join(', ')} (+${formatPrice(extraTotal)} MXN). ` +
+                    `Extras: ${selectedComps.join(', ')}.`
+                }
+            />
         </>
     )
 }

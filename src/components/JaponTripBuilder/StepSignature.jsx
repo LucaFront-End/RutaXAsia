@@ -169,41 +169,64 @@ export default function StepSignature({ season }) {
                 </div>
             </section>
 
-            {/* Juan Santiago Profile spotlight */}
-            <section className="sig-juan-section">
+            {/* Juan y Ale Profile Spotlight & Gallery */}
+            <section className="sig-hosts-section">
                 <div className="container">
-                    <div className="sig-juan-content">
-                        <div className="sig-juan-text">
-                            <span className="sig-juan-subtitle">Diseño de Experiencias</span>
-                            <h3>{SIGNATURE_JUAN.name}</h3>
-                            <div className="sig-juan-title">{SIGNATURE_JUAN.title} — {SIGNATURE_JUAN.experience}</div>
-                            <p className="sig-juan-quote">
-                                "Para mí, Japón no es solo un destino turístico; es un estilo de vida que merece ser descubierto con alma."
-                            </p>
-                            <p className="sig-juan-desc">{SIGNATURE_JUAN.desc}</p>
-                            <ul className="sig-juan-highlights">
-                                {SIGNATURE_JUAN.highlights.map((h, i) => (
-                                    <li key={i}>{h}</li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="sig-juan-visual">
-                            <div className="sig-juan-museum-frame">
-                                <span className="sig-museum-corner-tl" />
-                                <span className="sig-museum-corner-tr" />
-                                <span className="sig-museum-corner-bl" />
-                                <span className="sig-museum-corner-br" />
-                                <div className="sig-juan-museum-header">
-                                    <span>EST. 2006</span>
-                                    <span>TOKIO — MEX</span>
-                                </div>
-                                <div className="sig-juan-badge">
-                                    <span>JS</span>
-                                </div>
-                                <div className="sig-juan-museum-footer">
-                                    <span>Juan Santiago</span>
+                    <div className="sig-title">Tus Anfitriones Signature</div>
+                    
+                    <div className="sig-hosts-content">
+                        {/* Left: Beautiful Photo frame with Juan & Ale */}
+                        <div className="sig-hosts-visual">
+                            <div className="sig-hosts-photo-frame">
+                                <img src="/images/juan_and_ale.png" alt="Juan y Ale en Japón" className="sig-hosts-main-img" />
+                                <div className="sig-hosts-photo-caption">
+                                    <span>📸 Juan y Ale — Diseñadores de RutaXAsia</span>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Right: Narrative / Bios */}
+                        <div className="sig-hosts-text">
+                            <span className="sig-hosts-subtitle">Tus Diseñadores y Acompañantes de Viaje</span>
+                            <h3>Juan & Ale</h3>
+                            <p className="sig-hosts-lead-quote">
+                                "No diseñamos viajes de catálogo; abrimos las puertas a nuestro Japón personal, el que hemos descubierto y vivido juntos durante años."
+                            </p>
+                            
+                            <div className="sig-hosts-bios">
+                                <div className="sig-host-bio-card">
+                                    <h4>⛩️ Juan Santiago</h4>
+                                    <p>
+                                        Con más de 20 años recorriendo Japón, Juan domina la logística impecable del tren bala y los rincones históricos más resguardados. Su misión es guiarte a través del Japón espiritual y auténtico.
+                                    </p>
+                                </div>
+                                <div className="sig-host-bio-card">
+                                    <h4>🌸 Alejandra Torres</h4>
+                                    <p>
+                                        Curadora y amante de la gastronomía contemporánea, el arte y el bienestar. Ale selecciona personalmente cada ryokan boutique, onsen privado y restaurante exclusivo de tu itinerario.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Personal Travel Log Gallery */}
+                    <div className="sig-gallery-container">
+                        <h4 className="sig-gallery-title">📸 Bitácora de Viaje — Momentos de Juan y Ale en Japón</h4>
+                        <div className="sig-gallery-grid">
+                            {[
+                                { img: '/images/journey/kimono-asakusa.jpg', caption: 'Tradición en Asakusa' },
+                                { img: '/images/journey/shibuya-noche.jpg', caption: 'Tokio de Noche' },
+                                { img: '/images/journey/ramen.jpg', caption: 'Gastronomía Local' },
+                                { img: '/images/journey/sensoji.jpeg', caption: 'Templos Históricos' },
+                            ].map((item, idx) => (
+                                <div className="sig-gallery-item" key={idx}>
+                                    <img src={item.img} alt={item.caption} loading="lazy" />
+                                    <div className="sig-gallery-item-overlay">
+                                        <span>{item.caption}</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
