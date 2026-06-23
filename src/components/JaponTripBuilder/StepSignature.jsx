@@ -8,6 +8,7 @@ import {
     WHATSAPP_PHONE,
 } from '../../data/japonData'
 import './StepStyles.css'
+import CheckoutModal from './CheckoutModal'
 
 /**
  * StepSignature — Step 3 for "Signature" premium experience.
@@ -16,6 +17,7 @@ import './StepStyles.css'
 export default function StepSignature({ season }) {
     const hero = EXP_HEROES.signature
     const [interests, setInterests] = useState([])
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
     const toggleInterest = (name) => {
         setInterests(prev =>
@@ -238,22 +240,46 @@ export default function StepSignature({ season }) {
                     <div className="sig-cta-invitation">
                         <h3 className="sig-cta-headline">Solicita Tu Diseño Personalizado</h3>
                         <p className="sig-cta-sub">
-                            Cuéntanos cómo quieres vivir Japón y diseñamos tu itinerario exclusivo Signature sin compromiso.
+                            Cuéntanos cómo quieres vivir Japón y diseñamos tu itinerario exclusivo Signature sin compromiso, o aparta hoy mismo.
                         </p>
-                        <a
-                            href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
-                            className="sig-cta-btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            👑 Solicitar Invitación & Diseño
-                        </a>
+                        
+                        <div className="sig-cta-actions">
+                            <a
+                                href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
+                                className="sig-cta-btn"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                👑 Solicitar Invitación & Diseño
+                            </a>
+                            
+                            <button
+                                type="button"
+                                className="sig-cta-checkout-btn"
+                                onClick={() => setIsCheckoutOpen(true)}
+                            >
+                                💳 Apartar y Pagar Anticipo
+                            </button>
+                        </div>
+                        
                         <div className="sig-cta-phone">
                             o llámanos directamente al <a href={`tel:+52${WHATSAPP_PHONE.replace(/\s/g, '')}`}>{WHATSAPP_PHONE}</a>
                         </div>
                     </div>
                 </div>
             </section>
+
+            <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                season={season}
+                estilo="Signature"
+                totalPrice={150000}
+                desglose={
+                    `Viaje Signature (${season.name}). ` +
+                    (interests.length ? `Intereses especiales: ${interests.join(', ')}.` : 'Sin intereses seleccionados.')
+                }
+            />
         </div>
     )
 }

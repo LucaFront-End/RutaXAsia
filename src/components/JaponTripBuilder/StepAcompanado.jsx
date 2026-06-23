@@ -10,6 +10,7 @@ import {
     WHATSAPP_PHONE,
 } from '../../data/japonData'
 import './StepStyles.css'
+import CheckoutModal from './CheckoutModal'
 
 /**
  * StepAcompanado — Step 3 for "Acompañado" (Sin Complicaciones) experience.
@@ -18,6 +19,7 @@ import './StepStyles.css'
 export default function StepAcompanado({ season }) {
     const hero = EXP_HEROES.acompanado
     const [selectedComps, setSelectedComps] = useState([])
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
@@ -28,6 +30,11 @@ export default function StepAcompanado({ season }) {
     const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Acompañado${selectedComps.length ? ` + Extras: ${selectedComps.join(', ')}` : ''}`
     const itinerario = season.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : ITINERARIO_ACOMPANADO
     const todoIncluido = season.key === 'momiji' ? ACOMPANADO_TODO_INCLUIDO_MOMIJI : ACOMPANADO_TODO_INCLUIDO
+
+    // Prices: $126,790 (Verano), $119,490 (Momiji), or $129,790 (Sakura/default)
+    let totalPrice = 129790
+    if (season?.key === 'verano') totalPrice = 126790
+    else if (season?.key === 'momiji') totalPrice = 119490
 
     return (
         <>
@@ -162,20 +169,45 @@ export default function StepAcompanado({ season }) {
             <section className="step3-cta-section">
                 <div className="container">
                     <h3 className="step3-cta-headline">¿Listo para disfrutar Japón sin complicaciones?</h3>
-                    <p className="step3-cta-sub">Escríbenos y reserva tu lugar.</p>
-                    <a
-                        href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
-                        className="step3-cta-btn"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        💬 Reserva tu Viaje Acompañado
-                    </a>
-                    <div className="step3-cta-phone">
+                    <p className="step3-cta-sub">Escríbenos y reserva tu lugar o aparta hoy mismo.</p>
+                    
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px', marginTop: '24px' }}>
+                        <a
+                            href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
+                            className="step3-cta-btn"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ margin: 0 }}
+                        >
+                            💬 Reserva tu Viaje Acompañado
+                        </a>
+                        
+                        <button
+                            type="button"
+                            className="step3-cta-checkout-btn"
+                            onClick={() => setIsCheckoutOpen(true)}
+                        >
+                            💳 Apartar y Pagar Anticipo
+                        </button>
+                    </div>
+                    
+                    <div className="step3-cta-phone" style={{ marginTop: '24px' }}>
                         o llámanos al <a href={`tel:+52${WHATSAPP_PHONE.replace(/\s/g, '')}`}>{WHATSAPP_PHONE}</a>
                     </div>
                 </div>
             </section>
+
+            <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                season={season}
+                estilo="Acompañado"
+                totalPrice={totalPrice}
+                desglose={
+                    `Viaje Acompañado (${season.name}). ` +
+                    (selectedComps.length ? `Extras seleccionados (por cotizar): ${selectedComps.join(', ')}.` : 'Sin extras seleccionados.')
+                }
+            />
         </>
     )
 }
