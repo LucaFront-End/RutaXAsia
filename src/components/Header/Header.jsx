@@ -130,8 +130,8 @@ function Header() {
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/sakura/libre" onClick={closeMenu}>🌿 Libre</Link>
-                                    <Link to="/viajes/japon/sakura/guiado" onClick={closeMenu}>⛩️ Guiado</Link>
-                                    <Link to="/viajes/japon/sakura/acompanado" onClick={closeMenu}>🏯 Acompañado</Link>
+                                    <Link to="/viajes/japon/sakura/guiado" onClick={closeMenu}>⛩️ Esencial</Link>
+                                    <Link to="/viajes/japon/sakura/acompanado" onClick={closeMenu}>🏯 Completo</Link>
                                     <Link to="/viajes/japon/sakura/signature" onClick={closeMenu}>👑 Signature</Link>
                                 </div>
                             </div>
@@ -145,8 +145,8 @@ function Header() {
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/verano/libre" onClick={closeMenu}>🌿 Libre</Link>
-                                    <Link to="/viajes/japon/verano/guiado" onClick={closeMenu}>⛩️ Guiado</Link>
-                                    <Link to="/viajes/japon/verano/acompanado" onClick={closeMenu}>🏯 Acompañado</Link>
+                                    <Link to="/viajes/japon/verano/guiado" onClick={closeMenu}>⛩️ Esencial</Link>
+                                    <Link to="/viajes/japon/verano/acompanado" onClick={closeMenu}>🏯 Completo</Link>
                                     <Link to="/viajes/japon/verano/signature" onClick={closeMenu}>👑 Signature</Link>
                                 </div>
                             </div>
@@ -160,8 +160,8 @@ function Header() {
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/momiji/libre" onClick={closeMenu}>🌿 Libre</Link>
-                                    <Link to="/viajes/japon/momiji/guiado" onClick={closeMenu}>⛩️ Guiado</Link>
-                                    <Link to="/viajes/japon/momiji/acompanado" onClick={closeMenu}>🏯 Acompañado</Link>
+                                    <Link to="/viajes/japon/momiji/guiado" onClick={closeMenu}>⛩️ Esencial</Link>
+                                    <Link to="/viajes/japon/momiji/acompanado" onClick={closeMenu}>🏯 Completo</Link>
                                     <Link to="/viajes/japon/momiji/signature" onClick={closeMenu}>👑 Signature</Link>
                                 </div>
                             </div>

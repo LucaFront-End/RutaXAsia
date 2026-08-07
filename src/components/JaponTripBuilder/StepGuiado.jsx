@@ -53,7 +53,7 @@ export default function StepGuiado({ season, temporadaKey }) {
         experiencesDetail += ` + Extras: ${selectedComps.join(', ')}`
     }
 
-    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Guiado${experiencesDetail}`
+    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Esencial${experiencesDetail}`
 
     // Experiencias recomendadas/badged
     const badgesMap = {
@@ -69,11 +69,11 @@ export default function StepGuiado({ season, temporadaKey }) {
             {/* Hero */}
             <div className="step3-hero">
                 <div className="step3-hero-bg">
-                    <img src={season.heroImage} alt={`${season.name} Guiado`} />
+                    <img src={season.heroImage} alt={`${season.name} Esencial`} />
                 </div>
                 <div className="step3-hero-content container">
                     <div className="step3-hero-badge">
-                        {season.emoji} {season.name} — Guiado
+                        {season.emoji} {season.name} — Esencial
                     </div>
                     <h2 className="step3-hero-headline">{hero.headline}</h2>
                     <p className="step3-hero-sub">{hero.subheadline}</p>
@@ -252,7 +252,7 @@ export default function StepGuiado({ season, temporadaKey }) {
             {/* CTA */}
             <section className="step3-cta-section">
                 <div className="container">
-                    <h3 className="step3-cta-headline">¿Listo para vivir {season.name} Guiado?</h3>
+                    <h3 className="step3-cta-headline">¿Listo para vivir {season.name} Esencial?</h3>
                     <p className="step3-cta-sub">Escríbenos para armar tu cotización o aparta tu lugar ahora mismo.</p>
                     
                     <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px', marginTop: '24px' }}>
@@ -285,7 +285,7 @@ export default function StepGuiado({ season, temporadaKey }) {
                 isOpen={isCheckoutOpen}
                 onClose={() => setIsCheckoutOpen(false)}
                 season={season}
-                estilo="Guiado"
+                estilo="Esencial"
                 totalPrice={(PRECIOS[temporadaKey]?.libre?.packages?.[0]?.priceNum || 22000) + extraTotal}
                 desglose={
                     `Incluidas: ${includedNames.join(', ')}. ` +

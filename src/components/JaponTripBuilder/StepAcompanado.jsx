@@ -27,7 +27,7 @@ export default function StepAcompanado({ season }) {
         )
     }
 
-    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Acompañado${selectedComps.length ? ` + Extras: ${selectedComps.join(', ')}` : ''}`
+    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Completo${selectedComps.length ? ` + Extras: ${selectedComps.join(', ')}` : ''}`
     const itinerario = season.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : ITINERARIO_ACOMPANADO
     const todoIncluido = season.key === 'momiji' ? ACOMPANADO_TODO_INCLUIDO_MOMIJI : ACOMPANADO_TODO_INCLUIDO
 
@@ -41,11 +41,11 @@ export default function StepAcompanado({ season }) {
             {/* Hero */}
             <div className="step3-hero">
                 <div className="step3-hero-bg">
-                    <img src={season.heroImage} alt={`${season.name} Acompañado`} />
+                    <img src={season.heroImage} alt={`${season.name} Completo`} />
                 </div>
                 <div className="step3-hero-content container">
                     <div className="step3-hero-badge">
-                        {season.emoji} {season.name} — Acompañado
+                        {season.emoji} {season.name} — Completo
                     </div>
                     <h2 className="step3-hero-headline">{hero.headline}</h2>
                     <p className="step3-hero-sub">{hero.subheadline}</p>
@@ -179,7 +179,7 @@ export default function StepAcompanado({ season }) {
                             rel="noopener noreferrer"
                             style={{ margin: 0 }}
                         >
-                            💬 Reserva tu Viaje Acompañado
+                            💬 Reserva tu Viaje Completo
                         </a>
                         
                         <button
@@ -201,10 +201,10 @@ export default function StepAcompanado({ season }) {
                 isOpen={isCheckoutOpen}
                 onClose={() => setIsCheckoutOpen(false)}
                 season={season}
-                estilo="Acompañado"
+                estilo="Completo"
                 totalPrice={totalPrice}
                 desglose={
-                    `Viaje Acompañado (${season.name}). ` +
+                    `Viaje Completo (${season.name}). ` +
                     (selectedComps.length ? `Extras seleccionados (por cotizar): ${selectedComps.join(', ')}.` : 'Sin extras seleccionados.')
                 }
             />

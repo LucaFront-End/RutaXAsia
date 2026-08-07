@@ -14,7 +14,7 @@ const DESTINATIONS = [
         flag: '🇯🇵',
         slug: '/viajes/japon',
         image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=500&fit=crop&q=85',
-        excerpt: 'Diseña tu viaje a Japón a tu medida. Elige tu estación preferida (Sakura, Verano u Otoño) y el estilo de viaje que más te guste (Libre, Guiado, Acompañado o Signature).',
+        excerpt: 'Diseña tu viaje a Japón a tu medida. Elige tu estación preferida (Sakura, Verano u Otoño) y el estilo de viaje que más te guste (Libre, Esencial, Completo o Signature).',
         seasons: ['🌸 Sakura', '☀️ Verano', '🍁 Momiji'],
         available: true,
         isCarta: true,

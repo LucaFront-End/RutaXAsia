@@ -32,7 +32,7 @@ export default function JaponTemporada() {
         <>
             <Helmet>
                 <title>{`Japón a la Carta — ${season.name} | RutaXAsia`}</title>
-                <meta name="description" content={`Elige tu forma de viajar a Japón en ${season.name}. Libre, Guiado, Acompañado o Signature. ${season.description} RutaXAsia.`} />
+                <meta name="description" content={`Elige tu forma de viajar a Japón en ${season.name}. Libre, Esencial, Completo o Signature. ${season.description} RutaXAsia.`} />
             </Helmet>
 
             {/* ===== HERO ===== */}

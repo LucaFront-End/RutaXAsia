@@ -117,7 +117,7 @@ export const EXPERIENCIAS = {
     },
     guiado: {
         key: 'guiado',
-        name: 'Guiado',
+        name: 'Esencial',
         icon: '⛩️',
         tagline: 'Itinerario organizado para que vivas Japón sin perderte nada.',
         shortDesc: 'Descubre Japón con un itinerario cuidadosamente organizado.',
@@ -155,7 +155,7 @@ export const EXPERIENCIAS = {
     },
     acompanado: {
         key: 'acompanado',
-        name: 'Acompañado',
+        name: 'Completo',
         icon: '🏯',
         tagline: 'Viaja con tranquilidad y acompañamiento constante.',
         shortDesc: 'Viaja con acompañamiento cercano durante toda tu experiencia.',
@@ -170,9 +170,9 @@ export const EXPERIENCIAS = {
         ],
         detailedIncludes: [
             {
-                title: 'Todo lo del plan Guiado',
+                title: 'Todo lo del plan Esencial',
                 icon: '✅',
-                desc: 'Incluye todo lo que ofrece el plan Guiado.',
+                desc: 'Incluye todo lo que ofrece el plan Esencial.',
             },
             {
                 title: 'Coordinador durante el viaje',

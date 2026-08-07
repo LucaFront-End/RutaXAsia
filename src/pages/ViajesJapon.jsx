@@ -20,7 +20,7 @@ export default function ViajesJapon() {
         <>
             <Helmet>
                 <title>Japón a la Carta — Viajes a Japón desde México | RutaXAsia</title>
-                <meta name="description" content="Japón a la Carta: elige tu temporada, tu estilo de viaje y vive Japón a tu manera. Sakura, Verano o Momiji. Libre, Guiado, Acompañado o Signature. RutaXAsia." />
+                <meta name="description" content="Japón a la Carta: elige tu temporada, tu estilo de viaje y vive Japón a tu manera. Sakura, Verano o Momiji. Libre, Esencial, Completo o Signature. RutaXAsia." />
             </Helmet>
 
             {/* ===== HERO ===== */}
