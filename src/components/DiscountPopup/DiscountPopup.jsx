@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { submitPopupToCMS } from '../../lib/wixClient'
 import './DiscountPopup.css'
 
@@ -11,22 +12,12 @@ const ESTADOS_MEXICO = [
     "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"
 ]
 
-const VIAJES_OPTIONS = [
-    'Sakura 2026',
-    'Corea Junio 2026',
-    'Verano Japón 2026',
-    'Corea Septiembre 2026',
-    'Japón Octubre 2026',
-    'Japón y Corea Octubre 2026',
-    'Otoño Japón 2026',
-    'Otro / No sé todavía',
-]
-
 function DiscountPopup() {
     const [visible, setVisible] = useState(false)
     const [closing, setClosing] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const dismissed = sessionStorage.getItem('rutaxasia_popup_dismissed')
@@ -53,7 +44,7 @@ function DiscountPopup() {
             telefono: formData.get('telefono'),
             correo: formData.get('email'),
             estado: formData.get('estado'),
-            viajeDeInteres: formData.get('viaje'),
+            viajeDeInteres: 'Sakura Completo 2027',
         }
 
         setSubmitting(true)
@@ -62,10 +53,14 @@ function DiscountPopup() {
             const result = await submitPopupToCMS(data)
             console.log('[Popup] CMS submission result:', result)
             setSubmitted(true)
-            setTimeout(() => handleClose(), 2500)
+            setTimeout(() => {
+                handleClose()
+                navigate('/viajes/japon/sakura')
+            }, 1800)
         } catch (err) {
             console.error('Form submission error:', err)
             handleClose()
+            navigate('/viajes/japon/sakura')
         } finally {
             setSubmitting(false)
         }
@@ -78,14 +73,19 @@ function DiscountPopup() {
             <div className={`popup${closing ? ' popup--closing' : ''}`} onClick={e => e.stopPropagation()}>
                 <button className="popup-close" onClick={handleClose} aria-label="Cerrar">&times;</button>
                 <div className="popup-content">
-                    <span className="popup-tag">🎌 Oferta Exclusiva</span>
-                    <h2 className="popup-title">Obtén un <span>10% de Descuento</span></h2>
-                    <p className="popup-text">Válido en tu primer viaje con nosotros. Regístrate y recibe tu código exclusivo.</p>
+                    <span className="popup-tag">🌸 Ya disponible</span>
+                    <h2 className="popup-title">VIAJE COMPLETO <span>SAKURA 2027</span></h2>
+                    <p className="popup-subtitle" style={{ color: 'var(--color-primary)', fontWeight: '700', fontSize: '1.05rem', margin: '4px 0 10px' }}>
+                        ¿Quieres vivir el Sakura 2027? 🌸
+                    </p>
+                    <p className="popup-text">
+                        Obtén un bono de <strong>$14,000 MXN</strong> en nuestro viaje Sakura Completo.
+                    </p>
 
                     {submitted ? (
                         <div className="popup-success">
                             <span style={{ fontSize: '2rem' }}>🎉</span>
-                            <p>¡Registrado! Revisa tu correo para tu código.</p>
+                            <p>¡Promoción registrada! Redirigiendo a Sakura Completo...</p>
                         </div>
                     ) : (
                         <form className="popup-form" onSubmit={handleSubmit}>
@@ -98,19 +98,13 @@ function DiscountPopup() {
                                     <option key={e} value={e}>{e}</option>
                                 ))}
                             </select>
-                            <select name="viaje" required disabled={submitting} defaultValue="">
-                                <option value="" disabled>Viaje de interés</option>
-                                {VIAJES_OPTIONS.map(v => (
-                                    <option key={v} value={v}>{v}</option>
-                                ))}
-                            </select>
                             <button type="submit" className="btn btn-primary btn-full" disabled={submitting}>
-                                {submitting ? 'Enviando...' : '¡Quiero mi descuento!'}
+                                {submitting ? 'Enviando...' : 'Quiero recibir la promoción'}
                             </button>
                         </form>
                     )}
 
-                    <small className="popup-disclaimer">No aplica con otras promociones.</small>
+                    <small className="popup-disclaimer">No aplica con otras promociones. Válido para Sakura 2027.</small>
                 </div>
             </div>
         </div>
@@ -118,4 +112,5 @@ function DiscountPopup() {
 }
 
 export default DiscountPopup
+
 
