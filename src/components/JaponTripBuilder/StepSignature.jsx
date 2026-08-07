@@ -185,7 +185,7 @@ export default function StepSignature({ season }) {
                         {/* Left: Beautiful Photo frame with Juan & Ale */}
                         <div className="sig-hosts-visual">
                             <div className="sig-hosts-photo-frame">
-                                <img src="/images/juan_and_ale.png" alt="Juan y Ale en Japón" className="sig-hosts-main-img" />
+                                <img src="/images/juan-ale/juan-ale-hero.jpg" alt="Juan y Ale en Japón" className="sig-hosts-main-img" />
                                 <div className="sig-hosts-photo-caption">
                                     <span>📸 Juan y Ale — Diseñadores de RutaXAsia</span>
                                 </div>
@@ -222,10 +222,9 @@ export default function StepSignature({ season }) {
                         <h4 className="sig-gallery-title">📸 Bitácora de Viaje — Momentos de Juan y Ale en Japón</h4>
                         <div className="sig-gallery-grid">
                             {[
-                                { img: '/images/journey/kimono-asakusa.jpg', caption: 'Tradición en Asakusa' },
-                                { img: '/images/journey/shibuya-noche.jpg', caption: 'Tokio de Noche' },
-                                { img: '/images/journey/ramen.jpg', caption: 'Gastronomía Local' },
-                                { img: '/images/journey/sensoji.jpeg', caption: 'Templos Históricos' },
+                                { img: '/images/juan-ale/bitacora-1.jpg', caption: 'Momentos en Japón' },
+                                { img: '/images/juan-ale/bitacora-2.jpg', caption: 'Tradición y Cultura' },
+                                { img: '/images/juan-ale/bitacora-3.jpg', caption: 'Lugares Exclusivos' },
                             ].map((item, idx) => (
                                 <div className="sig-gallery-item" key={idx}>
                                     <img src={item.img} alt={item.caption} loading="lazy" />
