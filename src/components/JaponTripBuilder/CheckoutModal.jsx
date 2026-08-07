@@ -68,16 +68,6 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         if (!nombre.trim()) errs.nombre = 'El nombre es obligatorio.'
         if (!correo.trim() || !/\S+@\S+\.\S+/.test(correo)) errs.correo = 'Introduce un correo válido.'
         if (!telefono.trim() || telefono.length < 10) errs.telefono = 'Introduce un teléfono de al menos 10 dígitos.'
-        if (!cardName.trim()) errs.cardName = 'El nombre del titular es obligatorio.'
-        
-        const cleanCard = cardNumber.replace(/\s+/g, '')
-        if (cleanCard.length < 15 || cleanCard.length > 16) errs.cardNumber = 'Número de tarjeta inválido.'
-        
-        if (!cardExpiry.includes('/') || cardExpiry.split('/')[0].length < 2 || cardExpiry.split('/')[1].length < 2) {
-            errs.cardExpiry = 'Formato MM/YY requerido.'
-        }
-        if (cardCvv.length < 3) errs.cardCvv = 'CVV inválido.'
-
         setErrors(errs)
         return Object.keys(errs).length === 0
     }
@@ -90,36 +80,69 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         setApiError('')
 
         try {
-            const response = await fetch('/api/checkout', {
+            // 1. Call serverless /api/wix-checkout
+            const response = await fetch('/api/wix-checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     nombre,
                     correo,
                     telefono,
-                    temporada: season.name,
-                    estilo: estilo,
+                    temporada: season?.name || 'Japón',
+                    estilo: estilo || 'Reserva',
                     totalViaje: totalPrice,
+                    montoAnticipo: depositAmount,
                     desglose: desglose,
-                    cardName,
-                    paymentMethodId: 'pm_card_visa' // Mock payment method for test cards
                 })
             })
 
             const result = await response.json()
-            if (result.success) {
+
+            // 2. Also send notification to reservas@rutaxasia.com.mx via FormSubmit
+            try {
+                await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com.mx', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        _subject: `💳 Nuevo Apartado de Viaje — ${nombre} (${season?.name || 'Japón'})`,
+                        _template: 'box',
+                        _captcha: 'false',
+                        _language: 'es',
+                        'Nombre': nombre,
+                        'Email': correo,
+                        'Teléfono': telefono,
+                        'Temporada': season?.name || 'Japón',
+                        'Modalidad': estilo || 'Reserva',
+                        'Monto Anticipo': `${formatPrice(depositAmount)} MXN`,
+                        'Total Estimado': `${formatPrice(totalPrice)} MXN`,
+                        'Desglose': desglose,
+                        'Fecha': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+                    }),
+                })
+            } catch (fsErr) {
+                console.error('[CheckoutModal] FormSubmit error:', fsErr)
+            }
+
+            if (result.success && result.checkoutUrl) {
                 setResultData(result)
                 setStatus('success')
+                // Redirect to Wix Store Anticipo Checkout
+                setTimeout(() => {
+                    window.location.href = result.checkoutUrl
+                }, 1500)
             } else {
-                setApiError(result.error || 'Hubo un problema al procesar tu reserva.')
+                setApiError(result.error || 'Hubo un problema al conectar con el checkout de Wix Store.')
                 setStatus('error')
             }
         } catch (err) {
             console.error('Checkout error:', err)
-            setApiError('Error de red. Intenta de nuevo por favor.')
-            setStatus('error')
+            // Fallback redirect directly to cart checkout if serverless offline
+            window.location.href = 'https://dilodigitalmx.wixsite.com/rutaxasia/cart'
         }
     }
+
+    const waMsg = `SW-Hola! Quiero realizar mi apartado de $5,000 MXN para el viaje: ${season?.name || 'Japón'} (${estilo}). Pasajero: ${nombre || 'Cliente'}. ${desglose || ''}`
+    const waUrl = `https://wa.me/525513610083?text=${encodeURIComponent(waMsg)}`
 
     return (
         <div className="jtb-modal-overlay animate-slide-in">
@@ -129,29 +152,25 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                 {status === 'checkout' && (
                     <form onSubmit={handleCheckoutSubmit} className="jtb-checkout-form">
                         <div className="jtb-modal-header">
-                            <h3>💳 Apartar Viaje — Japón a la Carta</h3>
-                            <p>Reserva tu lugar de forma segura en segundos</p>
+                            <h3>💳 Apartar Viaje — Pagar Anticipo</h3>
+                            <p>Reserva tu lugar de forma segura procesando tu anticipo en Wix Store</p>
                         </div>
 
                         {/* Summary of what they pay */}
                         <div className="jtb-checkout-summary">
                             <div className="jtb-checkout-summary-row">
                                 <span>Modalidad:</span>
-                                <strong>Japón {season.emoji} {season.name} — {estilo}</strong>
+                                <strong>Japón {season?.emoji} {season?.name} — {estilo}</strong>
                             </div>
                             <div className="jtb-checkout-summary-row">
-                                <span>Costo Total:</span>
+                                <span>Costo Total Estimado:</span>
                                 <span>{formatPrice(totalPrice)} MXN</span>
                             </div>
                             <div className="jtb-checkout-summary-divider" />
                             
                             <div className="jtb-checkout-summary-row highlight">
                                 <span>Anticipo de Apartado (Hoy):</span>
-                                <span>{formatPrice(depositAmount)} MXN</span>
-                            </div>
-                            <div className="jtb-checkout-summary-row installment">
-                                <span>Plan Mensual Recurrente:</span>
-                                <span>{installmentsCount} mensualidades de {formatPrice(monthlyInstallment)} MXN</span>
+                                <span style={{ color: 'var(--color-primary)', fontWeight: '900' }}>{formatPrice(depositAmount)} MXN</span>
                             </div>
                         </div>
 
@@ -195,64 +214,25 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                             </div>
                         </div>
 
-                        {/* Card Details */}
-                        <div className="jtb-form-section">
-                            <h4>💳 Detalles de Pago (Conexión Encriptada Segura)</h4>
-                            <div className="jtb-input-group">
-                                <label>Titular de la Tarjeta</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="Nombre escrito en la tarjeta"
-                                    value={cardName} 
-                                    onChange={(e) => handleInputChange('cardName', e.target.value)} 
-                                    className={errors.cardName ? 'input-error' : ''}
-                                />
-                                {errors.cardName && <span className="error-text">{errors.cardName}</span>}
-                            </div>
-                            <div className="jtb-input-group">
-                                <label>Número de Tarjeta</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="4111 1111 1111 1111"
-                                    value={cardNumber} 
-                                    onChange={(e) => handleInputChange('cardNumber', e.target.value)} 
-                                    className={errors.cardNumber ? 'input-error' : ''}
-                                />
-                                {errors.cardNumber && <span className="error-text">{errors.cardNumber}</span>}
-                            </div>
-                            <div className="jtb-input-row">
-                                <div className="jtb-input-group">
-                                    <label>Vencimiento</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="MM/YY"
-                                        value={cardExpiry} 
-                                        onChange={(e) => handleInputChange('cardExpiry', e.target.value)} 
-                                        className={errors.cardExpiry ? 'input-error' : ''}
-                                    />
-                                    {errors.cardExpiry && <span className="error-text">{errors.cardExpiry}</span>}
-                                </div>
-                                <div className="jtb-input-group">
-                                    <label>Cvv</label>
-                                    <input 
-                                        type="password" 
-                                        placeholder="123"
-                                        value={cardCvv} 
-                                        onChange={(e) => handleInputChange('cardCvv', e.target.value)} 
-                                        className={errors.cardCvv ? 'input-error' : ''}
-                                    />
-                                    {errors.cardCvv && <span className="error-text">{errors.cardCvv}</span>}
-                                </div>
-                            </div>
-                        </div>
-
                         <div className="jtb-checkout-disclaimer">
-                            🔒 Tus datos de pago están encriptados y procesados de manera segura. Al reservar, aceptas los Términos y Condiciones de RutaXAsia.
+                            🔒 Serás redirigido a la pasarela de pago segura de <strong>Wix Store</strong> para completar tu anticipo de <strong>{formatPrice(depositAmount)} MXN</strong> (Tarjeta, PayPal o Meses).
                         </div>
 
-                        <button type="submit" className="jtb-checkout-submit-btn">
-                            Confirmar Apartado y Pagar {formatPrice(depositAmount)}
-                        </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
+                            <button type="submit" className="jtb-checkout-submit-btn">
+                                💳 Pagar Anticipo de {formatPrice(depositAmount)} en Wix Store
+                            </button>
+                            
+                            <a
+                                href={waUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline"
+                                style={{ textAlign: 'center', display: 'block', textDecoration: 'none', padding: '12px 18px', borderRadius: '100px', fontSize: '0.9rem', color: '#25D366', borderColor: '#25D366', fontWeight: '800' }}
+                            >
+                                💬 O bien, Cotizar / Apartar por WhatsApp
+                            </a>
+                        </div>
                     </form>
                 )}
 

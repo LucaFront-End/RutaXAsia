@@ -12,7 +12,10 @@
   "dependencies": {
     "@wix/blog": "^1.0.588",
     "@wix/data": "^1.0.419",
+    "@wix/ecom": "^1.0.2362",
+    "@wix/redirects": "^1.0.125",
     "@wix/sdk": "^1.21.4",
+    "@wix/stores": "^1.0.856",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "leaflet": "^1.9.4",
