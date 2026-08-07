@@ -1463,24 +1463,29 @@
 }
 
 .libre-calc-cta {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
     text-align: center;
     padding: 16px 20px;
-    background: var(--jtb-primary);
-    color: #fff;
+    background: #25D366 !important;
+    color: #ffffff !important;
     font-size: 0.95rem;
     font-weight: 800;
     border-radius: 16px;
     text-decoration: none;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25);
+    border: none;
 }
 
 .libre-calc-cta:hover {
+    background: #20ba5a !important;
+    color: #ffffff !important;
     transform: translateY(-3px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.18);
-    filter: brightness(1.1);
+    box-shadow: 0 12px 28px rgba(37, 211, 102, 0.35);
 }
 
 @keyframes animate-slide-in {
@@ -2210,26 +2215,29 @@
    CHECKOUT MODAL & BUTTONS
    ================================== */
 .libre-calc-checkout-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
     text-align: center;
     padding: 16px 20px;
-    background: #000;
-    color: #fff;
+    background: var(--jtb-primary, #e91e63) !important;
+    color: #ffffff !important;
     font-size: 0.95rem;
     font-weight: 800;
     border-radius: 16px;
-    border: 2px solid var(--jtb-primary);
+    border: none;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(233, 30, 122, 0.25);
     cursor: pointer;
 }
 
 .libre-calc-checkout-btn:hover {
+    background: #d81b60 !important;
+    color: #ffffff !important;
     transform: translateY(-3px);
-    background: var(--jtb-primary);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-    border-color: transparent;
+    box-shadow: 0 12px 28px rgba(233, 30, 122, 0.35);
 }
 
 .step3-cta-checkout-btn {

@@ -51,7 +51,7 @@ export default function FloatingTicket({
         ` | Total estimado: ${formatPrice(totalPrice)} MXN`
 
     return (
-        <div className="libre-calculator sticky-ticket-container">
+        <div className="libre-calculator sticky-ticket-container" style={{ '--jtb-primary': season?.colors?.primary || '#e91e63' }}>
             <div className="libre-calc-ticket-top">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div className="libre-calc-title">🎫 Pase de Abordar</div>
@@ -80,81 +80,83 @@ export default function FloatingTicket({
             </div>
 
             <div className="libre-calc-ticket-body">
-                {/* Base Package */}
-                {selectedPkg ? (
-                    <div className="libre-calc-line">
-                        <span className="libre-calc-line-name">{selectedPkg.days}</span>
-                        <span className="libre-calc-line-price">{formatPrice(basePrice)} c/u</span>
-                    </div>
-                ) : (
-                    <div className="libre-calc-line">
-                        <span className="libre-calc-line-name" style={{ fontWeight: '700' }}>Plan {estilo}</span>
-                        <span className="libre-calc-line-price">{basePrice > 0 ? formatPrice(basePrice) : 'Cotizar'}</span>
+                {/* Selected Package Name */}
+                {selectedPkg && (
+                    <div className="libre-calc-item-row" style={{ fontWeight: '800', color: 'var(--color-dark)', fontSize: '0.95rem' }}>
+                        <span>Plan {selectedPkg.name || 'Seleccionado'}</span>
+                        <span>{formatPrice(basePrice)}</span>
                     </div>
                 )}
 
-                {/* Included experiences note (for Esencial/Completo) */}
-                {freeExpLimit && (
-                    <div className="libre-calc-line" style={{ background: '#eefcf3', padding: '6px 10px', borderRadius: '8px', margin: '6px 0' }}>
-                        <span className="libre-calc-line-name" style={{ color: '#1b5e20', fontWeight: '700', fontSize: '0.8rem' }}>
-                            ✨ Incluye {freeExpLimit} experiencias gratis
+                {/* Included Tours Badge List */}
+                {includedExps.length > 0 && (
+                    <div style={{ marginTop: '8px', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary)' }}>
+                            ✨ Tours Incluidos ({freeExpLimit || includedExps.length} Gratis):
                         </span>
-                        <span className="libre-calc-line-price" style={{ color: '#1b5e20', fontWeight: '800' }}>GRATIS</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+                            {includedExps.map((name, i) => (
+                                <div key={i} style={{ fontSize: '0.8rem', color: '#333', background: '#fff7f9', padding: '4px 8px', borderRadius: '6px', borderLeft: '3px solid var(--color-primary)' }}>
+                                    ✓ {name} <strong style={{ color: '#2e7d32', float: 'right' }}>GRATIS</strong>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 
-                {/* Included list items */}
-                {includedExps.map((name, i) => (
-                    <div className="libre-calc-line" key={i} style={{ fontSize: '0.8rem' }}>
-                        <span className="libre-calc-line-name">🌸 {name}</span>
-                        <span className="libre-calc-line-price" style={{ color: '#2e7d32', fontWeight: '700' }}>Incluida</span>
+                {/* Additional / Optional Experiences Header */}
+                {addedItems.length > 0 && (
+                    <div style={{ marginTop: '12px', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#666' }}>
+                            {estilo === 'Tours Sueltos' ? '🏷️ Tours Seleccionados:' : '🏷️ Cotización Extra (No incluidos):'}
+                        </span>
+                    </div>
+                )}
+
+                {/* Added items */}
+                {addedItems.length === 0 && includedExps.length === 0 && !selectedPkg && (
+                    <p className="libre-calc-empty-text">Selecciona tus tours o itinerario para armar tu pase de abordar.</p>
+                )}
+
+                {addedItems.map((item, idx) => (
+                    <div className="libre-calc-item-row" key={idx}>
+                        <span>➕ {item.name}</span>
+                        <span>{formatPrice(item.price)}</span>
                     </div>
                 ))}
 
-                {/* Cotización Extra (No incluidos) */}
-                {addedItems.length > 0 && (
-                    <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb' }}>
-                        <div style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-                            🏷️ Cotización Extra (No incluidos)
-                        </div>
-                        {addedItems.map(exp => (
-                            <div className="libre-calc-line animate-slide-in" key={exp.id}>
-                                <span className="libre-calc-line-name" style={{ fontSize: '0.82rem' }}>➕ {exp.name}</span>
-                                <span className="libre-calc-line-price" style={{ fontWeight: '700' }}>{formatPrice(exp.price || exp.priceNum || 0)}</span>
+                {/* Selected Upsell Comps */}
+                {selectedComps.length > 0 && (
+                    <div style={{ marginTop: '10px' }}>
+                        <span className="libre-calc-sublabel">Complementos (Por cotizar):</span>
+                        {selectedComps.map((comp, idx) => (
+                            <div className="libre-calc-item-row libre-calc-item-row--comp" key={idx}>
+                                <span>⭐ {comp}</span>
+                                <span className="libre-calc-comp-badge">Cotizar</span>
                             </div>
                         ))}
                     </div>
                 )}
 
-                {/* Selected Comps */}
-                {selectedComps.map((comp, i) => (
-                    <div className="libre-calc-line animate-slide-in" key={i}>
-                        <span className="libre-calc-line-name">✨ {comp}</span>
-                        <span className="libre-calc-line-price" style={{ fontSize: '0.78rem', opacity: 0.7 }}>Extra</span>
-                    </div>
-                ))}
-
-                {/* Passenger multiplier tag */}
-                {passengersCount > 1 && (
-                    <div style={{ textAlign: 'right', fontSize: '0.78rem', color: '#666', marginTop: '8px' }}>
-                        Subtotal por pers: <strong>{formatPrice(pricePerPerson)} MXN</strong> &times; {passengersCount} personas
+                {/* Subtotal per person */}
+                {pricePerPerson > 0 && (
+                    <div className="libre-calc-subtotal-row">
+                        <span>Subtotal por pers:</span>
+                        <strong>{formatPrice(pricePerPerson)} MXN</strong>
+                        {passengersCount > 1 && <span> × {passengersCount} personas</span>}
                     </div>
                 )}
 
                 {/* Total */}
-                <div className="libre-calc-total">
-                    <span className="libre-calc-total-label">Total estimado</span>
-                    <div>
-                        <span className="libre-calc-total-price">
+                <div className="libre-calc-total-box">
+                    <span className="libre-calc-total-label">TOTAL ESTIMADO</span>
+                    <div className="libre-calc-total-amount">
+                        <span className="libre-calc-total-num">
                             {totalPrice > 0 ? formatPrice(totalPrice) : 'Cotizar'}
                         </span>
                         {totalPrice > 0 && <span className="libre-calc-total-currency">MXN</span>}
                     </div>
                 </div>
-
-                <p className="libre-calc-note">
-                    Tarifas en base a {passengersText}. Todos los impuestos incluidos. Cotización estimada para {season?.name}.
-                </p>
 
                 {/* Barcode visual */}
                 <div className="libre-calc-barcode-wrapper">
@@ -173,6 +175,15 @@ export default function FloatingTicket({
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+                    {onOpenCheckout && (
+                        <button
+                            type="button"
+                            className="libre-calc-checkout-btn"
+                            onClick={onOpenCheckout}
+                        >
+                            💳 Apartar / Reservar en Línea
+                        </button>
+                    )}
                     <a
                         href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
                         className="libre-calc-cta"
@@ -181,15 +192,6 @@ export default function FloatingTicket({
                     >
                         💬 Cotizar por WhatsApp
                     </a>
-                    {totalPrice > 0 && onOpenCheckout && (
-                        <button
-                            type="button"
-                            className="libre-calc-checkout-btn"
-                            onClick={onOpenCheckout}
-                        >
-                            💳 Apartar y Pagar Anticipo
-                        </button>
-                    )}
                 </div>
             </div>
         </div>
