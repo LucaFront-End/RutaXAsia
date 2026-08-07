@@ -348,7 +348,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                         {/* ================= PASSENGERS POPOVER ================= */}
                         {openModal === 'passengers' && (
                             <div className="passengers-popover-content">
-                                <h4 className="passengers-popover-title">Pasajeros (Sin habitación)</h4>
+                                <h4 className="passengers-popover-title">Pasajeros</h4>
                                 <div className="passenger-row">
                                     <div>
                                         <span className="passenger-type-title">Adultos</span>
