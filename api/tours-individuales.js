@@ -55,13 +55,22 @@ export default async function handler(req, res) {
                 category = 'Rutas por Japón'
             }
 
+            let priceNum = 0
+            if (typeof it.precioNmero === 'number' && !isNaN(it.precioNmero) && it.precioNmero > 0) {
+                priceNum = it.precioNmero
+            } else if (it.precioEnTexto) {
+                const cleaned = String(it.precioEnTexto).replace(/[^0-9.]/g, '')
+                const parsed = parseFloat(cleaned)
+                if (!isNaN(parsed)) priceNum = parsed
+            }
+
             return {
                 id: it._id,
                 title: it.title || 'Tour Individual',
                 excerpt: it.excerptDeTour || '',
                 image: formatWixImageUrl(it.image),
-                priceText: it.precioEnTexto || (it.precioNmero ? `$${it.precioNmero.toLocaleString('es-MX')} MXN` : ''),
-                priceNum: typeof it.precioNmero === 'number' ? it.precioNmero : parseFloat(it.precioNmero) || 0,
+                priceText: it.precioEnTexto || (priceNum > 0 ? `$${priceNum.toLocaleString('es-MX')} MXN` : ''),
+                priceNum: priceNum,
                 days: it.dasDeViaje || '',
                 hours: it.horasDeViaje || '',
                 observations: it.observaciones || '',

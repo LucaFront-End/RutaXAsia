@@ -43,6 +43,17 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
     const modalRef = useRef(null)
 
     useEffect(() => {
+        if (openModal) {
+            setTempStartDate(currentData.startDate || '2026-10-15')
+            setTempEndDate(currentData.endDate || '2026-10-28')
+            setTempMonth(currentData.selectedMonth || 'Octubre 2026')
+            setTempAdults(currentData.adults || 2)
+            setTempChildren(currentData.children || 0)
+            setDateTab(currentData.dateMode || 'exact')
+        }
+    }, [openModal])
+
+    useEffect(() => {
         const handleClickOutside = (e) => {
             if (modalRef.current && !modalRef.current.contains(e.target)) {
                 setOpenModal(null)
@@ -83,7 +94,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
 
     const formattedDatesSummary = () => {
         if (currentData.dateMode === 'month') {
-            return currentData.selectedMonth
+            return currentData.selectedMonth || 'Octubre 2026'
         }
         if (currentData.startDate && currentData.endDate) {
             const start = new Date(currentData.startDate + 'T00:00:00')
@@ -95,8 +106,8 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
     }
 
     const formattedPassengersSummary = () => {
-        const ad = currentData.adults
-        const ch = currentData.children
+        const ad = currentData.adults || 2
+        const ch = currentData.children || 0
         let text = `${ad} Adulto${ad > 1 ? 's' : ''}`
         if (ch > 0) {
             text += `, ${ch} Menor${ch > 1 ? 'es' : ''}`
@@ -238,23 +249,66 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                                                 <div className="month-cal-header">Octubre 2026</div>
                                                 <div className="month-cal-grid">
                                                     {['D','L','M','M','J','V','S'].map(d => <span key={d} className="cal-day-head">{d}</span>)}
-                                                    {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                                                        <span
-                                                            key={day}
-                                                            className={`cal-day-num${day >= 15 && day <= 28 ? ' cal-day-num--in-range' : ''}${day === 15 || day === 28 ? ' cal-day-num--selected' : ''}`}
-                                                        >
-                                                            {day}
-                                                        </span>
-                                                    ))}
+                                                    {Array.from({ length: 31 }, (_, i) => i + 1).map(day => {
+                                                        const dateStr = `2026-10-${String(day).padStart(2, '0')}`
+                                                        const isStart = tempStartDate === dateStr
+                                                        const isEnd = tempEndDate === dateStr
+                                                        const inRange = tempStartDate && tempEndDate && dateStr >= tempStartDate && dateStr <= tempEndDate
+
+                                                        return (
+                                                            <span
+                                                                key={day}
+                                                                onClick={() => {
+                                                                    if (!tempStartDate || (tempStartDate && tempEndDate)) {
+                                                                        setTempStartDate(dateStr)
+                                                                        setTempEndDate('')
+                                                                    } else if (dateStr >= tempStartDate) {
+                                                                        setTempEndDate(dateStr)
+                                                                    } else {
+                                                                        setTempStartDate(dateStr)
+                                                                        setTempEndDate('')
+                                                                    }
+                                                                }}
+                                                                className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
+                                                                style={{ cursor: 'pointer' }}
+                                                            >
+                                                                {day}
+                                                            </span>
+                                                        )
+                                                    })}
                                                 </div>
                                             </div>
                                             <div className="month-cal">
                                                 <div className="month-cal-header">Noviembre 2026</div>
                                                 <div className="month-cal-grid">
                                                     {['D','L','M','M','J','V','S'].map(d => <span key={d} className="cal-day-head">{d}</span>)}
-                                                    {Array.from({ length: 30 }, (_, i) => i + 1).map(day => (
-                                                        <span key={day} className="cal-day-num">{day}</span>
-                                                    ))}
+                                                    {Array.from({ length: 30 }, (_, i) => i + 1).map(day => {
+                                                        const dateStr = `2026-11-${String(day).padStart(2, '0')}`
+                                                        const isStart = tempStartDate === dateStr
+                                                        const isEnd = tempEndDate === dateStr
+                                                        const inRange = tempStartDate && tempEndDate && dateStr >= tempStartDate && dateStr <= tempEndDate
+
+                                                        return (
+                                                            <span
+                                                                key={day}
+                                                                onClick={() => {
+                                                                    if (!tempStartDate || (tempStartDate && tempEndDate)) {
+                                                                        setTempStartDate(dateStr)
+                                                                        setTempEndDate('')
+                                                                    } else if (dateStr >= tempStartDate) {
+                                                                        setTempEndDate(dateStr)
+                                                                    } else {
+                                                                        setTempStartDate(dateStr)
+                                                                        setTempEndDate('')
+                                                                    }
+                                                                }}
+                                                                className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
+                                                                style={{ cursor: 'pointer' }}
+                                                            >
+                                                                {day}
+                                                            </span>
+                                                        )
+                                                    })}
                                                 </div>
                                             </div>
                                         </div>
