@@ -5,22 +5,6 @@ import './Header.css'
 const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20cotizar%20un%20viaje'
 
 const TOUR_LINKS = [
-    { slug: 'sakura-2026', title: 'Sakura 2026', flag: 'jp', sub: 'Japón · Marzo 2026', soldOut: true },
-    { slug: 'japon-corea-mayo-2026', title: 'Japón y Corea', flag: 'jp', sub: 'Japón & Corea · Mayo 2026', soldOut: true },
-    {
-        title: 'Corea del Sur', flag: 'kr', sub: '2 fechas disponibles',
-        children: [
-            { slug: 'corea-junio-2026', label: 'Junio 2026', sub: '1 – 12 de junio' },
-            { slug: 'corea-septiembre-2026', label: 'Septiembre 2026', sub: '18 – 29 de septiembre' },
-        ],
-    },
-    {
-        title: 'Verano en Japón', flag: 'jp', sub: '2 fechas disponibles',
-        children: [
-            { slug: 'verano-japon-2026', label: 'Julio 2026 — Fecha 1', sub: '3 – 16 de julio' },
-            { slug: 'verano-japon-2026', label: 'Julio 2026 — Fecha 2', sub: '19 de julio – 1 de agosto' },
-        ],
-    },
     { slug: 'octubre-japon-2026', title: 'Japón Octubre', flag: 'jp', sub: 'Japón · Octubre 2026 · Trilogía Otoño' },
     { slug: 'japon-corea-2026', title: 'Japón y Corea', flag: 'jp', sub: 'Japón & Corea · Octubre 2026' },
 ]
@@ -31,6 +15,7 @@ function Header() {
     const [menuOpen, setMenuOpen] = useState(false)
     const [toursOpen, setToursOpen] = useState(false)
     const [japonOpen, setJaponOpen] = useState(false)
+    const [comunidadOpen, setComunidadOpen] = useState(false)
     const location = useLocation()
     const isHome = location.pathname === '/'
     const lastScrollY = { current: 0 }
@@ -53,7 +38,7 @@ function Header() {
         return () => { document.body.style.overflow = '' }
     }, [menuOpen])
 
-    const closeMenu = () => { setMenuOpen(false); setToursOpen(false) }
+    const closeMenu = () => { setMenuOpen(false); setToursOpen(false); setJaponOpen(false); setComunidadOpen(false) }
 
     /* If on home, anchor links scroll; otherwise navigate home */
     const homeLink = (hash) => isHome ? hash : `/${hash}`
@@ -66,7 +51,7 @@ function Header() {
                 </Link>
 
                 <ul className={`navbar-menu${menuOpen ? ' navbar-menu--open' : ''}`}>
-                    {/* Tours dropdown */}
+                    {/* Próximos Viajes dropdown */}
                     <li className={`nav-dropdown${toursOpen ? ' nav-dropdown--open' : ''}`}
                         onMouseEnter={() => setToursOpen(true)}
                         onMouseLeave={() => setToursOpen(false)}
@@ -110,6 +95,7 @@ function Header() {
                             ))}
                         </div>
                     </li>
+
                     {/* Japón a la Carta dropdown */}
                     <li className={`nav-dropdown${japonOpen ? ' nav-dropdown--open' : ''}`}
                         onMouseEnter={() => setJaponOpen(true)}
@@ -128,7 +114,7 @@ function Header() {
                             <Link to="/viajes/japon" className="nav-dropdown-item nav-jac-main" onClick={closeMenu}>
                                 <span className="nav-jac-main-icon">⛩️</span>
                                 <div>
-                                    <span className="nav-dropdown-title">Diseña Tu Viaje</span>
+                                    <span className="nav-dropdown-title">Diseña tu viaje (Fechas Personalizadas)</span>
                                     <span className="nav-dropdown-sub">Paso a paso con el Trip Builder</span>
                                 </div>
                             </Link>
@@ -181,9 +167,44 @@ function Header() {
                             </div>
                         </div>
                     </li>
+
+                    {/* Tours Individuales a la Carta link */}
+                    <li><Link to="/viajes/japon" onClick={closeMenu}>Tours individuales a la carta</Link></li>
+
                     <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
-                    <li><Link to="/blog" onClick={closeMenu}>Blog</Link></li>
-                    <li><Link to="/faq" onClick={closeMenu}>Preguntas Frecuentes</Link></li>
+
+                    {/* Comunidad dropdown (Blog + Preguntas Frecuentes) */}
+                    <li className={`nav-dropdown${comunidadOpen ? ' nav-dropdown--open' : ''}`}
+                        onMouseEnter={() => setComunidadOpen(true)}
+                        onMouseLeave={() => setComunidadOpen(false)}
+                    >
+                        <button
+                            className="nav-dropdown-trigger"
+                            onClick={() => setComunidadOpen(!comunidadOpen)}
+                        >
+                            Comunidad
+                            <svg className="nav-dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                        <div className="nav-dropdown-panel nav-comunidad-panel">
+                            <Link to="/blog" className="nav-dropdown-item" onClick={closeMenu}>
+                                <span className="nav-dropdown-item-icon">📝</span>
+                                <div>
+                                    <span className="nav-dropdown-title">Blog</span>
+                                    <span className="nav-dropdown-sub">Consejos, guías e historias de viaje</span>
+                                </div>
+                            </Link>
+                            <Link to="/faq" className="nav-dropdown-item" onClick={closeMenu}>
+                                <span className="nav-dropdown-item-icon">❓</span>
+                                <div>
+                                    <span className="nav-dropdown-title">Preguntas Frecuentes</span>
+                                    <span className="nav-dropdown-sub">Resuelve tus dudas antes de viajar</span>
+                                </div>
+                            </Link>
+                        </div>
+                    </li>
+
                     <li><Link to="/contacto" onClick={closeMenu}>Contacto</Link></li>
                 </ul>
 

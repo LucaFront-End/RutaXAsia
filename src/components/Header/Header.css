@@ -168,6 +168,13 @@
   flex-shrink: 0;
 }
 
+.nav-dropdown-item-icon {
+  font-size: 1.1rem;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
 .nav-dropdown-title {
   display: block;
   font-size: 0.85rem;
