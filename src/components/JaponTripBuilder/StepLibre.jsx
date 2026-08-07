@@ -9,6 +9,7 @@ import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
+import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -135,37 +136,16 @@ export default function StepLibre({ season, temporadaKey }) {
                                 </div>
                             )}
 
-                            {/* Experiences Grid */}
-                            <div style={{ marginBottom: 60 }}>
-                                <div className="step3-section-title">🌸 Experiencias recomendadas para {season.name}</div>
-                                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '-12px', marginBottom: '20px' }}>
-                                    En la modalidad Libre, las experiencias que agregues se suman al presupuesto por persona.
-                                </p>
-                                <div className="libre-exp-grid">
-                                    {EXPERIENCIAS_DISPONIBLES.map(exp => {
-                                        const added = addedExperiences.includes(exp.id)
-                                        return (
-                                            <div
-                                                key={exp.id}
-                                                className={`libre-exp-card${added ? ' libre-exp-card--added' : ''}`}
-                                                onClick={() => toggleExperience(exp.id)}
-                                            >
-                                                <div className="libre-exp-card-toggle">
-                                                    {added ? '✓' : '+'}
-                                                </div>
-                                                <div className="libre-exp-card-img">
-                                                    <img src={exp.img} alt={exp.name} loading="lazy" />
-                                                </div>
-                                                <div className="libre-exp-card-body">
-                                                    <div className="libre-exp-card-name">{exp.name}</div>
-                                                    <div className="libre-exp-card-price">{formatPrice(exp.price)} MXN</div>
-                                                    <div className="libre-exp-card-desc">{exp.desc}</div>
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
+                            {/* Wix CMS Recommended Experiences (3 Collapsible Accordion Sections) */}
+                            <RecommendedExperiencesCMS
+                                addedExperiences={addedExperiences}
+                                onToggleExperience={(id) => {
+                                    setAddedExperiences(prev =>
+                                        prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+                                    )
+                                }}
+                                seasonName={season.name}
+                            />
 
                             {/* Complementos */}
                             <div>

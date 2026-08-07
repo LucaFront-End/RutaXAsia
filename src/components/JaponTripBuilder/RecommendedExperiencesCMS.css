@@ -1,0 +1,279 @@
+/* ===== RECOMMENDED EXPERIENCES CMS ACCORDION ===== */
+.rec-cms-wrapper {
+    margin-bottom: 50px;
+}
+
+.rec-cms-header {
+    margin-bottom: 24px;
+}
+
+.rec-cms-main-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    color: var(--color-dark);
+    margin-bottom: 6px;
+}
+
+.rec-cms-subtitle {
+    font-size: 0.92rem;
+    color: #666;
+    margin: 0;
+}
+
+.rec-cms-loading {
+    text-align: center;
+    padding: 40px;
+    background: #faf9f6;
+    border-radius: 20px;
+    color: #666;
+}
+
+.rec-cms-spinner {
+    font-size: 2.2rem;
+    display: inline-block;
+    animation: recSpin 2s infinite ease-in-out;
+}
+
+@keyframes recSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Accordion Container */
+.rec-cms-accordion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rec-cms-acc-item {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid rgba(12, 14, 22, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rec-cms-acc-item--open {
+    border-color: var(--color-primary);
+    box-shadow: 0 10px 35px rgba(233, 30, 122, 0.12);
+}
+
+/* Accordion Header */
+.rec-cms-acc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.rec-cms-acc-header:hover {
+    background: #fcfbfa;
+}
+
+.rec-cms-acc-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.rec-cms-acc-icon {
+    font-size: 1.8rem;
+    width: 48px;
+    height: 48px;
+    background: rgba(233, 30, 122, 0.08);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rec-cms-acc-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    margin: 0 0 2px;
+    color: var(--color-dark);
+}
+
+.rec-cms-acc-count {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.rec-cms-acc-chevron {
+    font-size: 0.9rem;
+    color: #999;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f5f5f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.rec-cms-acc-item--open .rec-cms-acc-chevron {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+/* Accordion Body */
+.rec-cms-acc-body {
+    padding: 0 24px 24px;
+    border-top: 1px dashed rgba(12, 14, 22, 0.08);
+    animation: recFadeDown 0.3s ease;
+}
+
+@keyframes recFadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rec-cms-cat-desc {
+    font-size: 0.88rem;
+    color: #666;
+    margin: 16px 0 20px;
+}
+
+.rec-cms-empty {
+    font-size: 0.9rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* Grid of Cards */
+.rec-cms-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.rec-cms-card {
+    background: #faf9f6;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.rec-cms-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    border-color: rgba(233, 30, 122, 0.3);
+}
+
+.rec-cms-card--added {
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 8px 25px rgba(233, 30, 122, 0.15);
+}
+
+.rec-cms-card-img-box {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+}
+
+.rec-cms-card-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.rec-cms-card:hover .rec-cms-card-img-box img {
+    transform: scale(1.06);
+}
+
+.rec-cms-duration-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(12, 14, 22, 0.75);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+}
+
+.rec-cms-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.rec-cms-card-title {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.rec-cms-card-excerpt {
+    font-size: 0.82rem;
+    color: #666;
+    line-height: 1.45;
+    margin: 0 0 16px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.rec-cms-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.rec-cms-card-price {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-dark);
+}
+
+.rec-cms-add-btn {
+    background: #fff;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rec-cms-add-btn:hover,
+.rec-cms-add-btn--added {
+    background: var(--color-primary);
+    color: #fff;
+}

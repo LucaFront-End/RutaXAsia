@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
     PRECIOS,
-    EXPERIENCIAS_DISPONIBLES,
     COMPLEMENTOS,
     EXP_HEROES,
 } from '../../data/japonData'
@@ -9,12 +8,13 @@ import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
+import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
 
 import { useTripSearch } from '../../context/TripContext'
 
 /**
  * StepGuiado — Step 3 for "Esencial" (Guiado) experience.
- * Features: TripSelectorBar (Dates & Passengers), selector for 6 or 9 included experiences, FloatingTicket.
+ * Features: TripSelectorBar (Dates & Passengers), selector for 6 or 9 included experiences, FloatingTicket, Wix CMS experiences.
  */
 export default function StepGuiado({ season, temporadaKey }) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
@@ -35,33 +35,12 @@ export default function StepGuiado({ season, temporadaKey }) {
     const selectedPkg = packages[1] || packages[0] || { days: '10 días 8 noches', priceNum: 28490 }
     const basePrice = selectedPkg?.priceNum || 28490
 
-    const toggleExp = (id) => {
-        setSelectedExps(prev => {
-            if (prev.includes(id)) return prev.filter(x => x !== id)
-            return [...prev, id]
-        })
-    }
-
-    const formatPrice = (n) => `$${n.toLocaleString('es-MX')}`
-
-    const includedNames = selectedExps.slice(0, freeExpLimit).map(id => EXPERIENCIAS_DISPONIBLES.find(e => e.id === id)?.name).filter(Boolean)
-    const extraItems = selectedExps.slice(freeExpLimit).map(id => EXPERIENCIAS_DISPONIBLES.find(e => e.id === id)).filter(Boolean)
-    const extraTotal = extraItems.reduce((sum, item) => sum + item.price, 0)
+    const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
     const adults = selectorData.adults
     const children = selectorData.children
     const passengersCount = adults + children
-    const pricePerPerson = basePrice + extraTotal
-    const totalPrice = pricePerPerson * passengersCount
-
-    // Badges
-    const badgesMap = {
-        kioto: 'Imperdible 🌸',
-        fuji: 'Top Destino 🗻',
-        universal: 'Adrenalina 🎢',
-        disney: 'Mágico 🏰',
-        hiroshima: 'Cultura 🕊️',
-    }
+    const totalPrice = basePrice * passengersCount
 
     return (
         <>
@@ -139,51 +118,16 @@ export default function StepGuiado({ season, temporadaKey }) {
                                 </div>
                             </div>
 
-                            <div className="step3-section-title">🌸 Selecciona tus experiencias (hasta {freeExpLimit} incluidas sin costo)</div>
-
-                            <div className="guiado-exp-grid" style={{ marginBottom: '50px' }}>
-                                {EXPERIENCIAS_DISPONIBLES.map(exp => {
-                                    const isSelected = selectedExps.includes(exp.id)
-                                    const selIndex = selectedExps.indexOf(exp.id)
-                                    const isIncluded = isSelected && selIndex < freeExpLimit
-                                    const isAdditional = isSelected && selIndex >= freeExpLimit
-                                    return (
-                                        <div
-                                            key={exp.id}
-                                            className={`guiado-exp-card${isSelected ? ' guiado-exp-card--selected' : ''}`}
-                                            onClick={() => toggleExp(exp.id)}
-                                        >
-                                            {badgesMap[exp.id] && (
-                                                <span className="guiado-exp-badge-tag">{badgesMap[exp.id]}</span>
-                                            )}
-                                            {isSelected && (
-                                                <div className="guiado-exp-card-badge" style={isAdditional ? { background: '#222' } : {}}>
-                                                    {isIncluded ? '✓ Incluida' : `✓ Adicional (+${formatPrice(exp.price)})`}
-                                                </div>
-                                            )}
-                                            <div className="guiado-exp-card-img">
-                                                <img src={exp.img} alt={exp.name} loading="lazy" />
-                                            </div>
-                                            <div className="guiado-exp-card-body">
-                                                <div className="guiado-exp-card-name">{exp.name}</div>
-                                                <div className="guiado-exp-card-price" style={{
-                                                    fontSize: '0.9rem',
-                                                    fontWeight: '800',
-                                                    color: isIncluded ? '#2d6a4f' : 'var(--jtb-primary)',
-                                                    marginBottom: '6px'
-                                                }}>
-                                                    {isIncluded ? (
-                                                        <span className="guiado-price-included">✨ Incluida gratis ({selIndex + 1}/{freeExpLimit})</span>
-                                                    ) : (
-                                                        <span className="guiado-price-additional">{formatPrice(exp.price)} MXN</span>
-                                                    )}
-                                                </div>
-                                                <div className="guiado-exp-card-desc">{exp.desc}</div>
-                                            </div>
-                                        </div>
+                            {/* Wix CMS Recommended Experiences (3 Collapsible Accordion Sections) */}
+                            <RecommendedExperiencesCMS
+                                addedExperiences={selectedExps}
+                                onToggleExperience={(id) => {
+                                    setSelectedExps(prev =>
+                                        prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
                                     )
-                                })}
-                            </div>
+                                }}
+                                seasonName={season.name}
+                            />
 
                             {/* Complementos */}
                             <div>
@@ -215,12 +159,12 @@ export default function StepGuiado({ season, temporadaKey }) {
                             estilo="Esencial"
                             selectorData={selectorData}
                             selectedPkg={selectedPkg}
-                            includedExps={includedNames}
-                            addedItems={extraItems}
+                            includedExps={[]}
+                            addedItems={[]}
                             selectedComps={selectedComps}
                             freeExpLimit={freeExpLimit}
                             basePrice={basePrice}
-                            extraTotal={extraTotal}
+                            extraTotal={0}
                             onOpenCheckout={() => setIsCheckoutOpen(true)}
                         />
                     </div>
@@ -236,9 +180,8 @@ export default function StepGuiado({ season, temporadaKey }) {
                 desglose={
                     `Pasajeros: ${adults} Adultos, ${children} Menores. ` +
                     `Fechas: ${selectorData.dateMode === 'month' ? selectorData.selectedMonth : `${selectorData.startDate} a ${selectorData.endDate}`}. ` +
-                    `Incluidas (${freeExpLimit} gratis): ${includedNames.join(', ')}. ` +
-                    `Adicionales: ${extraItems.map(e => e.name).join(', ')} (+${formatPrice(extraTotal)} MXN). ` +
-                    `Extras: ${selectedComps.join(', ')}.`
+                    `Modalidad: ${freeExpLimit} incluidas gratis. ` +
+                    `Extras: ${selectedComps.join(', ') || 'Ninguno'}.`
                 }
             />
         </>

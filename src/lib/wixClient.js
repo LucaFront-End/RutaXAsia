@@ -118,3 +118,18 @@ export async function fetchBlogPostBySlug(slug) {
         return null
     }
 }
+
+/**
+ * Fetch all TourIndividuales from Wix CMS via /api/tours-individuales
+ */
+export async function fetchTourIndividuales() {
+    try {
+        const res = await fetch('/api/tours-individuales')
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const data = await res.json()
+        return data.tours || []
+    } catch (error) {
+        console.error('[TourIndividuales] Error fetching tours:', error.message)
+        return []
+    }
+}
