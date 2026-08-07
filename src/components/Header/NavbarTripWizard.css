@@ -1,0 +1,137 @@
+/* ===== NAVBAR TRIP WIZARD OVERLAY & MODAL ===== */
+.nav-wizard-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: navWizardFadeIn 0.3s ease;
+}
+
+@keyframes navWizardFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.nav-wizard-modal {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    position: relative;
+    animation: navWizardScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes navWizardScaleIn {
+    from {
+        opacity: 0;
+        transform: translateY(-16px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.nav-wizard-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #999;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.nav-wizard-close:hover {
+    background: #f0f0f2;
+    color: #222;
+}
+
+.nav-wizard-header {
+    background: var(--color-dark);
+    color: #fff;
+    padding: 24px 28px 20px;
+    text-align: center;
+}
+
+.nav-wizard-tag {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.nav-wizard-title {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    margin: 0 0 16px;
+    color: #fff;
+}
+
+.nav-wizard-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.nav-wizard-step-dot {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.45);
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-wizard-step-dot.active {
+    color: #fff;
+    background: var(--color-primary);
+}
+
+.nav-wizard-step-line {
+    width: 24px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-wizard-body {
+    padding: 24px 28px;
+}
+
+.nav-wizard-body-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 16px;
+}
+
+.nav-wizard-footer {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
