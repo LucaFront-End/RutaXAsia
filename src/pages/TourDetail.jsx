@@ -17,13 +17,19 @@ function WhatsAppIcon() {
     )
 }
 
+import { useTripSearch } from '../context/TripContext'
+import FloatingTicket from '../components/JaponTripBuilder/FloatingTicket'
+import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
+
 export default function TourDetail() {
     const { slug } = useParams()
     const tour = TOURS[slug]
+    const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const [lightbox, setLightbox] = useState(null)
     const [openFaq, setOpenFaq] = useState(null)
     const [showBar, setShowBar] = useState(false)
     const [activeCity, setActiveCity] = useState(0)
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
     useEffect(() => { window.scrollTo(0, 0) }, [slug])
 
@@ -47,6 +53,22 @@ export default function TourDetail() {
     const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`
     const priceDisplay = tour.priceMXN ? `${tour.price} / ${tour.priceMXN}` : tour.price
     const isSoldOut = tour.soldOut || tour.spotsLeft === 0
+
+    // Parse price to numeric for FloatingTicket
+    let basePriceNum = 0
+    if (tour.priceMXN) {
+        const cleaned = tour.priceMXN.replace(/[^0-9.]/g, '')
+        basePriceNum = parseFloat(cleaned) || 0
+    }
+    if (!basePriceNum && tour.price) {
+        const cleaned = tour.price.replace(/[^0-9.]/g, '')
+        basePriceNum = parseFloat(cleaned) || 0
+    }
+
+    const adults = selectorData.adults || 2
+    const children = selectorData.children || 0
+    const passengersCount = adults + children
+    const totalPrice = basePriceNum * passengersCount
 
     return (
         <>
@@ -123,17 +145,52 @@ export default function TourDetail() {
                 </div>
             )}
 
-            {/* ===== 3. OVERVIEW — Editorial text ===== */}
+            {/* ===== 3. OVERVIEW + BOLETO DE COMPRA (Floating Ticket Sidebar Layout) ===== */}
             <section className="td-editorial container">
-                <h2 className="td-section-label">Sobre este viaje</h2>
-                <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, vuelos y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
-                {tour.hospedaje && (
-                    <div className="td-hospedaje">
-                        <span className="td-hospedaje-icon">🏨</span>
-                        <span className="td-hospedaje-text"><strong>Hospedaje:</strong> {tour.hospedaje}</span>
+                <div className="libre-layout">
+                    <div>
+                        <h2 className="td-section-label">Sobre este viaje</h2>
+                        <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, vuelos y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
+                        {tour.hospedaje && (
+                            <div className="td-hospedaje">
+                                <span className="td-hospedaje-icon">🏨</span>
+                                <span className="td-hospedaje-text"><strong>Hospedaje:</strong> {tour.hospedaje}</span>
+                            </div>
+                        )}
                     </div>
-                )}
+
+                    {/* Floating Ticket / Boleto de Compra Sidebar */}
+                    <div>
+                        <FloatingTicket
+                            season={{ name: tour.title, colors: { primary: '#e91e63' } }}
+                            temporadaKey="sakura"
+                            estilo="Reserva"
+                            selectorData={selectorData}
+                            selectedPkg={{ days: tour.duration, priceNum: basePriceNum, name: tour.title }}
+                            includedExps={tour.includes || []}
+                            addedItems={[]}
+                            selectedComps={[]}
+                            basePrice={basePriceNum}
+                            extraTotal={0}
+                            onOpenCheckout={() => setIsCheckoutOpen(true)}
+                        />
+                    </div>
+                </div>
             </section>
+
+            <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                season={{ name: tour.title, colors: { primary: '#e91e63' } }}
+                estilo="Reserva"
+                totalPrice={totalPrice}
+                desglose={
+                    `Tour: ${tour.title}. ` +
+                    `Fecha: ${tour.date}. ` +
+                    `Duración: ${tour.duration}. ` +
+                    `Pasajeros: ${adults} Adultos, ${children} Menores.`
+                }
+            />
 
             {/* ===== 4. ITINERARY — Map + Detail Split ===== */}
             <section className="td-tabs-section container">
