@@ -266,31 +266,66 @@
     overflow: hidden;
 }
 
-.tours-indiv-date-picker-row {
-    background: #f8f9fa;
-    padding: 8px 12px;
-    border-radius: 10px;
+/* Custom Date Selector Chip */
+.tours-indiv-date-chip {
+    position: relative;
+    background: #fff7f9;
+    border: 1px dashed rgba(233, 30, 122, 0.35);
+    border-radius: 12px;
+    padding: 8px 14px;
     margin-bottom: 14px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    border: 1px solid #eee;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.tours-indiv-date-picker-row label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #444;
-    white-space: nowrap;
+.tours-indiv-date-chip:hover {
+    background: #fff0f5;
+    border-color: var(--color-primary);
+    border-style: solid;
+    box-shadow: 0 4px 12px rgba(233, 30, 122, 0.12);
 }
 
-.tours-indiv-date-picker-row input {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 0.8rem;
-    outline: none;
+.tours-indiv-date-chip--added {
+    background: rgba(233, 30, 122, 0.08);
+    border-color: var(--color-primary);
+    border-style: solid;
+}
+
+.tours-indiv-date-chip-icon {
+    font-size: 1.15rem;
+}
+
+.tours-indiv-date-chip-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.tours-indiv-date-chip-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888;
+}
+
+.tours-indiv-date-chip-value {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--color-primary);
+}
+
+.tours-indiv-date-chip-native {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
 }
 
 .tours-indiv-card-footer {

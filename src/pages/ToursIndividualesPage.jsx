@@ -103,6 +103,17 @@ export default function ToursIndividualesPage() {
 
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
+    // Format date string to friendly readable format (e.g. 18 Oct 2026)
+    const formatDateLabel = (dateStr) => {
+        if (!dateStr) return 'Elegir fecha'
+        const parts = dateStr.split('-')
+        if (parts.length === 3) {
+            const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]))
+            return dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+        }
+        return dateStr
+    }
+
     return (
         <div className="tours-indiv-page">
             <Helmet>
@@ -176,7 +187,7 @@ export default function ToursIndividualesPage() {
                             includedExps={[]}
                             addedItems={selectedTours.map(t => ({
                                 id: t.id,
-                                name: `${t.name} (📅 ${t.date})`,
+                                name: `${t.name} (📅 ${formatDateLabel(t.date)})`,
                                 price: t.price
                             }))}
                             selectedComps={[]}
@@ -234,11 +245,16 @@ export default function ToursIndividualesPage() {
                                                     <p className="tours-indiv-card-excerpt">{tour.excerpt}</p>
                                                 )}
 
-                                                {/* Date Picker Input per Tour */}
-                                                <div className="tours-indiv-date-picker-row">
-                                                    <label>📅 Fecha del tour:</label>
+                                                {/* Elegant Custom Date Selector Pill */}
+                                                <div className={`tours-indiv-date-chip${isAdded ? ' tours-indiv-date-chip--added' : ''}`}>
+                                                    <span className="tours-indiv-date-chip-icon">📅</span>
+                                                    <div className="tours-indiv-date-chip-info">
+                                                        <span className="tours-indiv-date-chip-label">Fecha del Tour</span>
+                                                        <span className="tours-indiv-date-chip-value">{formatDateLabel(currentDate)} ▾</span>
+                                                    </div>
                                                     <input
                                                         type="date"
+                                                        className="tours-indiv-date-chip-native"
                                                         value={currentDate}
                                                         onChange={(e) => handleDateChange(tour.id, e.target.value)}
                                                     />

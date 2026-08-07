@@ -62,10 +62,12 @@ export default function FloatingTicket({
 
                 {/* Trip info badge strip */}
                 <div style={{ marginTop: '12px', background: 'rgba(233, 30, 122, 0.05)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', color: 'var(--color-dark)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', marginBottom: '3px' }}>
-                        <span>📅</span> <span>{datesText}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666' }}>
+                    {estilo !== 'Tours Sueltos' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', marginBottom: '3px' }}>
+                            <span>📅</span> <span>{datesText}</span>
+                        </div>
+                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontWeight: estilo === 'Tours Sueltos' ? '700' : 'normal' }}>
                         <span>👥</span> <span>{passengersText}</span>
                     </div>
                 </div>
