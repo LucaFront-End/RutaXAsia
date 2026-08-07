@@ -11,22 +11,17 @@ import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 
+import { useTripSearch } from '../../context/TripContext'
+
 /**
  * StepSignature — Step 3 for "Signature" premium experience.
  * Dark theme with gold accents. Fully bespoke content.
  */
 export default function StepSignature({ season }) {
+    const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const hero = EXP_HEROES.signature
     const [interests, setInterests] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
-    const [selectorData, setSelectorData] = useState({
-        dateMode: 'exact',
-        startDate: '2026-10-15',
-        endDate: '2026-10-28',
-        selectedMonth: 'Octubre 2026',
-        adults: 2,
-        children: 0,
-    })
 
     const toggleInterest = (name) => {
         setInterests(prev =>

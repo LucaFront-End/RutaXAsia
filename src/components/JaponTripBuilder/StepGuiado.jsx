@@ -10,23 +10,18 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 
+import { useTripSearch } from '../../context/TripContext'
+
 /**
  * StepGuiado — Step 3 for "Esencial" (Guiado) experience.
  * Features: TripSelectorBar (Dates & Passengers), selector for 6 or 9 included experiences, FloatingTicket.
  */
 export default function StepGuiado({ season, temporadaKey }) {
+    const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const [selectedExps, setSelectedExps] = useState([])
     const [selectedComps, setSelectedComps] = useState([])
     const [freeExpLimit, setFreeExpLimit] = useState(6) // 6 u 9 incluidas
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
-    const [selectorData, setSelectorData] = useState({
-        dateMode: 'exact',
-        startDate: '2026-10-15',
-        endDate: '2026-10-28',
-        selectedMonth: 'Octubre 2026',
-        adults: 2,
-        children: 0,
-    })
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>

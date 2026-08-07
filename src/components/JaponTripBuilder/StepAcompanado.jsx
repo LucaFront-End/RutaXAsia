@@ -12,22 +12,17 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 
+import { useTripSearch } from '../../context/TripContext'
+
 /**
  * StepAcompanado — Step 3 for "Completo" (Acompañado) experience.
  * Features: TripSelectorBar (Dates & Passengers), FloatingTicket, all-inclusive list, day-by-day timeline, why choose this, upsell.
  */
 export default function StepAcompanado({ season, temporadaKey }) {
+    const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const hero = EXP_HEROES.acompanado
     const [selectedComps, setSelectedComps] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
-    const [selectorData, setSelectorData] = useState({
-        dateMode: 'exact',
-        startDate: '2026-10-15',
-        endDate: '2026-10-28',
-        selectedMonth: 'Octubre 2026',
-        adults: 2,
-        children: 0,
-    })
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>

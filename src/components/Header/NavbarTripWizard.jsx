@@ -119,23 +119,66 @@ export default function NavbarTripWizard({ isOpen, onClose, targetTrip }) {
                                         <div className="month-cal-header">Octubre 2026</div>
                                         <div className="month-cal-grid">
                                             {['D','L','M','M','J','V','S'].map(d => <span key={d} className="cal-day-head">{d}</span>)}
-                                            {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                                                <span
-                                                    key={day}
-                                                    className={`cal-day-num${day >= 15 && day <= 28 ? ' cal-day-num--in-range' : ''}${day === 15 || day === 28 ? ' cal-day-num--selected' : ''}`}
-                                                >
-                                                    {day}
-                                                </span>
-                                            ))}
+                                            {Array.from({ length: 31 }, (_, i) => i + 1).map(day => {
+                                                const dateStr = `2026-10-${String(day).padStart(2, '0')}`
+                                                const isStart = tempStartDate === dateStr
+                                                const isEnd = tempEndDate === dateStr
+                                                const inRange = tempStartDate && tempEndDate && dateStr >= tempStartDate && dateStr <= tempEndDate
+
+                                                return (
+                                                    <span
+                                                        key={day}
+                                                        onClick={() => {
+                                                            if (!tempStartDate || (tempStartDate && tempEndDate)) {
+                                                                setTempStartDate(dateStr)
+                                                                setTempEndDate('')
+                                                            } else if (dateStr >= tempStartDate) {
+                                                                setTempEndDate(dateStr)
+                                                            } else {
+                                                                setTempStartDate(dateStr)
+                                                                setTempEndDate('')
+                                                            }
+                                                        }}
+                                                        className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        {day}
+                                                    </span>
+                                                )
+                                            })}
                                         </div>
                                     </div>
                                     <div className="month-cal">
                                         <div className="month-cal-header">Noviembre 2026</div>
                                         <div className="month-cal-grid">
                                             {['D','L','M','M','J','V','S'].map(d => <span key={d} className="cal-day-head">{d}</span>)}
-                                            {Array.from({ length: 30 }, (_, i) => i + 1).map(day => (
-                                                <span key={day} className="cal-day-num">{day}</span>
-                                            ))}
+                                            {Array.from({ length: 30 }, (_, i) => i + 1).map(day => {
+                                                const dateStr = `2026-11-${String(day).padStart(2, '0')}`
+                                                const isStart = tempStartDate === dateStr
+                                                const isEnd = tempEndDate === dateStr
+                                                const inRange = tempStartDate && tempEndDate && dateStr >= tempStartDate && dateStr <= tempEndDate
+
+                                                return (
+                                                    <span
+                                                        key={day}
+                                                        onClick={() => {
+                                                            if (!tempStartDate || (tempStartDate && tempEndDate)) {
+                                                                setTempStartDate(dateStr)
+                                                                setTempEndDate('')
+                                                            } else if (dateStr >= tempStartDate) {
+                                                                setTempEndDate(dateStr)
+                                                            } else {
+                                                                setTempStartDate(dateStr)
+                                                                setTempEndDate('')
+                                                            }
+                                                        }}
+                                                        className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        {day}
+                                                    </span>
+                                                )
+                                            })}
                                         </div>
                                     </div>
                                 </div>

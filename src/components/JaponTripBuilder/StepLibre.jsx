@@ -10,23 +10,18 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 
+import { useTripSearch } from '../../context/TripContext'
+
 /**
  * StepLibre — Step 3 for "Libre" experience.
  * Features: TripSelectorBar (Dates & Passengers), duration selector, experience toggle grid, floating ticket calculator.
  */
 export default function StepLibre({ season, temporadaKey }) {
+    const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const [selectedDuration, setSelectedDuration] = useState(0)
     const [addedExperiences, setAddedExperiences] = useState([])
     const [selectedComps, setSelectedComps] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
-    const [selectorData, setSelectorData] = useState({
-        dateMode: 'exact',
-        startDate: '2026-10-15',
-        endDate: '2026-10-28',
-        selectedMonth: 'Octubre 2026',
-        adults: 2,
-        children: 0,
-    })
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
