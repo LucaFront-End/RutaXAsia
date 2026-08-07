@@ -80,7 +80,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         setApiError('')
 
         try {
-            // 1. Call serverless API to save reservation to Wix CMS
+            // 1. Call serverless API to save reservation in Wix CMS and create Checkout session
             const response = await fetch('/api/wix-checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -123,19 +123,22 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                 console.error('[CheckoutModal] FormSubmit error:', fsErr)
             }
 
-            const targetUrl = result.checkoutUrl || 'https://dilodigitalmx.wixsite.com/rutaxasia/p-gina-de-producto/anticipo-de-viaje'
-            setResultData(result)
-            setStatus('success')
-
-            // Redirect after 1.5 seconds
-            setTimeout(() => {
-                window.location.href = targetUrl
-            }, 1500)
+            if (result.success && result.checkoutUrl) {
+                setResultData(result)
+                setStatus('success')
+                // Redirect to exact Wix Store __ecom/checkout?checkoutId=... URL
+                setTimeout(() => {
+                    window.location.href = result.checkoutUrl
+                }, 1200)
+            } else {
+                setApiError(result.error || 'Hubo un problema al conectar con el checkout de Wix Store.')
+                setStatus('error')
+            }
 
         } catch (err) {
             console.error('Checkout error:', err)
-            // Fallback redirect directly to Anticipo product page
-            window.location.href = 'https://dilodigitalmx.wixsite.com/rutaxasia/p-gina-de-producto/anticipo-de-viaje'
+            setApiError('Error de conexión. Inténtalo de nuevo por favor.')
+            setStatus('error')
         }
     }
 
