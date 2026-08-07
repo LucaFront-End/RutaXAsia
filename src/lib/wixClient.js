@@ -133,3 +133,18 @@ export async function fetchTourIndividuales() {
         return []
     }
 }
+
+/**
+ * Fetch all PreciosporCategoriasydias from Wix CMS via /api/precios-categorias-dias
+ */
+export async function fetchPreciosCategoriasDias() {
+    try {
+        const res = await fetch('/api/precios-categorias-dias')
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const data = await res.json()
+        return data.prices || []
+    } catch (error) {
+        console.error('[PreciosCategoriasDias] Error fetching prices:', error.message)
+        return []
+    }
+}

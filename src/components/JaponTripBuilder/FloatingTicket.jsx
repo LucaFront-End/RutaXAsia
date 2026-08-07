@@ -109,13 +109,20 @@ export default function FloatingTicket({
                     </div>
                 ))}
 
-                {/* Added experiences */}
-                {addedItems.map(exp => (
-                    <div className="libre-calc-line animate-slide-in" key={exp.id}>
-                        <span className="libre-calc-line-name">➕ {exp.name}</span>
-                        <span className="libre-calc-line-price">{formatPrice(exp.price)}</span>
+                {/* Cotización Extra (No incluidos) */}
+                {addedItems.length > 0 && (
+                    <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
+                            🏷️ Cotización Extra (No incluidos)
+                        </div>
+                        {addedItems.map(exp => (
+                            <div className="libre-calc-line animate-slide-in" key={exp.id}>
+                                <span className="libre-calc-line-name" style={{ fontSize: '0.82rem' }}>➕ {exp.name}</span>
+                                <span className="libre-calc-line-price" style={{ fontWeight: '700' }}>{formatPrice(exp.price || exp.priceNum || 0)}</span>
+                            </div>
+                        ))}
                     </div>
-                ))}
+                )}
 
                 {/* Selected Comps */}
                 {selectedComps.map((comp, i) => (

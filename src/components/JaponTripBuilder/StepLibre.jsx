@@ -1,7 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
     PRECIOS,
-    EXPERIENCIAS_DISPONIBLES,
     COMPLEMENTOS,
     EXP_HEROES,
 } from '../../data/japonData'
@@ -10,6 +9,7 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
+import { fetchPreciosCategoriasDias } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -23,6 +23,28 @@ export default function StepLibre({ season, temporadaKey }) {
     const [addedExperiences, setAddedExperiences] = useState([])
     const [selectedComps, setSelectedComps] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [cmsPackages, setCmsPackages] = useState([])
+
+    useEffect(() => {
+        let isMounted = true
+        async function loadCmsPrices() {
+            const allPrices = await fetchPreciosCategoriasDias()
+            const filtered = allPrices.filter(p =>
+                p.categoria.toLowerCase().includes('libre') &&
+                (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
+            )
+            if (isMounted && filtered.length > 0) {
+                setCmsPackages(filtered.map(p => ({
+                    days: p.diasYNochesCompletos || `${p.dias} ${p.noches}`,
+                    price: p.precioText,
+                    priceNum: p.precioNum,
+                    name: p.tituloComercial
+                })))
+            }
+        }
+        loadCmsPrices()
+        return () => { isMounted = false }
+    }, [season?.name, temporadaKey])
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
@@ -31,8 +53,8 @@ export default function StepLibre({ season, temporadaKey }) {
     }
 
     const hero = EXP_HEROES.libre
-    const pricing = PRECIOS[temporadaKey]?.libre
-    const packages = pricing?.packages || []
+    const staticPricing = PRECIOS[temporadaKey]?.libre
+    const packages = cmsPackages.length > 0 ? cmsPackages : (staticPricing?.packages || [])
     const toggleExperience = (tourObj) => {
         setAddedExperiences(prev => {
             const exists = prev.some(item => item.id === tourObj.id)

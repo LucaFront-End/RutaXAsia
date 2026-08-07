@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     ITINERARIO_ACOMPANADO,
     ITINERARIO_ACOMPANADO_MOMIJI,
@@ -11,6 +11,7 @@ import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
+import { fetchPreciosCategoriasDias } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -23,6 +24,24 @@ export default function StepAcompanado({ season, temporadaKey }) {
     const hero = EXP_HEROES.acompanado
     const [selectedComps, setSelectedComps] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [cmsPrice, setCmsPrice] = useState(null)
+
+    useEffect(() => {
+        let isMounted = true
+        async function loadCmsPrices() {
+            const allPrices = await fetchPreciosCategoriasDias()
+            const filtered = allPrices.filter(p =>
+                p.categoria.toLowerCase().includes('completo') &&
+                (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
+            )
+            if (isMounted && filtered.length > 0) {
+                // Sort by price or pick primary
+                setCmsPrice(filtered[0].precioNum)
+            }
+        }
+        loadCmsPrices()
+        return () => { isMounted = false }
+    }, [season?.name, temporadaKey])
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
@@ -33,13 +52,15 @@ export default function StepAcompanado({ season, temporadaKey }) {
     const itinerario = season?.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : ITINERARIO_ACOMPANADO
     const todoIncluido = season?.key === 'momiji' ? ACOMPANADO_TODO_INCLUIDO_MOMIJI : ACOMPANADO_TODO_INCLUIDO
 
-    // Prices per person: $126,790 (Verano), $119,490 (Momiji), or $129,790 (Sakura/default)
-    let basePrice = 129790
-    if (season?.key === 'verano') basePrice = 126790
-    else if (season?.key === 'momiji') basePrice = 119490
+    // Base price from CMS or default fallback
+    let defaultBasePrice = 129790
+    if (season?.key === 'verano') defaultBasePrice = 126790
+    else if (season?.key === 'momiji') defaultBasePrice = 119490
 
-    const adults = selectorData.adults
-    const children = selectorData.children
+    const basePrice = cmsPrice || defaultBasePrice
+
+    const adults = selectorData.adults || 2
+    const children = selectorData.children || 0
     const passengersCount = adults + children
     const totalPrice = basePrice * passengersCount
 

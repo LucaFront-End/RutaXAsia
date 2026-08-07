@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     PRECIOS,
     COMPLEMENTOS,
@@ -9,6 +9,7 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
+import { fetchPreciosCategoriasDias } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -20,8 +21,35 @@ export default function StepGuiado({ season, temporadaKey }) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const [selectedExps, setSelectedExps] = useState([])
     const [selectedComps, setSelectedComps] = useState([])
-    const [freeExpLimit, setFreeExpLimit] = useState(6) // 6 u 9 incluidas
+    const [freeExpLimit, setFreeExpLimit] = useState(6) // 6 u 8 incluidas desde CMS
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [cmsPackages, setCmsPackages] = useState([])
+
+    useEffect(() => {
+        let isMounted = true
+        async function loadCmsPrices() {
+            const allPrices = await fetchPreciosCategoriasDias()
+            const filtered = allPrices.filter(p =>
+                p.categoria.toLowerCase().includes('esencial') &&
+                (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
+            )
+            if (isMounted && filtered.length > 0) {
+                const mapped = filtered.map(p => ({
+                    days: p.diasYNochesCompletos || `${p.dias} ${p.noches}`,
+                    price: p.precioText,
+                    priceNum: p.precioNum,
+                    name: p.tituloComercial,
+                    freeTours: p.tourGratisQueIncluira || 6
+                }))
+                setCmsPackages(mapped)
+                if (mapped[0]?.freeTours) {
+                    setFreeExpLimit(mapped[0].freeTours)
+                }
+            }
+        }
+        loadCmsPrices()
+        return () => { isMounted = false }
+    }, [season?.name, temporadaKey])
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
@@ -41,10 +69,10 @@ export default function StepGuiado({ season, temporadaKey }) {
     }
 
     const hero = EXP_HEROES.guiado
-    const pricing = PRECIOS[temporadaKey]?.libre
-    const packages = pricing?.packages || []
-    const selectedPkg = packages[1] || packages[0] || { days: '10 días 8 noches', priceNum: 28490 }
-    const basePrice = selectedPkg?.priceNum || 28490
+    const staticPricing = PRECIOS[temporadaKey]?.libre
+    const packages = cmsPackages.length > 0 ? cmsPackages : (staticPricing?.packages || [])
+    const selectedPkg = packages[1] || packages[0] || { days: '10 días 8 noches', priceNum: 47890 }
+    const basePrice = selectedPkg?.priceNum || 47890
 
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
