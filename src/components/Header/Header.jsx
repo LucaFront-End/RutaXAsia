@@ -209,11 +209,6 @@ function Header() {
                     <li><Link to="/contacto" onClick={closeMenu}>Contacto</Link></li>
                 </ul>
 
-                {/* Compact Trip Search Selector in Navbar Header */}
-                <div className="navbar-trip-search-widget">
-                    <TripSelectorBar variant="bar" />
-                </div>
-
                 <a href={WHATSAPP_URL} className="btn btn-primary navbar-cta" target="_blank" rel="noopener noreferrer">
                     Cotiza tu Viaje
                 </a>

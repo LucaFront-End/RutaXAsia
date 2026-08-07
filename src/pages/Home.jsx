@@ -506,11 +506,8 @@ function Home({ cityOverride } = {}) {
 
                         <p className="hero-excerpt">{currentTrip.excerpt}</p>
 
-                        {/* Search Bar Banner (Fechas exactas / mes + personas + buscar) */}
-                        <TripSelectorBar variant="hero" />
-
                         {/* Trip meta chips */}
-                        <div className="hero-meta-chips" style={{ marginTop: '20px' }}>
+                        <div className="hero-meta-chips">
                             <span className="hero-chip">
                                 <span className="hero-chip-icon">📅</span>
                                 {currentTrip.date}
