@@ -51,7 +51,7 @@ export default function AvisoPrivacidad() {
                         <p>RutaXAsia podrá transferir sus datos personales a terceros nacionales o internacionales, incluyendo aerolíneas, hoteles, operadores turísticos y agencias de seguros, únicamente con la finalidad de prestar los servicios de viaje contratados.</p>
 
                         <h2>5. Medios para Ejercer Derechos ARCO</h2>
-                        <p>Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse al tratamiento de sus datos personales (Derechos ARCO). Para ejercer estos derechos, puede enviar su solicitud al correo electrónico: <strong>reservas@rutaxasia.com</strong></p>
+                        <p>Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse al tratamiento de sus datos personales (Derechos ARCO). Para ejercer estos derechos, puede enviar su solicitud al correo electrónico: <strong>reservas@rutaxasia.com.mx</strong></p>
 
                         <h2>6. Uso de Cookies y Tecnologías de Rastreo</h2>
                         <p>Nuestro sitio web utiliza cookies y tecnologías similares para mejorar su experiencia de navegación, analizar el tráfico del sitio y personalizar el contenido. Usted puede desactivar las cookies a través de la configuración de su navegador.</p>
@@ -62,7 +62,7 @@ export default function AvisoPrivacidad() {
                         <h2>8. Contacto</h2>
                         <p>Para cualquier duda o aclaración sobre este Aviso de Privacidad, puede contactarnos en:</p>
                         <ul>
-                            <li>Email: <a href="mailto:reservas@rutaxasia.com">reservas@rutaxasia.com</a></li>
+                            <li>Email: <a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
                             <li>Teléfono: <a href="tel:+525513610083">55 13 61 00 83</a></li>
                             <li>Dirección: Río Lerma 232 P23 A, Cuauhtémoc, CDMX, CP 6500</li>
                         </ul>

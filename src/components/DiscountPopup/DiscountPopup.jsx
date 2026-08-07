@@ -50,8 +50,28 @@ function DiscountPopup() {
         setSubmitting(true)
 
         try {
+            // 1) Save to Wix CMS
             const result = await submitPopupToCMS(data)
             console.log('[Popup] CMS submission result:', result)
+
+            // 2) Send email via FormSubmit.co
+            await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com.mx', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    _subject: `🌸 Registro Pop-up Sakura 2027 — ${data.nombre}`,
+                    _template: 'box',
+                    _captcha: 'false',
+                    _language: 'es',
+                    'Nombre': data.nombre,
+                    'Teléfono': data.telefono,
+                    'Email': data.correo,
+                    'Estado': data.estado,
+                    'Viaje de Interés': data.viajeDeInteres,
+                    'Fecha': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+                }),
+            })
+
             setSubmitted(true)
             setTimeout(() => {
                 handleClose()

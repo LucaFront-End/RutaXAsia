@@ -58,7 +58,7 @@ function Footer() {
                         <ul>
                             <li><a href="tel:+525513610083">55 13 61 00 83</a></li>
                             <li><a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-                            <li><a href="mailto:reservas@rutaxasia.com">reservas@rutaxasia.com</a></li>
+                            <li><a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
                             <li>Río Lerma 232 P23 A<br />Cuauhtémoc, CDMX, CP 6500</li>
                         </ul>
                         <div className="footer-legal-badge">

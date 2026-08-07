@@ -79,7 +79,7 @@ export default function TerminosCondiciones() {
                         <h2>10. Contacto</h2>
                         <p>Para cualquier consulta sobre estos Términos y Condiciones:</p>
                         <ul>
-                            <li>Email: <a href="mailto:reservas@rutaxasia.com">reservas@rutaxasia.com</a></li>
+                            <li>Email: <a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
                             <li>Teléfono: <a href="tel:+525513610083">55 13 61 00 83</a></li>
                             <li>WhatsApp: <a href="https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20terminos%20y%20condiciones" target="_blank" rel="noopener noreferrer">55 13 61 00 83</a></li>
                         </ul>
