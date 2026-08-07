@@ -166,8 +166,8 @@ function Header() {
                             </div>
                         </li>
 
-                        {/* Tours Individuales a la Carta link */}
-                        <li><Link to="/viajes/japon" onClick={(e) => handleTripClick(e, 'Tours Individuales a la Carta', '/viajes/japon')}>Tours individuales a la carta</Link></li>
+                        {/* Tours Individuales link */}
+                        <li><Link to="/viajes/japon" onClick={(e) => handleTripClick(e, 'Tours Individuales', '/viajes/japon')}>Tours individuales</Link></li>
 
                         <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
 
