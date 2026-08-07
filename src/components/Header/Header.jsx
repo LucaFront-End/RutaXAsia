@@ -167,7 +167,7 @@ function Header() {
                         </li>
 
                         {/* Tours Individuales link */}
-                        <li><Link to="/viajes/japon" onClick={(e) => handleTripClick(e, 'Tours Individuales', '/viajes/japon')}>Tours individuales</Link></li>
+                        <li><Link to="/tours-individuales" onClick={closeMenu}>Tours individuales</Link></li>
 
                         <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
 
