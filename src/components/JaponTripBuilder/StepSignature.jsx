@@ -9,6 +9,7 @@ import {
 } from '../../data/japonData'
 import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
+import TripSelectorBar from './TripSelectorBar'
 
 /**
  * StepSignature — Step 3 for "Signature" premium experience.
@@ -18,6 +19,14 @@ export default function StepSignature({ season }) {
     const hero = EXP_HEROES.signature
     const [interests, setInterests] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [selectorData, setSelectorData] = useState({
+        dateMode: 'exact',
+        startDate: '2026-10-15',
+        endDate: '2026-10-28',
+        selectedMonth: 'Octubre 2026',
+        adults: 2,
+        children: 0,
+    })
 
     const toggleInterest = (name) => {
         setInterests(prev =>
@@ -60,6 +69,7 @@ export default function StepSignature({ season }) {
             {/* Diseñado para ti */}
             <section className="sig-section">
                 <div className="container">
+                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} />
                     <div className="sig-intro-grid">
                         <h3 className="sig-intro-lead">
                             Tu Viaje a Japón, <span>Diseñado Desde Cero</span>

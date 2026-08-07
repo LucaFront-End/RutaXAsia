@@ -4,21 +4,29 @@ import {
     EXPERIENCIAS_DISPONIBLES,
     COMPLEMENTOS,
     EXP_HEROES,
-    WHATSAPP_BASE,
-    WHATSAPP_PHONE,
 } from '../../data/japonData'
 import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
+import TripSelectorBar from './TripSelectorBar'
+import FloatingTicket from './FloatingTicket'
 
 /**
  * StepLibre — Step 3 for "Libre" experience.
- * Features: duration selector, experience toggle grid, live price calculator.
+ * Features: TripSelectorBar (Dates & Passengers), duration selector, experience toggle grid, floating ticket calculator.
  */
 export default function StepLibre({ season, temporadaKey }) {
-    const [selectedDuration, setSelectedDuration] = useState(null)
+    const [selectedDuration, setSelectedDuration] = useState(0)
     const [addedExperiences, setAddedExperiences] = useState([])
     const [selectedComps, setSelectedComps] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [selectorData, setSelectorData] = useState({
+        dateMode: 'exact',
+        startDate: '2026-10-15',
+        endDate: '2026-10-28',
+        selectedMonth: 'Octubre 2026',
+        adults: 2,
+        children: 0,
+    })
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
@@ -36,23 +44,25 @@ export default function StepLibre({ season, temporadaKey }) {
         )
     }
 
-    const selectedPkg = packages.find((_, i) => i === selectedDuration)
-    const basePrice = selectedPkg?.priceNum || 0
+    const selectedPkg = packages[selectedDuration] || packages[0]
+    const basePrice = selectedPkg?.priceNum || 24790
 
     const addedItems = useMemo(() =>
         EXPERIENCIAS_DISPONIBLES.filter(e => addedExperiences.includes(e.id)),
         [addedExperiences]
     )
     const extrasTotal = addedItems.reduce((sum, e) => sum + e.price, 0)
-    const totalPrice = basePrice + extrasTotal
 
     const formatPrice = (n) => `$${n.toLocaleString('es-MX')}`
 
     const passNames = ['Pase Express', 'Pase Clásico', 'Pase Explorador', 'Pase Gran Tour']
     const passBadges = ['', 'Más Popular 🌟', '', 'Recomendado 🔥']
 
-    // Build WhatsApp message
-    const waMsg = `SW-Hola quiero info sobre Japón a la Carta - ${season.name} Libre${selectedPkg ? ` con el ${passNames[selectedDuration]} (${selectedPkg.days})` : ''}${addedItems.length ? ` agregando: ${addedItems.map(e => e.name).join(', ')}` : ''}${selectedComps.length ? ` + Extras: ${selectedComps.join(', ')}` : ''}`
+    const adults = selectorData.adults
+    const children = selectorData.children
+    const passengersCount = adults + children
+    const pricePerPerson = basePrice + extrasTotal
+    const totalPrice = pricePerPerson * passengersCount
 
     return (
         <>
@@ -98,6 +108,9 @@ export default function StepLibre({ season, temporadaKey }) {
             {/* Duration + Calculator + Experiences */}
             <section className="step3-section">
                 <div className="container">
+                    {/* Top Date & Passenger Selector */}
+                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} />
+
                     <div className="libre-layout">
                         {/* Left column: duration + experiences */}
                         <div>
@@ -130,6 +143,9 @@ export default function StepLibre({ season, temporadaKey }) {
                             {/* Experiences Grid */}
                             <div style={{ marginBottom: 60 }}>
                                 <div className="step3-section-title">🌸 Experiencias recomendadas para {season.name}</div>
+                                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '-12px', marginBottom: '20px' }}>
+                                    En la modalidad Libre, las experiencias que agregues se suman al presupuesto por persona.
+                                </p>
                                 <div className="libre-exp-grid">
                                     {EXPERIENCIAS_DISPONIBLES.map(exp => {
                                         const added = addedExperiences.includes(exp.id)
@@ -179,91 +195,19 @@ export default function StepLibre({ season, temporadaKey }) {
                             </div>
                         </div>
 
-                        {/* Right column: Calculator Ticket */}
-                        <div className="libre-calculator">
-                            <div className="libre-calc-ticket-top">
-                                <div className="libre-calc-title">🎫 Pase de Abordar</div>
-                                <div className="libre-calc-ticket-status">
-                                    {selectedPkg ? 'CONFIGURADO' : 'INCOMPLETO'}
-                                </div>
-                            </div>
-
-                            <div className="libre-calc-ticket-divider">
-                                <div className="libre-calc-notch libre-calc-notch--left" />
-                                <div className="libre-calc-dashed-line" />
-                                <div className="libre-calc-notch libre-calc-notch--right" />
-                            </div>
-
-                            <div className="libre-calc-ticket-body">
-                                {selectedPkg ? (
-                                    <div className="libre-calc-line">
-                                        <span className="libre-calc-line-name">{passNames[selectedDuration]} ({selectedPkg.days.split(' ')[0]} días)</span>
-                                        <span className="libre-calc-line-price">{formatPrice(basePrice)}</span>
-                                    </div>
-                                ) : (
-                                    <div className="libre-calc-line">
-                                        <span className="libre-calc-line-name" style={{ fontStyle: 'italic', opacity: 0.5 }}>Selecciona una duración ↑</span>
-                                        <span className="libre-calc-line-price">—</span>
-                                    </div>
-                                )}
-
-                                {addedItems.map(exp => (
-                                    <div className="libre-calc-line animate-slide-in" key={exp.id}>
-                                        <span className="libre-calc-line-name">➕ {exp.name}</span>
-                                        <span className="libre-calc-line-price">{formatPrice(exp.price)}</span>
-                                    </div>
-                                ))}
-
-                                <div className="libre-calc-total">
-                                    <span className="libre-calc-total-label">Total estimado</span>
-                                    <div>
-                                        <span className="libre-calc-total-price">
-                                            {totalPrice > 0 ? formatPrice(totalPrice) : '—'}
-                                        </span>
-                                        {totalPrice > 0 && <span className="libre-calc-total-currency">MXN</span>}
-                                    </div>
-                                </div>
-
-                                <p className="libre-calc-note">
-                                    Tarifas por persona en base a habitación doble. Impuestos incluidos. El precio total de las experiencias adicionales se integra al presupuesto final.
-                                </p>
-
-                                <div className="libre-calc-barcode-wrapper">
-                                    <div className="libre-calc-barcode">
-                                        <div className="bar-line bar-line--w3" />
-                                        <div className="bar-line bar-line--w1" />
-                                        <div className="bar-line bar-line--w2" />
-                                        <div className="bar-line bar-line--w1" />
-                                        <div className="bar-line bar-line--w4" />
-                                        <div className="bar-line bar-line--w1" />
-                                        <div className="bar-line bar-line--w2" />
-                                        <div className="bar-line bar-line--w3" />
-                                        <div className="bar-line bar-line--w1" />
-                                    </div>
-                                    <span className="libre-calc-barcode-num">JAC-{temporadaKey.toUpperCase()}-LIBRE</span>
-                                </div>
-
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
-                                    <a
-                                        href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
-                                        className="libre-calc-cta"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        💬 Cotizar por WhatsApp
-                                    </a>
-                                    {totalPrice > 0 && (
-                                        <button
-                                            type="button"
-                                            className="libre-calc-checkout-btn"
-                                            onClick={() => setIsCheckoutOpen(true)}
-                                        >
-                                            💳 Apartar y Pagar Anticipo
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        {/* Right column: Floating Ticket Sidebar */}
+                        <FloatingTicket
+                            season={season}
+                            temporadaKey={temporadaKey}
+                            estilo="Libre"
+                            selectorData={selectorData}
+                            selectedPkg={selectedPkg}
+                            addedItems={addedItems}
+                            selectedComps={selectedComps}
+                            basePrice={basePrice}
+                            extraTotal={extrasTotal}
+                            onOpenCheckout={() => setIsCheckoutOpen(true)}
+                        />
                     </div>
                 </div>
             </section>
@@ -275,6 +219,8 @@ export default function StepLibre({ season, temporadaKey }) {
                 estilo="Libre"
                 totalPrice={totalPrice}
                 desglose={
+                    `Pasajeros: ${adults} Adultos, ${children} Menores. ` +
+                    `Fechas: ${selectorData.dateMode === 'month' ? selectorData.selectedMonth : `${selectorData.startDate} a ${selectorData.endDate}`}. ` +
                     `Pase: ${selectedPkg ? selectedPkg.days : ''}. ` +
                     `Experiencias: ${addedItems.map(e => e.name).join(', ')}. ` +
                     `Extras: ${selectedComps.join(', ')}.`
