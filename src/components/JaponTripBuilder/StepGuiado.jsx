@@ -29,6 +29,17 @@ export default function StepGuiado({ season, temporadaKey }) {
         )
     }
 
+    const toggleExperience = (tourObj) => {
+        setSelectedExps(prev => {
+            const exists = prev.some(item => item.id === tourObj.id)
+            if (exists) {
+                return prev.filter(item => item.id !== tourObj.id)
+            } else {
+                return [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }]
+            }
+        })
+    }
+
     const hero = EXP_HEROES.guiado
     const pricing = PRECIOS[temporadaKey]?.libre
     const packages = pricing?.packages || []
@@ -37,10 +48,15 @@ export default function StepGuiado({ season, temporadaKey }) {
 
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
+    const includedExpsList = selectedExps.slice(0, freeExpLimit).map(e => e.name)
+    const extraItems = selectedExps.slice(freeExpLimit)
+    const extraTotal = extraItems.reduce((sum, item) => sum + (item.price || 0), 0)
+
     const adults = selectorData.adults
     const children = selectorData.children
     const passengersCount = adults + children
-    const totalPrice = basePrice * passengersCount
+    const pricePerPerson = basePrice + extraTotal
+    const totalPrice = pricePerPerson * passengersCount
 
     return (
         <>
@@ -120,11 +136,9 @@ export default function StepGuiado({ season, temporadaKey }) {
 
                             {/* Wix CMS Recommended Experiences (3 Collapsible Accordion Sections) */}
                             <RecommendedExperiencesCMS
-                                addedExperiences={selectedExps}
-                                onToggleExperience={(id) => {
-                                    setSelectedExps(prev =>
-                                        prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-                                    )
+                                addedExperiences={selectedExps.map(e => e.id)}
+                                onToggleExperience={(tourId, tourTitle, tourPriceNum) => {
+                                    toggleExperience({ id: tourId, title: tourTitle, priceNum: tourPriceNum })
                                 }}
                                 seasonName={season.name}
                             />
@@ -159,12 +173,12 @@ export default function StepGuiado({ season, temporadaKey }) {
                             estilo="Esencial"
                             selectorData={selectorData}
                             selectedPkg={selectedPkg}
-                            includedExps={[]}
-                            addedItems={[]}
+                            includedExps={includedExpsList}
+                            addedItems={extraItems}
                             selectedComps={selectedComps}
                             freeExpLimit={freeExpLimit}
                             basePrice={basePrice}
-                            extraTotal={0}
+                            extraTotal={extraTotal}
                             onOpenCheckout={() => setIsCheckoutOpen(true)}
                         />
                     </div>
@@ -180,7 +194,8 @@ export default function StepGuiado({ season, temporadaKey }) {
                 desglose={
                     `Pasajeros: ${adults} Adultos, ${children} Menores. ` +
                     `Fechas: ${selectorData.dateMode === 'month' ? selectorData.selectedMonth : `${selectorData.startDate} a ${selectorData.endDate}`}. ` +
-                    `Modalidad: ${freeExpLimit} incluidas gratis. ` +
+                    `Incluidas (${freeExpLimit} gratis): ${includedExpsList.join(', ') || 'Ninguna'}. ` +
+                    (extraItems.length ? `Adicionales: ${extraItems.map(e => e.name).join(', ')} (+${formatPrice(extraTotal)} MXN). ` : '') +
                     `Extras: ${selectedComps.join(', ') || 'Ninguno'}.`
                 }
             />

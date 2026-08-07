@@ -33,21 +33,22 @@ export default function StepLibre({ season, temporadaKey }) {
     const hero = EXP_HEROES.libre
     const pricing = PRECIOS[temporadaKey]?.libre
     const packages = pricing?.packages || []
-
-    const toggleExperience = (id) => {
-        setAddedExperiences(prev =>
-            prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-        )
+    const toggleExperience = (tourObj) => {
+        setAddedExperiences(prev => {
+            const exists = prev.some(item => item.id === tourObj.id)
+            if (exists) {
+                return prev.filter(item => item.id !== tourObj.id)
+            } else {
+                return [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }]
+            }
+        })
     }
 
     const selectedPkg = packages[selectedDuration] || packages[0]
     const basePrice = selectedPkg?.priceNum || 24790
 
-    const addedItems = useMemo(() =>
-        EXPERIENCIAS_DISPONIBLES.filter(e => addedExperiences.includes(e.id)),
-        [addedExperiences]
-    )
-    const extrasTotal = addedItems.reduce((sum, e) => sum + e.price, 0)
+    const addedItems = addedExperiences
+    const extrasTotal = addedItems.reduce((sum, e) => sum + (e.price || 0), 0)
 
     const formatPrice = (n) => `$${n.toLocaleString('es-MX')}`
 
@@ -80,14 +81,13 @@ export default function StepLibre({ season, temporadaKey }) {
             {/* Includes */}
             <section className="step3-section" style={{ background: season.colors.bg }}>
                 <div className="container">
-                    <div className="step3-section-title">✅ ¿Qué incluye tu viaje?</div>
+                    <div className="step3-section-title">✅ Tu viaje ya incluye</div>
                     <div className="jtb-pass-includes-grid">
                         {[
-                            { icon: '🏨', title: 'Hospedaje y Desayuno', desc: 'Habitaciones dobles en APA hoteles de 3 y 4 estrellas con desayuno buffet de cortesía.' },
-                            { icon: '🚄', title: 'Transporte Base', desc: 'Tren bala Shinkansen, tarjetas IC pre-cargadas y traslados de llegada y salida.' },
-                            { icon: '🗺️', title: 'Asesoría de Expertos', desc: 'Organización integral y una guía digital personalizada de navegación.' },
-                            { icon: '📶', title: 'Wi-Fi de Alta Velocidad', desc: 'Tarjeta eSIM con datos móviles ilimitados para mantenerte conectado.' },
-                            { icon: '🎁', title: 'Soporte y Respaldo', desc: 'Asistencia y soporte remoto permanente en español durante tu estancia.' },
+                            { icon: '🏨', title: 'Hospedaje Seleccionado', desc: 'Estancia en hoteles de alta valoración en Tokio, Kioto y Osaka.' },
+                            { icon: '🚄', title: 'Movilidad en Japón', desc: 'Tarjetas IC recargables y pases de transporte seleccionados.' },
+                            { icon: '📋', title: 'Guía Digital & Asesoría', desc: 'Rutas recomendadas y asistencia remota para personalizar tus días.' },
+                            { icon: '📶', title: 'Conectividad eSIM', desc: 'Internet ilimitado en tu smartphone durante toda tu estancia.' },
                         ].map((item, i) => (
                             <div className="jtb-pass-include-item" key={i}>
                                 <span className="jtb-pass-include-icon">{item.icon}</span>
@@ -101,7 +101,7 @@ export default function StepLibre({ season, temporadaKey }) {
                 </div>
             </section>
 
-            {/* Duration + Calculator + Experiences */}
+            {/* Duration Selector + Experiences Grid + Floating Ticket */}
             <section className="step3-section">
                 <div className="container">
                     {/* Top Date & Passenger Selector */}
@@ -138,11 +138,9 @@ export default function StepLibre({ season, temporadaKey }) {
 
                             {/* Wix CMS Recommended Experiences (3 Collapsible Accordion Sections) */}
                             <RecommendedExperiencesCMS
-                                addedExperiences={addedExperiences}
-                                onToggleExperience={(id) => {
-                                    setAddedExperiences(prev =>
-                                        prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-                                    )
+                                addedExperiences={addedExperiences.map(e => e.id)}
+                                onToggleExperience={(tourId, tourTitle, tourPriceNum) => {
+                                    toggleExperience({ id: tourId, title: tourTitle, priceNum: tourPriceNum })
                                 }}
                                 seasonName={season.name}
                             />
