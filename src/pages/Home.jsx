@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import TripSelectorBar from '../components/JaponTripBuilder/TripSelectorBar'
 
 
 const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
@@ -505,8 +506,11 @@ function Home({ cityOverride } = {}) {
 
                         <p className="hero-excerpt">{currentTrip.excerpt}</p>
 
+                        {/* Search Bar Banner (Fechas exactas / mes + personas + buscar) */}
+                        <TripSelectorBar variant="hero" />
+
                         {/* Trip meta chips */}
-                        <div className="hero-meta-chips">
+                        <div className="hero-meta-chips" style={{ marginTop: '20px' }}>
                             <span className="hero-chip">
                                 <span className="hero-chip-icon">📅</span>
                                 {currentTrip.date}

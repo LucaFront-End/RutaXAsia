@@ -30,6 +30,41 @@
   justify-content: space-between;
 }
 
+.navbar-trip-search-widget {
+  margin: 0 12px;
+}
+
+.navbar-trip-search-widget .trip-selector-bar-wrapper {
+  margin-bottom: 0;
+}
+
+.navbar-trip-search-widget .trip-selector-bar {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+
+.navbar-trip-search-widget .trip-selector-label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.navbar-trip-search-widget .trip-selector-value {
+  color: #fff;
+  font-size: 0.82rem;
+}
+
+.navbar-trip-search-widget .trip-selector-arrow {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 992px) {
+  .navbar-trip-search-widget {
+    display: none;
+  }
+}
+
 .navbar-brand {
   text-decoration: none;
   display: flex;

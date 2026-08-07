@@ -1,5 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTripSearch } from '../../context/TripContext'
 import './TripSelectorBar.css'
+
+const DESTINOS_OPTIONS = [
+    { label: 'Japón a la Carta', slug: '/viajes/japon', icon: '⛩️' },
+    { label: 'Japón Octubre 2026', slug: '/tours/octubre-japon-2026', icon: '🍁' },
+    { label: 'Japón y Corea Octubre 2026', slug: '/tours/japon-corea-2026', icon: '🌸' },
+    { label: 'Corea del Sur', slug: '/viajes/corea', icon: '🇰🇷' },
+]
 
 const MONTHS_OPTIONS = [
     { label: 'Marzo 2026', key: '2026-03' },
@@ -13,16 +22,23 @@ const MONTHS_OPTIONS = [
     { label: 'Noviembre 2026', key: '2026-11' },
 ]
 
-export default function TripSelectorBar({ selectorData, onChange }) {
-    const [openModal, setOpenModal] = useState(null) // 'dates' | 'passengers' | null
-    const [dateTab, setDateTab] = useState('exact') // 'exact' | 'month'
+export default function TripSelectorBar({ selectorData, onChange, variant = 'bar' }) {
+    const { tripSearch, updateTripSearch } = useTripSearch()
+    const navigate = useNavigate()
+
+    const currentData = selectorData || tripSearch
+    const handleUpdate = onChange || updateTripSearch
+
+    const [openModal, setOpenModal] = useState(null) // 'destino' | 'dates' | 'passengers' | null
+    const [dateTab, setDateTab] = useState(currentData.dateMode || 'exact') // 'exact' | 'month'
 
     // Local temporary states before applying
-    const [tempStartDate, setTempStartDate] = useState(selectorData.startDate || '2026-10-15')
-    const [tempEndDate, setTempEndDate] = useState(selectorData.endDate || '2026-10-28')
-    const [tempMonth, setTempMonth] = useState(selectorData.selectedMonth || 'Octubre 2026')
-    const [tempAdults, setTempAdults] = useState(selectorData.adults || 2)
-    const [tempChildren, setTempChildren] = useState(selectorData.children || 0)
+    const [tempDestino, setTempDestino] = useState(currentData.destino || 'japon')
+    const [tempStartDate, setTempStartDate] = useState(currentData.startDate || '2026-10-15')
+    const [tempEndDate, setTempEndDate] = useState(currentData.endDate || '2026-10-28')
+    const [tempMonth, setTempMonth] = useState(currentData.selectedMonth || 'Octubre 2026')
+    const [tempAdults, setTempAdults] = useState(currentData.adults || 2)
+    const [tempChildren, setTempChildren] = useState(currentData.children || 0)
 
     const modalRef = useRef(null)
 
@@ -37,8 +53,7 @@ export default function TripSelectorBar({ selectorData, onChange }) {
     }, [])
 
     const handleApplyDates = () => {
-        onChange({
-            ...selectorData,
+        handleUpdate({
             dateMode: dateTab,
             startDate: tempStartDate,
             endDate: tempEndDate,
@@ -48,21 +63,31 @@ export default function TripSelectorBar({ selectorData, onChange }) {
     }
 
     const handleApplyPassengers = () => {
-        onChange({
-            ...selectorData,
+        handleUpdate({
             adults: tempAdults,
             children: tempChildren,
         })
         setOpenModal(null)
     }
 
+    const handleSelectDestino = (dest) => {
+        setTempDestino(dest.slug)
+        handleUpdate({ destino: dest.slug })
+        setOpenModal(null)
+    }
+
+    const handleSearchClick = () => {
+        const targetSlug = currentData.destino || '/viajes/japon'
+        navigate(targetSlug.startsWith('/') ? targetSlug : `/viajes/${targetSlug}`)
+    }
+
     const formattedDatesSummary = () => {
-        if (selectorData.dateMode === 'month') {
-            return selectorData.selectedMonth
+        if (currentData.dateMode === 'month') {
+            return currentData.selectedMonth
         }
-        if (selectorData.startDate && selectorData.endDate) {
-            const start = new Date(selectorData.startDate + 'T00:00:00')
-            const end = new Date(selectorData.endDate + 'T00:00:00')
+        if (currentData.startDate && currentData.endDate) {
+            const start = new Date(currentData.startDate + 'T00:00:00')
+            const end = new Date(currentData.endDate + 'T00:00:00')
             const options = { day: 'numeric', month: 'short' }
             return `${start.toLocaleDateString('es-MX', options)} — ${end.toLocaleDateString('es-MX', options)} ${end.getFullYear()}`
         }
@@ -70,8 +95,8 @@ export default function TripSelectorBar({ selectorData, onChange }) {
     }
 
     const formattedPassengersSummary = () => {
-        const ad = selectorData.adults
-        const ch = selectorData.children
+        const ad = currentData.adults
+        const ch = currentData.children
         let text = `${ad} Adulto${ad > 1 ? 's' : ''}`
         if (ch > 0) {
             text += `, ${ch} Menor${ch > 1 ? 'es' : ''}`
@@ -79,9 +104,29 @@ export default function TripSelectorBar({ selectorData, onChange }) {
         return text
     }
 
+    const selectedDestinoObj = DESTINOS_OPTIONS.find(d => d.slug === currentData.destino) || DESTINOS_OPTIONS[0]
+
     return (
-        <div className="trip-selector-bar-wrapper">
-            <div className="trip-selector-bar">
+        <div className={`trip-selector-bar-wrapper trip-selector-bar-wrapper--${variant}`}>
+            <div className={`trip-selector-bar trip-selector-bar--${variant}`}>
+                {/* Destino (Hero variant) */}
+                {variant === 'hero' && (
+                    <>
+                        <div
+                            className={`trip-selector-btn${openModal === 'destino' ? ' trip-selector-btn--active' : ''}`}
+                            onClick={() => setOpenModal(openModal === 'destino' ? null : 'destino')}
+                        >
+                            <span className="trip-selector-icon">{selectedDestinoObj.icon}</span>
+                            <div className="trip-selector-text">
+                                <span className="trip-selector-label">DESTINO</span>
+                                <span className="trip-selector-value">{selectedDestinoObj.label}</span>
+                            </div>
+                            <span className="trip-selector-arrow">▾</span>
+                        </div>
+                        <div className="trip-selector-divider" />
+                    </>
+                )}
+
                 {/* Fechas / Calendario Trigger */}
                 <div
                     className={`trip-selector-btn${openModal === 'dates' ? ' trip-selector-btn--active' : ''}`}
@@ -109,16 +154,43 @@ export default function TripSelectorBar({ selectorData, onChange }) {
                     </div>
                     <span className="trip-selector-arrow">▾</span>
                 </div>
+
+                {/* Buscar Button (Hero variant) */}
+                {variant === 'hero' && (
+                    <button type="button" className="trip-selector-search-btn" onClick={handleSearchClick}>
+                        🔍 Buscar
+                    </button>
+                )}
             </div>
 
             {/* Modal / Popover Content */}
             {openModal && (
                 <div className="trip-selector-popover-overlay" onClick={() => setOpenModal(null)}>
                     <div
-                        className={`trip-selector-popover ${openModal === 'dates' ? 'popover-dates' : 'popover-passengers'}`}
+                        className={`trip-selector-popover ${openModal === 'dates' ? 'popover-dates' : openModal === 'destino' ? 'popover-destino' : 'popover-passengers'}`}
                         ref={modalRef}
                         onClick={e => e.stopPropagation()}
                     >
+                        {/* ================= DESTINO POPOVER ================= */}
+                        {openModal === 'destino' && (
+                            <div className="passengers-popover-content">
+                                <h4 className="passengers-popover-title">Elige tu Destino</h4>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {DESTINOS_OPTIONS.map((d, i) => (
+                                        <button
+                                            key={i}
+                                            className={`month-chip${currentData.destino === d.slug ? ' month-chip--selected' : ''}`}
+                                            onClick={() => handleSelectDestino(d)}
+                                            style={{ display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'none', justifyContent: 'flex-start' }}
+                                        >
+                                            <span style={{ fontSize: '1.2rem' }}>{d.icon}</span>
+                                            <span>{d.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* ================= DATES POPOVER ================= */}
                         {openModal === 'dates' && (
                             <div className="dates-popover-content">

@@ -22,12 +22,15 @@ import ViajesCorea from './pages/ViajesCorea'
 import ViajesChina from './pages/ViajesChina'
 import Zonas from './pages/Zonas'
 
+import { TripProvider } from './context/TripContext'
+
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <HelmetProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<App />}>
+            <TripProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<App />}>
                         <Route index element={<Home />} />
                         <Route path="tours/:slug" element={<TourDetail />} />
                         <Route path="nosotros" element={<AboutUs />} />
@@ -48,6 +51,7 @@ createRoot(document.getElementById('root')).render(
                     </Route>
                 </Routes>
             </BrowserRouter>
-        </HelmetProvider>
-    </StrictMode>,
+        </TripProvider>
+    </HelmetProvider>
+</StrictMode>,
 )

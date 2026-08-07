@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import TripSelectorBar from '../JaponTripBuilder/TripSelectorBar'
 import './Header.css'
 
 const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20cotizar%20un%20viaje'
@@ -207,6 +208,11 @@ function Header() {
 
                     <li><Link to="/contacto" onClick={closeMenu}>Contacto</Link></li>
                 </ul>
+
+                {/* Compact Trip Search Selector in Navbar Header */}
+                <div className="navbar-trip-search-widget">
+                    <TripSelectorBar variant="bar" />
+                </div>
 
                 <a href={WHATSAPP_URL} className="btn btn-primary navbar-cta" target="_blank" rel="noopener noreferrer">
                     Cotiza tu Viaje

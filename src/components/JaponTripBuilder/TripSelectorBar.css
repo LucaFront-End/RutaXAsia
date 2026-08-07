@@ -21,6 +21,40 @@
     box-shadow: 0 14px 45px rgba(12, 14, 22, 0.12), 0 0 0 1px var(--color-primary);
 }
 
+.trip-selector-bar-wrapper--hero {
+    max-width: 900px;
+    margin: 24px auto 0;
+}
+
+.trip-selector-bar--hero {
+    max-width: 900px;
+    padding: 8px 12px 8px 20px;
+    background: #fff;
+    border-radius: 100px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.trip-selector-search-btn {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    padding: 14px 32px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(233, 30, 122, 0.35);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+.trip-selector-search-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    background: #d81b60;
+    box-shadow: 0 12px 30px rgba(233, 30, 122, 0.45);
+}
+
 .trip-selector-btn {
     flex: 1;
     display: flex;
