@@ -82,22 +82,25 @@ export default function FloatingTicket({
             <div className="libre-calc-ticket-body">
                 {/* Selected Package Name */}
                 {selectedPkg && (
-                    <div className="libre-calc-item-row" style={{ fontWeight: '800', color: 'var(--color-dark)', fontSize: '0.95rem' }}>
-                        <span>Plan {selectedPkg.name || 'Seleccionado'}</span>
-                        <span>{formatPrice(basePrice)}</span>
+                    <div className="libre-calc-item-row libre-calc-item-row--main">
+                        <span className="libre-calc-item-title">
+                            {selectedPkg.name ? (selectedPkg.name.startsWith('Pase') ? selectedPkg.name : `Plan ${selectedPkg.name}`) : 'Pase Seleccionado'}
+                        </span>
+                        <span className="libre-calc-item-price">{formatPrice(basePrice)} MXN</span>
                     </div>
                 )}
 
                 {/* Included Tours Badge List */}
                 {includedExps.length > 0 && (
-                    <div style={{ marginTop: '8px', marginBottom: '12px' }}>
+                    <div style={{ marginTop: '10px', marginBottom: '12px' }}>
                         <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary)' }}>
                             ✨ Tours Incluidos ({freeExpLimit || includedExps.length} Gratis):
                         </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
                             {includedExps.map((name, i) => (
-                                <div key={i} style={{ fontSize: '0.8rem', color: '#333', background: '#fff7f9', padding: '4px 8px', borderRadius: '6px', borderLeft: '3px solid var(--color-primary)' }}>
-                                    ✓ {name} <strong style={{ color: '#2e7d32', float: 'right' }}>GRATIS</strong>
+                                <div key={i} style={{ fontSize: '0.8rem', color: '#333', background: '#fff7f9', padding: '6px 10px', borderRadius: '8px', borderLeft: '3px solid var(--color-primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span>✓ {name}</span>
+                                    <strong style={{ color: '#2e7d32', fontSize: '0.75rem' }}>GRATIS</strong>
                                 </div>
                             ))}
                         </div>
@@ -120,8 +123,8 @@ export default function FloatingTicket({
 
                 {addedItems.map((item, idx) => (
                     <div className="libre-calc-item-row" key={idx}>
-                        <span>➕ {item.name}</span>
-                        <span>{formatPrice(item.price)}</span>
+                        <span className="libre-calc-item-title">➕ {item.name}</span>
+                        <span className="libre-calc-item-price">{formatPrice(item.price)} MXN</span>
                     </div>
                 ))}
 
@@ -141,9 +144,15 @@ export default function FloatingTicket({
                 {/* Subtotal per person */}
                 {pricePerPerson > 0 && (
                     <div className="libre-calc-subtotal-row">
-                        <span>Subtotal por pers:</span>
-                        <strong>{formatPrice(pricePerPerson)} MXN</strong>
-                        {passengersCount > 1 && <span> × {passengersCount} personas</span>}
+                        <div className="libre-calc-subtotal-info">
+                            <span style={{ color: '#666' }}>Subtotal por persona: </span>
+                            <strong>{formatPrice(pricePerPerson)} MXN</strong>
+                        </div>
+                        {passengersCount > 1 && (
+                            <div className="libre-calc-passengers-badge">
+                                × {passengersCount} personas
+                            </div>
+                        )}
                     </div>
                 )}
 

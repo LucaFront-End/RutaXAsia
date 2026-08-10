@@ -431,6 +431,69 @@
     color: var(--color-gray-600);
 }
 
+/* Ticket Item Rows and Subtotal Styling */
+.libre-calc-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(12, 14, 22, 0.1);
+    font-size: 0.88rem;
+}
+
+.libre-calc-item-row--main {
+    font-weight: 800;
+    color: var(--color-dark, #1a1a1a);
+    font-size: 0.95rem;
+    border-bottom: 1px dashed rgba(12, 14, 22, 0.15);
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+}
+
+.libre-calc-item-title {
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.3;
+}
+
+.libre-calc-item-price {
+    font-weight: 800;
+    white-space: nowrap;
+    color: var(--jtb-primary, #d6336c);
+}
+
+.libre-calc-subtotal-row {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 2px solid rgba(12, 14, 22, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.libre-calc-subtotal-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.libre-calc-subtotal-info strong {
+    font-size: 1rem;
+    font-weight: 850;
+    color: var(--jtb-primary, #d6336c);
+}
+
+.libre-calc-passengers-badge {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 600;
+}
+
 /* ==================================
    STEP GUIADO — Photobook Catalog & Neon Gauge
    ================================== */

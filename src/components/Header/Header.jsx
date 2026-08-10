@@ -108,7 +108,7 @@ function Header() {
                                 <Link
                                     to="/viajes/japon"
                                     className="nav-dropdown-item nav-jac-main"
-                                    onClick={(e) => handleTripClick(e, 'Diseña tu viaje (Fechas Personalizadas)', '/viajes/japon')}
+                                    onClick={closeMenu}
                                 >
                                     <span className="nav-jac-main-icon">⛩️</span>
                                     <div>
@@ -127,7 +127,7 @@ function Header() {
                                         <span className="nav-jac-season-dates">Mar — Abr</span>
                                     </Link>
                                     <div className="nav-jac-exp-row">
-                                        <Link to="/viajes/japon/sakura/libre" onClick={(e) => handleTripClick(e, 'Sakura — Libre', '/viajes/japon/sakura/libre')}>🌿 Libre</Link>
+                                        <Link to="/viajes/japon/sakura/libre" onClick={closeMenu}>🌿 Libre</Link>
                                         <Link to="/viajes/japon/sakura/guiado" onClick={(e) => handleTripClick(e, 'Sakura — Esencial', '/viajes/japon/sakura/guiado')}>⛩️ Esencial</Link>
                                         <Link to="/viajes/japon/sakura/acompanado" onClick={(e) => handleTripClick(e, 'Sakura — Completo', '/viajes/japon/sakura/acompanado')}>🏯 Completo</Link>
                                         <Link to="/viajes/japon/sakura/signature" onClick={(e) => handleTripClick(e, 'Sakura — Signature', '/viajes/japon/sakura/signature')}>👑 Signature</Link>
@@ -142,7 +142,7 @@ function Header() {
                                         <span className="nav-jac-season-dates">Jun — Ago</span>
                                     </Link>
                                     <div className="nav-jac-exp-row">
-                                        <Link to="/viajes/japon/verano/libre" onClick={(e) => handleTripClick(e, 'Verano — Libre', '/viajes/japon/verano/libre')}>🌿 Libre</Link>
+                                        <Link to="/viajes/japon/verano/libre" onClick={closeMenu}>🌿 Libre</Link>
                                         <Link to="/viajes/japon/verano/guiado" onClick={(e) => handleTripClick(e, 'Verano — Esencial', '/viajes/japon/verano/guiado')}>⛩️ Esencial</Link>
                                         <Link to="/viajes/japon/verano/acompanado" onClick={(e) => handleTripClick(e, 'Verano — Completo', '/viajes/japon/verano/acompanado')}>🏯 Completo</Link>
                                         <Link to="/viajes/japon/verano/signature" onClick={(e) => handleTripClick(e, 'Verano — Signature', '/viajes/japon/verano/signature')}>👑 Signature</Link>
@@ -157,7 +157,7 @@ function Header() {
                                         <span className="nav-jac-season-dates">Oct — Nov</span>
                                     </Link>
                                     <div className="nav-jac-exp-row">
-                                        <Link to="/viajes/japon/momiji/libre" onClick={(e) => handleTripClick(e, 'Momiji — Libre', '/viajes/japon/momiji/libre')}>🌿 Libre</Link>
+                                        <Link to="/viajes/japon/momiji/libre" onClick={closeMenu}>🌿 Libre</Link>
                                         <Link to="/viajes/japon/momiji/guiado" onClick={(e) => handleTripClick(e, 'Momiji — Esencial', '/viajes/japon/momiji/guiado')}>⛩️ Esencial</Link>
                                         <Link to="/viajes/japon/momiji/acompanado" onClick={(e) => handleTripClick(e, 'Momiji — Completo', '/viajes/japon/momiji/acompanado')}>🏯 Completo</Link>
                                         <Link to="/viajes/japon/momiji/signature" onClick={(e) => handleTripClick(e, 'Momiji — Signature', '/viajes/japon/momiji/signature')}>👑 Signature</Link>
