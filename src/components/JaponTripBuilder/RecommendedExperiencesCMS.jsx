@@ -26,7 +26,7 @@ const CATEGORIES_CONFIG = [
     },
 ]
 
-export default function RecommendedExperiencesCMS({ addedExperiences = [], onToggleExperience, seasonName = 'tu viaje' }) {
+export default function RecommendedExperiencesCMS({ addedExperiences = [], onToggleExperience, seasonName = 'tu viaje', tourLimit = null }) {
     const [tours, setTours] = useState([])
     const [loading, setLoading] = useState(true)
     const [openCategory, setOpenCategory] = useState('rutas') // First open by default ("Rutas por Japón")
@@ -50,10 +50,19 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
         setOpenCategory(prev => prev === key ? null : key)
     }
 
+    const isLimitReached = tourLimit !== null && addedExperiences.length >= tourLimit
+
     return (
         <div className="rec-cms-wrapper">
             <div className="rec-cms-header">
-                <h3 className="rec-cms-main-title">🌸 Experiencias recomendadas para {seasonName}</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '8px' }}>
+                    <h3 className="rec-cms-main-title">🌸 Experiencias recomendadas para {seasonName}</h3>
+                    {tourLimit && (
+                        <span style={{ fontSize: '0.82rem', fontWeight: '800', background: 'rgba(233, 30, 99, 0.1)', color: 'var(--color-primary, #d6336c)', padding: '4px 12px', borderRadius: '100px' }}>
+                            🎯 Límite del pase: {addedExperiences.length} / {tourLimit} tours
+                        </span>
+                    )}
+                </div>
                 <p className="rec-cms-subtitle">
                     Catálogo oficial de experiencias. Explora nuestras 3 categorías y selecciona tus experiencias:
                 </p>
@@ -104,6 +113,7 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                             <div className="rec-cms-cards-grid">
                                                 {catTours.map((tour) => {
                                                     const isAdded = addedExperiences.includes(tour.id) || addedExperiences.includes(tour.title)
+                                                    const isDisabled = isLimitReached && !isAdded
                                                     return (
                                                         <div
                                                             key={tour.id}
@@ -136,10 +146,10 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                                                     {onToggleExperience && (
                                                                         <button
                                                                             type="button"
-                                                                            className={`rec-cms-add-btn${isAdded ? ' rec-cms-add-btn--added' : ''}`}
+                                                                            className={`rec-cms-add-btn${isAdded ? ' rec-cms-add-btn--added' : isDisabled ? ' rec-cms-add-btn--disabled' : ''}`}
                                                                             onClick={() => onToggleExperience(tour.id, tour.title, tour.priceNum)}
                                                                         >
-                                                                            {isAdded ? '✓ Agregado' : '+ Agregar'}
+                                                                            {isAdded ? '✓ Agregado' : isDisabled ? 'Límite alcanzado' : '+ Agregar'}
                                                                         </button>
                                                                     )}
                                                                 </div>

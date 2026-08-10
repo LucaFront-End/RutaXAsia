@@ -53,7 +53,8 @@ export default function StepAcompanado({ season, temporadaKey }) {
                         daysNum: isGrandTour ? 14 : 12,
                         priceNum: p.precioNum || (isGrandTour ? 72290 : 67490),
                         priceText: p.precioText,
-                        freeTours: isGrandTour ? 2 : 1, // 1 for Explorador, 2 for Grand Tour
+                        freeTours: p.tourGratisQueIncluira || (isGrandTour ? 2 : 1),
+                        limiteDeTours: p.limiteDeTours || (isGrandTour ? 12 : 10)
                     }
                 })
                 // Sort so Explorador comes first, then Grand Tour
@@ -71,25 +72,29 @@ export default function StepAcompanado({ season, temporadaKey }) {
         )
     }
 
+    const defaultPackages = [
+        { name: 'PASE EXPLORADOR', days: '12 días 10 noches', daysNum: 12, priceNum: 67490, priceText: '$67,490.00 MXN', freeTours: 1, limiteDeTours: 10 },
+        { name: 'PASE GRAND TOUR', days: '14 días 12 noches', daysNum: 14, priceNum: 72290, priceText: '$72,290.00 MXN', freeTours: 2, limiteDeTours: 12 },
+    ]
+
+    const packages = cmsPackages.length > 0 ? cmsPackages : defaultPackages
+    const activePass = packages[selectedPassIndex] || packages[0]
+    const currentTourLimit = activePass?.limiteDeTours || (activePass?.daysNum === 14 ? 12 : 10)
+
     const toggleExperience = (tourObj) => {
         setSelectedExps(prev => {
             const exists = prev.some(item => item.id === tourObj.id)
             if (exists) {
                 return prev.filter(item => item.id !== tourObj.id)
             } else {
+                if (prev.length >= currentTourLimit) {
+                    alert(`Has alcanzado el límite de ${currentTourLimit} tours para tu pase.`)
+                    return prev
+                }
                 return [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }]
             }
         })
     }
-
-    // Default package fallback if CMS is loading
-    const defaultPackages = [
-        { name: 'PASE EXPLORADOR', days: '12 días 10 noches', daysNum: 12, priceNum: 67490, priceText: '$67,490.00 MXN', freeTours: 1 },
-        { name: 'PASE GRAND TOUR', days: '14 días 12 noches', daysNum: 14, priceNum: 72290, priceText: '$72,290.00 MXN', freeTours: 2 },
-    ]
-
-    const packages = cmsPackages.length > 0 ? cmsPackages : defaultPackages
-    const activePass = packages[selectedPassIndex] || packages[0]
 
     const basePrice = activePass.priceNum
     const freeExpLimit = activePass.freeTours || 1
@@ -192,6 +197,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                     toggleExperience({ id: tourId, title: tourTitle, priceNum: tourPriceNum })
                                 }}
                                 seasonName={`${season.name} (${activePass.name})`}
+                                tourLimit={currentTourLimit}
                             />
 
                             {/* Timeline Shinkansen Rail JR Line (Filtered by pass duration) */}

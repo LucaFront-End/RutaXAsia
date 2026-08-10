@@ -40,6 +40,10 @@ export default async function handler(req, res) {
                 if (!isNaN(parsed)) priceNum = parsed
             }
 
+            const limiteDeToursVal = typeof it.lmiteDeTours === 'number'
+                ? it.lmiteDeTours
+                : (parseInt(it.lmiteDeTours || it.limiteDeTours) || 0)
+
             return {
                 id: it._id,
                 title: it.title || '',
@@ -52,6 +56,7 @@ export default async function handler(req, res) {
                 precioNum: priceNum,
                 precioText: it.precioConDatos || (priceNum ? `$${priceNum.toLocaleString('es-MX')}` : 'Consultar'),
                 tourGratisQueIncluira: typeof it.tourGratisQueIncluira === 'number' ? it.tourGratisQueIncluira : (parseInt(it.tourGratisQueIncluira) || 0),
+                limiteDeTours: limiteDeToursVal,
                 fechasDeInicio: it.fechasDeInicio || '',
                 fechaEntre: it.fechaEntre || '',
                 flotanteDescriptivo: it.flotanteDescriptivo || 'Precio por persona en cupo doble',

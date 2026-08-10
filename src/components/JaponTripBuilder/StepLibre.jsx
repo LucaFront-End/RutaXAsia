@@ -45,7 +45,8 @@ export default function StepLibre({ season, temporadaKey }) {
                     days: p.diasYNochesCompletos || `${p.dias} ${p.noches}`,
                     price: p.precioText,
                     priceNum: p.precioNum,
-                    name: p.tituloComercial
+                    name: p.tituloComercial,
+                    limiteDeTours: p.limiteDeTours || 6
                 })))
             }
         }
@@ -62,6 +63,9 @@ export default function StepLibre({ season, temporadaKey }) {
     const hero = EXP_HEROES.libre
     const staticPricing = PRECIOS[temporadaKey]?.libre
     const packages = cmsPackages.length > 0 ? cmsPackages : (staticPricing?.packages || [])
+    const pkgFromList = packages[selectedDuration] || packages[0] || { days: '8 días 6 noches', priceNum: 24790 }
+    
+    const currentTourLimit = pkgFromList.limiteDeTours || (selectedDuration === 0 ? 6 : selectedDuration === 1 ? 8 : selectedDuration === 2 ? 10 : 12)
 
     const toggleExperience = (tourObj) => {
         setAddedExperiences(prev => {
@@ -69,6 +73,10 @@ export default function StepLibre({ season, temporadaKey }) {
             if (exists) {
                 return prev.filter(item => item.id !== tourObj.id)
             } else {
+                if (prev.length >= currentTourLimit) {
+                    alert(`Has alcanzado el límite de ${currentTourLimit} tours para tu ${passNames[selectedDuration] || 'pase'}.`)
+                    return prev
+                }
                 return [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }]
             }
         })
@@ -84,7 +92,6 @@ export default function StepLibre({ season, temporadaKey }) {
         return fallbackNights[index] || 6
     }
 
-    const pkgFromList = packages[selectedDuration] || packages[0] || { days: '8 días 6 noches', priceNum: 24790 }
     const currentNights = getNightsFromPkg(pkgFromList, selectedDuration)
 
     // Auto-calculate end date from start date + selected pass nights
@@ -244,6 +251,7 @@ export default function StepLibre({ season, temporadaKey }) {
                                     toggleExperience({ id: tourId, title: tourTitle, priceNum: tourPriceNum })
                                 }}
                                 seasonName={season.name}
+                                tourLimit={currentTourLimit}
                             />
 
                             {/* Complementos */}

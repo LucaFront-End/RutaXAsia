@@ -39,7 +39,8 @@ export default function StepGuiado({ season, temporadaKey }) {
                     price: p.precioText,
                     priceNum: p.precioNum,
                     name: p.tituloComercial,
-                    freeTours: p.tourGratisQueIncluira || 6
+                    freeTours: p.tourGratisQueIncluira || 6,
+                    limiteDeTours: p.limiteDeTours || (p.tourGratisQueIncluira ? p.tourGratisQueIncluira + 2 : 8)
                 }))
                 setCmsPackages(mapped)
                 if (mapped[0]?.freeTours) {
@@ -57,12 +58,18 @@ export default function StepGuiado({ season, temporadaKey }) {
         )
     }
 
+    const currentTourLimit = selectedPkg?.limiteDeTours || (freeExpLimit + 2)
+
     const toggleExperience = (tourObj) => {
         setSelectedExps(prev => {
             const exists = prev.some(item => item.id === tourObj.id)
             if (exists) {
                 return prev.filter(item => item.id !== tourObj.id)
             } else {
+                if (prev.length >= currentTourLimit) {
+                    alert(`Has alcanzado el límite de ${currentTourLimit} tours seleccionables.`)
+                    return prev
+                }
                 return [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }]
             }
         })
@@ -162,13 +169,14 @@ export default function StepGuiado({ season, temporadaKey }) {
                                 </div>
                             </div>
 
-                            {/* Wix CMS Recommended Experiences (3 Collapsible Accordion Sections) */}
+                            {/* Wix CMS Recommended Experiences */}
                             <RecommendedExperiencesCMS
                                 addedExperiences={selectedExps.map(e => e.id)}
                                 onToggleExperience={(tourId, tourTitle, tourPriceNum) => {
                                     toggleExperience({ id: tourId, title: tourTitle, priceNum: tourPriceNum })
                                 }}
                                 seasonName={season.name}
+                                tourLimit={currentTourLimit}
                             />
 
                             {/* Complementos */}
