@@ -121,12 +121,29 @@ export default function FloatingTicket({
                     <p className="libre-calc-empty-text">Selecciona tus tours o itinerario para armar tu pase de abordar.</p>
                 )}
 
-                {addedItems.map((item, idx) => (
-                    <div className="libre-calc-item-row" key={idx}>
-                        <span className="libre-calc-item-title">➕ {item.name}</span>
-                        <span className="libre-calc-item-price">{formatPrice(item.price)} MXN</span>
-                    </div>
-                ))}
+                {addedItems.map((item, idx) => {
+                    const itemQty = item.quantity || 1
+                    const itemTotalPrice = (item.price || 0) * itemQty
+                    return (
+                        <div className="libre-calc-item-row" key={idx} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '3px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                <span className="libre-calc-item-title">➕ {item.name}</span>
+                                <span className="libre-calc-item-price">{formatPrice(itemTotalPrice)} MXN</span>
+                            </div>
+                            {(item.date || itemQty > 1) && (
+                                <div style={{ fontSize: '0.74rem', color: '#666', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                    {item.date && <span>📅 {item.date}</span>}
+                                    {itemQty > 1 && <span style={{ fontWeight: '700', color: 'var(--color-primary)' }}>👥 {itemQty} personas</span>}
+                                </div>
+                            )}
+                            {item.passengerNames && item.passengerNames.length > 0 && (
+                                <div style={{ fontSize: '0.72rem', color: '#777', fontStyle: 'italic' }}>
+                                    👤 {item.passengerNames.join(', ')}
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
 
                 {/* Selected Upsell Comps */}
                 {selectedComps.length > 0 && (

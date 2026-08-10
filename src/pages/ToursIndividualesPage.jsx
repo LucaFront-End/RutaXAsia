@@ -16,10 +16,16 @@ export default function ToursIndividualesPage() {
     const [selectedCategory, setSelectedCategory] = useState('Todas')
     const [sortBy, setSortBy] = useState('price-asc') // 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc'
 
-    // Selected Individual Tours Cart: [{ id, name, price, date }]
+    // Selected Individual Tours Cart: [{ id, name, price, date, quantity, passengerNames }]
     const [selectedTours, setSelectedTours] = useState([])
     // Pending date pickers for tours: { [tourId]: '2026-10-18' }
     const [tourDates, setTourDates] = useState({})
+
+    // Modal state for configuring tour before adding
+    const [configuringTour, setConfiguringTour] = useState(null)
+    const [modalDate, setModalDate] = useState('')
+    const [modalQuantity, setModalQuantity] = useState(1)
+    const [modalNames, setModalNames] = useState([''])
 
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
@@ -47,22 +53,41 @@ export default function ToursIndividualesPage() {
         ))
     }
 
-    // Toggle tour selection
-    const toggleTour = (tour) => {
-        const dateForTour = tourDates[tour.id] || new Date().toISOString().split('T')[0]
+    // Open modal to configure tour or remove if added
+    const openTourModal = (tour) => {
+        const existing = selectedTours.find(t => t.id === tour.id)
+        if (existing) {
+            // Already added -> remove or allow re-configuring
+            setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
+            return
+        }
+
+        const defaultDate = tourDates[tour.id] || new Date().toISOString().split('T')[0]
+        const defaultQty = selectorData?.adults || 1
+        setConfiguringTour(tour)
+        setModalDate(defaultDate)
+        setModalQuantity(defaultQty)
+        setModalNames(Array(defaultQty).fill(''))
+    }
+
+    const saveConfiguredTour = () => {
+        if (!configuringTour) return
+        const formattedNames = modalNames.map(n => n.trim()).filter(Boolean)
+
         setSelectedTours(prev => {
-            const exists = prev.some(item => item.id === tour.id)
-            if (exists) {
-                return prev.filter(item => item.id !== tour.id)
-            } else {
-                return [...prev, {
-                    id: tour.id,
-                    name: tour.title,
-                    price: tour.priceNum || 0,
-                    date: dateForTour
-                }]
-            }
+            const filtered = prev.filter(t => t.id !== configuringTour.id)
+            return [...filtered, {
+                id: configuringTour.id,
+                name: configuringTour.title,
+                price: configuringTour.priceNum || 0,
+                date: modalDate,
+                quantity: modalQuantity,
+                passengerNames: formattedNames
+            }]
         })
+
+        setTourDates(prev => ({ ...prev, [configuringTour.id]: modalDate }))
+        setConfiguringTour(null)
     }
 
     // Filter & Sort logic
@@ -97,9 +122,8 @@ export default function ToursIndividualesPage() {
 
     const adults = selectorData?.adults || 2
     const children = selectorData?.children || 0
-    const passengersCount = adults + children
-    const extraTotal = selectedTours.reduce((sum, item) => sum + item.price, 0)
-    const totalPrice = extraTotal * passengersCount
+    const extraTotal = selectedTours.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
+    const totalPrice = extraTotal
 
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
@@ -246,7 +270,15 @@ export default function ToursIndividualesPage() {
                                                 )}
 
                                                 {/* Elegant Custom Date Selector Pill */}
-                                                <div className={`tours-indiv-date-chip${isAdded ? ' tours-indiv-date-chip--added' : ''}`}>
+                                                <div
+                                                    className={`tours-indiv-date-chip${isAdded ? ' tours-indiv-date-chip--added' : ''}`}
+                                                    onClick={(e) => {
+                                                        const input = e.currentTarget.querySelector('input[type="date"]')
+                                                        if (input) {
+                                                            try { input.showPicker() } catch (err) { input.focus() }
+                                                        }
+                                                    }}
+                                                >
                                                     <span className="tours-indiv-date-chip-icon">📅</span>
                                                     <div className="tours-indiv-date-chip-info">
                                                         <span className="tours-indiv-date-chip-label">Fecha del Tour</span>
@@ -256,7 +288,11 @@ export default function ToursIndividualesPage() {
                                                         type="date"
                                                         className="tours-indiv-date-chip-native"
                                                         value={currentDate}
-                                                        onChange={(e) => handleDateChange(tour.id, e.target.value)}
+                                                        min={new Date().toISOString().split('T')[0]}
+                                                        onChange={(e) => {
+                                                            e.stopPropagation()
+                                                            handleDateChange(tour.id, e.target.value)
+                                                        }}
                                                     />
                                                 </div>
 
@@ -267,7 +303,7 @@ export default function ToursIndividualesPage() {
                                                     <button
                                                         type="button"
                                                         className={`tours-indiv-btn${isAdded ? ' tours-indiv-btn--added' : ''}`}
-                                                        onClick={() => toggleTour(tour)}
+                                                        onClick={() => openTourModal(tour)}
                                                     >
                                                         {isAdded ? '✓ Agregado' : '+ Agregar'}
                                                     </button>
@@ -282,6 +318,126 @@ export default function ToursIndividualesPage() {
                 </div>
             </div>
 
+            {/* Modal for configuring Tour date, quantity & passenger names */}
+            {configuringTour && (
+                <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 99999 }}>
+                    <div className="jtb-modal-card" style={{ maxWidth: '580px', padding: '32px 28px', textAlign: 'left' }}>
+                        <button className="jtb-modal-close" onClick={() => setConfiguringTour(null)}>&times;</button>
+                        
+                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid #eee' }}>
+                            <img
+                                src={configuringTour.image}
+                                alt={configuringTour.title}
+                                style={{ width: '76px', height: '76px', borderRadius: '16px', objectFit: 'cover' }}
+                                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop' }}
+                            />
+                            <div>
+                                <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-primary)', letterSpacing: '0.05em' }}>
+                                    Configurar Reserva de Tour
+                                </span>
+                                <h3 style={{ margin: '4px 0 0', fontSize: '1.2rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)' }}>
+                                    {configuringTour.title}
+                                </h3>
+                                <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '2px', fontWeight: '700' }}>
+                                    {configuringTour.priceText || formatPrice(configuringTour.priceNum)} MXN / persona
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Date and Quantity Selector */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
+                                    📅 Fecha del Tour:
+                                </label>
+                                <input
+                                    type="date"
+                                    value={modalDate}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    onChange={(e) => setModalDate(e.target.value)}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
+                                    👥 Cantidad de Pasajeros:
+                                </label>
+                                <select
+                                    value={modalQuantity}
+                                    onChange={(e) => {
+                                        const newQty = parseInt(e.target.value, 10)
+                                        setModalQuantity(newQty)
+                                        setModalNames(prev => {
+                                            const copy = [...prev]
+                                            if (newQty > copy.length) {
+                                                while (copy.length < newQty) copy.push('')
+                                            } else {
+                                                copy.length = newQty
+                                            }
+                                            return copy
+                                        })
+                                    }}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
+                                >
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                                        <option key={num} value={num}>{num} {num === 1 ? 'Persona' : 'Personas'}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Passenger Names Form */}
+                        <div style={{ marginBottom: '24px' }}>
+                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '800', color: 'var(--color-dark)', marginBottom: '10px' }}>
+                                📋 Nombre(s) de la(s) persona(s) que asistirán:
+                            </label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
+                                {modalNames.map((nameVal, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#666', width: '85px', flexShrink: 0 }}>
+                                            Persona {i + 1}:
+                                        </span>
+                                        <input
+                                            type="text"
+                                            placeholder={`Nombre completo del asistente ${i + 1}`}
+                                            value={nameVal}
+                                            onChange={(e) => {
+                                                const val = e.target.value
+                                                setModalNames(prev => {
+                                                    const copy = [...prev]
+                                                    copy[i] = val
+                                                    return copy
+                                                })
+                                            }}
+                                            style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.88rem' }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Modal Footer Summary & CTA */}
+                        <div style={{ background: '#f8f9fa', padding: '16px 20px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                            <div>
+                                <span style={{ fontSize: '0.78rem', color: '#666', display: 'block' }}>Total por {modalQuantity} persona(s):</span>
+                                <strong style={{ fontSize: '1.25rem', color: 'var(--color-primary)' }}>
+                                    {formatPrice((configuringTour.priceNum || 0) * modalQuantity)} MXN
+                                </strong>
+                            </div>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                style={{ borderRadius: '100px', padding: '10px 24px', fontWeight: '800', fontSize: '0.9rem' }}
+                                onClick={saveConfiguredTour}
+                            >
+                                ✓ Confirmar y Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <CheckoutModal
                 isOpen={isCheckoutOpen}
                 onClose={() => setIsCheckoutOpen(false)}
@@ -289,9 +445,8 @@ export default function ToursIndividualesPage() {
                 estilo="Tours Sueltos"
                 totalPrice={totalPrice}
                 desglose={
-                    `Pasajeros: ${adults} Adultos, ${children} Menores. ` +
-                    `Tours seleccionados: ${selectedTours.map(t => `${t.name} (📅 ${t.date})`).join('; ') || 'Ninguno'}. ` +
-                    `Total estimado: ${formatPrice(totalPrice)} MXN.`
+                    `Tours seleccionados: ${selectedTours.map(t => `${t.name} (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [Asistentes: ${t.passengerNames?.join(', ') || 'Por definir'}]`).join('; ') || 'Ninguno'}. ` +
+                    `Total acumulado: ${formatPrice(totalPrice)} MXN.`
                 }
             />
         </div>
