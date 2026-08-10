@@ -339,7 +339,7 @@ export default function StepLibre({ season, temporadaKey }) {
                                                     {passNames[i]} ({pkg.days})
                                                 </div>
                                                 <div style={{ fontSize: '0.85rem', color: '#2b8a3e', fontWeight: '700', marginTop: '3px' }}>
-                                                    ✨ Hasta {limitVal} tours disponibles · {pkg.price} MXN
+                                                    ✨ +{(i - selectedDuration) * 2} tours adicionales (Hasta {limitVal} tours) · {pkg.price} MXN
                                                 </div>
                                             </div>
                                             <button
