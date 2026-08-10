@@ -126,12 +126,12 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
             if (result.success && result.checkoutUrl) {
                 setResultData(result)
                 setStatus('success')
-                // Redirect to exact Wix Store __ecom/checkout?checkoutId=... URL
+                // Redirect to exact checkout URL
                 setTimeout(() => {
                     window.location.href = result.checkoutUrl
                 }, 1200)
             } else {
-                setApiError(result.error || 'Hubo un problema al conectar con el checkout de Wix Store.')
+                setApiError(result.error || 'Hubo un problema al conectar con la pasarela de pago.')
                 setStatus('error')
             }
 
@@ -154,7 +154,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                     <form onSubmit={handleCheckoutSubmit} className="jtb-checkout-form">
                         <div className="jtb-modal-header">
                             <h3>💳 Apartar Viaje — Pagar Anticipo</h3>
-                            <p>Reserva tu lugar de forma segura procesando tu anticipo en Wix Store</p>
+                            <p>Reserva tu lugar de forma segura procesando tu anticipo 100% en línea</p>
                         </div>
 
                         {/* Summary of what they pay */}
@@ -216,12 +216,12 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         </div>
 
                         <div className="jtb-checkout-disclaimer">
-                            🔒 Serás redirigido a la pasarela de pago segura de <strong>Wix Store</strong> para completar tu anticipo de <strong>{formatPrice(depositAmount)} MXN</strong> (Tarjeta, PayPal o Meses).
+                            🔒 Serás redirigido a la pasarela de pago segura para completar tu anticipo de <strong>{formatPrice(depositAmount)} MXN</strong> (Tarjeta, PayPal o Meses).
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
                             <button type="submit" className="jtb-checkout-submit-btn">
-                                💳 Pagar Anticipo de {formatPrice(depositAmount)} en Wix Store
+                                💳 Pagar Anticipo de {formatPrice(depositAmount)} en Línea
                             </button>
                             
                             <a
@@ -241,7 +241,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                     <div className="jtb-modal-status-view">
                         <div className="jtb-checkout-loader" />
                         <h3>Procesando Pago Seguro...</h3>
-                        <p>Estamos registrando tu reservación en el CMS y configurando tu plan de facturación mensual. No cierres esta ventana.</p>
+                        <p>Estamos registrando tu reservación y preparando tu pasarela de pago. No cierres esta ventana.</p>
                     </div>
                 )}
 
@@ -253,7 +253,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         
                         <div className="jtb-success-ticket animate-slide-in">
                             <div className="ticket-line">
-                                <span>ID Registro CMS:</span>
+                                <span>Código de Reserva:</span>
                                 <span>{resultData?.wixId || 'Registrado'}</span>
                             </div>
                             <div className="ticket-line">

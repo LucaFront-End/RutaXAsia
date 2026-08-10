@@ -55,14 +55,14 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
             <div className="rec-cms-header">
                 <h3 className="rec-cms-main-title">🌸 Experiencias recomendadas para {seasonName}</h3>
                 <p className="rec-cms-subtitle">
-                    Catálogo oficial sincronizado desde Wix CMS. Explora nuestras 3 categorías y selecciona tus experiencias:
+                    Catálogo oficial de experiencias. Explora nuestras 3 categorías y selecciona tus experiencias:
                 </p>
             </div>
 
             {loading ? (
                 <div className="rec-cms-loading">
                     <span className="rec-cms-spinner">⛩️</span>
-                    <p>Cargando experiencias desde Wix CMS...</p>
+                    <p>Cargando experiencias...</p>
                 </div>
             ) : (
                 <div className="rec-cms-accordion-list">

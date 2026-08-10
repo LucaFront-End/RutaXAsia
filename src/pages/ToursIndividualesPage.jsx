@@ -202,7 +202,7 @@ export default function ToursIndividualesPage() {
                         {loading ? (
                             <div className="tours-indiv-loading">
                                 <span className="tours-indiv-spinner">⛩️</span>
-                                <p>Cargando catálogo oficial de Tours en Japón desde Wix CMS...</p>
+                                <p>Cargando catálogo oficial de Tours en Japón...</p>
                             </div>
                         ) : filteredTours.length === 0 ? (
                             <div className="tours-indiv-empty">
