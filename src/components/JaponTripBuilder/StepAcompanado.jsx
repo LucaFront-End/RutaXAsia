@@ -72,6 +72,9 @@ export default function StepAcompanado({ season, temporadaKey }) {
         )
     }
 
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+    const [pendingTour, setPendingTour] = useState(null)
+
     const defaultPackages = [
         { name: 'PASE EXPLORADOR', days: '12 días 10 noches', daysNum: 12, priceNum: 67490, priceText: '$67,490.00 MXN', freeTours: 1, limiteDeTours: 10 },
         { name: 'PASE GRAND TOUR', days: '14 días 12 noches', daysNum: 14, priceNum: 72290, priceText: '$72,290.00 MXN', freeTours: 2, limiteDeTours: 12 },
@@ -82,18 +85,17 @@ export default function StepAcompanado({ season, temporadaKey }) {
     const currentTourLimit = activePass?.limiteDeTours || (activePass?.daysNum === 14 ? 12 : 10)
 
     const toggleExperience = (tourObj) => {
-        setSelectedExps(prev => {
-            const exists = prev.some(item => item.id === tourObj.id)
-            if (exists) {
-                return prev.filter(item => item.id !== tourObj.id)
-            } else {
-                if (prev.length >= currentTourLimit) {
-                    alert(`Has alcanzado el límite de ${currentTourLimit} tours para tu pase.`)
-                    return prev
-                }
-                return [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }]
+        const exists = selectedExps.some(item => item.id === tourObj.id)
+        if (exists) {
+            setSelectedExps(prev => prev.filter(item => item.id !== tourObj.id))
+        } else {
+            if (selectedExps.length >= currentTourLimit) {
+                setPendingTour({ id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 })
+                setShowUpgradeModal(true)
+                return
             }
-        })
+            setSelectedExps(prev => [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }])
+        }
     }
 
     const basePrice = activePass.priceNum
@@ -265,6 +267,77 @@ export default function StepAcompanado({ season, temporadaKey }) {
                     </div>
                 </div>
             </section>
+
+            {/* Upgrade Pass Modal when Tour Limit is Reached */}
+            {showUpgradeModal && (
+                <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 99999 }}>
+                    <div className="jtb-modal-card" style={{ maxWidth: '620px', textAlign: 'center', padding: '36px 28px' }}>
+                        <button className="jtb-modal-close" onClick={() => setShowUpgradeModal(false)}>&times;</button>
+                        
+                        <div style={{ fontSize: '3rem', marginBottom: '8px' }}>🌸</div>
+                        
+                        <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)', marginBottom: '10px', lineHeight: 1.3 }}>
+                            Has alcanzado el límite de {currentTourLimit} tours para tu {activePass.name || 'Pase'}
+                        </h3>
+                        
+                        <p style={{ fontSize: '0.95rem', color: '#555', marginBottom: '24px', lineHeight: '1.5' }}>
+                            ¿Deseas ampliar tus días en Japón para agregar más tours a tu viaje? Puedes seleccionar un paquete con mayor duración:
+                        </p>
+
+                        {selectedPassIndex === 0 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        background: '#f8f9fa',
+                                        padding: '16px 20px',
+                                        borderRadius: '16px',
+                                        border: '1.5px solid #e9ecef',
+                                        textAlign: 'left',
+                                        gap: '12px',
+                                        flexWrap: 'wrap'
+                                    }}
+                                >
+                                    <div>
+                                        <div style={{ fontWeight: '800', color: 'var(--color-dark)', fontSize: '1.05rem' }}>
+                                            PASE GRAND TOUR ({packages[1]?.days || '14 días 12 noches'})
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem', color: '#2b8a3e', fontWeight: '700', marginTop: '3px' }}>
+                                            ✨ Hasta 12 tours disponibles · {packages[1]?.priceText || '$72,290.00 MXN'}
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        style={{ padding: '9px 18px', fontSize: '0.85rem', fontWeight: '800', borderRadius: '100px' }}
+                                        onClick={() => {
+                                            setSelectedPassIndex(1)
+                                            setShowUpgradeModal(false)
+                                            if (pendingTour) {
+                                                setSelectedExps(prev => [...prev, pendingTour])
+                                                setPendingTour(null)
+                                            }
+                                        }}
+                                    >
+                                        Ampliar a Grand Tour 🚀
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            style={{ width: '100%', borderRadius: '100px', fontSize: '0.9rem', color: '#666', borderColor: '#ccc', padding: '12px' }}
+                            onClick={() => setShowUpgradeModal(false)}
+                        >
+                            Entendido, conservar {activePass.name}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <CheckoutModal
                 isOpen={isCheckoutOpen}

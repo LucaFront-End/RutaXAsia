@@ -52,6 +52,9 @@ export default function StepGuiado({ season, temporadaKey }) {
         return () => { isMounted = false }
     }, [season?.name, temporadaKey])
 
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+    const [pendingTour, setPendingTour] = useState(null)
+
     const toggleComp = (title) => {
         setSelectedComps(prev =>
             prev.includes(title) ? prev.filter(x => x !== title) : [...prev, title]
@@ -61,18 +64,17 @@ export default function StepGuiado({ season, temporadaKey }) {
     const currentTourLimit = selectedPkg?.limiteDeTours || (freeExpLimit + 2)
 
     const toggleExperience = (tourObj) => {
-        setSelectedExps(prev => {
-            const exists = prev.some(item => item.id === tourObj.id)
-            if (exists) {
-                return prev.filter(item => item.id !== tourObj.id)
-            } else {
-                if (prev.length >= currentTourLimit) {
-                    alert(`Has alcanzado el límite de ${currentTourLimit} tours seleccionables.`)
-                    return prev
-                }
-                return [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }]
+        const exists = selectedExps.some(item => item.id === tourObj.id)
+        if (exists) {
+            setSelectedExps(prev => prev.filter(item => item.id !== tourObj.id))
+        } else {
+            if (selectedExps.length >= currentTourLimit) {
+                setPendingTour({ id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 })
+                setShowUpgradeModal(true)
+                return
             }
-        })
+            setSelectedExps(prev => [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }])
+        }
     }
 
     const hero = EXP_HEROES.guiado
@@ -220,6 +222,34 @@ export default function StepGuiado({ season, temporadaKey }) {
                     </div>
                 </div>
             </section>
+
+            {/* Upgrade Pass Modal when Tour Limit is Reached */}
+            {showUpgradeModal && (
+                <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 99999 }}>
+                    <div className="jtb-modal-card" style={{ maxWidth: '620px', textAlign: 'center', padding: '36px 28px' }}>
+                        <button className="jtb-modal-close" onClick={() => setShowUpgradeModal(false)}>&times;</button>
+                        
+                        <div style={{ fontSize: '3rem', marginBottom: '8px' }}>🌸</div>
+                        
+                        <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)', marginBottom: '10px', lineHeight: 1.3 }}>
+                            Has alcanzado el límite de {currentTourLimit} tours seleccionables
+                        </h3>
+                        
+                        <p style={{ fontSize: '0.95rem', color: '#555', marginBottom: '24px', lineHeight: '1.5' }}>
+                            ¿Deseas ampliar tus días en Japón para agregar más tours a tu viaje? Puedes seleccionar un paquete con mayor duración:
+                        </p>
+
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            style={{ width: '100%', borderRadius: '100px', fontSize: '0.9rem', color: '#666', borderColor: '#ccc', padding: '12px' }}
+                            onClick={() => setShowUpgradeModal(false)}
+                        >
+                            Entendido, conservar itinerario actual
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <CheckoutModal
                 isOpen={isCheckoutOpen}
