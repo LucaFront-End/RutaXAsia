@@ -15,7 +15,10 @@ import { useTripSearch } from '../../context/TripContext'
 
 /**
  * StepLibre — Step 3 for "Libre" experience.
- * Features: TripSelectorBar (Dates & Passengers), duration selector, experience toggle grid, floating ticket calculator.
+ * Features:
+ * 1. Pass Selection (Pase Express, Pase Clásico, Pase Explorador, Pase Grand Tour)
+ * 2. Date Selector (after pass selection, auto-calculates nights from start date)
+ * 3. Calculation Banner & Floating Ticket
  */
 export default function StepLibre({ season, temporadaKey }) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
@@ -24,6 +27,10 @@ export default function StepLibre({ season, temporadaKey }) {
     const [selectedComps, setSelectedComps] = useState([])
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [cmsPackages, setCmsPackages] = useState([])
+
+    const passNames = ['Pase Express', 'Pase Clásico', 'Pase Explorador', 'Pase Gran Tour']
+    const passBadges = ['', 'Más Popular 🌟', '', 'Recomendado 🔥']
+    const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
     useEffect(() => {
         let isMounted = true
@@ -55,6 +62,7 @@ export default function StepLibre({ season, temporadaKey }) {
     const hero = EXP_HEROES.libre
     const staticPricing = PRECIOS[temporadaKey]?.libre
     const packages = cmsPackages.length > 0 ? cmsPackages : (staticPricing?.packages || [])
+
     const toggleExperience = (tourObj) => {
         setAddedExperiences(prev => {
             const exists = prev.some(item => item.id === tourObj.id)
@@ -65,29 +73,6 @@ export default function StepLibre({ season, temporadaKey }) {
             }
         })
     }
-
-    // Dynamic duration calculation when exact dates are chosen
-    const exactDaysInfo = useMemo(() => {
-        if (selectorData.dateMode === 'exact' && selectorData.startDate && selectorData.endDate) {
-            const start = new Date(selectorData.startDate + 'T00:00:00')
-            const end = new Date(selectorData.endDate + 'T00:00:00')
-            const diffMs = end - start
-            const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-            if (days > 0) {
-                const nights = Math.max(1, days - 1)
-                // Daily base estimation ~$2,480 MXN / day
-                const calculatedPrice = days * 2480
-                return {
-                    days,
-                    nights,
-                    daysText: `${days} días ${nights} noches`,
-                    priceNum: calculatedPrice,
-                    priceText: `$${calculatedPrice.toLocaleString('es-MX')} MXN`
-                }
-            }
-        }
-        return null
-    }, [selectorData])
 
     // Helper to parse nights count from package string (e.g. "8 días 6 noches" -> 6)
     const getNightsFromPkg = (pkg, index) => {
@@ -181,17 +166,14 @@ export default function StepLibre({ season, temporadaKey }) {
                 </div>
             </section>
 
-            {/* Duration Selector + Experiences Grid + Floating Ticket */}
+            {/* Main Content Layout */}
             <section className="step3-section">
                 <div className="container">
-                    {/* Top Date & Passenger Selector */}
-                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedNights={currentNights} />
-
                     <div className="libre-layout">
-                        {/* Left column: duration + experiences */}
+                        {/* Left column */}
                         <div>
-                            {/* 1. Always show the 4 Passes Grid */}
-                            <div style={{ marginBottom: 30 }}>
+                            {/* Paso 1: Elige tu Pase de Viaje */}
+                            <div style={{ marginBottom: 32 }}>
                                 <div className="step3-section-title">🎋 1. Elige tu Pase de Viaje</div>
                                 <div className="libre-duration-grid">
                                     {packages.slice(0, 4).map((pkg, i) => (
@@ -214,7 +196,13 @@ export default function StepLibre({ season, temporadaKey }) {
                                 </div>
                             </div>
 
-                            {/* 2. Calculated Summary Banner */}
+                            {/* Paso 2: Selecciona Fecha de Inicio y Pasajeros */}
+                            <div style={{ marginBottom: 24 }}>
+                                <div className="step3-section-title">📅 2. Selecciona Fecha de Inicio y Pasajeros</div>
+                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedNights={currentNights} />
+                            </div>
+
+                            {/* Dynamic Calculated Summary Banner */}
                             <div style={{ marginBottom: 40 }}>
                                 <div style={{
                                     background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -249,7 +237,7 @@ export default function StepLibre({ season, temporadaKey }) {
                                 </div>
                             </div>
 
-                            {/* Wix CMS Recommended Experiences (3 Collapsible Accordion Sections) */}
+                            {/* Wix CMS Recommended Experiences */}
                             <RecommendedExperiencesCMS
                                 addedExperiences={addedExperiences.map(e => e.id)}
                                 onToggleExperience={(tourId, tourTitle, tourPriceNum) => {
