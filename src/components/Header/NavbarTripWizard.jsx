@@ -236,7 +236,7 @@ export default function NavbarTripWizard({ isOpen, onClose, targetTrip }) {
                         <div className="passenger-row" style={{ padding: '16px 0', borderBottom: 'none' }}>
                             <div>
                                 <span className="passenger-type-title">Menores</span>
-                                <span className="passenger-type-sub">0 - 11 años</span>
+                                <span className="passenger-type-sub">2 - 11 años</span>
                             </div>
                             <div className="passenger-counter">
                                 <button

@@ -22,7 +22,7 @@ const MONTHS_OPTIONS = [
     { label: 'Noviembre 2026', key: '2026-11' },
 ]
 
-export default function TripSelectorBar({ selectorData, onChange, variant = 'bar' }) {
+export default function TripSelectorBar({ selectorData, onChange, variant = 'bar', selectedNights = 6 }) {
     const { tripSearch, updateTripSearch } = useTripSearch()
     const navigate = useNavigate()
 
@@ -35,23 +35,43 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
     // Local temporary states before applying
     const [tempDestino, setTempDestino] = useState(currentData.destino || 'japon')
     const [tempStartDate, setTempStartDate] = useState(currentData.startDate || '2026-10-15')
-    const [tempEndDate, setTempEndDate] = useState(currentData.endDate || '2026-10-28')
+    const [tempEndDate, setTempEndDate] = useState(currentData.endDate || '2026-10-21')
     const [tempMonth, setTempMonth] = useState(currentData.selectedMonth || 'Octubre 2026')
     const [tempAdults, setTempAdults] = useState(currentData.adults || 2)
     const [tempChildren, setTempChildren] = useState(currentData.children || 0)
 
     const modalRef = useRef(null)
 
+    // Calculate end date based on start date and selectedNights
+    const getCalculatedEndDate = (startDateStr, nights = selectedNights) => {
+        if (!startDateStr) return ''
+        const [y, m, d] = startDateStr.split('-').map(Number)
+        if (!y || !m || !d) return ''
+        const date = new Date(y, m - 1, d)
+        date.setDate(date.getDate() + nights)
+        const yyyy = date.getFullYear()
+        const mm = String(date.getMonth() + 1).padStart(2, '0')
+        const dd = String(date.getDate()).padStart(2, '0')
+        return `${yyyy}-${mm}-${dd}`
+    }
+
+    const handleSelectStartDate = (startDateStr) => {
+        setTempStartDate(startDateStr)
+        const computedEnd = getCalculatedEndDate(startDateStr, selectedNights)
+        setTempEndDate(computedEnd)
+    }
+
     useEffect(() => {
         if (openModal) {
             setTempStartDate(currentData.startDate || '2026-10-15')
-            setTempEndDate(currentData.endDate || '2026-10-28')
+            const initialEnd = getCalculatedEndDate(currentData.startDate || '2026-10-15', selectedNights)
+            setTempEndDate(initialEnd)
             setTempMonth(currentData.selectedMonth || 'Octubre 2026')
             setTempAdults(currentData.adults || 2)
             setTempChildren(currentData.children || 0)
             setDateTab(currentData.dateMode || 'exact')
         }
-    }, [openModal])
+    }, [openModal, selectedNights])
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -64,10 +84,11 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
     }, [])
 
     const handleApplyDates = () => {
+        const finalEnd = getCalculatedEndDate(tempStartDate, selectedNights)
         handleUpdate({
             dateMode: dateTab,
             startDate: tempStartDate,
-            endDate: tempEndDate,
+            endDate: finalEnd,
             selectedMonth: tempMonth,
         })
         setOpenModal(null)
@@ -211,7 +232,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                                         className={`dates-tab-btn${dateTab === 'exact' ? ' dates-tab-btn--active' : ''}`}
                                         onClick={() => setDateTab('exact')}
                                     >
-                                        Fechas exactas
+                                        Fecha de Inicio
                                     </button>
                                     <button
                                         className={`dates-tab-btn${dateTab === 'month' ? ' dates-tab-btn--active' : ''}`}
@@ -225,21 +246,16 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                                 {dateTab === 'exact' && (
                                     <div className="dates-exact-view">
                                         <div className="dates-inputs-row">
-                                            <div>
-                                                <label>Fecha de Salida</label>
+                                            <div style={{ width: '100%' }}>
+                                                <label>Selecciona tu Fecha de Inicio de Viaje</label>
                                                 <input
                                                     type="date"
                                                     value={tempStartDate}
-                                                    onChange={e => setTempStartDate(e.target.value)}
+                                                    onChange={e => handleSelectStartDate(e.target.value)}
                                                 />
-                                            </div>
-                                            <div>
-                                                <label>Fecha de Regreso</label>
-                                                <input
-                                                    type="date"
-                                                    value={tempEndDate}
-                                                    onChange={e => setTempEndDate(e.target.value)}
-                                                />
+                                                <p style={{ fontSize: '0.78rem', color: '#059669', margin: '4px 0 0', fontWeight: 600 }}>
+                                                    ✨ Fecha de regreso calculada automáticamente (+{selectedNights} noches): <strong>{tempEndDate}</strong>
+                                                </p>
                                             </div>
                                         </div>
 
@@ -258,17 +274,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                                                         return (
                                                             <span
                                                                 key={day}
-                                                                onClick={() => {
-                                                                    if (!tempStartDate || (tempStartDate && tempEndDate)) {
-                                                                        setTempStartDate(dateStr)
-                                                                        setTempEndDate('')
-                                                                    } else if (dateStr >= tempStartDate) {
-                                                                        setTempEndDate(dateStr)
-                                                                    } else {
-                                                                        setTempStartDate(dateStr)
-                                                                        setTempEndDate('')
-                                                                    }
-                                                                }}
+                                                                onClick={() => handleSelectStartDate(dateStr)}
                                                                 className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
                                                                 style={{ cursor: 'pointer' }}
                                                             >
@@ -291,17 +297,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                                                         return (
                                                             <span
                                                                 key={day}
-                                                                onClick={() => {
-                                                                    if (!tempStartDate || (tempStartDate && tempEndDate)) {
-                                                                        setTempStartDate(dateStr)
-                                                                        setTempEndDate('')
-                                                                    } else if (dateStr >= tempStartDate) {
-                                                                        setTempEndDate(dateStr)
-                                                                    } else {
-                                                                        setTempStartDate(dateStr)
-                                                                        setTempEndDate('')
-                                                                    }
-                                                                }}
+                                                                onClick={() => handleSelectStartDate(dateStr)}
                                                                 className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
                                                                 style={{ cursor: 'pointer' }}
                                                             >
@@ -371,7 +367,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                                 <div className="passenger-row">
                                     <div>
                                         <span className="passenger-type-title">Menores</span>
-                                        <span className="passenger-type-sub">0 - 11 años</span>
+                                        <span className="passenger-type-sub">2 - 11 años</span>
                                     </div>
                                     <div className="passenger-counter">
                                         <button

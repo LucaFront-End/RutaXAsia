@@ -89,17 +89,51 @@ export default function StepLibre({ season, temporadaKey }) {
         return null
     }, [selectorData])
 
-    const pkgFromList = packages[selectedDuration] || packages[0] || { days: '10 días 9 noches', priceNum: 24790 }
-    const selectedPkg = exactDaysInfo ? { days: exactDaysInfo.daysText, priceNum: exactDaysInfo.priceNum } : pkgFromList
+    // Helper to parse nights count from package string (e.g. "8 días 6 noches" -> 6)
+    const getNightsFromPkg = (pkg, index) => {
+        if (pkg && pkg.days) {
+            const match = pkg.days.match(/(\d+)\s*noches/i)
+            if (match) return parseInt(match[1], 10)
+        }
+        const fallbackNights = [6, 8, 10, 12]
+        return fallbackNights[index] || 6
+    }
+
+    const pkgFromList = packages[selectedDuration] || packages[0] || { days: '8 días 6 noches', priceNum: 24790 }
+    const currentNights = getNightsFromPkg(pkgFromList, selectedDuration)
+
+    // Auto-calculate end date from start date + selected pass nights
+    useEffect(() => {
+        if (selectorData.startDate) {
+            const [y, m, d] = selectorData.startDate.split('-').map(Number)
+            if (y && m && d) {
+                const dt = new Date(y, m - 1, d)
+                dt.setDate(dt.getDate() + currentNights)
+                const endY = dt.getFullYear()
+                const endM = String(dt.getMonth() + 1).padStart(2, '0')
+                const endD = String(dt.getDate()).padStart(2, '0')
+                const calcEndDate = `${endY}-${endM}-${endD}`
+
+                if (selectorData.endDate !== calcEndDate) {
+                    setSelectorData(prev => ({
+                        ...prev,
+                        endDate: calcEndDate
+                    }))
+                }
+            }
+        }
+    }, [selectorData.startDate, currentNights, selectedDuration])
+
+    const selectedPkg = {
+        name: passNames[selectedDuration] || 'Pase Elegido',
+        days: pkgFromList.days,
+        priceNum: pkgFromList.priceNum,
+        price: pkgFromList.price || formatPrice(pkgFromList.priceNum)
+    }
     const basePrice = selectedPkg.priceNum || 24790
 
     const addedItems = addedExperiences
     const extrasTotal = addedItems.reduce((sum, e) => sum + (e.price || 0), 0)
-
-    const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
-
-    const passNames = ['Pase Express', 'Pase Clásico', 'Pase Explorador', 'Pase Gran Tour']
-    const passBadges = ['', 'Más Popular 🌟', '', 'Recomendado 🔥']
 
     const adults = selectorData.adults || 2
     const children = selectorData.children || 0
@@ -151,71 +185,68 @@ export default function StepLibre({ season, temporadaKey }) {
             <section className="step3-section">
                 <div className="container">
                     {/* Top Date & Passenger Selector */}
-                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} />
+                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedNights={currentNights} />
 
                     <div className="libre-layout">
                         {/* Left column: duration + experiences */}
                         <div>
-                            {/* Dynamic Duration Banner if exact dates chosen, or Cards if month mode */}
+                            {/* 1. Always show the 4 Passes Grid */}
+                            <div style={{ marginBottom: 30 }}>
+                                <div className="step3-section-title">🎋 1. Elige tu Pase de Viaje</div>
+                                <div className="libre-duration-grid">
+                                    {packages.slice(0, 4).map((pkg, i) => (
+                                        <div
+                                            key={i}
+                                            className={`libre-duration-card${selectedDuration === i ? ' libre-duration-card--selected' : ''}`}
+                                            onClick={() => setSelectedDuration(i)}
+                                        >
+                                            {passBadges[i] && (
+                                                <span className="libre-duration-card-badge">{passBadges[i]}</span>
+                                            )}
+                                            <div className="libre-duration-check">✓</div>
+                                            <span className="libre-duration-pass-name">{passNames[i]}</span>
+                                            <div className="libre-duration-days">{pkg.days.split(' ')[0]} días</div>
+                                            <div className="libre-duration-nights">{pkg.days.split(' ').slice(1).join(' ')}</div>
+                                            <div className="libre-duration-price">{pkg.price}</div>
+                                            <span className="libre-duration-per">MXN / persona</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 2. Calculated Summary Banner */}
                             <div style={{ marginBottom: 40 }}>
-                                {exactDaysInfo ? (
-                                    <div style={{
-                                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                        color: '#fff',
-                                        padding: '24px 28px',
-                                        borderRadius: '20px',
-                                        boxShadow: '0 10px 25px rgba(16, 185, 129, 0.25)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justify: 'space-between',
-                                        flexWrap: 'wrap',
-                                        gap: '16px'
-                                    }}>
-                                        <div>
-                                            <span style={{ fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.9 }}>
-                                                ✨ Duración personalizada calculada
-                                            </span>
-                                            <h3 style={{ margin: '4px 0 0', fontSize: '1.4rem', fontFamily: 'var(--font-heading)', color: '#fff' }}>
-                                                🗓️ {exactDaysInfo.daysText}
-                                            </h3>
-                                            <p style={{ margin: '4px 0 0', fontSize: '0.88rem', opacity: 0.95 }}>
-                                                Fechas seleccionadas: <strong>{selectorData.startDate}</strong> al <strong>{selectorData.endDate}</strong>
-                                            </p>
-                                        </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.9 }}>Tarifa base estimada</span>
-                                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff' }}>
-                                                {exactDaysInfo.priceText}
-                                            </div>
-                                            <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>/ persona</span>
-                                        </div>
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                    color: '#fff',
+                                    padding: '24px 28px',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 10px 25px rgba(16, 185, 129, 0.25)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    flexWrap: 'wrap',
+                                    gap: '16px'
+                                }}>
+                                    <div>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.9 }}>
+                                            ✨ {passNames[selectedDuration]} ({pkgFromList.days})
+                                        </span>
+                                        <h3 style={{ margin: '4px 0 0', fontSize: '1.4rem', fontFamily: 'var(--font-heading)', color: '#fff' }}>
+                                            🗓️ Fechas: {selectorData.startDate || 'Sin seleccionar'} al {selectorData.endDate || '...'}
+                                        </h3>
+                                        <p style={{ margin: '4px 0 0', fontSize: '0.88rem', opacity: 0.95 }}>
+                                            Duración: <strong>{currentNights} noches</strong> (calculadas automáticamente desde la fecha de inicio)
+                                        </p>
                                     </div>
-                                ) : (
-                                    packages.length > 0 && (
-                                        <div>
-                                            <div className="step3-section-title">🎋 Elige tu Pase de Viaje</div>
-                                            <div className="libre-duration-grid">
-                                                {packages.map((pkg, i) => (
-                                                    <div
-                                                        key={i}
-                                                        className={`libre-duration-card${selectedDuration === i ? ' libre-duration-card--selected' : ''}`}
-                                                        onClick={() => setSelectedDuration(i)}
-                                                    >
-                                                        {passBadges[i] && (
-                                                            <span className="libre-duration-card-badge">{passBadges[i]}</span>
-                                                        )}
-                                                        <div className="libre-duration-check">✓</div>
-                                                        <span className="libre-duration-pass-name">{passNames[i]}</span>
-                                                        <div className="libre-duration-days">{pkg.days.split(' ')[0]} días</div>
-                                                        <div className="libre-duration-nights">{pkg.days.split(' ').slice(1).join(' ')}</div>
-                                                        <div className="libre-duration-price">{pkg.price}</div>
-                                                        <span className="libre-duration-per">MXN / persona</span>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.9 }}>Tarifa base</span>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff' }}>
+                                            {selectedPkg.price}
                                         </div>
-                                    )
-                                )}
+                                        <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>MXN / persona</span>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Wix CMS Recommended Experiences (3 Collapsible Accordion Sections) */}
