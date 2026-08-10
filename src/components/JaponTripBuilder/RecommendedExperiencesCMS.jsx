@@ -29,7 +29,7 @@ const CATEGORIES_CONFIG = [
 export default function RecommendedExperiencesCMS({ addedExperiences = [], onToggleExperience, seasonName = 'tu viaje', tourLimit = null }) {
     const [tours, setTours] = useState([])
     const [loading, setLoading] = useState(true)
-    const [openCategory, setOpenCategory] = useState('rutas') // First open by default ("Rutas por Japón")
+    const [openCategories, setOpenCategories] = useState(['rutas']) // "Rutas por Japón" open by default
 
     useEffect(() => {
         let isMounted = true
@@ -45,9 +45,24 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
         return () => { isMounted = false }
     }, [])
 
-    const toggleCategory = (key) => {
-        // Selecting another section collapses the previous one
-        setOpenCategory(prev => prev === key ? null : key)
+    const toggleCategory = (key, event) => {
+        const headerEl = event?.currentTarget
+        const isOpening = !openCategories.includes(key)
+
+        setOpenCategories(prev =>
+            prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+        )
+
+        if (headerEl && isOpening) {
+            setTimeout(() => {
+                const rect = headerEl.getBoundingClientRect()
+                const navbarHeight = 110
+                if (rect.top < navbarHeight || rect.top > window.innerHeight - 100) {
+                    const y = rect.top + window.scrollY - navbarHeight - 20
+                    window.scrollTo({ top: y, behavior: 'smooth' })
+                }
+            }, 80)
+        }
     }
 
     const isLimitReached = tourLimit !== null && addedExperiences.length >= tourLimit
@@ -77,7 +92,7 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                 <div className="rec-cms-accordion-list">
                     {CATEGORIES_CONFIG.map((catConfig) => {
                         const catTours = tours.filter(catConfig.matchFn)
-                        const isOpen = openCategory === catConfig.key
+                        const isOpen = openCategories.includes(catConfig.key)
 
                         return (
                             <div
@@ -87,7 +102,7 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                 {/* Accordion Header */}
                                 <div
                                     className="rec-cms-acc-header"
-                                    onClick={() => toggleCategory(catConfig.key)}
+                                    onClick={(e) => toggleCategory(catConfig.key, e)}
                                 >
                                     <div className="rec-cms-acc-title-wrap">
                                         <span className="rec-cms-acc-icon">{catConfig.icon}</span>
