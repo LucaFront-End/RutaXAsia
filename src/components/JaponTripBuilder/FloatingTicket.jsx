@@ -111,7 +111,7 @@ export default function FloatingTicket({
                 {addedItems.length > 0 && (
                     <div style={{ marginTop: '12px', marginBottom: '8px' }}>
                         <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#666' }}>
-                            {estilo === 'Tours Sueltos' ? '🏷️ Tours Seleccionados:' : '🏷️ Cotización Extra (No incluidos):'}
+                            {estilo === 'Tours Sueltos' ? '🏷️ TOURS SELECCIONADOS:' : '🏷️ TOURS ADICIONALES:'}
                         </span>
                     </div>
                 )}
@@ -130,12 +130,12 @@ export default function FloatingTicket({
 
                 {/* Selected Upsell Comps */}
                 {selectedComps.length > 0 && (
-                    <div style={{ marginTop: '10px' }}>
-                        <span className="libre-calc-sublabel">Complementos (Por cotizar):</span>
+                    <div style={{ marginTop: '14px' }}>
+                        <span className="libre-calc-sublabel">COMPLEMENTOS (POR COTIZAR):</span>
                         {selectedComps.map((comp, idx) => (
                             <div className="libre-calc-item-row libre-calc-item-row--comp" key={idx}>
-                                <span>⭐ {comp}</span>
-                                <span className="libre-calc-comp-badge">Cotizar</span>
+                                <span className="libre-calc-item-title" style={{ fontSize: '0.82rem' }}>⭐ {comp}</span>
+                                <span className="libre-calc-comp-badge">COTIZAR</span>
                             </div>
                         ))}
                     </div>

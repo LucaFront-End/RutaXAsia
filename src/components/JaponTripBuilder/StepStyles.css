@@ -463,6 +463,37 @@
     color: var(--jtb-primary, #d6336c);
 }
 
+.libre-calc-sublabel {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.libre-calc-item-row--comp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.82rem;
+    color: #444;
+    padding: 6px 0;
+}
+
+.libre-calc-comp-badge {
+    background: #f1f3f5;
+    color: #495057;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
 .libre-calc-subtotal-row {
     margin-top: 16px;
     padding-top: 14px;

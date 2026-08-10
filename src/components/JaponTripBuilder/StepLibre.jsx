@@ -248,7 +248,7 @@ export default function StepLibre({ season, temporadaKey }) {
 
                             {/* Complementos */}
                             <div>
-                                <div className="step3-section-title">✨ Completa tu experiencia (opcionales)</div>
+                                <div className="step3-section-title">✨ COMPLETA TU EXPERIENCIA (OPCIONALES)</div>
                                 <div className="jtb-extras-grid">
                                     {COMPLEMENTOS.map((item, i) => {
                                         const isSelected = selectedComps.includes(item.title)
@@ -260,7 +260,7 @@ export default function StepLibre({ season, temporadaKey }) {
                                             >
                                                 {isSelected && <span className="jtb-extra-card-badge">✓</span>}
                                                 <div className="jtb-extra-icon">{item.icon}</div>
-                                                <h4 className="jtb-extra-title">{item.title}</h4>
+                                                <h4 className="jtb-extra-title">{item.title.toUpperCase()}</h4>
                                                 <p className="jtb-extra-desc">{item.desc}</p>
                                             </div>
                                         )
