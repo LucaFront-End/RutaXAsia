@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import TripSelectorBar from '../components/JaponTripBuilder/TripSelectorBar'
 
 
-const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
+const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 /* ===== DATA ===== */
 const TRIPS = [
@@ -1192,7 +1192,7 @@ function Home({ cityOverride } = {}) {
                     {/* Secondary CTAs */}
                     <div className="bp-secondary" data-animate="fade-up">
                         <div className="bp-secondary-options">
-                            <a href="tel:+525513610083" className="bp-phone-link">📞 Prefiero llamar</a>
+                            <a href="tel:+525657929121" className="bp-phone-link">📞 Prefiero llamar</a>
                             <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
                             <a href="mailto:reservas@rutaxasia.com" className="bp-phone-link">✉️ Enviar email</a>
                         </div>

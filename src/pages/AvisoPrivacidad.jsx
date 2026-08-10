@@ -63,7 +63,7 @@ export default function AvisoPrivacidad() {
                         <p>Para cualquier duda o aclaración sobre este Aviso de Privacidad, puede contactarnos en:</p>
                         <ul>
                             <li>Email: <a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
-                            <li>Teléfono: <a href="tel:+525513610083">55 13 61 00 83</a></li>
+                            <li>Teléfono: <a href="tel:+525657929121">56 5792 9121</a></li>
                             <li>Dirección: Río Lerma 232 P23 A, Cuauhtémoc, CDMX, CP 6500</li>
                         </ul>
                     </div>

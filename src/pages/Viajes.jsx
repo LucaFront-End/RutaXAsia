@@ -113,7 +113,7 @@ export default function Viajes() {
                     <h2 className="viajes-cta-title">¿No sabés por dónde empezar?</h2>
                     <p className="viajes-cta-text">Escribinos y te ayudamos a elegir el viaje perfecto para vos.</p>
                     <a
-                        href="https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20viajes%20a%20Asia"
+                        href="https://wa.me/525657929121?text=SW-Hola%20quiero%20info%20sobre%20viajes%20a%20Asia"
                         className="btn btn-primary"
                         target="_blank"
                         rel="noopener noreferrer"

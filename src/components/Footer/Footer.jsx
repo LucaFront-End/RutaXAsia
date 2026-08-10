@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import './Footer.css'
 
-const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20viajes%20a%20Asia'
+const WHATSAPP_URL = 'https://wa.me/525657929121?text=SW-Hola%20quiero%20info%20sobre%20viajes%20a%20Asia'
 
 function Footer() {
     return (
@@ -56,7 +56,7 @@ function Footer() {
                     <div className="footer-contact">
                         <h4>Contacto</h4>
                         <ul>
-                            <li><a href="tel:+525513610083">55 13 61 00 83</a></li>
+                            <li><a href="tel:+525657929121">56 5792 9121</a></li>
                             <li><a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
                             <li><a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
                             <li>Río Lerma 232 P23 A<br />Cuauhtémoc, CDMX, CP 6500</li>

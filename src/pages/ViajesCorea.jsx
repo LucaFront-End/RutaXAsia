@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import TOURS, { TOUR_ORDER } from '../data/tourData'
 import './pages.css'
 
-const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
+const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 /**
  * ViajesCorea — Korea trips page with filtered tours.

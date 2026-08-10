@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { LuFlag, LuUsers, LuLanguages, LuPlane, LuShieldCheck, LuCreditCard, LuSearch, LuMessageCircle, LuCircleCheck, LuPackage, LuPlaneTakeoff, LuCheck, LuArrowRight } from 'react-icons/lu'
 import './aboutus.css'
 
-const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
+const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 const STATS = [
     { value: 500, suffix: '+', label: 'Viajeros felices' },

@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import ItineraryMap from '../components/ItineraryMap'
 
-const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
+const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 import TOURS from '../data/tourData'
 

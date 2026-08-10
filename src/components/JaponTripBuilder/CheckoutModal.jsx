@@ -143,7 +143,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     }
 
     const waMsg = `SW-Hola! Quiero realizar mi apartado de $5,000 MXN para el viaje: ${season?.name || 'Japón'} (${estilo}). Pasajero: ${nombre || 'Cliente'}. ${desglose || ''}`
-    const waUrl = `https://wa.me/525513610083?text=${encodeURIComponent(waMsg)}`
+    const waUrl = `https://wa.me/525657929121?text=${encodeURIComponent(waMsg)}`
 
     return (
         <div className="jtb-modal-overlay animate-slide-in">

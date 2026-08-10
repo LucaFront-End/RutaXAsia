@@ -5,7 +5,7 @@ import { LuCalendar, LuClock, LuArrowLeft, LuArrowRight, LuLoader } from 'react-
 import { fetchBlogPostBySlug } from '../lib/wixClient'
 import './Blog.css'
 
-const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
+const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 export default function BlogPost() {
     const { slug } = useParams()

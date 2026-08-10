@@ -105,7 +105,7 @@ export default function Zonas() {
                     <h2 className="viajes-cta-title">¿No ves tu ciudad?</h2>
                     <p className="viajes-cta-text">No importa de dónde seas, te ayudamos a planear tu viaje a Asia.</p>
                     <a
-                        href="https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20viajes%20desde%20mi%20ciudad"
+                        href="https://wa.me/525657929121?text=SW-Hola%20quiero%20info%20sobre%20viajes%20desde%20mi%20ciudad"
                         className="btn btn-primary"
                         target="_blank"
                         rel="noopener noreferrer"

@@ -3,8 +3,8 @@
  * Used by ViajesJapon, JaponTemporada, and JaponExperiencia.
  */
 
-export const WHATSAPP_BASE = 'https://wa.me/525513610083?text='
-export const WHATSAPP_PHONE = '55 13 61 00 83'
+export const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
+export const WHATSAPP_PHONE = '56 5792 9121'
 
 /* ==========================================
    TEMPORADAS (Seasons)

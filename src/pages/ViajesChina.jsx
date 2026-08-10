@@ -39,7 +39,7 @@ export default function ViajesChina() {
                         Dejanos tu contacto y serás el primero en enterarte cuando abramos fechas.
                     </p>
                     <a
-                        href="https://wa.me/525513610083?text=SW-Hola%20me%20interesa%20info%20sobre%20viajes%20a%20China%20cuando%20estén%20disponibles"
+                        href="https://wa.me/525657929121?text=SW-Hola%20me%20interesa%20info%20sobre%20viajes%20a%20China%20cuando%20estén%20disponibles"
                         className="btn btn-primary"
                         target="_blank"
                         rel="noopener noreferrer"

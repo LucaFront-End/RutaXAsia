@@ -4,13 +4,13 @@ import { LuMessageCircle, LuMail, LuPhone, LuMapPin, LuClock, LuInstagram, LuFac
 import { FaTiktok } from 'react-icons/fa6'
 import { submitFormToCMS } from '../lib/wixClient'
 
-const WHATSAPP_URL = 'https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20viajes'
+const WHATSAPP_URL = 'https://wa.me/525657929121?text=SW-Hola%20quiero%20info%20sobre%20viajes'
 const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/reservas@rutaxasia.com.mx'
 
 const CONTACT_METHODS = [
-    { icon: <LuMessageCircle size={28} />, title: 'WhatsApp', desc: 'Respuesta en menos de 2 horas', value: '55 13 61 00 83', href: WHATSAPP_URL, cta: 'Escribir por WhatsApp', external: true },
+    { icon: <LuMessageCircle size={28} />, title: 'WhatsApp', desc: 'Respuesta en menos de 2 horas', value: '56 5792 9121', href: WHATSAPP_URL, cta: 'Escribir por WhatsApp', external: true },
     { icon: <LuMail size={28} />, title: 'Email', desc: 'Para consultas detalladas', value: 'reservas@rutaxasia.com.mx', href: 'mailto:reservas@rutaxasia.com.mx', cta: 'Enviar email', external: false },
-    { icon: <LuPhone size={28} />, title: 'Teléfono', desc: 'Lunes a Viernes 9am - 7pm', value: '55 13 61 00 83', href: 'tel:+525513610083', cta: 'Llamar ahora', external: false },
+    { icon: <LuPhone size={28} />, title: 'Teléfono', desc: 'Lunes a Viernes 9am - 7pm', value: '56 5792 9121', href: 'tel:+525657929121', cta: 'Llamar ahora', external: false },
 ]
 
 const SOCIAL_LINKS = [

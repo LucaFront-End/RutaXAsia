@@ -80,8 +80,8 @@ export default function TerminosCondiciones() {
                         <p>Para cualquier consulta sobre estos Términos y Condiciones:</p>
                         <ul>
                             <li>Email: <a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
-                            <li>Teléfono: <a href="tel:+525513610083">55 13 61 00 83</a></li>
-                            <li>WhatsApp: <a href="https://wa.me/525513610083?text=SW-Hola%20quiero%20info%20sobre%20terminos%20y%20condiciones" target="_blank" rel="noopener noreferrer">55 13 61 00 83</a></li>
+                            <li>Teléfono: <a href="tel:+525657929121">56 5792 9121</a></li>
+                            <li>WhatsApp: <a href="https://wa.me/525657929121?text=SW-Hola%20quiero%20info%20sobre%20terminos%20y%20condiciones" target="_blank" rel="noopener noreferrer">56 5792 9121</a></li>
                         </ul>
                     </div>
                 </div>
