@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import {
     ITINERARIO_ACOMPANADO,
     ITINERARIO_ACOMPANADO_MOMIJI,
+    ITINERARIO_ACOMPANADO_SAKURA,
     ACOMPANADO_TODO_INCLUIDO,
     ACOMPANADO_TODO_INCLUIDO_MOMIJI,
     ACOMPANADO_UPSELL,
@@ -105,7 +106,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
     const extraItems = selectedExps.slice(freeExpLimit)
     const extraTotal = extraItems.reduce((sum, item) => sum + (item.price || 0), 0)
 
-    const fullItinerario = season?.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : ITINERARIO_ACOMPANADO
+    const fullItinerario = season?.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : season?.key === 'sakura' ? ITINERARIO_ACOMPANADO_SAKURA : ITINERARIO_ACOMPANADO
     // Filter itinerary timeline according to chosen pass (12 days vs 14 days)
     const filteredItinerario = useMemo(() => {
         return fullItinerario.filter(item => item.day <= activePass.daysNum)

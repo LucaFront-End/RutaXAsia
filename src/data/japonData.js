@@ -408,6 +408,26 @@ export const ITINERARIO_ACOMPANADO = [
 ]
 
 /* ==========================================
+   ACOMPAÑADO — Itinerario Sakura Completo 2027
+   Based on "Sakura Completo 2027.pdf"
+   12 días, 10 noches (22 de marzo al 2 de abril)
+   ========================================== */
+export const ITINERARIO_ACOMPANADO_SAKURA = [
+    { day: 1, title: 'Vuelo Internacional a Japón', desc: 'Vuelo internacional desde la CDMX hacia Japón. ¡Comienza la gran aventura!', icon: '✈️' },
+    { day: 2, title: 'Llegada a Narita / Traslado a Osaka', desc: 'Llegada al aeropuerto de Narita, recepción y trámites varios para el viaje. Traslado al hotel en Shin Osaka, check in y tarde libre en Osaka. Noche en Shin Osaka.', icon: '🛬' },
+    { day: 3, title: 'Castillo de Osaka y Dotonbori', desc: 'Iniciamos el día visitando la estación, el fabuloso museo y castillo de Osaka, así como el parque que lo rodea. Posteriormente nos vamos a Dotonbori, el barrio clásico de gastronomía y restaurantes más famoso de Japón. Noche en Shin Osaka.', icon: '🏯' },
+    { day: 4, title: 'Parque Nacional de Nara', desc: 'Tour a la primera capital y cuna del budismo en Japón, la ciudad de Nara, donde visitaremos el majestuoso templo Todaiji con uno de los Budas más grandes del país, rodeado de miles de ciervos sagrados. Noche en Shin Osaka.', icon: '🦌' },
+    { day: 5, title: 'City Tour Kioto (Inari & Kiyomizudera)', desc: 'La capital cultural de Japón. Visitaremos Fushimi Inari, el tradicional barrio de Gion e Higashiyama, el parque Maruyama (famoso por el festejo Hanami de floración de cerezos) y el Templo Kiyomizudera. Noche en Shin Osaka.', icon: '⛩️' },
+    { day: 6, title: 'Castillo de Himeji y Kobe', desc: 'Visitamos el Castillo de Himeji, tesoro nacional famoso por su estructura blanca y los árboles de cerezos. Después viajamos a la ciudad de Kobe a probar su exquisita y mundialmente famosa carne. Noche en Shin Osaka.', icon: '🏰' },
+    { day: 7, title: 'Tren Bala a Tokio & Akihabara', desc: 'Check out. Tomamos el tren bala Shinkansen con destino a Tokio. Resguardo de equipaje en el hotel y visita al famoso barrio tecnológico y de electrónica, Akihabara. Noche en Tokio.', icon: '🚄' },
+    { day: 8, title: 'City Tour Tokio I: Palacio Imperial, Ginza & Shibuya', desc: 'Iniciamos en la Gran Estación de Tokio, Jardines Este del Palacio Imperial, caminata por Marunouchi hasta Ginza para compras. Por la tarde-noche, nos vamos al cruce más famoso del mundo en Shibuya y foto con la estatua de Hachiko. Noche en Tokio.', icon: '🏙️' },
+    { day: 9, title: 'City Tour Tokio II: Harajuku, Omotesando & Shinjuku', desc: 'Visitamos Takeshita Street en Harajuku, el exclusivo barrio de Omotesando y sus tiendas. Por la tarde-noche exploramos Shinjuku, uno de los barrios con mejor vida nocturna e iluminación espectaculares. Noche en Tokio.', icon: '✨' },
+    { day: 10, title: 'Asakusa, Sensoji & Sky Tree', desc: 'Caminata junto al río Sumida hasta el templo más antiguo de Tokio, Sensoji en Asakusa (ideal para fotos con kimono). Después visitamos el centro comercial y miradores del Tokio Sky Tree. Noche en Tokio.', icon: '🗼' },
+    { day: 11, title: 'Día Libre o Tour Adicional', desc: 'Día libre en Tokio para programar actividades a tu gusto con nuestro apoyo: compras, visitas libres, tours adicionales opcionales o parques de atracciones. Noche en Tokio.', icon: '🗺️' },
+    { day: 12, title: 'Regreso a México', desc: 'Desayuno y check out del hotel. Traslado al aeropuerto de Narita, check in y vuelo de regreso a la CDMX.', icon: '🛫' },
+]
+
+/* ==========================================
    ACOMPAÑADO — Itinerario Momiji (Ruta Dorada)
    Based on "OTOÑO EN JAPÓN 2026" PDF
    12 días, 10 noches
