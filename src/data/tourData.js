@@ -598,13 +598,12 @@ const TOURS = {
                 days: 'Día 1 – 3', country: 'jp',
                 image: 'https://images.unsplash.com/photo-1704003671790-ab28034a1b24?w=1200&h=700&fit=crop',
                 intro: 'Castillo, templos y start.',
-                description: 'Llegada a Narita, tren bala a Shin Osaka. Parque y Castillo de Osaka, barrio Dotonbori. Parque Nacional de Nara con Templo Todaiji y ciervos.',
-                highlights: ['Castillo de Osaka', 'Dotonbori street food', 'Nara: Todaiji & ciervos', 'Tren bala desde Narita'],
+                description: 'Llegada a Narita, tren bala a Shin Osaka. Castillo de Osaka, Dotonbori y Nara con ciervos sagrados.',
+                highlights: ['Castillo de Osaka', 'Dotonbori', 'Nara & Todaiji'],
             },
             {
-                city: 'Kioto & Uji', cityKey: 'kyoto',
+                city: 'Kioto & Hiroshima', cityKey: 'kyoto',
                 days: 'Día 4 – 7', country: 'jp',
-                image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&h=700&fit=crop',
                 intro: 'El corazón del momiji.',
                 description: 'Capital cultural de Japón: mercado Nishiki, barrio Higashiyama, templo Kiyomizu-dera. Hiroshima y Santuario de Miyajima con su Torii Flotante y Monte Minsen. Uji, capital del Té Verde: museo y Templo Byodo-In, catas de sake y matcha.',
                 highlights: ['Kiyomizu-dera en otoño', 'Hiroshima & Miyajima', 'Uji: capital del Té Verde', 'Barrio Higashiyama'],
@@ -642,6 +641,79 @@ const TOURS = {
         seoTitle: 'Otoño en Japón 2026 — Ruta Dorada $119,490 MXN | RutaXAsia',
         seoDescription: 'Tour otoño Japón noviembre 2026. 12 días: Osaka, Nara, Kioto, Hiroshima, Miyajima, Uji, Hakone, Monte Fuji, Tokyo. $119,490 MXN. RutaXAsia México.',
     },
+
+    /* ============ 9. COREA EN OTOÑO (27 Octubre – 7 Noviembre) ============ */
+    'corea-otono-2026': {
+        title: 'Corea en Otoño',
+        subtitle: 'Corea del Sur',
+        tagline: '12 días descubriendo la magia del otoño en Corea del Sur: Seúl, Busan y Gyeongju.',
+        overviewText: 'Descubre la magia de Corea del Sur durante su época más hermosa: el otoño. Desde la vibrante y moderna capital Seúl, con sus palacios y templos envueltos en hojas doradas, hasta la energía costera y los coloridos barrios de Busan y la riqueza histórica de Gyeongju.',
+        hospedaje: '5 noches en Seúl · 4 noches en Busan · 1 noche en Gyeongju',
+        anticipoText: 'Anticipo disponible + mensualidades',
+        dates: [
+            { range: '27 de octubre al 7 de noviembre', status: 'available', label: 'Disponible' },
+        ],
+        date: '27 octubre – 7 noviembre 2026',
+        duration: '12 días',
+        cities: '3 ciudades (Seúl, Busan, Gyeongju)',
+        groupSize: '18 personas máx.',
+        spotsLeft: 10,
+        price: '$119,490 MXN',
+        priceMXN: null,
+        priceNote: 'por persona · base doble',
+        badge: '🍁 Otoño 2026',
+        flagIcons: [{ code: 'kr', name: 'Corea' }],
+        heroImage: 'https://images.unsplash.com/photo-1538669715315-155098f0fa19?w=1920&h=1080&fit=crop&q=85',
+        gallery: [
+            { img: '/images/tours/gamcheon-village.png', caption: 'Aldea Gamcheon, Busan' },
+            { img: '/images/tours/busan-temple.png', caption: 'Templo Haedong Yonggungsa' },
+            { img: 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=900&h=600&fit=crop', caption: 'Gyeongju Histórico' },
+            { img: '/images/tours/bukchon-seoul.jpg', caption: 'Bukchon Hanok Village, Seúl' },
+        ],
+        chapters: [
+            {
+                city: 'Seúl', cityKey: 'seoul',
+                days: 'Día 1 – 4', country: 'kr',
+                image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=1200&h=700&fit=crop',
+                intro: 'Palacios, K-culture y modernidad.',
+                description: 'Llegada a Incheon, traslado a Seúl. Palacio Gyeongbokgung, Aldea Bukchon Hanok, Insadong, Myeongdong, Torre Namsan, Lotte World Tower, Gangnam y Biblioteca Starfield.',
+                highlights: ['Palacio Gyeongbokgung', 'Bukchon Hanok Village', 'Myeongdong & Namsan', 'Starfield Coex Gangnam'],
+            },
+            {
+                city: 'Busan', cityKey: 'busan',
+                days: 'Día 5 – 8', country: 'kr',
+                image: '/images/tours/gamcheon-village.png',
+                intro: 'Playas, templos junto al mar y cultura.',
+                description: 'Tren KTX de alta velocidad a Busan. Aldea cultural Gamcheon, templo costero Haedong Yonggungsa, teleférico de Songdo, mercado de mariscos Jagalchi y playas de Haeundae y Gwangalli.',
+                highlights: ['Aldea Cultural Gamcheon', 'Templo Haedong Yonggungsa', 'Bahía Songdo & teleférico', 'Playas Haeundae & Gwangalli'],
+            },
+            {
+                city: 'Gyeongju & Seúl', cityKey: 'gyeongju',
+                days: 'Día 9 – 12', country: 'kr',
+                image: 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=1200&h=700&fit=crop',
+                intro: 'Historia milenaria y regreso.',
+                description: 'Visita a la capital histórica de Gyeongju, patrimonio de la humanidad. Regreso en KTX a Seúl para últimas compras y vuelo de regreso a la Ciudad de México.',
+                highlights: ['Gyeongju patrimonio histórico', 'KTX a Seúl', 'Compras en Hongdae/Myeongdong', 'Vuelo de regreso'],
+            },
+        ],
+        includes: [
+            '10 noches de hospedaje con desayuno',
+            'Coordinador durante todo el viaje 24/7',
+            'Todos los tours con entradas y guía en español',
+            'Toda la transportación para el viaje, incluyendo KTX tren de alta velocidad',
+            'Envío de equipaje entre hoteles',
+            'Wi Fi ilimitado para todo el viaje',
+            'Traslado final hotel aeropuerto',
+        ],
+        notIncludes: ['Comidas no mencionadas', 'Propinas (opcionales)', 'Gastos personales', 'Actividades opcionales'],
+        faqs: [
+            { q: '¿Cómo es el clima en otoño en Corea?', a: 'El otoño en Corea (octubre-noviembre) tiene un clima ideal (10-18°C), cielos despejados y los espectaculares follajes otoñales de arces y ginkgos dorados.' },
+            { q: '¿Necesito visa para Corea?', a: 'No. Los ciudadanos mexicanos no requieren visa de turismo para Corea del Sur.' },
+            { q: '¿Puedo pagar en cuotas?', a: 'Sí. Puedes apartar tu lugar con un anticipo y pagar el resto en cómodas mensualidades.' },
+        ],
+        seoTitle: 'Corea en Otoño 2026 — Seúl, Busan y Gyeongju | RutaXAsia',
+        seoDescription: 'Viaje grupal a Corea del Sur en otoño (27 de octubre al 7 de noviembre 2026). 12 días: Seúl, Busan y Gyeongju. RutaXAsia México.',
+    },
 }
 
 // Support backwards compatibility for sakura-2026 slug
@@ -650,12 +722,9 @@ TOURS['sakura-2026'] = TOURS['sakura-2027']
 /* Tour display order — use this array everywhere for consistent ordering */
 export const TOUR_ORDER = [
     'sakura-2027',
-    'japon-corea-mayo-2026',
-    'corea-junio-2026',
-    'verano-japon-2026',
-    'corea-septiembre-2026',
     'octubre-japon-2026',
     'japon-corea-2026',
+    'corea-otono-2026',
 ]
 
 export default TOURS
