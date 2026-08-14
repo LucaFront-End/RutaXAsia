@@ -468,11 +468,13 @@ const TOURS = {
             },
         ],
         includes: [
-            '10 noches de hospedaje con desayuno buffet',
-            'Todos los tours con entradas y transportación', 'Entrada Universal Studios Japan',
-            'Entrada a un parque Disney (Disneyland o DisneySea)',
-            'JR Pass 7 días (tren bala)', 'Guía y atención en español',
-            'Envío de equipaje (aplican condiciones)', 'Seguro de viajero', 'Traslado hotel-aeropuerto',
+            '10 noches de Hospedaje con Desayuno',
+            'Coordinador durante todo el viaje 24/7',
+            'Todos los Tours con Entradas y Guía en Español',
+            'Toda la transportación para el viaje, incluyendo el tren bala',
+            'Envío de equipaje entre hoteles (aplican condiciones)',
+            'Wi Fi ilimitado para todo el viaje',
+            'Traslado final hotel aeropuerto',
         ],
         notIncludes: ['Comidas no mencionadas', 'Propinas (opcionales)', 'Gastos personales', 'Actividades opcionales'],
         faqs: [
