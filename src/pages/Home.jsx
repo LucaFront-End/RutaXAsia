@@ -9,17 +9,17 @@ const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 /* ===== DATA ===== */
 const TRIPS = [
     {
-        id: 'sakura-2026',
-        title: 'Sakura 2026',
+        id: 'sakura-2027',
+        title: 'Sakura 2027',
         heroTagline: 'Japón',
         heroHeading: 'JAPÓN',
         heroSubheading: 'Sakura',
         excerpt: 'Cerezos en flor, templos milenarios y la esencia más pura de Japón. 12 días inolvidables.',
-        date: '23 marzo – 3 abril',
+        date: '22 marzo – 2 abril',
         duration: '12 días',
         flagIcons: [{ code: 'jp', name: 'Japón' }],
-        badge: 'SOLD OUT',
-        soldOut: true,
+        badge: 'DISPONIBLE 2027',
+        soldOut: false,
         image: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=600&h=400&fit=crop',
         heroImage: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&h=1080&fit=crop&q=85',
         gallery: [

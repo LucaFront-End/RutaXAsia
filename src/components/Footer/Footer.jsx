@@ -33,7 +33,7 @@ function Footer() {
                             <li><Link to="/viajes/japon">Viajes a Japón</Link></li>
                             <li><Link to="/viajes/corea">Viajes a Corea</Link></li>
                             <li><Link to="/viajes/china">Viajes a China</Link></li>
-                            <li><Link to="/tours/sakura-2026">Sakura 2026</Link></li>
+                            <li><Link to="/tours/sakura-2027">Sakura 2027</Link></li>
                             <li><Link to="/tours/verano-japon-2026">Verano en Japón</Link></li>
                             <li><Link to="/tours/corea-junio-2026">Corea (Junio)</Link></li>
                             <li><Link to="/tours/octubre-japon-2026">Japón Octubre</Link></li>

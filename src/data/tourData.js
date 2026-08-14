@@ -12,24 +12,24 @@
    =================================================================== */
 
 const TOURS = {
-    /* ============ 1. SAKURA 2026 — SOLD OUT ============ */
-    'sakura-2026': {
-        title: 'Sakura 2026',
+    /* ============ 1. SAKURA 2027 ============ */
+    'sakura-2027': {
+        title: 'Sakura 2027',
         subtitle: 'Japón',
         tagline: '12 días entre cerezos en flor, templos milenarios y la esencia más pura de Japón.',
         dates: [
-            { range: '23 de marzo – 3 de abril', status: 'sold-out', label: 'SOLD OUT' },
+            { range: '22 de marzo – 2 de abril', status: 'available', label: 'LUGARES DISPONIBLES' },
         ],
-        date: '23 marzo – 3 abril 2026',
+        date: '22 marzo – 2 abril 2027',
         duration: '12 días',
         cities: '4 ciudades',
-        groupSize: 'SOLD OUT',
-        spotsLeft: 0,
-        soldOut: true,
+        groupSize: 'Máximo 18 personas',
+        spotsLeft: 10,
+        soldOut: false,
         price: '$5,350 USD',
         priceMXN: '$109,490 MXN',
         priceNote: 'por persona · base doble',
-        badge: 'SOLD OUT',
+        badge: 'SAKURA 2027',
         flagIcons: [{ code: 'jp', name: 'Japón' }],
         heroImage: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&h=1080&fit=crop&q=85',
         gallery: [
@@ -96,8 +96,8 @@ const TOURS = {
             { q: '¿Es seguro?', a: 'Japón es uno de los países más seguros del mundo.' },
             { q: '¿Qué pasa si no hablo el idioma?', a: 'Nuestro guía hispanohablante te acompaña todo el viaje. Todo resuelto.' },
         ],
-        seoTitle: 'Sakura 2026 — Viaje Japón $5,350 USD | RutaXAsia',
-        seoDescription: 'Viaje grupal Japón marzo 2026. Cerezos en flor, Tokyo, Kyoto, Osaka. $5,350 USD / $109,490 MXN. Incluye vuelos, hospedaje y guía. RutaXAsia México.',
+        seoTitle: 'Sakura 2027 — Viaje Japón $5,350 USD | RutaXAsia',
+        seoDescription: 'Viaje grupal Japón 22 de marzo al 2 de abril 2027. Cerezos en flor, Tokyo, Kyoto, Osaka. $5,350 USD / $109,490 MXN. Incluye vuelos, hospedaje y guía. RutaXAsia México.',
     },
 
     /* ============ 2. JAPÓN COREA MAYO — SOLD OUT ============ */
@@ -639,9 +639,12 @@ const TOURS = {
     },
 }
 
+// Support backwards compatibility for sakura-2026 slug
+TOURS['sakura-2026'] = TOURS['sakura-2027']
+
 /* Tour display order — use this array everywhere for consistent ordering */
 export const TOUR_ORDER = [
-    'sakura-2026',
+    'sakura-2027',
     'japon-corea-mayo-2026',
     'corea-junio-2026',
     'verano-japon-2026',

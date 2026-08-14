@@ -182,7 +182,7 @@ export default function Contact() {
                                         <label>Viaje de interés</label>
                                         <select name="viaje" value={formData.viaje} onChange={handleChange}>
                                             <option value="">Seleccionar viaje</option>
-                                            <option value="Sakura 2026">Sakura 2026</option>
+                                            <option value="Sakura 2027">Sakura 2027</option>
                                             <option value="Corea Junio 2026">Corea Junio 2026</option>
                                             <option value="Verano Japón 2026">Verano Japón 2026</option>
                                             <option value="Corea Septiembre 2026">Corea Septiembre 2026</option>
