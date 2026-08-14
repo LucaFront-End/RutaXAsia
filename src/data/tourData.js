@@ -492,7 +492,10 @@ const TOURS = {
         tagline: '¡Un viaje, dos culturas! 14 días desde Tokyo y Kioto hasta Busan y Seúl.',
         overviewText: 'Prepárate para un viaje único donde tradición y modernidad se entrelazan a la perfección. Recorreremos dos países fascinantes: desde la energía vibrante de Tokio hasta la serenidad de los templos en Kioto y Nara, pasando por el dinamismo de Osaka. En Corea, exploraremos la modernidad de Seúl y la belleza costera de Busan, con sus templos frente al mar y su ambiente único.',
         hospedaje: '4 noches en Shin Osaka · 2 noches en Tokyo · 3 noches en Busan · 2 noches en Seúl',
-        anticipoText: 'Anticipo: $19,490 · 7 mensualidades de $16,000',
+        anticipoText: 'Anticipo: $19,490 MXN · 7 mensualidades de $16,000 MXN',
+        anticipoDisplay: '$19,490 MXN',
+        anticipoNum: 19490,
+        pdfUrl: '/pdf/itinerario-japon-corea-2026.pdf',
         dates: [
             { range: '17 – 30 de octubre', status: 'available', label: 'Ya a la venta' },
         ],
