@@ -84,8 +84,8 @@ const TRIPS = [
         image: '/images/tours/gyeongju-otono-korea.jpg',
         heroImage: '/images/tours/gyeongju-otono-korea.jpg',
         gallery: [
-            { title: 'Gamcheon, Busan', img: '/images/tours/gamcheon-village.png' },
-            { title: 'Haedong Yonggungsa', img: '/images/tours/busan-temple.png' },
+            { title: 'Gamcheon, Busan', img: '/images/tours/gamcheon-village-busan.jpg' },
+            { title: 'Haedong Yonggungsa', img: '/images/tours/haedong-yonggungsa-busan.jpg' },
             { title: 'Gyeongju en Otoño', img: '/images/tours/gyeongju-otono-korea.jpg' },
         ],
         includes: ['10 noches con desayuno', 'Tours y entradas con guía', 'Transportación y KTX', 'Coordinador 24/7 y Wi-Fi'],

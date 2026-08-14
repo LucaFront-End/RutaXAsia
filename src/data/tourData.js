@@ -678,15 +678,15 @@ const TOURS = {
         heroImage: '/images/tours/gyeongju-otono-korea.jpg',
         gallery: [
             { img: '/images/tours/gyeongju-otono-korea.jpg', caption: 'Gyeongju en Otoño — Templo Bulguksa' },
-            { img: '/images/tours/gamcheon-village.png', caption: 'Aldea Cultural Gamcheon, Busan' },
-            { img: '/images/tours/busan-temple.png', caption: 'Templo Haedong Yonggungsa frente al mar' },
+            { img: '/images/tours/gamcheon-village-busan.jpg', caption: 'Aldea Cultural Gamcheon, Busan' },
+            { img: '/images/tours/haedong-yonggungsa-busan.jpg', caption: 'Templo Haedong Yonggungsa frente al mar' },
             { img: '/images/tours/gyeongbokgung-palacio.jpg', caption: 'Palacio Imperial Gyeongbokgung, Seúl' },
-            { img: '/images/tours/bukchon-seoul.jpg', caption: 'Aldea Tradicional Bukchon Hanok, Seúl' },
-            { img: 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?w=900&h=600&fit=crop', caption: 'Fortaleza Hwaseong, Suwon' },
-            { img: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=900&h=600&fit=crop', caption: 'Torre Namsan y Seúl de noche' },
-            { img: 'https://images.unsplash.com/photo-1578637387939-43c525550085?w=900&h=600&fit=crop', caption: 'Playa de Haeundae, Busan' },
+            { img: '/images/tours/bukchon-hanok-seoul.jpg', caption: 'Aldea Tradicional Bukchon Hanok, Seúl' },
+            { img: '/images/tours/suwon-hwaseong-fortress.jpg', caption: 'Fortaleza Hwaseong, Suwon' },
+            { img: '/images/tours/namsan-tower-seoul-night.jpg', caption: 'Torre Namsan y Seúl de noche' },
+            { img: '/images/tours/haeundae-beach-busan.jpg', caption: 'Playa de Haeundae y Blueline Park, Busan' },
             { img: '/images/tours/starfield-library-seoul.jpg', caption: 'Biblioteca Starfield Coex & Gangnam, Seúl' },
-            { img: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=900&h=600&fit=crop', caption: 'Estanque Donggung y Palacio Wolji iluminado, Gyeongju' },
+            { img: '/images/tours/donggung-wolji-gyeongju.jpg', caption: 'Estanque Donggung y Palacio Wolji iluminado, Gyeongju' },
         ],
         chapters: [
             {
@@ -700,7 +700,7 @@ const TOURS = {
             {
                 city: 'Suwon', cityKey: 'suwon',
                 days: 'Día 5', country: 'kr',
-                image: 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?w=1200&h=700&fit=crop',
+                image: '/images/tours/suwon-hwaseong-fortress.jpg',
                 intro: 'La ciudad de los reyes y los K-dramas.',
                 description: 'Excursión a Suwon. Recorrido por la imponente Fortaleza Hwaseong, Puerta Changnyongmun, caminata por las murallas hacia la Puerta Hwaseongmun y visita al Palacio Hwaseong Haenggung. Culminamos la tarde conociendo la majestuosa Biblioteca Starfield Suwon.',
                 highlights: ['Fortaleza Hwaseong (UNESCO)', 'Palacio Hwaseong Haenggung', 'Murallas históricas de reyes', 'Nueva Biblioteca Starfield Suwon'],
@@ -708,7 +708,7 @@ const TOURS = {
             {
                 city: 'Busan', cityKey: 'busan',
                 days: 'Día 6 – 8', country: 'kr',
-                image: '/images/tours/busan-temple.png',
+                image: '/images/tours/haedong-yonggungsa-busan.jpg',
                 intro: 'Playas, tren panorámico y templos frente al mar.',
                 description: 'Tren bala KTX a Busan atravesando el interior de Corea. Visita a la colorida Aldea Cultural Gamcheon, mercado de pescados Jagalchi, BIFF Square, Nampo-dong y Gwangbok-ro. Templo costero Haedong Yonggungsa, mirador de cristal de Cheongsapo sobre el océano, tren panorámico Blueline Park y la famosa playa de Haeundae.',
                 highlights: ['Aldea Cultural Gamcheon', 'Templo marino Haedong Yonggungsa', 'Tren panorámico Blueline Park', 'Mercado Jagalchi & Haeundae Beach'],
