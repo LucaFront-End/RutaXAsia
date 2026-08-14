@@ -145,10 +145,12 @@ export default function TourDetail() {
                 </div>
             )}
 
-            {/* ===== 3. OVERVIEW + BOLETO DE COMPRA (Floating Ticket Sidebar Layout) ===== */}
-            <section className="td-editorial container">
-                <div className="libre-layout">
-                    <div>
+            {/* ===== 3. MAIN CONTENT WITH FLOATING TICKET SIDEBAR ===== */}
+            <div className="container libre-layout" style={{ marginTop: '50px', marginBottom: '60px' }}>
+                {/* Left Column: All Tour Sections */}
+                <div>
+                    {/* Sobre este viaje */}
+                    <section className="td-editorial" style={{ paddingTop: 0, paddingBottom: '30px' }}>
                         <h2 className="td-section-label">Sobre este viaje</h2>
                         <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, vuelos y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
                         {tour.hospedaje && (
@@ -157,26 +159,72 @@ export default function TourDetail() {
                                 <span className="td-hospedaje-text"><strong>Hospedaje:</strong> {tour.hospedaje}</span>
                             </div>
                         )}
-                    </div>
+                    </section>
 
-                    {/* Floating Ticket / Boleto de Compra Sidebar */}
-                    <div>
-                        <FloatingTicket
-                            season={{ name: tour.title, colors: { primary: '#e91e63' } }}
-                            temporadaKey="sakura"
-                            estilo="Reserva"
-                            selectorData={selectorData}
-                            selectedPkg={{ days: tour.duration, priceNum: basePriceNum, name: tour.title }}
-                            includedExps={tour.includes || []}
-                            addedItems={[]}
-                            selectedComps={[]}
-                            basePrice={basePriceNum}
-                            extraTotal={0}
-                            onOpenCheckout={() => setIsCheckoutOpen(true)}
+                    {/* Itinerario día por día */}
+                    <section className="td-tabs-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                        <h2 className="td-section-label">Itinerario día por día</h2>
+                        <p className="td-tabs-subtitle">Seleccioná una ciudad en el mapa para ver el detalle</p>
+                        <ItineraryMap
+                            chapters={tour.chapters}
+                            activeCity={activeCity}
+                            onCityClick={setActiveCity}
                         />
-                    </div>
+                    </section>
+
+                    {/* ¿Qué incluye? */}
+                    <section className="td-split-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                        <h2 className="td-section-label">¿Qué incluye?</h2>
+                        <div className="td-split-card">
+                            <div className="td-split-yes">
+                                <h3 className="td-split-title">Incluye</h3>
+                                <ul className="td-split-list">
+                                    {tour.includes.map((item, i) => <li key={i}><span className="td-split-check">✓</span>{item}</li>)}
+                                </ul>
+                            </div>
+                            <div className="td-split-no">
+                                <h3 className="td-split-title">No incluye</h3>
+                                <ul className="td-split-list">
+                                    {tour.notIncludes.map((item, i) => <li key={i}><span className="td-split-x">✕</span>{item}</li>)}
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Preguntas frecuentes */}
+                    <section className="td-faq-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                        <h2 className="td-section-label">Preguntas frecuentes</h2>
+                        <div className="td-faqs">
+                            {tour.faqs.map((faq, i) => (
+                                <div key={i} className={`td-faq ${openFaq === i ? 'td-faq--open' : ''}`}>
+                                    <button className="td-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                                        <span>{faq.q}</span>
+                                        <span className="td-faq-icon">{openFaq === i ? '−' : '+'}</span>
+                                    </button>
+                                    {openFaq === i && <div className="td-faq-a"><p>{faq.a}</p></div>}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
                 </div>
-            </section>
+
+                {/* Right Column: Floating Ticket Sidebar */}
+                <div>
+                    <FloatingTicket
+                        season={{ name: tour.title, colors: { primary: '#e91e63' } }}
+                        temporadaKey="sakura"
+                        estilo="Reserva"
+                        selectorData={selectorData}
+                        selectedPkg={{ days: tour.duration, priceNum: basePriceNum, name: tour.title }}
+                        includedExps={tour.includes || []}
+                        addedItems={[]}
+                        selectedComps={[]}
+                        basePrice={basePriceNum}
+                        extraTotal={0}
+                        onOpenCheckout={() => setIsCheckoutOpen(true)}
+                    />
+                </div>
+            </div>
 
             <CheckoutModal
                 isOpen={isCheckoutOpen}
@@ -191,53 +239,6 @@ export default function TourDetail() {
                     `Pasajeros: ${adults} Adultos, ${children} Menores.`
                 }
             />
-
-            {/* ===== 4. ITINERARY — Map + Detail Split ===== */}
-            <section className="td-tabs-section container">
-                <h2 className="td-section-label">Itinerario día por día</h2>
-                <p className="td-tabs-subtitle">Seleccioná una ciudad en el mapa para ver el detalle</p>
-
-                <ItineraryMap
-                    chapters={tour.chapters}
-                    activeCity={activeCity}
-                    onCityClick={setActiveCity}
-                />
-            </section>
-
-            {/* ===== 5. SPLIT CARD — Incluye / No incluye ===== */}
-            <section className="td-split-section container">
-                <h2 className="td-section-label">¿Qué incluye?</h2>
-                <div className="td-split-card">
-                    <div className="td-split-yes">
-                        <h3 className="td-split-title">Incluye</h3>
-                        <ul className="td-split-list">
-                            {tour.includes.map((item, i) => <li key={i}><span className="td-split-check">✓</span>{item}</li>)}
-                        </ul>
-                    </div>
-                    <div className="td-split-no">
-                        <h3 className="td-split-title">No incluye</h3>
-                        <ul className="td-split-list">
-                            {tour.notIncludes.map((item, i) => <li key={i}><span className="td-split-x">✕</span>{item}</li>)}
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== 6. FAQ ===== */}
-            <section className="td-faq-section container">
-                <h2 className="td-section-label">Preguntas frecuentes</h2>
-                <div className="td-faqs">
-                    {tour.faqs.map((faq, i) => (
-                        <div key={i} className={`td-faq ${openFaq === i ? 'td-faq--open' : ''}`}>
-                            <button className="td-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                                <span>{faq.q}</span>
-                                <span className="td-faq-icon">{openFaq === i ? '−' : '+'}</span>
-                            </button>
-                            {openFaq === i && <div className="td-faq-a"><p>{faq.a}</p></div>}
-                        </div>
-                    ))}
-                </div>
-            </section>
 
             {/* ===== 7. BOTTOM CTA ===== */}
             <section className="td-bottom-cta">
