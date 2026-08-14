@@ -474,7 +474,58 @@
 .libre-calc-item-title {
     font-weight: 700;
     color: #1a1a1a;
-    line-height: 1.3;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+/* Inclusions checklist for Fixed Tours */
+.libre-calc-inc-clean {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: #2b2b2b;
+    line-height: 1.4;
+    padding: 3px 0;
+}
+
+.libre-calc-inc-check {
+    color: #10b981;
+    font-weight: 900;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.libre-calc-inc-text {
+    flex: 1;
+    word-break: break-word;
+}
+
+/* Inclusions pills for Custom Trip Builder */
+.libre-calc-included-pill {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    background: #fff7f9;
+    border-left: 3px solid var(--jtb-primary, #e11d48);
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    color: #333;
+    line-height: 1.35;
+}
+
+.libre-calc-free-tag {
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
 }
 
 .libre-calc-item-price {

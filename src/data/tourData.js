@@ -667,9 +667,9 @@ const TOURS = {
         priceNote: 'por persona · base doble',
         badge: '🍁 Otoño 2026',
         flagIcons: [{ code: 'kr', name: 'Corea' }],
-        heroImage: 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=1920&h=1080&fit=crop&q=85',
+        heroImage: '/images/tours/gyeongju-otono-korea.jpg',
         gallery: [
-            { img: 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=900&h=600&fit=crop', caption: 'Gyeongju en Otoño — Templo Bulguksa' },
+            { img: '/images/tours/gyeongju-otono-korea.jpg', caption: 'Gyeongju en Otoño — Templo Bulguksa' },
             { img: '/images/tours/gamcheon-village.png', caption: 'Aldea Cultural Gamcheon, Busan' },
             { img: '/images/tours/busan-temple.png', caption: 'Templo Haedong Yonggungsa frente al mar' },
             { img: 'https://images.unsplash.com/photo-1538669715315-155098f0fa19?w=900&h=600&fit=crop', caption: 'Palacio Imperial Gyeongbokgung, Seúl' },

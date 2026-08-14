@@ -97,7 +97,7 @@ export default function FloatingTicket({
                 {selectedPkg && (
                     <div className="libre-calc-item-row libre-calc-item-row--main">
                         <span className="libre-calc-item-title">
-                            {selectedPkg.name ? (selectedPkg.name.startsWith('Pase') ? selectedPkg.name : `Plan ${selectedPkg.name}`) : 'Pase Seleccionado'}
+                            {selectedPkg.name ? (selectedPkg.name.startsWith('Pase') || estilo === 'Reserva' ? selectedPkg.name : `Plan ${selectedPkg.name}`) : 'Pase Seleccionado'}
                         </span>
                         <span className="libre-calc-item-price">{formatPrice(basePrice)} MXN</span>
                     </div>
@@ -105,15 +105,16 @@ export default function FloatingTicket({
 
                 {/* Included Tours Badge List */}
                 {includedExps.length > 0 && (
-                    <div style={{ marginTop: '10px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary)' }}>
-                            ✨ Tours Incluidos ({freeExpLimit || includedExps.length} Gratis):
+                    <div style={{ marginTop: '12px', marginBottom: '14px' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary, #e11d48)', display: 'block', marginBottom: '6px' }}>
+                            ✨ {estilo === 'Reserva' ? 'Incluido en tu viaje:' : `Tours Incluidos (${freeExpLimit || includedExps.length} Gratis):`}
                         </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '4px' }}>
                             {includedExps.map((name, i) => (
-                                <div className="libre-calc-included-pill" key={i}>
-                                    <span>✓ {name}</span>
-                                    <span className="libre-calc-free-tag">GRATIS</span>
+                                <div className={estilo === 'Reserva' ? 'libre-calc-inc-clean' : 'libre-calc-included-pill'} key={i}>
+                                    <span className="libre-calc-inc-check">✓</span>
+                                    <span className="libre-calc-inc-text">{name}</span>
+                                    {estilo !== 'Reserva' && <span className="libre-calc-free-tag">GRATIS</span>}
                                 </div>
                             ))}
                         </div>
