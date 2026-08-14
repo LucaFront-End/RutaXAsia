@@ -20,6 +20,7 @@ function WhatsAppIcon() {
 import { useTripSearch } from '../context/TripContext'
 import FloatingTicket from '../components/JaponTripBuilder/FloatingTicket'
 import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
+import DownloadItineraryModal from '../components/DownloadItineraryModal/DownloadItineraryModal'
 
 export default function TourDetail() {
     const { slug } = useParams()
@@ -30,6 +31,7 @@ export default function TourDetail() {
     const [showBar, setShowBar] = useState(false)
     const [activeCity, setActiveCity] = useState(0)
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
 
     useEffect(() => { window.scrollTo(0, 0) }, [slug])
 
@@ -49,7 +51,7 @@ export default function TourDetail() {
         )
     }
 
-    const waMsg = `SW-Hola! Quiero info sobre el tour "${tour.title}" (${tour.date})`
+    const waMsg = `SW-Hola! Quiero info sobre el tour "${tour.title}" (${tour.date})` + (tour.anticipoText ? ` [${tour.anticipoText}]` : '')
     const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`
     const priceDisplay = tour.priceMXN ? `${tour.price} / ${tour.priceMXN}` : tour.price
     const isSoldOut = tour.soldOut || tour.spotsLeft === 0
@@ -68,7 +70,7 @@ export default function TourDetail() {
     const adults = selectorData.adults || 2
     const children = selectorData.children || 0
     const passengersCount = adults + children
-    const totalPrice = basePriceNum * passengersCount
+    const totalPrice = basePriceNum
 
     return (
         <>
@@ -94,14 +96,22 @@ export default function TourDetail() {
                         <span className="td-chip">⏱ {tour.duration}</span>
                         <span className="td-chip">🏙️ {tour.cities}</span>
                     </div>
-                    <div className="td-hero-cta-row">
+                    <div className="td-hero-cta-row" style={{ flexWrap: 'wrap', gap: '12px' }}>
                         {!isSoldOut ? (
                             <a href={waLink} className="td-hero-btn" target="_blank" rel="noopener noreferrer">
-                                <WhatsAppIcon /> Reservar — {tour.price}
+                                <WhatsAppIcon /> {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : `Reservar — ${tour.price}`}
                             </a>
                         ) : (
                             <span className="td-hero-btn td-hero-btn--sold">SOLD OUT</span>
                         )}
+                        <button
+                            type="button"
+                            className="td-hero-btn td-hero-btn--pdf"
+                            style={{ background: 'rgba(255, 255, 255, 0.95)', color: '#111', border: '1px solid rgba(0,0,0,0.15)', fontWeight: '750', cursor: 'pointer' }}
+                            onClick={() => setIsPdfModalOpen(true)}
+                        >
+                            📄 Descargar Itinerario PDF
+                        </button>
                         {tour.priceMXN && (
                             <span className="td-price-alt">{tour.priceMXN}</span>
                         )}
@@ -152,13 +162,23 @@ export default function TourDetail() {
                     {/* Sobre este viaje */}
                     <section className="td-editorial" style={{ paddingTop: 0, paddingBottom: '30px' }}>
                         <h2 className="td-section-label">Sobre este viaje</h2>
-                        <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, vuelos y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
+                        <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, traslados y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
                         {tour.hospedaje && (
                             <div className="td-hospedaje">
                                 <span className="td-hospedaje-icon">🏨</span>
                                 <span className="td-hospedaje-text"><strong>Hospedaje:</strong> {tour.hospedaje}</span>
                             </div>
                         )}
+                        <div style={{ marginTop: '18px' }}>
+                            <button
+                                type="button"
+                                className="btn btn-outline"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', borderRadius: '100px', fontWeight: '750', fontSize: '0.88rem' }}
+                                onClick={() => setIsPdfModalOpen(true)}
+                            >
+                                📄 Descargar Itinerario en PDF (Gratis)
+                            </button>
+                        </div>
                     </section>
 
                     {/* Itinerario día por día */}
@@ -221,7 +241,12 @@ export default function TourDetail() {
                         selectedComps={[]}
                         basePrice={basePriceNum}
                         extraTotal={0}
+                        anticipoText={tour.anticipoText}
+                        anticipoDisplay={tour.anticipoDisplay}
+                        hideQuantity={true}
+                        customReserveBtnText={tour.anticipoDisplay ? `Apartar con ${tour.anticipoDisplay}` : null}
                         onOpenCheckout={() => setIsCheckoutOpen(true)}
+                        onOpenDownloadPdf={() => setIsPdfModalOpen(true)}
                     />
                 </div>
             </div>
@@ -236,7 +261,7 @@ export default function TourDetail() {
                     `Tour: ${tour.title}. ` +
                     `Fecha: ${tour.date}. ` +
                     `Duración: ${tour.duration}. ` +
-                    `Pasajeros: ${adults} Adultos, ${children} Menores.`
+                    (tour.anticipoText ? `Plan: ${tour.anticipoText}. ` : '')
                 }
             />
 
@@ -247,9 +272,19 @@ export default function TourDetail() {
                 <div className="td-bottom-inner container">
                     <h2 className="td-bottom-h2">¿Listo para vivir {tour.title}?</h2>
                     <p className="td-bottom-p">Escríbenos y reserva tu lugar antes de que se agoten.</p>
-                    <a href={waLink} className="td-bottom-btn" target="_blank" rel="noopener noreferrer">
-                        <WhatsAppIcon /> Reservar — {tour.price}
-                    </a>
+                    <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
+                        <a href={waLink} className="td-bottom-btn" target="_blank" rel="noopener noreferrer">
+                            <WhatsAppIcon /> {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : `Reservar — ${tour.price}`}
+                        </a>
+                        <button
+                            type="button"
+                            className="td-bottom-btn"
+                            style={{ background: '#ffffff', color: '#111111', cursor: 'pointer' }}
+                            onClick={() => setIsPdfModalOpen(true)}
+                        >
+                            📄 Descargar Itinerario en PDF
+                        </button>
+                    </div>
                     {tour.priceMXN && <p className="td-bottom-price-alt">{tour.priceMXN}</p>}
                 </div>
             </section>
@@ -259,16 +294,31 @@ export default function TourDetail() {
                 <div className="td-float-inner container">
                     <div className="td-float-left">
                         <strong>{tour.title}</strong>
-                        <span>{tour.date} · {tour.duration}</span>
+                        <span>{tour.date} · {tour.duration} {tour.anticipoText ? `(${tour.anticipoText})` : ''}</span>
                     </div>
-                    <div className="td-float-right">
+                    <div className="td-float-right" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            style={{ fontSize: '0.82rem', padding: '8px 16px', borderRadius: '100px', background: 'rgba(255,255,255,0.12)', color: '#fff', borderColor: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}
+                            onClick={() => setIsPdfModalOpen(true)}
+                        >
+                            📄 Itinerario PDF
+                        </button>
                         <span className="td-float-price">{tour.price}</span>
                         <a href={waLink} className="td-float-btn" target="_blank" rel="noopener noreferrer">
-                            <WhatsAppIcon /> Reservar
+                            <WhatsAppIcon /> {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : 'Reservar'}
                         </a>
                     </div>
                 </div>
             </div>
+
+            {/* Download Itinerary PDF Popup Modal */}
+            <DownloadItineraryModal
+                isOpen={isPdfModalOpen}
+                onClose={() => setIsPdfModalOpen(false)}
+                tour={tour}
+            />
         </>
     )
 }

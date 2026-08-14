@@ -417,7 +417,10 @@ const TOURS = {
         tagline: 'Vive Japón en una de sus mejores temporadas: clima templado, cielos despejados y paisajes espectaculares.',
         overviewText: 'Viajar a Japón en octubre es descubrir el país en una de sus mejores temporadas del año: clima templado, cielos despejados y paisajes que comienzan a transformarse con los tonos del otoño. Este viaje combina lo mejor de Japón: ciudades vibrantes, templos y barrios históricos llenos de tradición, paisajes naturales y experiencias que conectan con la esencia cultural del país. Sumamos días de diversión en Universal Studios Japan y Disney Tokio.',
         hospedaje: '4 noches en Shin Osaka · 4 noches en Tokyo',
-        anticipoText: 'Anticipo: $19,490 · 7 mensualidades de $18,000',
+        anticipoText: 'Anticipo de $18,490 MXN + Mensualidades',
+        anticipoDisplay: '$18,490 MXN',
+        anticipoNum: 18490,
+        pdfUrl: '/pdf/itinerario-japon-octubre-2026.pdf',
         dates: [
             { range: '2 – 13 de octubre', status: 'available', label: 'Disponible' },
         ],
@@ -426,7 +429,7 @@ const TOURS = {
         cities: '5 ciudades',
         groupSize: '20 personas máx.',
         spotsLeft: 10,
-        price: '$119,490 MXN',
+        price: '$72,490 MXN',
         priceMXN: null,
         priceNote: 'por persona · base doble',
         badge: '🍁 Trilogía Otoño',
@@ -465,7 +468,7 @@ const TOURS = {
             },
         ],
         includes: [
-            'Vuelo redondo desde CDMX', '10 noches de hospedaje con desayuno buffet',
+            '10 noches de hospedaje con desayuno buffet',
             'Todos los tours con entradas y transportación', 'Entrada Universal Studios Japan',
             'Entrada a un parque Disney (Disneyland o DisneySea)',
             'JR Pass 7 días (tren bala)', 'Guía y atención en español',
@@ -476,8 +479,8 @@ const TOURS = {
             { q: '¿Cómo es el clima en octubre?', a: 'Octubre en Japón es posiblemente la mejor época: templado (15-22°C), poca lluvia y cielos despejados.' },
             { q: '¿Puedo pagar en cuotas?', a: 'Sí. Apartá tu lugar con un anticipo y pagá el resto en cuotas sin interés.' },
         ],
-        seoTitle: 'Japón Octubre 2026 — Tour $119,490 MXN | RutaXAsia',
-        seoDescription: 'Tour Japón octubre 2026. 12 días: Tokyo, Hakone, Kyoto, Nara, Osaka. $119,490 MXN. RutaXAsia México.',
+        seoTitle: 'Japón Octubre 2026 — Tour $72,490 MXN | RutaXAsia',
+        seoDescription: 'Tour Japón octubre 2026. 12 días: Tokyo, Hakone, Kyoto, Nara, Osaka. $72,490 MXN (Anticipo de $18,490 MXN + Mensualidades). RutaXAsia México.',
     },
 
     /* ============ 7. JAPÓN COREA OCTUBRE ============ */

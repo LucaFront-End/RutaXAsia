@@ -127,7 +127,7 @@ const TRIPS = [
             { title: 'Ciervos de Nara', img: '/images/tours/nara-ciervos.jpg' },
             { title: 'Universal Studios Japan', img: '/images/tours/usj.jpg' },
         ],
-        includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass incluido', 'Guía hispanohablante'],
+        includes: ['Hospedaje incluido', 'JR Pass incluido', 'USJ & Disney incluidos', 'Guía hispanohablante'],
     },
     {
         id: 'japon-corea-2026',
