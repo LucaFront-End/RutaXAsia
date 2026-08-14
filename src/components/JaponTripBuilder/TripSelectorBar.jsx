@@ -22,7 +22,7 @@ const MONTHS_OPTIONS = [
     { label: 'Noviembre 2026', key: '2026-11' },
 ]
 
-export default function TripSelectorBar({ selectorData, onChange, variant = 'bar', selectedNights = 6 }) {
+export default function TripSelectorBar({ selectorData, onChange, variant = 'bar', selectedNights = 6, isFixedDates = false, fixedDatesText = '' }) {
     const { tripSearch, updateTripSearch } = useTripSearch()
     const navigate = useNavigate()
 
@@ -114,6 +114,9 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
     }
 
     const formattedDatesSummary = () => {
+        if (isFixedDates) {
+            return fixedDatesText || '📌 Fechas fijas del grupo'
+        }
         if (currentData.dateMode === 'month') {
             return currentData.selectedMonth || 'Octubre 2026'
         }
@@ -223,8 +226,42 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                             </div>
                         )}
 
-                        {/* ================= DATES POPOVER ================= */}
-                        {openModal === 'dates' && (
+                        {/* ================= DATES POPOVER (FIXED DATES MODE) ================= */}
+                        {openModal === 'dates' && isFixedDates && (
+                            <div className="dates-popover-content" style={{ textAlign: 'center', padding: '20px 14px' }}>
+                                <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>📌</div>
+                                <h4 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--color-dark)', marginBottom: '8px' }}>
+                                    Fechas Grupales Establecidas
+                                </h4>
+                                <p style={{ fontSize: '0.88rem', color: '#555', lineHeight: '1.5', marginBottom: '18px' }}>
+                                    {fixedDatesText ? `Las fechas fijas para este viaje en grupo son: ${fixedDatesText}.` : 'Este paquete cuenta con fechas de salida fijas para el grupo.'} Si deseas personalizar tus fechas de salida libremente, puedes armar tu viaje en la modalidad <strong>Japón Libre</strong>.
+                                </p>
+                                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        style={{ fontSize: '0.85rem', padding: '8px 18px', borderRadius: '100px' }}
+                                        onClick={() => {
+                                            setOpenModal(null)
+                                            navigate('/viajes/japon')
+                                        }}
+                                    >
+                                        🌿 Ir a Japón Libre
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline"
+                                        style={{ fontSize: '0.85rem', padding: '8px 18px', borderRadius: '100px' }}
+                                        onClick={() => setOpenModal(null)}
+                                    >
+                                        Entendido
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ================= DATES POPOVER (CUSTOM DATES MODE) ================= */}
+                        {openModal === 'dates' && !isFixedDates && (
                             <div className="dates-popover-content">
                                 {/* Header Tabs */}
                                 <div className="dates-tab-header">

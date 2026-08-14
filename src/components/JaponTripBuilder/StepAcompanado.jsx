@@ -160,7 +160,12 @@ export default function StepAcompanado({ season, temporadaKey }) {
             <section className="step3-section">
                 <div className="container">
                     {/* Top Date & Passenger Selector */}
-                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} />
+                    <TripSelectorBar
+                        selectorData={selectorData}
+                        onChange={setSelectorData}
+                        isFixedDates={true}
+                        fixedDatesText={season?.key === 'momiji' ? '15 Oct — 28 Oct 2026 (Salida Grupal)' : 'Marzo — Abril (Salidas Grupales)'}
+                    />
 
                     <div className="libre-layout">
                         <div>
