@@ -287,13 +287,16 @@ export default function ToursIndividualesPage() {
                                                         }
                                                     }}
                                                 >
-                                                    <span className="tours-indiv-chip-icon">📅</span>
-                                                    <span className="tours-indiv-chip-text">
-                                                        {formatDateLabel(currentDate)}
-                                                    </span>
+                                                    <span className="tours-indiv-date-chip-icon">📅</span>
+                                                    <div className="tours-indiv-date-chip-info">
+                                                        <span className="tours-indiv-date-chip-label">Fecha del Tour</span>
+                                                        <span className="tours-indiv-date-chip-value">
+                                                            {formatDateLabel(currentDate)}
+                                                        </span>
+                                                    </div>
                                                     <input
                                                         type="date"
-                                                        className="tours-indiv-hidden-date"
+                                                        className="tours-indiv-date-chip-native"
                                                         value={currentDate}
                                                         min={new Date().toISOString().split('T')[0]}
                                                         onClick={(e) => e.stopPropagation()}
