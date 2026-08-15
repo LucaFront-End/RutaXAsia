@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import {
-    PRECIOS,
     COMPLEMENTOS,
     EXP_HEROES,
 } from '../../data/japonData'
@@ -15,13 +14,18 @@ import { useTripSearch } from '../../context/TripContext'
 
 /**
  * StepGuiado — Step 3 for "Esencial" (Guiado) experience.
- * Features: TripSelectorBar (Dates & Passengers), selector for 6 or 9 included experiences, FloatingTicket, Wix CMS experiences.
+ * Features:
+ * - 4 Pass Options (Express 8d, Clásico 10d, Explorador 12d, Grand Tour 14d) loaded from Wix CMS
+ * - Exact date calculation with dual calendar
+ * - Free experience limit (6 or 8) + selectable extra tours up to pass limit
+ * - Auto-trim selected tours when switching to a lower pass
+ * - FloatingTicket & CheckoutModal
  */
 export default function StepGuiado({ season, temporadaKey }) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
+    const [selectedDuration, setSelectedDuration] = useState(0) // 0: Express, 1: Clásico, 2: Explorador, 3: Grand Tour
     const [selectedExps, setSelectedExps] = useState([])
     const [selectedComps, setSelectedComps] = useState([])
-    const [freeExpLimit, setFreeExpLimit] = useState(6) // 6 u 8 incluidas desde CMS
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [cmsPackages, setCmsPackages] = useState([])
 
@@ -34,34 +38,86 @@ export default function StepGuiado({ season, temporadaKey }) {
                 (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
             )
             if (isMounted && filtered.length > 0) {
-                const mapped = filtered.map(p => ({
-                    days: p.diasYNochesCompletos || `${p.dias} ${p.noches}`,
-                    price: p.precioText,
-                    priceNum: p.precioNum,
-                    name: p.tituloComercial,
-                    freeTours: p.tourGratisQueIncluira || 6,
-                    limiteDeTours: p.limiteDeTours || (p.tourGratisQueIncluira ? p.tourGratisQueIncluira + 2 : 8)
-                }))
+                const mapped = filtered.map(p => {
+                    const daysMatch = (p.dias || '').match(/\d+/)
+                    const nightsMatch = (p.noches || '').match(/\d+/)
+                    const daysNum = daysMatch ? parseInt(daysMatch[0], 10) : (p.tituloComercial.includes('EXPRESS') ? 8 : p.tituloComercial.includes('CLÁSICO') ? 10 : p.tituloComercial.includes('EXPLORADOR') ? 12 : 14)
+                    const nightsNum = nightsMatch ? parseInt(nightsMatch[0], 10) : (daysNum - 2)
+
+                    return {
+                        id: p.id,
+                        name: p.tituloComercial || `Pase ${daysNum} Días`,
+                        days: p.diasYNochesCompletos || `${daysNum} días ${nightsNum} noches`,
+                        daysNum: daysNum,
+                        nightsNum: nightsNum,
+                        price: p.precioText || `$${(p.precioNum || 0).toLocaleString('es-MX')} MXN`,
+                        priceNum: p.precioNum,
+                        freeTours: p.tourGratisQueIncluira || (daysNum === 14 ? 8 : 6),
+                        limiteDeTours: p.limiteDeTours || (daysNum === 8 ? 6 : daysNum === 10 ? 8 : daysNum === 12 ? 10 : 12),
+                    }
+                })
+                // Sort ascending by daysNum
+                mapped.sort((a, b) => a.daysNum - b.daysNum)
                 setCmsPackages(mapped)
-                if (mapped[0]?.freeTours) {
-                    setFreeExpLimit(mapped[0].freeTours)
-                }
             }
         }
         loadCmsPrices()
         return () => { isMounted = false }
     }, [season?.name, temporadaKey])
 
+    const defaultPackages = [
+        { name: 'PASE EXPRESS', days: '8 días 6 noches', daysNum: 8, nightsNum: 6, priceNum: 43490, price: '$43,490.00 MXN', freeTours: 6, limiteDeTours: 6 },
+        { name: 'PASE CLÁSICO', days: '10 días 8 noches', daysNum: 10, nightsNum: 8, priceNum: 49490, price: '$49,490.00 MXN', freeTours: 6, limiteDeTours: 8 },
+        { name: 'PASE EXPLORADOR', days: '12 días 10 noches', daysNum: 12, nightsNum: 10, priceNum: 58490, price: '$58,490.00 MXN', freeTours: 6, limiteDeTours: 10 },
+        { name: 'PASE GRAND TOUR', days: '14 días 12 noches', daysNum: 14, nightsNum: 12, priceNum: 64790, price: '$64,790.00 MXN', freeTours: 8, limiteDeTours: 12 },
+    ]
+
+    const packages = cmsPackages.length > 0 ? cmsPackages : defaultPackages
+    const activePkg = packages[selectedDuration] || packages[0]
+    const freeExpLimit = activePkg.freeTours || (activePkg.daysNum === 14 ? 8 : 6)
+    const currentTourLimit = activePkg.limiteDeTours || (activePkg.daysNum === 8 ? 6 : activePkg.daysNum === 10 ? 8 : activePkg.daysNum === 12 ? 10 : 12)
+    const currentDays = activePkg.daysNum || 8
+    const currentNights = activePkg.nightsNum || 6
+    const basePrice = activePkg.priceNum || 43490
+
+    const passBadges = [
+        '✨ Más Popular',
+        '⭐ Recomendado',
+        '⛩️ Completo',
+        '👑 Máxima Experiencia',
+    ]
+
     const [showUpgradeModal, setShowUpgradeModal] = useState(false)
     const [pendingTour, setPendingTour] = useState(null)
 
-    const hero = EXP_HEROES.guiado
-    const staticPricing = PRECIOS[temporadaKey]?.libre
-    const packages = cmsPackages.length > 0 ? cmsPackages : (staticPricing?.packages || [])
-    const selectedPkg = packages[1] || packages[0] || { days: '10 días 8 noches', priceNum: 47890 }
-    const basePrice = selectedPkg?.priceNum || 47890
+    // Auto-trim experiences if switching to a pass with a lower limit
+    useEffect(() => {
+        if (selectedExps.length > currentTourLimit) {
+            setSelectedExps(prev => prev.slice(0, currentTourLimit))
+        }
+    }, [currentTourLimit])
 
-    const currentTourLimit = selectedPkg?.limiteDeTours || (freeExpLimit + 2)
+    // Auto-calculate end date from start date + (currentDays - 1) days (exact calendar coverage)
+    useEffect(() => {
+        if (selectorData.startDate) {
+            const [y, m, d] = selectorData.startDate.split('-').map(Number)
+            if (y && m && d) {
+                const dt = new Date(y, m - 1, d)
+                dt.setDate(dt.getDate() + (currentDays - 1))
+                const endY = dt.getFullYear()
+                const endM = String(dt.getMonth() + 1).padStart(2, '0')
+                const endD = String(dt.getDate()).padStart(2, '0')
+                const calcEndDate = `${endY}-${endM}-${endD}`
+
+                if (selectorData.endDate !== calcEndDate) {
+                    setSelectorData(prev => ({
+                        ...prev,
+                        endDate: calcEndDate
+                    }))
+                }
+            }
+        }
+    }, [selectorData.startDate, currentDays, selectedDuration])
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
@@ -83,14 +139,15 @@ export default function StepGuiado({ season, temporadaKey }) {
         }
     }
 
+    const hero = EXP_HEROES.guiado
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
     const includedExpsList = selectedExps.slice(0, freeExpLimit).map(e => e.name)
     const extraItems = selectedExps.slice(freeExpLimit)
     const extraTotal = extraItems.reduce((sum, item) => sum + (item.price || 0), 0)
 
-    const adults = selectorData.adults
-    const children = selectorData.children
+    const adults = selectorData.adults || 2
+    const children = selectorData.children || 0
     const passengersCount = adults + children
     const pricePerPerson = basePrice + extraTotal
     const totalPrice = pricePerPerson * passengersCount
@@ -140,34 +197,70 @@ export default function StepGuiado({ season, temporadaKey }) {
             {/* Experience Selector + Floating Ticket */}
             <section className="step3-section">
                 <div className="container">
-                    {/* Top Date & Passenger Selector */}
-                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} />
-
                     <div className="libre-layout">
                         <div>
-                            {/* Option to select 6 or 9 included experiences */}
-                            <div style={{ background: '#f8f9fa', padding: '20px 24px', borderRadius: '20px', marginBottom: '30px', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-                                <div>
-                                    <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>Modalidad de Experiencias Incluidas</h4>
-                                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#666' }}>Elige cuántas experiencias gratuitas quieres incluir en tu paquete Esencial:</p>
+                            {/* Paso 1: Elige tu Pase de Viaje */}
+                            <div style={{ marginBottom: 32 }}>
+                                <div className="step3-section-title">🎋 1. Elige tu Pase de Viaje Esencial</div>
+                                <div className="libre-duration-grid">
+                                    {packages.slice(0, 4).map((pkg, i) => (
+                                        <div
+                                            key={i}
+                                            className={`libre-duration-card${selectedDuration === i ? ' libre-duration-card--selected' : ''}`}
+                                            onClick={() => setSelectedDuration(i)}
+                                        >
+                                            <span className="libre-duration-card-badge">
+                                                {pkg.freeTours ? `🎁 ${pkg.freeTours} Tours Gratis` : (passBadges[i] || 'Disponible')}
+                                            </span>
+                                            <div className="libre-duration-check">✓</div>
+                                            <span className="libre-duration-pass-name">{pkg.name}</span>
+                                            <div className="libre-duration-days">{pkg.daysNum} días</div>
+                                            <div className="libre-duration-nights">{pkg.nightsNum} noches</div>
+                                            <div className="libre-duration-price">{pkg.price}</div>
+                                            <span className="libre-duration-per">MXN / persona</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <button
-                                        type="button"
-                                        className={`btn ${freeExpLimit === 6 ? 'btn-primary' : 'btn-outline'}`}
-                                        onClick={() => setFreeExpLimit(6)}
-                                        style={{ padding: '8px 18px', borderRadius: '100px', fontSize: '0.88rem', fontWeight: 700 }}
-                                    >
-                                        6 Incluidas gratis
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`btn ${freeExpLimit === 9 ? 'btn-primary' : 'btn-outline'}`}
-                                        onClick={() => setFreeExpLimit(9)}
-                                        style={{ padding: '8px 18px', borderRadius: '100px', fontSize: '0.88rem', fontWeight: 700 }}
-                                    >
-                                        9 Incluidas gratis
-                                    </button>
+                            </div>
+
+                            {/* Paso 2: Selecciona Fecha de Inicio y Pasajeros */}
+                            <div style={{ marginBottom: 24 }}>
+                                <div className="step3-section-title">📅 2. Selecciona Fecha de Inicio y Pasajeros</div>
+                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedDays={currentDays} selectedNights={currentNights} />
+                            </div>
+
+                            {/* Dynamic Calculated Summary Banner */}
+                            <div style={{ marginBottom: 40 }}>
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)',
+                                    color: '#fff',
+                                    padding: '24px 28px',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 10px 25px rgba(225, 29, 72, 0.25)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    flexWrap: 'wrap',
+                                    gap: '16px'
+                                }}>
+                                    <div>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.9 }}>
+                                            ✨ {activePkg.name} ({activePkg.days})
+                                        </span>
+                                        <h3 style={{ margin: '4px 0 0', fontSize: '1.4rem', fontFamily: 'var(--font-heading)', color: '#fff' }}>
+                                            🗓️ Fechas: {selectorData.startDate || 'Sin seleccionar'} al {selectorData.endDate || '...'}
+                                        </h3>
+                                        <p style={{ margin: '4px 0 0', fontSize: '0.88rem', opacity: 0.95 }}>
+                                            Duración: <strong>{currentDays} días / {currentNights} noches</strong> · <strong>{freeExpLimit} tours gratis incluidos</strong> (hasta {currentTourLimit} tours seleccionables)
+                                        </p>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.9 }}>Tarifa base</span>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff' }}>
+                                            {activePkg.price}
+                                        </div>
+                                        <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>MXN / persona</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -177,7 +270,7 @@ export default function StepGuiado({ season, temporadaKey }) {
                                 onToggleExperience={(tourId, tourTitle, tourPriceNum) => {
                                     toggleExperience({ id: tourId, title: tourTitle, priceNum: tourPriceNum })
                                 }}
-                                seasonName={season.name}
+                                seasonName={`${season.name} (${activePkg.name})`}
                                 tourLimit={currentTourLimit}
                             />
 
@@ -210,7 +303,7 @@ export default function StepGuiado({ season, temporadaKey }) {
                             temporadaKey={temporadaKey}
                             estilo="Esencial"
                             selectorData={selectorData}
-                            selectedPkg={selectedPkg}
+                            selectedPkg={{ name: activePkg.name, days: activePkg.days, priceNum: basePrice }}
                             includedExps={includedExpsList}
                             addedItems={extraItems}
                             selectedComps={selectedComps}
@@ -236,7 +329,7 @@ export default function StepGuiado({ season, temporadaKey }) {
                         </h3>
                         
                         <p style={{ fontSize: '0.95rem', color: '#555', marginBottom: '24px', lineHeight: '1.5' }}>
-                            ¿Deseas ampliar tus días en Japón para agregar más tours a tu viaje? Puedes seleccionar un paquete con mayor duración:
+                            Tu <strong>{activePkg.name}</strong> incluye {freeExpLimit} tours gratis y permite hasta {currentTourLimit} tours en total. ¿Deseas ampliar tus días en Japón para agregar más tours a tu viaje? Puedes seleccionar un paquete con mayor duración arriba.
                         </p>
 
                         <button
@@ -258,6 +351,7 @@ export default function StepGuiado({ season, temporadaKey }) {
                 estilo="Esencial"
                 totalPrice={totalPrice}
                 desglose={
+                    `Pase: ${activePkg.name} (${activePkg.days}). ` +
                     `Pasajeros: ${adults} Adultos, ${children} Menores. ` +
                     `Fechas: ${selectorData.dateMode === 'month' ? selectorData.selectedMonth : `${selectorData.startDate} a ${selectorData.endDate}`}. ` +
                     `Incluidas (${freeExpLimit} gratis): ${includedExpsList.join(', ') || 'Ninguna'}. ` +

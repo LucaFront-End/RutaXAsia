@@ -70,6 +70,13 @@ export default function StepLibre({ season, temporadaKey }) {
     
     const currentTourLimit = pkgFromList.limiteDeTours || (selectedDuration === 0 ? 6 : selectedDuration === 1 ? 8 : selectedDuration === 2 ? 10 : 12)
 
+    // Auto-trim experiences if switching to a pass with a lower limit
+    useEffect(() => {
+        if (addedExperiences.length > currentTourLimit) {
+            setAddedExperiences(prev => prev.slice(0, currentTourLimit))
+        }
+    }, [currentTourLimit])
+
     const toggleExperience = (tourObj) => {
         const exists = addedExperiences.some(item => item.id === tourObj.id)
         if (exists) {
@@ -84,25 +91,26 @@ export default function StepLibre({ season, temporadaKey }) {
         }
     }
 
-    // Helper to parse nights count from package string (e.g. "8 días 6 noches" -> 6)
-    const getNightsFromPkg = (pkg, index) => {
+    // Helper to parse days and nights count from package string (e.g. "8 días 6 noches" -> 8 days, 6 nights)
+    const getDaysCountFromPkg = (pkg, index) => {
         if (pkg && pkg.days) {
-            const match = pkg.days.match(/(\d+)\s*noches/i)
+            const match = pkg.days.match(/(\d+)\s*días/i)
             if (match) return parseInt(match[1], 10)
         }
-        const fallbackNights = [6, 8, 10, 12]
-        return fallbackNights[index] || 6
+        const fallbackDays = [8, 10, 12, 14]
+        return fallbackDays[index] || 8
     }
 
-    const currentNights = getNightsFromPkg(pkgFromList, selectedDuration)
+    const currentDays = getDaysCountFromPkg(pkgFromList, selectedDuration)
+    const currentNights = currentDays - 2
 
-    // Auto-calculate end date from start date + selected pass nights
+    // Auto-calculate end date from start date + (currentDays - 1) days (exact calendar coverage)
     useEffect(() => {
         if (selectorData.startDate) {
             const [y, m, d] = selectorData.startDate.split('-').map(Number)
             if (y && m && d) {
                 const dt = new Date(y, m - 1, d)
-                dt.setDate(dt.getDate() + currentNights)
+                dt.setDate(dt.getDate() + (currentDays - 1))
                 const endY = dt.getFullYear()
                 const endM = String(dt.getMonth() + 1).padStart(2, '0')
                 const endD = String(dt.getDate()).padStart(2, '0')
@@ -116,7 +124,7 @@ export default function StepLibre({ season, temporadaKey }) {
                 }
             }
         }
-    }, [selectorData.startDate, currentNights, selectedDuration])
+    }, [selectorData.startDate, currentDays, selectedDuration])
 
     const selectedPkg = {
         name: passNames[selectedDuration] || 'Pase Elegido',
@@ -208,7 +216,7 @@ export default function StepLibre({ season, temporadaKey }) {
                             {/* Paso 2: Selecciona Fecha de Inicio y Pasajeros */}
                             <div style={{ marginBottom: 24 }}>
                                 <div className="step3-section-title">📅 2. Selecciona Fecha de Inicio y Pasajeros</div>
-                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedNights={currentNights} />
+                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedDays={currentDays} selectedNights={currentNights} />
                             </div>
 
                             {/* Dynamic Calculated Summary Banner */}
@@ -233,7 +241,7 @@ export default function StepLibre({ season, temporadaKey }) {
                                             🗓️ Fechas: {selectorData.startDate || 'Sin seleccionar'} al {selectorData.endDate || '...'}
                                         </h3>
                                         <p style={{ margin: '4px 0 0', fontSize: '0.88rem', opacity: 0.95 }}>
-                                            Duración: <strong>{currentNights} noches</strong> (calculadas automáticamente desde la fecha de inicio)
+                                            Duración: <strong>{currentDays} días / {currentNights} noches</strong> (calculadas automáticamente desde la fecha de inicio)
                                         </p>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>

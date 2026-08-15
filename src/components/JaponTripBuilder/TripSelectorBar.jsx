@@ -22,12 +22,17 @@ const MONTHS_OPTIONS = [
     { label: 'Noviembre 2026', key: '2026-11' },
 ]
 
-export default function TripSelectorBar({ selectorData, onChange, variant = 'bar', selectedNights = 6, isFixedDates = false, fixedDatesText = '' }) {
+export default function TripSelectorBar({ selectorData, onChange, variant = 'bar', selectedDays = null, selectedNights = null, isFixedDates = false, fixedDatesText = '' }) {
     const { tripSearch, updateTripSearch } = useTripSearch()
     const navigate = useNavigate()
 
     const currentData = selectorData || tripSearch
     const handleUpdate = onChange || updateTripSearch
+
+    // Determine exact trip duration in days and nights
+    const daysCount = selectedDays || (selectedNights ? selectedNights + 2 : 8)
+    const nightsCount = selectedNights || (daysCount - 2)
+    const offsetDays = daysCount - 1
 
     const [openModal, setOpenModal] = useState(null) // 'destino' | 'dates' | 'passengers' | null
     const [dateTab, setDateTab] = useState(currentData.dateMode || 'exact') // 'exact' | 'month'
@@ -35,20 +40,20 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
     // Local temporary states before applying
     const [tempDestino, setTempDestino] = useState(currentData.destino || 'japon')
     const [tempStartDate, setTempStartDate] = useState(currentData.startDate || '2026-10-15')
-    const [tempEndDate, setTempEndDate] = useState(currentData.endDate || '2026-10-21')
+    const [tempEndDate, setTempEndDate] = useState(currentData.endDate || '2026-10-22')
     const [tempMonth, setTempMonth] = useState(currentData.selectedMonth || 'Octubre 2026')
     const [tempAdults, setTempAdults] = useState(currentData.adults || 2)
     const [tempChildren, setTempChildren] = useState(currentData.children || 0)
 
     const modalRef = useRef(null)
 
-    // Calculate end date based on start date and selectedNights
-    const getCalculatedEndDate = (startDateStr, nights = selectedNights) => {
+    // Calculate end date based on start date and exact daysCount
+    const getCalculatedEndDate = (startDateStr, days = daysCount) => {
         if (!startDateStr) return ''
         const [y, m, d] = startDateStr.split('-').map(Number)
         if (!y || !m || !d) return ''
         const date = new Date(y, m - 1, d)
-        date.setDate(date.getDate() + nights)
+        date.setDate(date.getDate() + (days - 1))
         const yyyy = date.getFullYear()
         const mm = String(date.getMonth() + 1).padStart(2, '0')
         const dd = String(date.getDate()).padStart(2, '0')
@@ -57,21 +62,21 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
 
     const handleSelectStartDate = (startDateStr) => {
         setTempStartDate(startDateStr)
-        const computedEnd = getCalculatedEndDate(startDateStr, selectedNights)
+        const computedEnd = getCalculatedEndDate(startDateStr, daysCount)
         setTempEndDate(computedEnd)
     }
 
     useEffect(() => {
         if (openModal) {
             setTempStartDate(currentData.startDate || '2026-10-15')
-            const initialEnd = getCalculatedEndDate(currentData.startDate || '2026-10-15', selectedNights)
+            const initialEnd = getCalculatedEndDate(currentData.startDate || '2026-10-15', daysCount)
             setTempEndDate(initialEnd)
             setTempMonth(currentData.selectedMonth || 'Octubre 2026')
             setTempAdults(currentData.adults || 2)
             setTempChildren(currentData.children || 0)
             setDateTab(currentData.dateMode || 'exact')
         }
-    }, [openModal, selectedNights])
+    }, [openModal, daysCount])
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -291,7 +296,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                                                     onChange={e => handleSelectStartDate(e.target.value)}
                                                 />
                                                 <p style={{ fontSize: '0.78rem', color: '#059669', margin: '4px 0 0', fontWeight: 600 }}>
-                                                    ✨ Fecha de regreso calculada automáticamente (+{selectedNights} noches): <strong>{tempEndDate}</strong>
+                                                    ✨ Fecha de regreso calculada automáticamente ({daysCount} días / {nightsCount} noches): <strong>{tempEndDate}</strong>
                                                 </p>
                                             </div>
                                         </div>
