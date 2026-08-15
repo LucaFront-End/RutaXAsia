@@ -55,13 +55,19 @@ export default function StepGuiado({ season, temporadaKey }) {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false)
     const [pendingTour, setPendingTour] = useState(null)
 
+    const hero = EXP_HEROES.guiado
+    const staticPricing = PRECIOS[temporadaKey]?.libre
+    const packages = cmsPackages.length > 0 ? cmsPackages : (staticPricing?.packages || [])
+    const selectedPkg = packages[1] || packages[0] || { days: '10 días 8 noches', priceNum: 47890 }
+    const basePrice = selectedPkg?.priceNum || 47890
+
+    const currentTourLimit = selectedPkg?.limiteDeTours || (freeExpLimit + 2)
+
     const toggleComp = (title) => {
         setSelectedComps(prev =>
             prev.includes(title) ? prev.filter(x => x !== title) : [...prev, title]
         )
     }
-
-    const currentTourLimit = selectedPkg?.limiteDeTours || (freeExpLimit + 2)
 
     const toggleExperience = (tourObj) => {
         const exists = selectedExps.some(item => item.id === tourObj.id)
@@ -76,12 +82,6 @@ export default function StepGuiado({ season, temporadaKey }) {
             setSelectedExps(prev => [...prev, { id: tourObj.id, name: tourObj.title || tourObj.name, price: tourObj.priceNum || tourObj.price || 0 }])
         }
     }
-
-    const hero = EXP_HEROES.guiado
-    const staticPricing = PRECIOS[temporadaKey]?.libre
-    const packages = cmsPackages.length > 0 ? cmsPackages : (staticPricing?.packages || [])
-    const selectedPkg = packages[1] || packages[0] || { days: '10 días 8 noches', priceNum: 47890 }
-    const basePrice = selectedPkg?.priceNum || 47890
 
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
