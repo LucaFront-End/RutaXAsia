@@ -16,13 +16,15 @@ export default function ToursIndividualesPage() {
     const [selectedCategory, setSelectedCategory] = useState('Todas')
     const [sortBy, setSortBy] = useState('price-asc') // 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc'
 
-    // Selected Individual Tours Cart: [{ id, name, price, date, quantity, passengerNames }]
+    // Selected Individual Tours Cart: [{ id, name, price, date, quantity, passengerNames, assistanceType }]
     const [selectedTours, setSelectedTours] = useState([])
     // Pending date pickers for tours: { [tourId]: '2026-10-18' }
     const [tourDates, setTourDates] = useState({})
 
-    // Modal state for configuring tour before adding
+    // Multi-Step Modal state for configuring tour
     const [configuringTour, setConfiguringTour] = useState(null)
+    const [modalStep, setModalStep] = useState(1) // 1: Asistencia (Locataria vs Anfitrión), 2: Fecha, Cantidad y Nombres
+    const [modalAssistance, setModalAssistance] = useState('locataria') // 'locataria' | 'anfitrion'
     const [modalDate, setModalDate] = useState('')
     const [modalQuantity, setModalQuantity] = useState(1)
     const [modalNames, setModalNames] = useState([''])
@@ -57,7 +59,7 @@ export default function ToursIndividualesPage() {
     const openTourModal = (tour) => {
         const existing = selectedTours.find(t => t.id === tour.id)
         if (existing) {
-            // Already added -> remove or allow re-configuring
+            // Already added -> remove
             setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
             return
         }
@@ -65,6 +67,8 @@ export default function ToursIndividualesPage() {
         const defaultDate = tourDates[tour.id] || new Date().toISOString().split('T')[0]
         const defaultQty = selectorData?.adults || 1
         setConfiguringTour(tour)
+        setModalStep(1)
+        setModalAssistance('locataria')
         setModalDate(defaultDate)
         setModalQuantity(defaultQty)
         setModalNames(Array(defaultQty).fill(''))
@@ -73,15 +77,18 @@ export default function ToursIndividualesPage() {
     const saveConfiguredTour = () => {
         if (!configuringTour) return
         const formattedNames = modalNames.map(n => n.trim()).filter(Boolean)
+        const assistanceLabel = modalAssistance === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'
 
         setSelectedTours(prev => {
             const filtered = prev.filter(t => t.id !== configuringTour.id)
             return [...filtered, {
                 id: configuringTour.id,
-                name: configuringTour.title,
+                name: `${configuringTour.title} (${assistanceLabel})`,
+                rawTitle: configuringTour.title,
                 price: configuringTour.priceNum || 0,
                 date: modalDate,
                 quantity: modalQuantity,
+                assistanceType: assistanceLabel,
                 passengerNames: formattedNames
             }]
         })
@@ -218,6 +225,7 @@ export default function ToursIndividualesPage() {
                             basePrice={0}
                             extraTotal={extraTotal}
                             onOpenCheckout={() => setIsCheckoutOpen(true)}
+                            onRemoveTour={(tourIdOrName) => setSelectedTours(prev => prev.filter(t => t.id !== tourIdOrName && t.name !== tourIdOrName && `${t.name} (📅 ${formatDateLabel(t.date)})` !== tourIdOrName))}
                         />
                     </div>
 
@@ -279,20 +287,17 @@ export default function ToursIndividualesPage() {
                                                         }
                                                     }}
                                                 >
-                                                    <span className="tours-indiv-date-chip-icon">📅</span>
-                                                    <div className="tours-indiv-date-chip-info">
-                                                        <span className="tours-indiv-date-chip-label">Fecha del Tour</span>
-                                                        <span className="tours-indiv-date-chip-value">{formatDateLabel(currentDate)} ▾</span>
-                                                    </div>
+                                                    <span className="tours-indiv-chip-icon">📅</span>
+                                                    <span className="tours-indiv-chip-text">
+                                                        {formatDateLabel(currentDate)}
+                                                    </span>
                                                     <input
                                                         type="date"
-                                                        className="tours-indiv-date-chip-native"
+                                                        className="tours-indiv-hidden-date"
                                                         value={currentDate}
                                                         min={new Date().toISOString().split('T')[0]}
-                                                        onChange={(e) => {
-                                                            e.stopPropagation()
-                                                            handleDateChange(tour.id, e.target.value)
-                                                        }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        onChange={(e) => handleDateChange(tour.id, e.target.value)}
                                                     />
                                                 </div>
 
@@ -318,13 +323,14 @@ export default function ToursIndividualesPage() {
                 </div>
             </div>
 
-            {/* Modal for configuring Tour date, quantity & passenger names */}
+            {/* Multi-Step Modal for Configuring Tour */}
             {configuringTour && (
                 <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 99999 }}>
-                    <div className="jtb-modal-card" style={{ maxWidth: '580px', padding: '32px 28px', textAlign: 'left' }}>
+                    <div className="jtb-modal-card" style={{ maxWidth: '600px', padding: '32px 28px', textAlign: 'left' }}>
                         <button className="jtb-modal-close" onClick={() => setConfiguringTour(null)}>&times;</button>
                         
-                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid #eee' }}>
+                        {/* Tour Header Summary */}
+                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #eee' }}>
                             <img
                                 src={configuringTour.image}
                                 alt={configuringTour.title}
@@ -333,107 +339,252 @@ export default function ToursIndividualesPage() {
                             />
                             <div>
                                 <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-primary)', letterSpacing: '0.05em' }}>
-                                    Configurar Reserva de Tour
+                                    Personalizar Experiencia
                                 </span>
-                                <h3 style={{ margin: '4px 0 0', fontSize: '1.2rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)' }}>
+                                <h3 style={{ margin: '4px 0 0', fontSize: '1.15rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)' }}>
                                     {configuringTour.title}
                                 </h3>
-                                <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '2px', fontWeight: '700' }}>
+                                <div style={{ fontSize: '0.88rem', color: '#666', marginTop: '2px', fontWeight: '700' }}>
                                     {configuringTour.priceText || formatPrice(configuringTour.priceNum)} MXN / persona
                                 </div>
                             </div>
                         </div>
 
-                        {/* Date and Quantity Selector */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
-                                    📅 Fecha del Tour:
-                                </label>
-                                <input
-                                    type="date"
-                                    value={modalDate}
-                                    min={new Date().toISOString().split('T')[0]}
-                                    onChange={(e) => setModalDate(e.target.value)}
-                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
-                                />
+                        {/* Step 1 vs Step 2 Navigation Pills */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            marginBottom: '20px',
+                            padding: '8px 12px',
+                            background: '#f8fafc',
+                            borderRadius: '100px',
+                            border: '1px solid #e2e8f0',
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: modalStep >= 1 ? 1 : 0.4 }}>
+                                <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: modalStep >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
+                                <span style={{ fontSize: '0.78rem', fontWeight: modalStep === 1 ? 800 : 600, color: modalStep === 1 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>Asistencia</span>
                             </div>
-
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
-                                    👥 Cantidad de Pasajeros:
-                                </label>
-                                <select
-                                    value={modalQuantity}
-                                    onChange={(e) => {
-                                        const newQty = parseInt(e.target.value, 10)
-                                        setModalQuantity(newQty)
-                                        setModalNames(prev => {
-                                            const copy = [...prev]
-                                            if (newQty > copy.length) {
-                                                while (copy.length < newQty) copy.push('')
-                                            } else {
-                                                copy.length = newQty
-                                            }
-                                            return copy
-                                        })
-                                    }}
-                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
-                                >
-                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                                        <option key={num} value={num}>{num} {num === 1 ? 'Persona' : 'Personas'}</option>
-                                    ))}
-                                </select>
+                            <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>→</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: modalStep >= 2 ? 1 : 0.4 }}>
+                                <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: modalStep >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
+                                <span style={{ fontSize: '0.78rem', fontWeight: modalStep === 2 ? 800 : 600, color: modalStep === 2 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>Fecha y Pasajeros</span>
                             </div>
                         </div>
 
-                        {/* Passenger Names Form */}
-                        <div style={{ marginBottom: '24px' }}>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '800', color: 'var(--color-dark)', marginBottom: '10px' }}>
-                                📋 Nombre(s) de la(s) persona(s) que asistirán:
-                            </label>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
-                                {modalNames.map((nameVal, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#666', width: '85px', flexShrink: 0 }}>
-                                            Persona {i + 1}:
-                                        </span>
+                        {/* ================= STEP 1: MODALIDAD DE ASISTENCIA ================= */}
+                        {modalStep === 1 && (
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: '800', color: 'var(--color-dark)', marginBottom: '12px' }}>
+                                    1. Elige tu modalidad de acompañamiento para este tour:
+                                </label>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '24px' }}>
+                                    {/* Card 1: Asistencia Locataria */}
+                                    <div
+                                        onClick={() => setModalAssistance('locataria')}
+                                        style={{
+                                            border: modalAssistance === 'locataria' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
+                                            background: modalAssistance === 'locataria' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                            borderRadius: '16px',
+                                            padding: '18px 16px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'space-between',
+                                            boxShadow: modalAssistance === 'locataria' ? '0 8px 20px rgba(225,29,72,0.12)' : 'none'
+                                        }}
+                                    >
+                                        <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                                <span style={{ fontSize: '1.8rem' }}>🏮</span>
+                                                <span style={{
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 800,
+                                                    padding: '3px 8px',
+                                                    borderRadius: '6px',
+                                                    background: modalAssistance === 'locataria' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
+                                                    color: modalAssistance === 'locataria' ? '#fff' : '#64748b'
+                                                }}>
+                                                    {modalAssistance === 'locataria' ? '✓ Seleccionado' : 'Elegir'}
+                                                </span>
+                                            </div>
+                                            <h4 style={{ margin: '0 0 6px', fontSize: '1rem', fontWeight: 800, color: 'var(--color-dark)' }}>
+                                                Asistencia Locataria
+                                            </h4>
+                                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b', lineHeight: 1.4 }}>
+                                                Orientación y soporte local en destino. Disfruta tu recorrido con la asistencia y recomendaciones de coordinadores locales en español.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Card 2: Anfitrión de Viaje */}
+                                    <div
+                                        onClick={() => setModalAssistance('anfitrion')}
+                                        style={{
+                                            border: modalAssistance === 'anfitrion' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
+                                            background: modalAssistance === 'anfitrion' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                            borderRadius: '16px',
+                                            padding: '18px 16px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'space-between',
+                                            boxShadow: modalAssistance === 'anfitrion' ? '0 8px 20px rgba(225,29,72,0.12)' : 'none'
+                                        }}
+                                    >
+                                        <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                                <span style={{ fontSize: '1.8rem' }}>👑</span>
+                                                <span style={{
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 800,
+                                                    padding: '3px 8px',
+                                                    borderRadius: '6px',
+                                                    background: modalAssistance === 'anfitrion' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
+                                                    color: modalAssistance === 'anfitrion' ? '#fff' : '#64748b'
+                                                }}>
+                                                    {modalAssistance === 'anfitrion' ? '✓ Seleccionado' : 'Elegir'}
+                                                </span>
+                                            </div>
+                                            <h4 style={{ margin: '0 0 6px', fontSize: '1rem', fontWeight: 800, color: 'var(--color-dark)' }}>
+                                                Anfitrión de Viaje
+                                            </h4>
+                                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b', lineHeight: 1.4 }}>
+                                                Acompañamiento cercano y personalizado durante todo el tour. Atención dedicada para una inmersión completa sin preocuparte por traslados ni logística.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    style={{ width: '100%', padding: '14px', borderRadius: '100px', fontSize: '0.95rem', fontWeight: 800 }}
+                                    onClick={() => setModalStep(2)}
+                                >
+                                    Continuar a Fecha y Pasajeros →
+                                </button>
+                            </div>
+                        )}
+
+                        {/* ================= STEP 2: FECHA, CANTIDAD Y ASISTENTES ================= */}
+                        {modalStep === 2 && (
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                    <label style={{ fontSize: '0.88rem', fontWeight: '800', color: 'var(--color-dark)', margin: 0 }}>
+                                        2. Configuración de Fecha y Pasajeros:
+                                    </label>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 750, color: 'var(--color-primary)', background: 'rgba(225, 29, 72, 0.08)', padding: '3px 10px', borderRadius: '100px' }}>
+                                        {modalAssistance === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria'}
+                                    </span>
+                                </div>
+
+                                {/* Date and Quantity Selector */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
+                                            📅 Fecha del Tour:
+                                        </label>
                                         <input
-                                            type="text"
-                                            placeholder={`Nombre completo del asistente ${i + 1}`}
-                                            value={nameVal}
+                                            type="date"
+                                            value={modalDate}
+                                            min={new Date().toISOString().split('T')[0]}
+                                            onChange={(e) => setModalDate(e.target.value)}
+                                            style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
+                                            👥 Cantidad de Pasajeros:
+                                        </label>
+                                        <select
+                                            value={modalQuantity}
                                             onChange={(e) => {
-                                                const val = e.target.value
+                                                const newQty = parseInt(e.target.value, 10)
+                                                setModalQuantity(newQty)
                                                 setModalNames(prev => {
                                                     const copy = [...prev]
-                                                    copy[i] = val
+                                                    if (newQty > copy.length) {
+                                                        while (copy.length < newQty) copy.push('')
+                                                    } else {
+                                                        copy.length = newQty
+                                                    }
                                                     return copy
                                                 })
                                             }}
-                                            style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.88rem' }}
-                                        />
+                                            style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
+                                        >
+                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                                                <option key={num} value={num}>{num} {num === 1 ? 'Persona' : 'Personas'}</option>
+                                            ))}
+                                        </select>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                </div>
 
-                        {/* Modal Footer Summary & CTA */}
-                        <div style={{ background: '#f8f9fa', padding: '16px 20px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                            <div>
-                                <span style={{ fontSize: '0.78rem', color: '#666', display: 'block' }}>Total por {modalQuantity} persona(s):</span>
-                                <strong style={{ fontSize: '1.25rem', color: 'var(--color-primary)' }}>
-                                    {formatPrice((configuringTour.priceNum || 0) * modalQuantity)} MXN
-                                </strong>
+                                {/* Passenger Names Form */}
+                                <div style={{ marginBottom: '20px' }}>
+                                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: 'var(--color-dark)', marginBottom: '8px' }}>
+                                        📋 Nombre(s) de la(s) persona(s) que asistirán:
+                                    </label>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
+                                        {modalNames.map((nameVal, i) => (
+                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#666', width: '80px', flexShrink: 0 }}>
+                                                    Persona {i + 1}:
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    placeholder={`Nombre completo del asistente ${i + 1}`}
+                                                    value={nameVal}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value
+                                                        setModalNames(prev => {
+                                                            const copy = [...prev]
+                                                            copy[i] = val
+                                                            return copy
+                                                        })
+                                                    }}
+                                                    style={{ flex: 1, padding: '9px 12px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.88rem' }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Modal Footer Summary & CTA */}
+                                <div style={{ background: '#f8f9fa', padding: '14px 18px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                    <div>
+                                        <span style={{ fontSize: '0.75rem', color: '#666', display: 'block' }}>Total por {modalQuantity} persona(s):</span>
+                                        <strong style={{ fontSize: '1.2rem', color: 'var(--color-primary)' }}>
+                                            {formatPrice((configuringTour.priceNum || 0) * modalQuantity)} MXN
+                                        </strong>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline"
+                                            style={{ padding: '8px 16px', borderRadius: '100px', fontSize: '0.85rem' }}
+                                            onClick={() => setModalStep(1)}
+                                        >
+                                            ← Volver
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            style={{ borderRadius: '100px', padding: '10px 22px', fontWeight: '800', fontSize: '0.88rem' }}
+                                            onClick={saveConfiguredTour}
+                                        >
+                                            ✓ Confirmar y Agregar
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <button
-                                type="button"
-                                className="btn btn-primary"
-                                style={{ borderRadius: '100px', padding: '10px 24px', fontWeight: '800', fontSize: '0.9rem' }}
-                                onClick={saveConfiguredTour}
-                            >
-                                ✓ Confirmar y Agregar
-                            </button>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}
