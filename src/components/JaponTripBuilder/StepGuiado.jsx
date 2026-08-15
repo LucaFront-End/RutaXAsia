@@ -175,12 +175,12 @@ export default function StepGuiado({ season, temporadaKey }) {
                     <div className="step3-section-title">✅ Tu viaje ya incluye</div>
                     <div className="jtb-pass-includes-grid">
                         {[
-                            { icon: '🏨', title: 'Hospedaje Seleccionado', desc: 'Estancia en habitaciones dobles en hoteles de alta valoración con desayunos incluidos.' },
-                            { icon: '🚄', title: 'Movilidad Completa', desc: 'Boletos de tren bala Shinkansen, tarjetas IC recargables y todos los traslados programados.' },
-                            { icon: '📋', title: 'Itinerario a Medida', desc: 'Organización experta con tiempos optimizados y guías detalladas.' },
-                            { icon: '🎌', title: `${freeExpLimit} Experiencias Incluidas`, desc: `Elige libremente ${freeExpLimit} experiencias de nuestro catálogo sin costo adicional.` },
-                            { icon: '📶', title: 'Conectividad eSIM', desc: 'Acceso a internet de alta velocidad ilimitado durante todo el viaje.' },
-                            { icon: '🗂️', title: 'Asistencia 24/7', desc: 'Soporte activo y asesoría para organizar tus actividades en los días libres.' },
+                            { icon: '🏨', title: 'Hospedaje y Desayuno Buffet', desc: 'Habitaciones dobles en hoteles APA de 3 y 4 estrellas con calidad premium y desayuno buffet incluido.' },
+                            { icon: '🚄', title: 'Transporte y Tren Bala Shinkansen', desc: 'Boletos de tren bala Shinkansen, tarjeta IC recargable y traslado del hotel al aeropuerto.' },
+                            { icon: '🎌', title: `${freeExpLimit} Actividades Incluidas con Guía`, desc: `Organiza tu itinerario con ${freeExpLimit} experiencias incluidas acompañadas por un guía experto.` },
+                            { icon: '📶', title: 'Wi-Fi Ilimitado (eSIM HolaFly)', desc: 'Conexión a internet de alta velocidad ilimitada durante todo tu recorrido en Japón.' },
+                            { icon: '👥', title: 'Bonus Extras y Asistencia Remota', desc: 'Asesoría experta y asistencia remota antes y durante tu viaje para organizar días libres y vuelos.' },
+                            { icon: '💳', title: 'Plan de Pagos Flexible', desc: 'Reserva con anticipo y liquida el saldo en cómodas mensualidades.' },
                         ].map((item, i) => (
                             <div className="jtb-pass-include-item" key={i}>
                                 <span className="jtb-pass-include-icon">{item.icon}</span>

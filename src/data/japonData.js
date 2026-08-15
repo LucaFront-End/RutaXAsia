@@ -251,7 +251,16 @@ export const PRECIOS = {
             note: 'Precios por persona en base a ocupación doble. Todos los impuestos incluidos. Los precios pueden variar según fechas y disponibilidad.',
             startingPrice: '$21,790',
         },
-        guiado: { startingPrice: 'Cotizar', packages: [] },
+        guiado: {
+            packages: [
+                { days: '8 días 6 noches', price: '$42,890', priceNum: 42890, freeTours: 6 },
+                { days: '10 días 8 noches', price: '$47,890', priceNum: 47890, freeTours: 6 },
+                { days: '12 días 10 noches', price: '$56,490', priceNum: 56490, freeTours: 6 },
+                { days: '14 días 12 noches', price: '$62,490', priceNum: 62490, freeTours: 6 },
+            ],
+            note: 'Precios por persona en base a ocupación doble. Todos los impuestos incluidos.',
+            startingPrice: '$42,890',
+        },
         acompanado: { startingPrice: 'Cotizar', packages: [] },
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
@@ -266,8 +275,20 @@ export const PRECIOS = {
             note: 'Precios por persona en base a ocupación doble durante temporada alta de Sakura. Todos los impuestos incluidos.',
             startingPrice: '$24,790',
         },
-        guiado: { startingPrice: 'Cotizar', packages: [] },
-        acompanado: { startingPrice: 'Cotizar', packages: [] },
+        guiado: {
+            packages: [
+                { days: '8 días 6 noches', price: '$43,490', priceNum: 43490, freeTours: 6 },
+                { days: '10 días 8 noches', price: '$49,490', priceNum: 49490, freeTours: 6 },
+                { days: '12 días 10 noches', price: '$58,490', priceNum: 58490, freeTours: 6 },
+                { days: '14 días 12 noches', price: '$64,790', priceNum: 64790, freeTours: 6 },
+            ],
+            note: 'Precios por persona en base a ocupación doble durante temporada Sakura 2027 (22 de marzo al 10 de abril de 2027). Todos los impuestos incluidos.',
+            startingPrice: '$43,490',
+        },
+        acompanado: { startingPrice: '$67,490', packages: [
+            { days: '12 días 10 noches', price: '$67,490', priceNum: 67490 },
+            { days: '14 días 12 noches', price: '$72,290', priceNum: 72290 },
+        ] },
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
     momiji: {
@@ -281,7 +302,16 @@ export const PRECIOS = {
             note: 'Precios por persona en base a ocupación doble durante temporada de otoño Momiji. Todos los impuestos incluidos.',
             startingPrice: '$22,490',
         },
-        guiado: { startingPrice: 'Cotizar', packages: [] },
+        guiado: {
+            packages: [
+                { days: '8 días 6 noches', price: '$43,490', priceNum: 43490, freeTours: 6 },
+                { days: '10 días 8 noches', price: '$49,490', priceNum: 49490, freeTours: 6 },
+                { days: '12 días 10 noches', price: '$58,490', priceNum: 58490, freeTours: 6 },
+                { days: '14 días 12 noches', price: '$64,790', priceNum: 64790, freeTours: 6 },
+            ],
+            note: 'Precios por persona en base a ocupación doble durante temporada de otoño Momiji. Todos los impuestos incluidos.',
+            startingPrice: '$43,490',
+        },
         acompanado: { startingPrice: 'Cotizar', packages: [] },
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
