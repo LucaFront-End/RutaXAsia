@@ -321,7 +321,13 @@ export default function TourDetail() {
                         </button>
                         <span className="td-float-price">{tour.price}</span>
                         <a href={waLink} className="td-float-btn" target="_blank" rel="noopener noreferrer">
-                            <WhatsAppIcon /> {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : 'Reservar'}
+                            <WhatsAppIcon />
+                            <span className="td-float-btn-text-desktop">
+                                {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : (tour.price ? `Reservar — ${tour.price}` : 'Reservar')}
+                            </span>
+                            <span className="td-float-btn-text-mobile">
+                                {tour.anticipoDisplay ? `Apartar ${tour.anticipoDisplay}` : 'Reservar'}
+                            </span>
                         </a>
                     </div>
                 </div>

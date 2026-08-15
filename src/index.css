@@ -4198,6 +4198,10 @@ a {
     height: 18px;
 }
 
+.td-float-btn-text-mobile {
+    display: none;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 900px) {
     .td-hero {
@@ -4628,14 +4632,16 @@ a {
         width: 100%;
     }
 
-    /* ---- FLOATING BAR + WHATSAPP: avoid overlap ---- */
-    .td-float--show~.whatsapp-float,
-    .td-float--show+.whatsapp-float {
-        bottom: 4.5rem;
+    /* ---- FLOATING BAR: Mobile optimization ---- */
+    .td-float-btn-text-desktop {
+        display: none;
+    }
+    .td-float-btn-text-mobile {
+        display: inline;
     }
 
     .td-float {
-        padding: 0.6rem 0;
+        padding: 0.55rem 0;
     }
 
     .td-float-pdf-btn {
@@ -4643,38 +4649,56 @@ a {
     }
 
     .td-float-inner {
-        gap: 0.75rem;
+        gap: 0.5rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .td-float-left {
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .td-float-left strong {
+        font-size: 0.8rem;
+        line-height: 1.15;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    .td-float-left span {
+        display: none;
     }
 
     .td-float-right {
-        gap: 0.6rem;
+        gap: 0.5rem;
         display: flex;
         align-items: center;
+        flex-shrink: 0;
     }
 
     .td-float-price {
-        font-size: 0.95rem;
+        font-size: 0.88rem;
+        font-weight: 800;
         white-space: nowrap;
     }
 
     .td-float-btn {
-        font-size: 0.8rem;
-        padding: 0.55rem 0.85rem;
+        font-size: 0.78rem;
+        padding: 0.5rem 0.8rem;
         white-space: nowrap;
         border-radius: 8px;
         flex-shrink: 0;
-    }
-
-    .td-float-left strong {
-        font-size: 0.82rem;
-        line-height: 1.2;
-    }
-
-    .td-float-left span {
-        font-size: 0.7rem;
+        gap: 0.35rem;
     }
 
     /* Tour sidebar stacks below content */
