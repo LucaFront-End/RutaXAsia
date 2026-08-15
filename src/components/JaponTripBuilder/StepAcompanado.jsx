@@ -151,27 +151,29 @@ export default function StepAcompanado({ season, temporadaKey }) {
 
     // Select dynamic itinerary from CMS or fallback to local data
     const filteredItinerario = useMemo(() => {
-        const seasonNameLower = (season?.name || 'Sakura').toLowerCase()
-        const passName = activePass.name || 'PASE EXPLORADOR'
+        const seasonNameLower = (season?.name || temporadaKey || 'sakura').toLowerCase()
+        const isGrandTour = selectedPassIndex === 1 || (activePass.name || '').toUpperCase().includes('GRAND') || activePass.daysNum === 14
+        const targetPass = isGrandTour ? 'PASE GRAND TOUR' : 'PASE EXPLORADOR'
 
-        if (cmsItinerarios.length > 0) {
+        if (cmsItinerarios && cmsItinerarios.length > 0) {
             const matched = cmsItinerarios.filter(it => {
-                const seasonMatch = it.temporada.toLowerCase() === seasonNameLower || it.temporada.toLowerCase() === temporadaKey.toLowerCase()
-                const passMatch = it.tipoDePase.toUpperCase().includes('GRAND')
-                    ? passName.toUpperCase().includes('GRAND')
-                    : !it.tipoDePase.toUpperCase().includes('GRAND')
+                const itSeason = (it.temporada || '').toLowerCase()
+                const itPass = (it.tipoDePase || '').toUpperCase().trim()
+
+                const seasonMatch = !itSeason || itSeason.includes('sakura') || itSeason.includes(seasonNameLower) || seasonNameLower.includes(itSeason)
+                const passMatch = itPass === targetPass || (isGrandTour ? itPass.includes('GRAND') : itPass.includes('EXPLORADOR'))
                 return seasonMatch && passMatch
             })
 
             if (matched.length > 0) {
-                return matched.sort((a, b) => a.day - b.day)
+                return [...matched].sort((a, b) => a.day - b.day)
             }
         }
 
         // Fallback to local files
         const fullItinerario = season?.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : season?.key === 'sakura' ? ITINERARIO_ACOMPANADO_SAKURA : ITINERARIO_ACOMPANADO
-        return fullItinerario.filter(item => item.day <= activePass.daysNum)
-    }, [cmsItinerarios, season?.name, season?.key, temporadaKey, activePass.name, activePass.daysNum])
+        return fullItinerario.filter(item => item.day <= (isGrandTour ? 14 : 12))
+    }, [cmsItinerarios, season?.name, season?.key, temporadaKey, selectedPassIndex, activePass.name, activePass.daysNum])
 
     const todoIncluido = season?.key === 'momiji' ? ACOMPANADO_TODO_INCLUIDO_MOMIJI : ACOMPANADO_TODO_INCLUIDO
 

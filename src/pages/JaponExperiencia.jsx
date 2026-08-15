@@ -63,7 +63,7 @@ export default function JaponExperiencia() {
             }}>
                 {experiencia === 'libre' && <StepLibre season={season} temporadaKey={temporada} />}
                 {experiencia === 'guiado' && <StepGuiado season={season} temporadaKey={temporada} />}
-                {experiencia === 'acompanado' && <StepAcompanado season={season} />}
+                {experiencia === 'acompanado' && <StepAcompanado season={season} temporadaKey={temporada} />}
                 {experiencia === 'signature' && <StepSignature season={season} />}
             </div>
 

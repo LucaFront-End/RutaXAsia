@@ -284,7 +284,7 @@ export default function JaponTripBuilder() {
                         <div id="jtb-step-3">
                             {selectedStyle === 'libre' && <StepLibre season={season} temporadaKey={selectedSeason} />}
                             {selectedStyle === 'guiado' && <StepGuiado season={season} temporadaKey={selectedSeason} />}
-                            {selectedStyle === 'acompanado' && <StepAcompanado season={season} />}
+                            {selectedStyle === 'acompanado' && <StepAcompanado season={season} temporadaKey={selectedSeason} />}
                             {selectedStyle === 'signature' && <StepSignature season={season} />}
 
                         </div>
