@@ -311,6 +311,9 @@ export default function StepGuiado({ season, temporadaKey }) {
                             basePrice={basePrice}
                             extraTotal={extraTotal}
                             onOpenCheckout={() => setIsCheckoutOpen(true)}
+                            onRemoveTour={(tourNameOrId) => {
+                                setSelectedExps(prev => prev.filter(e => e.id !== tourNameOrId && e.name !== tourNameOrId))
+                            }}
                         />
                     </div>
                 </div>

@@ -299,6 +299,7 @@ export default function StepLibre({ season, temporadaKey }) {
                             basePrice={basePrice}
                             extraTotal={extrasTotal}
                             onOpenCheckout={() => setIsCheckoutOpen(true)}
+                            onRemoveTour={(tourNameOrId) => toggleExperience({ id: tourNameOrId, name: tourNameOrId })}
                         />
                     </div>
                 </div>

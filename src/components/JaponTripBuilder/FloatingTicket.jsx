@@ -21,6 +21,7 @@ export default function FloatingTicket({
     customReserveBtnText = null,
     onOpenCheckout,
     onOpenDownloadPdf,
+    onRemoveTour,
 }) {
     const adults = selectorData?.adults || 1
     const children = selectorData?.children || 0
@@ -113,10 +114,37 @@ export default function FloatingTicket({
                         </span>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '4px' }}>
                             {includedExps.map((name, i) => (
-                                <div className={estilo === 'Reserva' ? 'libre-calc-inc-clean' : 'libre-calc-included-pill'} key={i}>
-                                    <span className="libre-calc-inc-check">✓</span>
-                                    <span className="libre-calc-inc-text">{name}</span>
-                                    {estilo !== 'Reserva' && <span className="libre-calc-free-tag">GRATIS</span>}
+                                <div className={estilo === 'Reserva' ? 'libre-calc-inc-clean' : 'libre-calc-included-pill'} key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                                        <span className="libre-calc-inc-check">✓</span>
+                                        <span className="libre-calc-inc-text">{name}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                                        {estilo !== 'Reserva' && <span className="libre-calc-free-tag">GRATIS</span>}
+                                        {onRemoveTour && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); onRemoveTour(name) }}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    color: '#9ca3af',
+                                                    cursor: 'pointer',
+                                                    padding: '2px 5px',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 'bold',
+                                                    lineHeight: 1,
+                                                    borderRadius: '4px',
+                                                    transition: 'all 0.2s',
+                                                }}
+                                                onMouseEnter={(e) => e.target.style.color = '#ef4444'}
+                                                onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+                                                title="Eliminar tour"
+                                            >
+                                                ✕
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -139,7 +167,32 @@ export default function FloatingTicket({
                                 <div className="libre-calc-item-row" key={idx} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '3px' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <span className="libre-calc-item-title">➕ {item.name}</span>
-                                        <span className="libre-calc-item-price">{formatPrice(itemTotalPrice)} MXN</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <span className="libre-calc-item-price">{formatPrice(itemTotalPrice)} MXN</span>
+                                            {onRemoveTour && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); onRemoveTour(item.id || item.name) }}
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        color: '#9ca3af',
+                                                        cursor: 'pointer',
+                                                        padding: '2px 5px',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: 'bold',
+                                                        lineHeight: 1,
+                                                        borderRadius: '4px',
+                                                        transition: 'all 0.2s',
+                                                    }}
+                                                    onMouseEnter={(e) => e.target.style.color = '#ef4444'}
+                                                    onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+                                                    title="Eliminar tour"
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#666' }}>
                                         <span>📅 {item.date || 'Fecha por confirmar'}</span>
