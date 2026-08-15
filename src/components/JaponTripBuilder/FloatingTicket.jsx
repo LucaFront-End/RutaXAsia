@@ -7,6 +7,7 @@ export default function FloatingTicket({
     temporadaKey,
     estilo,
     selectorData,
+    tourDate = null,
     selectedPkg,
     includedExps = [],
     addedItems = [],
@@ -31,6 +32,7 @@ export default function FloatingTicket({
     const formatPrice = (n) => `$${n.toLocaleString('es-MX')}`
 
     const datesText = useMemo(() => {
+        if (tourDate) return tourDate
         if (selectorData?.dateMode === 'month') {
             return selectorData.selectedMonth || 'Por definir'
         }
@@ -41,7 +43,7 @@ export default function FloatingTicket({
             return `${start.toLocaleDateString('es-MX', options)} — ${end.toLocaleDateString('es-MX', options)}`
         }
         return 'Fechas seleccionadas'
-    }, [selectorData])
+    }, [selectorData, tourDate])
 
     const passengersText = `${adults} Adulto${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} Menor${children > 1 ? 'es' : ''}` : ''}`
 

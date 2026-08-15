@@ -41,6 +41,19 @@ export default function TourDetail() {
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
 
+    // Auto-open PDF Lead Capture Modal after 7 seconds (once per tour/session)
+    useEffect(() => {
+        const popupKey = `pdf_popup_auto_${slug}`
+        const hasShown = sessionStorage.getItem(popupKey)
+        if (!hasShown) {
+            const timer = setTimeout(() => {
+                setIsPdfModalOpen(true)
+                sessionStorage.setItem(popupKey, 'true')
+            }, 7000)
+            return () => clearTimeout(timer)
+        }
+    }, [slug])
+
     if (!tour) {
         return (
             <div className="td-notfound">
@@ -235,6 +248,7 @@ export default function TourDetail() {
                         temporadaKey="sakura"
                         estilo="Reserva"
                         selectorData={selectorData}
+                        tourDate={tour.date}
                         selectedPkg={{ days: tour.duration, priceNum: basePriceNum, name: tour.title }}
                         includedExps={tour.includes || []}
                         addedItems={[]}
@@ -299,7 +313,7 @@ export default function TourDetail() {
                     <div className="td-float-right" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                         <button
                             type="button"
-                            className="btn btn-outline"
+                            className="btn btn-outline td-float-pdf-btn"
                             style={{ fontSize: '0.82rem', padding: '8px 16px', borderRadius: '100px', background: 'rgba(255,255,255,0.12)', color: '#fff', borderColor: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}
                             onClick={() => setIsPdfModalOpen(true)}
                         >
