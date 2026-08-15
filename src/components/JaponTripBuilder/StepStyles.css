@@ -2786,8 +2786,12 @@
 
 /* Tablet & Mobile responsive overrides */
 @media (max-width: 600px) {
+    .jtb-modal-overlay {
+        padding: 12px;
+    }
     .jtb-modal-card {
-        padding: 30px 20px;
+        padding: 24px 16px !important;
+        border-radius: 20px !important;
     }
     .jtb-input-row {
         flex-direction: column;
@@ -2800,5 +2804,152 @@
         text-align: center;
     }
 }
+
+/* ===== CHECKOUT MODAL STYLING ===== */
+.jtb-checkout-modal-card {
+    width: 100%;
+    max-width: 600px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 32px 26px;
+    position: relative;
+    box-sizing: border-box;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.28);
+}
+
+.jtb-checkout-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-dark, #0c0e16);
+    margin: 0 0 6px;
+    line-height: 1.25;
+}
+
+.jtb-checkout-subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.jtb-checkout-section-title {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    color: var(--color-dark, #0c0e16) !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+.jtb-checkout-steps-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-radius: 100px;
+    border: 1px solid #e2e8f0;
+    flex-wrap: nowrap;
+}
+
+.jtb-checkout-summary {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.jtb-checkout-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+
+.jtb-checkout-summary-row span:first-child {
+    color: #64748b;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+}
+
+.jtb-checkout-summary-row span:last-child,
+.jtb-checkout-summary-row strong {
+    text-align: right;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 0.85rem;
+    word-break: break-word;
+}
+
+.jtb-checkout-summary-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 12px 0;
+}
+
+.jtb-checkout-summary-row.highlight {
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.jtb-checkout-summary-row.highlight span:first-child {
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 0.9rem;
+}
+
+.jtb-checkout-summary-row.highlight span:last-child {
+    color: var(--color-primary, #e11d48);
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.jtb-checkout-submit-btn {
+    width: 100%;
+    background: var(--color-primary, #e11d48) !important;
+    color: #ffffff !important;
+    border: none;
+    border-radius: 100px;
+    padding: 15px 20px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
+    transition: all 0.2s ease;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+}
+
+.jtb-checkout-submit-btn:hover {
+    background: #be123c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(225, 29, 72, 0.4);
+}
+
+.jtb-checkout-submit-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+    .jtb-checkout-steps-bar {
+        padding: 6px 8px;
+        gap: 4px;
+    }
+    .jtb-checkout-section-title {
+        font-size: 0.88rem !important;
+    }
+    .jtb-checkout-submit-btn {
+        font-size: 0.88rem;
+        padding: 14px 16px;
+    }
+}
+
 
 

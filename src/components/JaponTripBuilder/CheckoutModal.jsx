@@ -225,51 +225,41 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
     return (
         <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 999999 }}>
-            <div className="jtb-modal-card" style={{ maxWidth: '640px', padding: '36px 30px' }}>
+            <div className="jtb-checkout-modal-card">
                 <button className="jtb-modal-close" onClick={onClose}>&times;</button>
 
                 {status === 'checkout' && (
                     <div className="jtb-checkout-form">
                         {/* Step Indicator Header */}
-                        <div className="jtb-modal-header" style={{ marginBottom: '20px' }}>
-                            <h3 style={{ fontSize: '1.45rem', marginBottom: '6px' }}>
-                                {isToursSueltos ? '🎟️ Reserva y Pago de Tours en Japón' : '💳 Apartado de Viaje con Anticipo'}
+                        <div className="jtb-modal-header" style={{ marginBottom: '16px', textAlign: 'center' }}>
+                            <h3 className="jtb-checkout-title">
+                                {isToursSueltos ? '🎟️ Reserva y Pago de Tours' : '💳 Apartado de Viaje con Anticipo'}
                             </h3>
-                            <p style={{ fontSize: '0.88rem' }}>
+                            <p className="jtb-checkout-subtitle">
                                 {isToursSueltos
-                                    ? 'Personaliza tu asistencia y completa tu pago seguro para confirmar tus tours'
+                                    ? 'Personaliza tu asistencia y completa tu pago seguro'
                                     : 'Congela tu tarifa y aparta tus lugares pagando únicamente $5,000 MXN'}
                             </p>
 
                             {/* 3 Steps Progress Bar */}
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                marginTop: '18px',
-                                padding: '10px 14px',
-                                background: '#f8fafc',
-                                borderRadius: '100px',
-                                border: '1px solid #e2e8f0',
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: step >= 1 ? 1 : 0.4 }}>
-                                    <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: step >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
-                                    <span style={{ fontSize: '0.8rem', fontWeight: step === 1 ? 800 : 600, color: step === 1 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                            <div className="jtb-checkout-steps-bar">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 1 ? 1 : 0.4 }}>
+                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</span>
+                                    <span style={{ fontSize: '0.78rem', fontWeight: step === 1 ? 800 : 600, color: step === 1 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
                                         {isToursSueltos ? 'Asistencia' : 'Comprador'}
                                     </span>
                                 </div>
-                                <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>→</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: step >= 2 ? 1 : 0.4 }}>
-                                    <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: step >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
-                                    <span style={{ fontSize: '0.8rem', fontWeight: step === 2 ? 800 : 600, color: step === 2 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
-                                        {isToursSueltos ? `Datos & Asistentes (${totalTravelers})` : `Viajeros (${totalTravelers})`}
+                                <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>→</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 2 ? 1 : 0.4 }}>
+                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>2</span>
+                                    <span style={{ fontSize: '0.78rem', fontWeight: step === 2 ? 800 : 600, color: step === 2 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
+                                        Viajeros ({totalTravelers})
                                     </span>
                                 </div>
-                                <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>→</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: step >= 3 ? 1 : 0.4 }}>
-                                    <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: step >= 3 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
-                                    <span style={{ fontSize: '0.8rem', fontWeight: step === 3 ? 800 : 600, color: step === 3 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>→</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 3 ? 1 : 0.4 }}>
+                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 3 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</span>
+                                    <span style={{ fontSize: '0.78rem', fontWeight: step === 3 ? 800 : 600, color: step === 3 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
                                         {isToursSueltos ? 'Pagar Total' : 'Pago Anticipo'}
                                     </span>
                                 </div>
@@ -279,11 +269,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         {/* ================= STEP 1: ASISTENCIA (FOR TOURS SUELTOS) OR COMPRADOR (FOR PACKAGES) ================= */}
                         {step === 1 && isToursSueltos && (
                             <div>
-                                <h4 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '14px', color: 'var(--color-dark)' }}>
+                                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '12px', color: 'var(--color-dark)' }}>
                                     🏮 1. Elige tu Modalidad de Acompañamiento:
                                 </h4>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '24px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
                                     {/* Card 1: Asistencia Locataria */}
                                     <div
                                         onClick={() => setAssistanceType('locataria')}
@@ -291,7 +281,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             border: assistanceType === 'locataria' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
                                             background: assistanceType === 'locataria' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
                                             borderRadius: '16px',
-                                            padding: '20px 16px',
+                                            padding: '16px 14px',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s',
                                             display: 'flex',
@@ -301,24 +291,24 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         }}
                                     >
                                         <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                                <span style={{ fontSize: '2rem' }}>🏮</span>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                                                <span style={{ fontSize: '1.8rem' }}>🏮</span>
                                                 <span style={{
-                                                    fontSize: '0.72rem',
+                                                    fontSize: '0.7rem',
                                                     fontWeight: 800,
-                                                    padding: '3px 8px',
+                                                    padding: '2px 7px',
                                                     borderRadius: '6px',
                                                     background: assistanceType === 'locataria' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
                                                     color: assistanceType === 'locataria' ? '#fff' : '#64748b'
                                                 }}>
-                                                    {assistanceType === 'locataria' ? '✓ Seleccionado' : 'Elegir'}
+                                                    {assistanceType === 'locataria' ? '✓ Elegido' : 'Elegir'}
                                                 </span>
                                             </div>
-                                            <h4 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-dark)' }}>
+                                            <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: 'var(--color-dark)' }}>
                                                 Asistencia Locataria
                                             </h4>
-                                            <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', lineHeight: 1.4 }}>
-                                                Orientación y soporte local en destino. Disfruta tu recorrido con la asistencia y recomendaciones de coordinadores locales en español.
+                                            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.35 }}>
+                                                Orientación y soporte local en destino. Disfruta tu recorrido con asistencia y recomendaciones de coordinadores locales en español.
                                             </p>
                                         </div>
                                     </div>
@@ -330,7 +320,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             border: assistanceType === 'anfitrion' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
                                             background: assistanceType === 'anfitrion' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
                                             borderRadius: '16px',
-                                            padding: '20px 16px',
+                                            padding: '16px 14px',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s',
                                             display: 'flex',
@@ -340,24 +330,24 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         }}
                                     >
                                         <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                                <span style={{ fontSize: '2rem' }}>👑</span>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                                                <span style={{ fontSize: '1.8rem' }}>👑</span>
                                                 <span style={{
-                                                    fontSize: '0.72rem',
+                                                    fontSize: '0.7rem',
                                                     fontWeight: 800,
-                                                    padding: '3px 8px',
+                                                    padding: '2px 7px',
                                                     borderRadius: '6px',
                                                     background: assistanceType === 'anfitrion' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
                                                     color: assistanceType === 'anfitrion' ? '#fff' : '#64748b'
                                                 }}>
-                                                    {assistanceType === 'anfitrion' ? '✓ Seleccionado' : 'Elegir'}
+                                                    {assistanceType === 'anfitrion' ? '✓ Elegido' : 'Elegir'}
                                                 </span>
                                             </div>
-                                            <h4 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-dark)' }}>
+                                            <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: 'var(--color-dark)' }}>
                                                 Anfitrión de Viaje
                                             </h4>
-                                            <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', lineHeight: 1.4 }}>
-                                                Acompañamiento cercano y personalizado durante todo el tour. Atención dedicada para una inmersión completa sin preocuparte por traslados ni logística.
+                                            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.35 }}>
+                                                Acompañamiento cercano y personalizado durante todo el tour. Atención dedicada para una inmersión completa y sin preocupaciones.
                                             </p>
                                         </div>
                                     </div>
@@ -366,7 +356,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                 <button
                                     type="button"
                                     className="btn btn-primary"
-                                    style={{ width: '100%', padding: '14px', borderRadius: '100px', fontSize: '0.95rem', fontWeight: 800 }}
+                                    style={{ width: '100%', padding: '13px', borderRadius: '100px', fontSize: '0.92rem', fontWeight: 800 }}
                                     onClick={() => setStep(2)}
                                 >
                                     Continuar con Datos de Asistentes →
@@ -377,100 +367,100 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         {/* ================= STEP 1 (FOR PACKAGES) ================= */}
                         {step === 1 && !isToursSueltos && (
                             <div>
-                                <div className="jtb-form-section" style={{ marginTop: '10px' }}>
-                                    <h4 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '14px', color: 'var(--color-dark)' }}>
-                                        👤 1. Información del Comprador (Titular de la Cuenta)
+                                <div className="jtb-form-section" style={{ marginTop: '6px' }}>
+                                    <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '12px', color: 'var(--color-dark)' }}>
+                                        👤 1. Información del Comprador (Titular)
                                     </h4>
 
-                                    <div className="jtb-input-group" style={{ marginBottom: '14px' }}>
-                                        <label style={{ fontSize: '0.82rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Nombre Completo</label>
+                                    <div className="jtb-input-group" style={{ marginBottom: '12px' }}>
+                                        <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Nombre Completo</label>
                                         <input
                                             type="text"
                                             placeholder="Como aparece en tu pasaporte o identificación oficial"
                                             value={nombre}
                                             onChange={(e) => handleBuyerNameChange(e.target.value)}
                                             className={errors.nombre ? 'input-error' : ''}
-                                            style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                            style={{ width: '100%', padding: '11px 13px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
                                         />
-                                        {errors.nombre && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '2px', display: 'block' }}>{errors.nombre}</span>}
+                                        {errors.nombre && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.73rem', marginTop: '2px', display: 'block' }}>{errors.nombre}</span>}
                                     </div>
 
-                                    <div className="jtb-input-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', marginBottom: '14px' }}>
+                                    <div className="jtb-input-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '12px' }}>
                                         <div className="jtb-input-group">
-                                            <label style={{ fontSize: '0.82rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Correo Electrónico</label>
+                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Correo Electrónico</label>
                                             <input
                                                 type="email"
                                                 placeholder="correo@ejemplo.com"
                                                 value={correo}
                                                 onChange={(e) => { setErrors(prev => ({ ...prev, correo: '' })); setCorreo(e.target.value); }}
                                                 className={errors.correo ? 'input-error' : ''}
-                                                style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                                style={{ width: '100%', padding: '11px 13px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
                                             />
-                                            {errors.correo && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '2px', display: 'block' }}>{errors.correo}</span>}
+                                            {errors.correo && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.73rem', marginTop: '2px', display: 'block' }}>{errors.correo}</span>}
                                         </div>
 
                                         <div className="jtb-input-group">
-                                            <label style={{ fontSize: '0.82rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Teléfono (WhatsApp)</label>
+                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Teléfono (WhatsApp)</label>
                                             <input
                                                 type="tel"
                                                 placeholder="55 1234 5678"
                                                 value={telefono}
                                                 onChange={(e) => { setErrors(prev => ({ ...prev, telefono: '' })); setTelefono(e.target.value); }}
                                                 className={errors.telefono ? 'input-error' : ''}
-                                                style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                                style={{ width: '100%', padding: '11px 13px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
                                             />
-                                            {errors.telefono && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '2px', display: 'block' }}>{errors.telefono}</span>}
+                                            {errors.telefono && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.73rem', marginTop: '2px', display: 'block' }}>{errors.telefono}</span>}
                                         </div>
                                     </div>
 
                                     {/* Number of Passengers Adjuster */}
-                                    <div style={{ background: '#f8fafc', padding: '16px 18px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '10px' }}>
-                                        <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-dark)', display: 'block', marginBottom: '8px' }}>
+                                    <div style={{ background: '#f8fafc', padding: '14px 16px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '8px' }}>
+                                        <label style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--color-dark)', display: 'block', marginBottom: '8px' }}>
                                             👥 Cantidad de Pasajeros para este Viaje:
                                         </label>
-                                        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Adultos:</span>
+                                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>Adultos:</span>
                                                 <button
                                                     type="button"
-                                                    style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                                                    style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
                                                     onClick={() => setAdultsCount(Math.max(1, adultsCount - 1))}
                                                 >-</button>
-                                                <span style={{ fontWeight: 800, minWidth: '18px', textAlign: 'center' }}>{adultsCount}</span>
+                                                <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>{adultsCount}</span>
                                                 <button
                                                     type="button"
-                                                    style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                                                    style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
                                                     onClick={() => setAdultsCount(adultsCount + 1)}
                                                 >+</button>
                                             </div>
 
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Menores:</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>Menores:</span>
                                                 <button
                                                     type="button"
-                                                    style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                                                    style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
                                                     onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}
                                                 >-</button>
-                                                <span style={{ fontWeight: 800, minWidth: '18px', textAlign: 'center' }}>{childrenCount}</span>
+                                                <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>{childrenCount}</span>
                                                 <button
                                                     type="button"
-                                                    style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                                                    style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
                                                     onClick={() => setChildrenCount(childrenCount + 1)}
                                                 >+</button>
                                             </div>
 
-                                            <span style={{ fontSize: '0.82rem', color: 'var(--color-primary, #e11d48)', fontWeight: 800, marginLeft: 'auto' }}>
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--color-primary, #e11d48)', fontWeight: 800, marginLeft: 'auto' }}>
                                                 Total: {totalTravelers} {totalTravelers === 1 ? 'Viajero' : 'Viajeros'}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div style={{ marginTop: '24px' }}>
+                                <div style={{ marginTop: '20px' }}>
                                     <button
                                         type="button"
                                         className="btn btn-primary"
-                                        style={{ width: '100%', padding: '14px', borderRadius: '100px', fontSize: '0.95rem', fontWeight: 800 }}
+                                        style={{ width: '100%', padding: '13px', borderRadius: '100px', fontSize: '0.92rem', fontWeight: 800 }}
                                         onClick={handleNextStep}
                                     >
                                         Continuar con Datos de los {totalTravelers} Viajeros →
@@ -482,112 +472,112 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         {/* ================= STEP 2: DATOS COMPRADOR & VIAJEROS ================= */}
                         {step === 2 && (
                             <div>
-                                <div className="jtb-form-section" style={{ marginTop: '10px' }}>
+                                <div className="jtb-form-section" style={{ marginTop: '6px' }}>
                                     {/* For Tours Sueltos, also capture buyer details in Step 2 */}
                                     {isToursSueltos && (
-                                        <div style={{ marginBottom: '18px', paddingBottom: '16px', borderBottom: '1px solid #e2e8f0' }}>
-                                            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0 0 12px', color: 'var(--color-dark)' }}>
+                                        <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid #e2e8f0' }}>
+                                            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0 0 10px', color: 'var(--color-dark)' }}>
                                                 👤 Información del Comprador
                                             </h4>
-                                            <div className="jtb-input-group" style={{ marginBottom: '10px' }}>
-                                                <label style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Nombre Completo</label>
+                                            <div className="jtb-input-group" style={{ marginBottom: '8px' }}>
+                                                <label style={{ fontSize: '0.76rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Nombre Completo</label>
                                                 <input
                                                     type="text"
                                                     placeholder="Nombre y apellidos"
                                                     value={nombre}
                                                     onChange={(e) => handleBuyerNameChange(e.target.value)}
-                                                    style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: errors.nombre ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                                                    style={{ width: '100%', padding: '9px 11px', borderRadius: '10px', border: errors.nombre ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                                                 />
-                                                {errors.nombre && <span style={{ color: '#ef4444', fontSize: '0.72rem' }}>{errors.nombre}</span>}
+                                                {errors.nombre && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors.nombre}</span>}
                                             </div>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                                 <div>
-                                                    <label style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Correo Electrónico</label>
+                                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Correo Electrónico</label>
                                                     <input
                                                         type="email"
                                                         placeholder="correo@ejemplo.com"
                                                         value={correo}
                                                         onChange={(e) => setCorreo(e.target.value)}
-                                                        style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: errors.correo ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                                                        style={{ width: '100%', padding: '9px 11px', borderRadius: '10px', border: errors.correo ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                                                     />
-                                                    {errors.correo && <span style={{ color: '#ef4444', fontSize: '0.72rem' }}>{errors.correo}</span>}
+                                                    {errors.correo && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors.correo}</span>}
                                                 </div>
                                                 <div>
-                                                    <label style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Teléfono (WhatsApp)</label>
+                                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Teléfono (WhatsApp)</label>
                                                     <input
                                                         type="tel"
                                                         placeholder="55 1234 5678"
                                                         value={telefono}
                                                         onChange={(e) => setTelefono(e.target.value)}
-                                                        style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: errors.telefono ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                                                        style={{ width: '100%', padding: '9px 11px', borderRadius: '10px', border: errors.telefono ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                                                     />
-                                                    {errors.telefono && <span style={{ color: '#ef4444', fontSize: '0.72rem' }}>{errors.telefono}</span>}
+                                                    {errors.telefono && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors.telefono}</span>}
                                                 </div>
                                             </div>
                                         </div>
                                     )}
 
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                        <h4 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0, color: 'var(--color-dark)' }}>
-                                            📋 Nombre(s) de Asistente(s) ({totalTravelers})
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                        <h4 className="jtb-checkout-section-title">
+                                            📋 Datos de Viajeros ({totalTravelers})
                                         </h4>
                                         {/* Dynamic Passenger Counter for Tours Sueltos */}
                                         {isToursSueltos && (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', border: '1px solid #cbd5e1', borderRadius: '100px', padding: '3px 8px' }}>
-                                                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>Cantidad:</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff', border: '1px solid #cbd5e1', borderRadius: '100px', padding: '2px 8px' }}>
+                                                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700 }}>Total:</span>
                                                 <button
                                                     type="button"
-                                                    style={{ width: '22px', height: '22px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
+                                                    style={{ width: '20px', height: '20px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
                                                     onClick={() => setAdultsCount(Math.max(1, adultsCount - 1))}
                                                 >-</button>
-                                                <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>{totalTravelers}</span>
+                                                <span style={{ fontWeight: 800, minWidth: '14px', textAlign: 'center', fontSize: '0.82rem' }}>{totalTravelers}</span>
                                                 <button
                                                     type="button"
-                                                    style={{ width: '22px', height: '22px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
+                                                    style={{ width: '20px', height: '20px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
                                                     onClick={() => setAdultsCount(adultsCount + 1)}
                                                 >+</button>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '36vh', overflowY: 'auto', paddingRight: '4px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '36vh', overflowY: 'auto', paddingRight: '4px' }}>
                                         {travelers.map((t, idx) => (
                                             <div key={idx} style={{
                                                 background: '#f8fafc',
                                                 border: '1px solid #e2e8f0',
-                                                borderRadius: '14px',
-                                                padding: '14px',
+                                                borderRadius: '12px',
+                                                padding: '12px',
                                             }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--color-dark)' }}>
+                                                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-dark)' }}>
                                                         Persona {idx + 1} {idx === 0 ? '(Titular)' : ''}
                                                     </span>
-                                                    <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '2px 8px', borderRadius: '6px', background: t.type === 'Menor' ? '#fef3c7' : '#e0f2fe', color: t.type === 'Menor' ? '#92400e' : '#0369a1' }}>
+                                                    <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: t.type === 'Menor' ? '#fef3c7' : '#e0f2fe', color: t.type === 'Menor' ? '#92400e' : '#0369a1' }}>
                                                         {t.type}
                                                     </span>
                                                 </div>
 
-                                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '8px' }}>
                                                     <div>
-                                                        <label style={{ fontSize: '0.75rem', color: '#475569', display: 'block', marginBottom: '2px' }}>Nombre Completo *</label>
+                                                        <label style={{ fontSize: '0.72rem', color: '#475569', display: 'block', marginBottom: '2px' }}>Nombre Completo *</label>
                                                         <input
                                                             type="text"
                                                             placeholder={`Nombre completo persona ${idx + 1}`}
                                                             value={t.fullName}
                                                             onChange={(e) => handleTravelerChange(idx, 'fullName', e.target.value)}
-                                                            style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: errors[`traveler_${idx}`] ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                                                            style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: errors[`traveler_${idx}`] ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.82rem' }}
                                                         />
-                                                        {errors[`traveler_${idx}`] && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors[`traveler_${idx}`]}</span>}
+                                                        {errors[`traveler_${idx}`] && <span style={{ color: '#ef4444', fontSize: '0.68rem' }}>{errors[`traveler_${idx}`]}</span>}
                                                     </div>
 
                                                     <div>
-                                                        <label style={{ fontSize: '0.75rem', color: '#475569', display: 'block', marginBottom: '2px' }}>Edad</label>
+                                                        <label style={{ fontSize: '0.72rem', color: '#475569', display: 'block', marginBottom: '2px' }}>Edad</label>
                                                         <input
                                                             type="text"
                                                             placeholder="Ej. 25"
                                                             value={t.age}
                                                             onChange={(e) => handleTravelerChange(idx, 'age', e.target.value)}
-                                                            style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                                                            style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                                                         />
                                                     </div>
                                                 </div>
@@ -596,11 +586,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '10px', marginTop: '22px' }}>
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '18px' }}>
                                     <button
                                         type="button"
                                         className="btn btn-outline"
-                                        style={{ padding: '14px 20px', borderRadius: '100px', fontSize: '0.9rem', color: '#64748b', borderColor: '#cbd5e1' }}
+                                        style={{ padding: '12px 16px', borderRadius: '100px', fontSize: '0.85rem', color: '#64748b', borderColor: '#cbd5e1' }}
                                         onClick={handlePrevStep}
                                     >
                                         ← Volver
@@ -608,10 +598,10 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                     <button
                                         type="button"
                                         className="btn btn-primary"
-                                        style={{ flex: 1, padding: '14px', borderRadius: '100px', fontSize: '0.95rem', fontWeight: 800 }}
+                                        style={{ flex: 1, padding: '12px 16px', borderRadius: '100px', fontSize: '0.88rem', fontWeight: 800, whiteSpace: 'nowrap' }}
                                         onClick={handleNextStep}
                                     >
-                                        {isToursSueltos ? 'Continuar al Pago del Total →' : 'Continuar al Pago del Anticipo →'}
+                                        Continuar al Pago →
                                     </button>
                                 </div>
                             </div>
@@ -620,9 +610,9 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         {/* ================= STEP 3: PAGO DE TOTAL O ANTICIPO ================= */}
                         {step === 3 && (
                             <form onSubmit={handleCheckoutSubmit}>
-                                <div style={{ marginTop: '10px' }}>
+                                <div style={{ marginTop: '6px' }}>
                                     {/* Detailed Summary */}
-                                    <div className="jtb-checkout-summary" style={{ marginBottom: '18px' }}>
+                                    <div className="jtb-checkout-summary" style={{ marginBottom: '14px' }}>
                                         <div className="jtb-checkout-summary-row">
                                             <span>Concepto:</span>
                                             <strong>{isToursSueltos ? `Tours en Japón (${assistanceLabel})` : `Japón ${season?.emoji || ''} ${season?.name || ''} — ${estilo}`}</strong>
@@ -632,7 +622,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             <span>{nombre} ({telefono})</span>
                                         </div>
                                         <div className="jtb-checkout-summary-row">
-                                            <span>Asistentes Registrados ({travelers.length}):</span>
+                                            <span>Viajeros Registrados ({travelers.length}):</span>
                                             <span>{travelers.map(t => t.fullName || 'Persona').join(', ')}</span>
                                         </div>
                                         {isToursSueltos && (
@@ -644,16 +634,16 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         <div className="jtb-checkout-summary-divider" />
                                         
                                         <div className="jtb-checkout-summary-row highlight">
-                                            <span style={{ fontSize: '1rem', fontWeight: 800 }}>
-                                                {isToursSueltos ? 'Total a Pagar en Línea (100%):' : 'Monto de Anticipo de Apartado (Hoy):'}
+                                            <span style={{ fontSize: '0.9rem', fontWeight: 800 }}>
+                                                {isToursSueltos ? 'Total a Pagar en Línea:' : 'Monto de Anticipo (Hoy):'}
                                             </span>
-                                            <span style={{ color: 'var(--color-primary, #e11d48)', fontWeight: 900, fontSize: '1.3rem' }}>
+                                            <span style={{ color: 'var(--color-primary, #e11d48)', fontWeight: 900, fontSize: '1.25rem' }}>
                                                 {formatPrice(paymentAmount)} MXN
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="jtb-checkout-disclaimer" style={{ marginBottom: '16px', background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46' }}>
+                                    <div className="jtb-checkout-disclaimer" style={{ marginBottom: '14px', background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46', fontSize: '0.82rem', padding: '10px 14px', borderRadius: '12px' }}>
                                         {isToursSueltos ? (
                                             <span>🔒 <strong>Confirmación Inmediata:</strong> Al pagar el total de <strong>{formatPrice(paymentAmount)} MXN</strong>, tus tours quedan confirmados y programados con los nombres de tus asistentes.</span>
                                         ) : (
@@ -661,18 +651,18 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         )}
                                     </div>
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        <button type="submit" className="jtb-checkout-submit-btn" style={{ padding: '16px', fontSize: '1rem', fontWeight: 800 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <button type="submit" className="jtb-checkout-submit-btn">
                                             {isToursSueltos
                                                 ? `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Línea`
                                                 : `💳 Pagar Anticipo de ${formatPrice(paymentAmount)} MXN en Línea`}
                                         </button>
 
-                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                             <button
                                                 type="button"
                                                 className="btn btn-outline"
-                                                style={{ padding: '12px 18px', borderRadius: '100px', fontSize: '0.85rem', color: '#64748b', borderColor: '#cbd5e1' }}
+                                                style={{ padding: '11px 16px', borderRadius: '100px', fontSize: '0.82rem', color: '#64748b', borderColor: '#cbd5e1' }}
                                                 onClick={handlePrevStep}
                                             >
                                                 ← Editar Datos
@@ -683,9 +673,9 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="btn btn-outline"
-                                                style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '12px 16px', borderRadius: '100px', fontSize: '0.88rem', color: '#25D366', borderColor: '#25D366', fontWeight: 800 }}
+                                                style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '11px 14px', borderRadius: '100px', fontSize: '0.84rem', color: '#25D366', borderColor: '#25D366', fontWeight: 800 }}
                                             >
-                                                💬 {isToursSueltos ? 'Pagar / Confirmar por WhatsApp' : 'Apartar por WhatsApp'}
+                                                💬 {isToursSueltos ? 'Pagar por WhatsApp' : 'Apartar por WhatsApp'}
                                             </a>
                                         </div>
                                     </div>
