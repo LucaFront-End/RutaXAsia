@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { WHATSAPP_BASE } from '../../data/japonData'
 import './StepStyles.css'
 
@@ -24,6 +24,8 @@ export default function FloatingTicket({
     onOpenDownloadPdf,
     onRemoveTour,
 }) {
+    const [isIncludesCollapsed, setIsIncludesCollapsed] = useState(false)
+
     const adults = selectorData?.adults || 1
     const children = selectorData?.children || 0
     const passengersCount = hideQuantity ? 1 : (adults + children)
@@ -110,45 +112,76 @@ export default function FloatingTicket({
                 {/* Included Tours Badge List */}
                 {includedExps.length > 0 && (
                     <div style={{ marginTop: '12px', marginBottom: '14px' }}>
-                        <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary, #e11d48)', display: 'block', marginBottom: '6px' }}>
-                            ✨ {estilo === 'Reserva' ? 'Incluido en tu viaje:' : `Tours Incluidos (${freeExpLimit || includedExps.length} Gratis):`}
-                        </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '4px' }}>
-                            {includedExps.map((name, i) => (
-                                <div className={estilo === 'Reserva' ? 'libre-calc-inc-clean' : 'libre-calc-included-pill'} key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                        <span className="libre-calc-inc-check">✓</span>
-                                        <span className="libre-calc-inc-text">{name}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                                        {estilo !== 'Reserva' && <span className="libre-calc-free-tag">GRATIS</span>}
-                                        {onRemoveTour && (
-                                            <button
-                                                type="button"
-                                                onClick={(e) => { e.stopPropagation(); onRemoveTour(name) }}
-                                                style={{
-                                                    background: 'transparent',
-                                                    border: 'none',
-                                                    color: '#9ca3af',
-                                                    cursor: 'pointer',
-                                                    padding: '2px 5px',
-                                                    fontSize: '0.85rem',
-                                                    fontWeight: 'bold',
-                                                    lineHeight: 1,
-                                                    borderRadius: '4px',
-                                                    transition: 'all 0.2s',
-                                                }}
-                                                onMouseEnter={(e) => e.target.style.color = '#ef4444'}
-                                                onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
-                                                title="Eliminar tour"
-                                            >
-                                                ✕
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
+                        <div
+                            onClick={() => setIsIncludesCollapsed(prev => !prev)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                cursor: 'pointer',
+                                userSelect: 'none',
+                                marginBottom: isIncludesCollapsed ? '0' : '6px',
+                                padding: '4px 8px',
+                                borderRadius: '8px',
+                                background: 'rgba(225, 29, 72, 0.06)',
+                                transition: 'background 0.2s',
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(225, 29, 72, 0.12)'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(225, 29, 72, 0.06)'}
+                        >
+                            <span style={{ fontSize: '0.74rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary, #e11d48)' }}>
+                                ✨ {estilo === 'Reserva' ? 'Incluido en tu viaje:' : `Tours Incluidos (${freeExpLimit || includedExps.length} Gratis):`}
+                            </span>
+                            <span style={{
+                                fontSize: '0.85rem',
+                                fontWeight: '900',
+                                color: 'var(--color-primary, #e11d48)',
+                                transition: 'transform 0.2s ease',
+                                transform: isIncludesCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                                display: 'inline-block',
+                                lineHeight: 1,
+                            }}>
+                                ▾
+                            </span>
                         </div>
+                        {!isIncludesCollapsed && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '4px' }}>
+                                {includedExps.map((name, i) => (
+                                    <div className={estilo === 'Reserva' ? 'libre-calc-inc-clean' : 'libre-calc-included-pill'} key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                                            <span className="libre-calc-inc-check">✓</span>
+                                            <span className="libre-calc-inc-text">{name}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                                            {estilo !== 'Reserva' && <span className="libre-calc-free-tag">GRATIS</span>}
+                                            {onRemoveTour && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); onRemoveTour(name) }}
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        color: '#9ca3af',
+                                                        cursor: 'pointer',
+                                                        padding: '2px 5px',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: 'bold',
+                                                        lineHeight: 1,
+                                                        borderRadius: '4px',
+                                                        transition: 'all 0.2s',
+                                                    }}
+                                                    onMouseEnter={(e) => e.target.style.color = '#ef4444'}
+                                                    onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+                                                    title="Eliminar tour"
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
 

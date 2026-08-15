@@ -5,11 +5,11 @@ import { FaTiktok } from 'react-icons/fa6'
 import { submitFormToCMS } from '../lib/wixClient'
 
 const WHATSAPP_URL = 'https://wa.me/525657929121?text=SW-Hola%20quiero%20info%20sobre%20viajes'
-const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/reservas@rutaxasia.com.mx'
+const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/reservas@rutaxasia.com'
 
 const CONTACT_METHODS = [
     { icon: <LuMessageCircle size={28} />, title: 'WhatsApp', desc: 'Respuesta en menos de 2 horas', value: '56 5792 9121', href: WHATSAPP_URL, cta: 'Escribir por WhatsApp', external: true },
-    { icon: <LuMail size={28} />, title: 'Email', desc: 'Para consultas detalladas', value: 'reservas@rutaxasia.com.mx', href: 'mailto:reservas@rutaxasia.com.mx', cta: 'Enviar email', external: false },
+    { icon: <LuMail size={28} />, title: 'Email', desc: 'Para consultas detalladas', value: 'reservas@rutaxasia.com', href: 'mailto:reservas@rutaxasia.com', cta: 'Enviar email', external: false },
     { icon: <LuPhone size={28} />, title: 'Teléfono', desc: 'Lunes a Viernes 9am - 7pm', value: '56 5792 9121', href: 'tel:+525657929121', cta: 'Llamar ahora', external: false },
 ]
 
@@ -40,6 +40,7 @@ const ORIGENES = [
 
 export default function Contact() {
     const [formData, setFormData] = useState({ nombre: '', email: '', tel: '', estado: '', viaje: '', mensaje: '', origen: '' })
+    const [phoneError, setPhoneError] = useState('')
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
 
@@ -55,11 +56,26 @@ export default function Contact() {
     }, [])
 
     const handleChange = (e) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+        const { name, value } = e.target
+        if (name === 'tel') {
+            const digits = value.replace(/\D/g, '').slice(0, 10)
+            setFormData(prev => ({ ...prev, tel: digits }))
+            setPhoneError('')
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }))
+        }
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        const cleanPhone = formData.tel.replace(/\D/g, '')
+        const isAllSameDigits = /^(\d)\1{9}$/.test(cleanPhone)
+        if (cleanPhone && (cleanPhone.length !== 10 || isAllSameDigits)) {
+            setPhoneError('Introduce un teléfono válido de 10 dígitos (no todos iguales).')
+            return
+        }
+
         setSubmitting(true)
         try {
             // 1) Save to Wix CMS
@@ -73,13 +89,13 @@ export default function Contact() {
                 origen: formData.origen,
             })
 
-            // 2) Send email via FormSubmit.co
+            // 2) Send email via FormSubmit.co to reservas@rutaxasia.com
             await fetch(FORMSUBMIT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     _subject: `Nuevo contacto RutaXAsia — ${formData.nombre}`,
-                    _template: 'box',
+                    _template: 'table',
                     _captcha: 'false',
                     _language: 'es',
                     'Nombre': formData.nombre,
@@ -164,8 +180,21 @@ export default function Contact() {
                                 </div>
                                 <div className="contact-form-row">
                                     <div className="contact-field">
-                                        <label>Teléfono</label>
-                                        <input type="tel" name="tel" value={formData.tel} onChange={handleChange} placeholder="+52 55 1234 5678" />
+                                        <label>Teléfono / WhatsApp (10 dígitos)</label>
+                                        <input
+                                            type="tel"
+                                            name="tel"
+                                            inputMode="numeric"
+                                            maxLength={10}
+                                            value={formData.tel}
+                                            onChange={handleChange}
+                                            placeholder="Ej. 5512345678"
+                                        />
+                                        {phoneError && (
+                                            <span style={{ color: '#ef4444', fontSize: '0.75rem', display: 'block', marginTop: '4px', fontWeight: 600 }}>
+                                                {phoneError}
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="contact-field">
                                         <label>Estado de la República</label>

@@ -36,12 +36,27 @@ function DiscountPopup() {
         }, 300)
     }
 
+    const [phoneVal, setPhoneVal] = useState('')
+    const [phoneError, setPhoneError] = useState('')
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData = new FormData(e.target)
+        const cleanPhone = phoneVal.replace(/\D/g, '')
+        const isAllSameDigits = /^(\d)\1{9}$/.test(cleanPhone)
+
+        if (!cleanPhone || cleanPhone.length !== 10) {
+            setPhoneError('Introduce un número de 10 dígitos.')
+            return
+        }
+        if (isAllSameDigits) {
+            setPhoneError('Número inválido (dígitos iguales).')
+            return
+        }
+
         const data = {
             nombre: formData.get('nombre'),
-            telefono: formData.get('telefono'),
+            telefono: cleanPhone,
             correo: formData.get('email'),
             estado: formData.get('estado'),
             viajeDeInteres: 'Sakura Completo 2027',
@@ -54,13 +69,13 @@ function DiscountPopup() {
             const result = await submitPopupToCMS(data)
             console.log('[Popup] CMS submission result:', result)
 
-            // 2) Send email via FormSubmit.co
-            await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com.mx', {
+            // 2) Send email via FormSubmit.co to reservas@rutaxasia.com
+            await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     _subject: `🌸 Registro Pop-up Sakura 2027 — ${data.nombre}`,
-                    _template: 'box',
+                    _template: 'table',
                     _captcha: 'false',
                     _language: 'es',
                     'Nombre': data.nombre,
@@ -110,7 +125,27 @@ function DiscountPopup() {
                     ) : (
                         <form className="popup-form" onSubmit={handleSubmit}>
                             <input type="text" name="nombre" placeholder="Nombre completo" required disabled={submitting} />
-                            <input type="tel" name="telefono" placeholder="WhatsApp / Teléfono" required disabled={submitting} />
+                            <div>
+                                <input
+                                    type="tel"
+                                    name="telefono"
+                                    inputMode="numeric"
+                                    maxLength={10}
+                                    placeholder="Teléfono WhatsApp (10 dígitos)"
+                                    required
+                                    disabled={submitting}
+                                    value={phoneVal}
+                                    onChange={(e) => {
+                                        setPhoneVal(e.target.value.replace(/\D/g, '').slice(0, 10))
+                                        setPhoneError('')
+                                    }}
+                                />
+                                {phoneError && (
+                                    <span style={{ color: '#ef4444', fontSize: '0.75rem', display: 'block', marginTop: '2px', textAlign: 'left', fontWeight: 600 }}>
+                                        {phoneError}
+                                    </span>
+                                )}
+                            </div>
                             <input type="email" name="email" placeholder="Correo electrónico" required disabled={submitting} />
                             <select name="estado" required disabled={submitting} defaultValue="">
                                 <option value="" disabled>Estado de la República</option>

@@ -64,6 +64,31 @@ export default async function handler(req, res) {
                 console.error('[Wix Checkout API] CMS error:', cmsErr.message)
             }
 
+            // Also send server-side email to reservas@rutaxasia.com as backup
+            try {
+                await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        _subject: `💳 [API] Nuevo Apartado / Reserva — ${nombre} (${temporada || 'Japón'})`,
+                        _template: 'table',
+                        _captcha: 'false',
+                        _language: 'es',
+                        'Comprador': nombre,
+                        'Email': correo,
+                        'Teléfono (WhatsApp)': telefono,
+                        'Temporada / Viaje': temporada || 'Japón',
+                        'Modalidad': estilo || 'Reserva',
+                        'Monto Anticipo / Cobro': `$${(montoAnticipo || 0).toLocaleString('es-MX')} MXN`,
+                        'Total Estimado': `$${(totalViaje || 0).toLocaleString('es-MX')} MXN`,
+                        'Detalle / Desglose': desglose || '',
+                        'Fecha': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+                    }),
+                })
+            } catch (mailErr) {
+                console.error('[Wix Checkout API] FormSubmit error:', mailErr.message)
+            }
+
             // 2. Create Wix E-commerce Checkout Session
             if (!checkoutUrl) {
                 try {

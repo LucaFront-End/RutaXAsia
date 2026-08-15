@@ -12,14 +12,35 @@ export default function DownloadItineraryModal({ isOpen, onClose, tour }) {
         ciudad: '',
     })
 
+    const [phoneError, setPhoneError] = useState('')
+
     if (!isOpen || !tour) return null
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
+        const { name, value } = e.target
+        if (name === 'telefono') {
+            const digits = value.replace(/\D/g, '').slice(0, 10)
+            setFormData(prev => ({ ...prev, telefono: digits }))
+            setPhoneError('')
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }))
+        }
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        const cleanPhone = formData.telefono.replace(/\D/g, '')
+        const isAllSameDigits = /^(\d)\1{9}$/.test(cleanPhone)
+        if (!cleanPhone || cleanPhone.length !== 10) {
+            setPhoneError('Introduce un número de teléfono de 10 dígitos.')
+            return
+        }
+        if (isAllSameDigits) {
+            setPhoneError('Número no válido (los dígitos no pueden ser todos iguales).')
+            return
+        }
+
         setSubmitting(true)
 
         const pdfUrl = tour.pdfUrl || '/pdf/itinerario-japon-octubre-2026.pdf'
@@ -44,13 +65,13 @@ export default function DownloadItineraryModal({ isOpen, onClose, tour }) {
                 mensaje: `Descarga de itinerario PDF: ${tour.title}`,
             })
 
-            // 2. Send email notification to reservaciones@rutaxasia.com
-            await fetch('https://formsubmit.co/ajax/reservaciones@rutaxasia.com', {
+            // 2. Send email notification to reservas@rutaxasia.com
+            await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     _subject: `📥 Descarga de Itinerario PDF — ${tour.title} — ${formData.nombre}`,
-                    _template: 'box',
+                    _template: 'table',
                     _captcha: 'false',
                     _language: 'es',
                     'Viaje / Tour': tour.title,
@@ -122,11 +143,18 @@ export default function DownloadItineraryModal({ isOpen, onClose, tour }) {
                                     id="pdf-telefono"
                                     name="telefono"
                                     type="tel"
-                                    placeholder="Ej. 55 1234 5678"
+                                    inputMode="numeric"
+                                    maxLength={10}
+                                    placeholder="10 dígitos (ej. 5512345678)"
                                     required
                                     value={formData.telefono}
                                     onChange={handleChange}
                                 />
+                                {phoneError && (
+                                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '4px', display: 'block', fontWeight: 600 }}>
+                                        {phoneError}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="pdf-form-group">

@@ -92,11 +92,24 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     // Validation for Buyer Information
     const validateBuyer = () => {
         const errs = {}
+        const cleanPhone = telefono.replace(/\D/g, '')
+        const isAllSameDigits = /^(\d)\1{9}$/.test(cleanPhone)
+
         if (!nombre.trim()) errs.nombre = 'El nombre completo es obligatorio.'
         if (!correo.trim() || !/\S+@\S+\.\S+/.test(correo)) errs.correo = 'Introduce un correo válido.'
-        if (!telefono.trim() || telefono.length < 10) errs.telefono = 'Introduce un teléfono de al menos 10 dígitos.'
+        if (!cleanPhone || cleanPhone.length !== 10) {
+            errs.telefono = 'Introduce un número de teléfono de 10 dígitos.'
+        } else if (isAllSameDigits) {
+            errs.telefono = 'Número no válido (los dígitos no pueden ser todos iguales).'
+        }
         setErrors(errs)
         return Object.keys(errs).length === 0
+    }
+
+    const handlePhoneChange = (val) => {
+        const digits = val.replace(/\D/g, '').slice(0, 10)
+        setTelefono(digits)
+        setErrors(prev => ({ ...prev, telefono: '' }))
     }
 
     // Validation for Travelers Information
@@ -164,16 +177,16 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
             const result = await response.json()
 
-            // 2. Send notification email to reservas@rutaxasia.com.mx via FormSubmit
+            // 2. Send notification email to reservas@rutaxasia.com via FormSubmit
             try {
-                await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com.mx', {
+                await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
                         _subject: isToursSueltos
                             ? `🎟️ Nueva Reserva de Tours Individuales (${formatPrice(paymentAmount)} MXN) — ${nombre}`
                             : `💳 Nuevo Apartado de Viaje ($5,000 MXN) — ${nombre} (${season?.name || 'Japón'})`,
-                        _template: 'box',
+                        _template: 'table',
                         _captcha: 'false',
                         _language: 'es',
                         'Comprador': nombre,
@@ -403,9 +416,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Teléfono (WhatsApp)</label>
                                             <input
                                                 type="tel"
-                                                placeholder="55 1234 5678"
+                                                inputMode="numeric"
+                                                maxLength={10}
+                                                placeholder="10 dígitos (ej. 5512345678)"
                                                 value={telefono}
-                                                onChange={(e) => { setErrors(prev => ({ ...prev, telefono: '' })); setTelefono(e.target.value); }}
+                                                onChange={(e) => handlePhoneChange(e.target.value)}
                                                 className={errors.telefono ? 'input-error' : ''}
                                                 style={{ width: '100%', padding: '11px 13px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
                                             />
@@ -506,9 +521,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                     <label style={{ fontSize: '0.76rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Teléfono (WhatsApp)</label>
                                                     <input
                                                         type="tel"
-                                                        placeholder="55 1234 5678"
+                                                        inputMode="numeric"
+                                                        maxLength={10}
+                                                        placeholder="10 dígitos"
                                                         value={telefono}
-                                                        onChange={(e) => setTelefono(e.target.value)}
+                                                        onChange={(e) => handlePhoneChange(e.target.value)}
                                                         style={{ width: '100%', padding: '9px 11px', borderRadius: '10px', border: errors.telefono ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                                                     />
                                                     {errors.telefono && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors.telefono}</span>}
