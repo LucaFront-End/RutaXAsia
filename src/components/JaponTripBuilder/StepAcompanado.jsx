@@ -297,18 +297,12 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                 <div className="acomp-shinkansen-timeline">
                                     <div className="acomp-railway-track" style={{ '--rail-color': season.colors.primary }} />
                                     {filteredItinerario.map((item) => {
-                                        const isTokyoFreeDay = (
-                                            item.day === 11 ||
-                                            item.day === 12 ||
-                                            item.day === 13 ||
-                                            (item.title && item.title.toLowerCase().includes('libre')) ||
-                                            (item.desc && item.desc.toLowerCase().includes('libre'))
-                                        ) && (
-                                            (item.desc && item.desc.toLowerCase().includes('tokio')) ||
-                                            (item.title && item.title.toLowerCase().includes('tokio')) ||
-                                            item.day === 11 ||
-                                            item.day === 12 ||
-                                            item.day === 13
+                                        const titleLower = (item.title || '').toLowerCase()
+                                        const descLower = (item.desc || '').toLowerCase()
+                                        const isReturnDay = titleLower.includes('regreso') || titleLower.includes('vuelta') || titleLower.includes('vuelo internacional') || descLower.includes('regreso a méxico') || descLower.includes('vuelo de regreso')
+
+                                        const isTokyoFreeDay = !isReturnDay && (
+                                            titleLower.includes('libre') || descLower.includes('libre') || titleLower.includes('ruta por japón')
                                         )
 
                                         return (
