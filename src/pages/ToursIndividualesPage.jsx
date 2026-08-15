@@ -16,18 +16,10 @@ export default function ToursIndividualesPage() {
     const [selectedCategory, setSelectedCategory] = useState('Todas')
     const [sortBy, setSortBy] = useState('price-asc') // 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc'
 
-    // Selected Individual Tours Cart: [{ id, name, price, date, quantity, passengerNames, assistanceType }]
+    // Selected Individual Tours Cart: [{ id, name, price, date, quantity }]
     const [selectedTours, setSelectedTours] = useState([])
-    // Pending date pickers for tours: { [tourId]: '2026-10-18' }
+    // Chosen date for each tour card: { [tourId]: '2026-10-18' }
     const [tourDates, setTourDates] = useState({})
-
-    // Multi-Step Modal state for configuring tour
-    const [configuringTour, setConfiguringTour] = useState(null)
-    const [modalStep, setModalStep] = useState(1) // 1: Asistencia (Locataria vs Anfitrión), 2: Fecha, Cantidad y Nombres
-    const [modalAssistance, setModalAssistance] = useState('locataria') // 'locataria' | 'anfitrion'
-    const [modalDate, setModalDate] = useState('')
-    const [modalQuantity, setModalQuantity] = useState(1)
-    const [modalNames, setModalNames] = useState([''])
 
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
@@ -46,7 +38,7 @@ export default function ToursIndividualesPage() {
         return () => { isMounted = false }
     }, [])
 
-    // Handle date change for a tour
+    // Handle date change for a tour card
     const handleDateChange = (tourId, dateStr) => {
         setTourDates(prev => ({ ...prev, [tourId]: dateStr }))
         // If already added, update date in selectedTours
@@ -55,46 +47,25 @@ export default function ToursIndividualesPage() {
         ))
     }
 
-    // Open modal to configure tour or remove if added
-    const openTourModal = (tour) => {
+    // Toggle tour freely directly from card
+    const toggleTour = (tour) => {
         const existing = selectedTours.find(t => t.id === tour.id)
         if (existing) {
-            // Already added -> remove
+            // Already added -> remove directly
             setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
-            return
+        } else {
+            // Add tour directly with the date selected on the card
+            const chosenDate = tourDates[tour.id] || new Date().toISOString().split('T')[0]
+            const qty = selectorData?.adults || 1
+
+            setSelectedTours(prev => [...prev, {
+                id: tour.id,
+                name: tour.title,
+                price: tour.priceNum || 0,
+                date: chosenDate,
+                quantity: qty,
+            }])
         }
-
-        const defaultDate = tourDates[tour.id] || new Date().toISOString().split('T')[0]
-        const defaultQty = selectorData?.adults || 1
-        setConfiguringTour(tour)
-        setModalStep(1)
-        setModalAssistance('locataria')
-        setModalDate(defaultDate)
-        setModalQuantity(defaultQty)
-        setModalNames(Array(defaultQty).fill(''))
-    }
-
-    const saveConfiguredTour = () => {
-        if (!configuringTour) return
-        const formattedNames = modalNames.map(n => n.trim()).filter(Boolean)
-        const assistanceLabel = modalAssistance === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'
-
-        setSelectedTours(prev => {
-            const filtered = prev.filter(t => t.id !== configuringTour.id)
-            return [...filtered, {
-                id: configuringTour.id,
-                name: `${configuringTour.title} (${assistanceLabel})`,
-                rawTitle: configuringTour.title,
-                price: configuringTour.priceNum || 0,
-                date: modalDate,
-                quantity: modalQuantity,
-                assistanceType: assistanceLabel,
-                passengerNames: formattedNames
-            }]
-        })
-
-        setTourDates(prev => ({ ...prev, [configuringTour.id]: modalDate }))
-        setConfiguringTour(null)
     }
 
     // Filter & Sort logic
@@ -127,8 +98,6 @@ export default function ToursIndividualesPage() {
         return result
     }, [tours, searchTerm, selectedCategory, sortBy])
 
-    const adults = selectorData?.adults || 2
-    const children = selectorData?.children || 0
     const extraTotal = selectedTours.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
     const totalPrice = extraTotal
 
@@ -158,7 +127,7 @@ export default function ToursIndividualesPage() {
                     <span className="tours-indiv-tag">⛩️ Viajeros Independientes</span>
                     <h1 className="tours-indiv-title">Tours en Japón</h1>
                     <p className="tours-indiv-excerpt">
-                        Excursiones de 1 día y actividades sueltas para personas que ya se encuentran en Japón o cuentan con su propio hospedaje. Selecciona tus tours, elige el día y agrégalos a tu boleto de reserva.
+                        Excursiones de 1 día y actividades sueltas para personas que ya se encuentran en Japón o cuentan con su propio hospedaje. Selecciona tus tours libremente, elige el día y agrégalos a tu boleto de reserva.
                     </p>
                 </div>
             </div>
@@ -224,7 +193,14 @@ export default function ToursIndividualesPage() {
                             selectedComps={[]}
                             basePrice={0}
                             extraTotal={extraTotal}
-                            onOpenCheckout={() => setIsCheckoutOpen(true)}
+                            customReserveBtnText="💳 Pagar Tours en Línea"
+                            onOpenCheckout={() => {
+                                if (selectedTours.length === 0) {
+                                    alert('Por favor selecciona al menos un tour antes de proceder al pago.')
+                                    return
+                                }
+                                setIsCheckoutOpen(true)
+                            }}
                             onRemoveTour={(tourIdOrName) => setSelectedTours(prev => prev.filter(t => t.id !== tourIdOrName && t.name !== tourIdOrName && `${t.name} (📅 ${formatDateLabel(t.date)})` !== tourIdOrName))}
                         />
                     </div>
@@ -311,7 +287,7 @@ export default function ToursIndividualesPage() {
                                                     <button
                                                         type="button"
                                                         className={`tours-indiv-btn${isAdded ? ' tours-indiv-btn--added' : ''}`}
-                                                        onClick={() => openTourModal(tour)}
+                                                        onClick={() => toggleTour(tour)}
                                                     >
                                                         {isAdded ? '✓ Agregado' : '+ Agregar'}
                                                     </button>
@@ -326,272 +302,6 @@ export default function ToursIndividualesPage() {
                 </div>
             </div>
 
-            {/* Multi-Step Modal for Configuring Tour */}
-            {configuringTour && (
-                <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 99999 }}>
-                    <div className="jtb-modal-card" style={{ maxWidth: '600px', padding: '32px 28px', textAlign: 'left' }}>
-                        <button className="jtb-modal-close" onClick={() => setConfiguringTour(null)}>&times;</button>
-                        
-                        {/* Tour Header Summary */}
-                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #eee' }}>
-                            <img
-                                src={configuringTour.image}
-                                alt={configuringTour.title}
-                                style={{ width: '76px', height: '76px', borderRadius: '16px', objectFit: 'cover' }}
-                                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop' }}
-                            />
-                            <div>
-                                <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-primary)', letterSpacing: '0.05em' }}>
-                                    Personalizar Experiencia
-                                </span>
-                                <h3 style={{ margin: '4px 0 0', fontSize: '1.15rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)' }}>
-                                    {configuringTour.title}
-                                </h3>
-                                <div style={{ fontSize: '0.88rem', color: '#666', marginTop: '2px', fontWeight: '700' }}>
-                                    {configuringTour.priceText || formatPrice(configuringTour.priceNum)} MXN / persona
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Step 1 vs Step 2 Navigation Pills */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            marginBottom: '20px',
-                            padding: '8px 12px',
-                            background: '#f8fafc',
-                            borderRadius: '100px',
-                            border: '1px solid #e2e8f0',
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: modalStep >= 1 ? 1 : 0.4 }}>
-                                <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: modalStep >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
-                                <span style={{ fontSize: '0.78rem', fontWeight: modalStep === 1 ? 800 : 600, color: modalStep === 1 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>Asistencia</span>
-                            </div>
-                            <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>→</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: modalStep >= 2 ? 1 : 0.4 }}>
-                                <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: modalStep >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
-                                <span style={{ fontSize: '0.78rem', fontWeight: modalStep === 2 ? 800 : 600, color: modalStep === 2 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>Fecha y Pasajeros</span>
-                            </div>
-                        </div>
-
-                        {/* ================= STEP 1: MODALIDAD DE ASISTENCIA ================= */}
-                        {modalStep === 1 && (
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: '800', color: 'var(--color-dark)', marginBottom: '12px' }}>
-                                    1. Elige tu modalidad de acompañamiento para este tour:
-                                </label>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '24px' }}>
-                                    {/* Card 1: Asistencia Locataria */}
-                                    <div
-                                        onClick={() => setModalAssistance('locataria')}
-                                        style={{
-                                            border: modalAssistance === 'locataria' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
-                                            background: modalAssistance === 'locataria' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
-                                            borderRadius: '16px',
-                                            padding: '18px 16px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'space-between',
-                                            boxShadow: modalAssistance === 'locataria' ? '0 8px 20px rgba(225,29,72,0.12)' : 'none'
-                                        }}
-                                    >
-                                        <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                                <span style={{ fontSize: '1.8rem' }}>🏮</span>
-                                                <span style={{
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 800,
-                                                    padding: '3px 8px',
-                                                    borderRadius: '6px',
-                                                    background: modalAssistance === 'locataria' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
-                                                    color: modalAssistance === 'locataria' ? '#fff' : '#64748b'
-                                                }}>
-                                                    {modalAssistance === 'locataria' ? '✓ Seleccionado' : 'Elegir'}
-                                                </span>
-                                            </div>
-                                            <h4 style={{ margin: '0 0 6px', fontSize: '1rem', fontWeight: 800, color: 'var(--color-dark)' }}>
-                                                Asistencia Locataria
-                                            </h4>
-                                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b', lineHeight: 1.4 }}>
-                                                Orientación y soporte local en destino. Disfruta tu recorrido con la asistencia y recomendaciones de coordinadores locales en español.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Card 2: Anfitrión de Viaje */}
-                                    <div
-                                        onClick={() => setModalAssistance('anfitrion')}
-                                        style={{
-                                            border: modalAssistance === 'anfitrion' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
-                                            background: modalAssistance === 'anfitrion' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
-                                            borderRadius: '16px',
-                                            padding: '18px 16px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'space-between',
-                                            boxShadow: modalAssistance === 'anfitrion' ? '0 8px 20px rgba(225,29,72,0.12)' : 'none'
-                                        }}
-                                    >
-                                        <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                                <span style={{ fontSize: '1.8rem' }}>👑</span>
-                                                <span style={{
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 800,
-                                                    padding: '3px 8px',
-                                                    borderRadius: '6px',
-                                                    background: modalAssistance === 'anfitrion' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
-                                                    color: modalAssistance === 'anfitrion' ? '#fff' : '#64748b'
-                                                }}>
-                                                    {modalAssistance === 'anfitrion' ? '✓ Seleccionado' : 'Elegir'}
-                                                </span>
-                                            </div>
-                                            <h4 style={{ margin: '0 0 6px', fontSize: '1rem', fontWeight: 800, color: 'var(--color-dark)' }}>
-                                                Anfitrión de Viaje
-                                            </h4>
-                                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b', lineHeight: 1.4 }}>
-                                                Acompañamiento cercano y personalizado durante todo el tour. Atención dedicada para una inmersión completa sin preocuparte por traslados ni logística.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    style={{ width: '100%', padding: '14px', borderRadius: '100px', fontSize: '0.95rem', fontWeight: 800 }}
-                                    onClick={() => setModalStep(2)}
-                                >
-                                    Continuar a Fecha y Pasajeros →
-                                </button>
-                            </div>
-                        )}
-
-                        {/* ================= STEP 2: FECHA, CANTIDAD Y ASISTENTES ================= */}
-                        {modalStep === 2 && (
-                            <div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                    <label style={{ fontSize: '0.88rem', fontWeight: '800', color: 'var(--color-dark)', margin: 0 }}>
-                                        2. Configuración de Fecha y Pasajeros:
-                                    </label>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 750, color: 'var(--color-primary)', background: 'rgba(225, 29, 72, 0.08)', padding: '3px 10px', borderRadius: '100px' }}>
-                                        {modalAssistance === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria'}
-                                    </span>
-                                </div>
-
-                                {/* Date and Quantity Selector */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
-                                            📅 Fecha del Tour:
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={modalDate}
-                                            min={new Date().toISOString().split('T')[0]}
-                                            onChange={(e) => setModalDate(e.target.value)}
-                                            style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#444', marginBottom: '6px' }}>
-                                            👥 Cantidad de Pasajeros:
-                                        </label>
-                                        <select
-                                            value={modalQuantity}
-                                            onChange={(e) => {
-                                                const newQty = parseInt(e.target.value, 10)
-                                                setModalQuantity(newQty)
-                                                setModalNames(prev => {
-                                                    const copy = [...prev]
-                                                    if (newQty > copy.length) {
-                                                        while (copy.length < newQty) copy.push('')
-                                                    } else {
-                                                        copy.length = newQty
-                                                    }
-                                                    return copy
-                                                })
-                                            }}
-                                            style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '0.9rem', fontWeight: '700' }}
-                                        >
-                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                                                <option key={num} value={num}>{num} {num === 1 ? 'Persona' : 'Personas'}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Passenger Names Form */}
-                                <div style={{ marginBottom: '20px' }}>
-                                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: 'var(--color-dark)', marginBottom: '8px' }}>
-                                        📋 Nombre(s) de la(s) persona(s) que asistirán:
-                                    </label>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
-                                        {modalNames.map((nameVal, i) => (
-                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#666', width: '80px', flexShrink: 0 }}>
-                                                    Persona {i + 1}:
-                                                </span>
-                                                <input
-                                                    type="text"
-                                                    placeholder={`Nombre completo del asistente ${i + 1}`}
-                                                    value={nameVal}
-                                                    onChange={(e) => {
-                                                        const val = e.target.value
-                                                        setModalNames(prev => {
-                                                            const copy = [...prev]
-                                                            copy[i] = val
-                                                            return copy
-                                                        })
-                                                    }}
-                                                    style={{ flex: 1, padding: '9px 12px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.88rem' }}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Modal Footer Summary & CTA */}
-                                <div style={{ background: '#f8f9fa', padding: '14px 18px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                                    <div>
-                                        <span style={{ fontSize: '0.75rem', color: '#666', display: 'block' }}>Total por {modalQuantity} persona(s):</span>
-                                        <strong style={{ fontSize: '1.2rem', color: 'var(--color-primary)' }}>
-                                            {formatPrice((configuringTour.priceNum || 0) * modalQuantity)} MXN
-                                        </strong>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            type="button"
-                                            className="btn btn-outline"
-                                            style={{ padding: '8px 16px', borderRadius: '100px', fontSize: '0.85rem' }}
-                                            onClick={() => setModalStep(1)}
-                                        >
-                                            ← Volver
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            style={{ borderRadius: '100px', padding: '10px 22px', fontWeight: '800', fontSize: '0.88rem' }}
-                                            onClick={saveConfiguredTour}
-                                        >
-                                            ✓ Confirmar y Agregar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
             <CheckoutModal
                 isOpen={isCheckoutOpen}
                 onClose={() => setIsCheckoutOpen(false)}
@@ -599,8 +309,8 @@ export default function ToursIndividualesPage() {
                 estilo="Tours Sueltos"
                 totalPrice={totalPrice}
                 desglose={
-                    `Tours seleccionados: ${selectedTours.map(t => `${t.name} (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [Asistentes: ${t.passengerNames?.join(', ') || 'Por definir'}]`).join('; ') || 'Ninguno'}. ` +
-                    `Total acumulado: ${formatPrice(totalPrice)} MXN.`
+                    `Tours seleccionados (${selectedTours.length}): ` +
+                    selectedTours.map(t => `${t.name} (📅 ${formatDateLabel(t.date)}) - ${formatPrice(t.price)} MXN`).join('; ')
                 }
             />
         </div>
