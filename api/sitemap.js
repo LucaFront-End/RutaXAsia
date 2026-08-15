@@ -22,13 +22,15 @@ const STATIC_PAGES = [
 
 /* ── Hardcoded tour slugs as fallback ───────── */
 const STATIC_TOUR_SLUGS = [
+    'sakura-2027',
+    'octubre-japon-2026',
+    'japon-corea-2026',
+    'corea-otono-2026',
     'sakura-2026',
     'japon-corea-mayo-2026',
     'corea-junio-2026',
     'verano-japon-2026',
     'corea-septiembre-2026',
-    'octubre-japon-2026',
-    'japon-corea-2026',
     'otono-japon-2026',
 ];
 
