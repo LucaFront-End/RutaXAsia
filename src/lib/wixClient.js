@@ -148,3 +148,18 @@ export async function fetchPreciosCategoriasDias() {
         return []
     }
 }
+
+/**
+ * Fetch all Itinerariosdecompletos from Wix CMS via /api/itinerarios-completos
+ */
+export async function fetchItinerariosCompletos() {
+    try {
+        const res = await fetch('/api/itinerarios-completos')
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const data = await res.json()
+        return data.itinerarios || []
+    } catch (error) {
+        console.error('[ItinerariosCompletos] Error fetching itineraries:', error.message)
+        return []
+    }
+}

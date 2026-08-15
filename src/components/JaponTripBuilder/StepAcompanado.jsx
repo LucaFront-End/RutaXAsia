@@ -5,15 +5,14 @@ import {
     ITINERARIO_ACOMPANADO_SAKURA,
     ACOMPANADO_TODO_INCLUIDO,
     ACOMPANADO_TODO_INCLUIDO_MOMIJI,
-    ACOMPANADO_UPSELL,
+    COMPLEMENTOS,
     EXP_HEROES,
 } from '../../data/japonData'
 import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
-import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
-import { fetchPreciosCategoriasDias, fetchTourIndividuales } from '../../lib/wixClient'
+import { fetchPreciosCategoriasDias, fetchTourIndividuales, fetchItinerariosCompletos } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -21,9 +20,9 @@ import { useTripSearch } from '../../context/TripContext'
  * StepAcompanado — Step 3 for "Completo" (Acompañado) experience.
  * Features:
  * - 2 Pass Options: PASE EXPLORADOR (12 días / 1 extra tour) & PASE GRAND TOUR (14 días / 2 extra tours)
- * - Dynamic Day-by-Day itinerary timeline filtered by pass duration (DISPLAYED FIRST)
- * - Free Day in Tokyo Pop-up / Experience selector (SOLO EN TOKIO)
- * - Extra Tours section (RecommendedExperiencesCMS) with free tour limit based on pass
+ * - Dynamic Day-by-Day itinerary loaded from Wix CMS "Itinerariosdecompletos"
+ * - Free Day in Tokyo Pop-up / Experience selector ONLY on the free day in Tokyo
+ * - Matching Optional Add-ons (Complementos) with Esencial
  * - FloatingTicket & CheckoutModal integration
  */
 export default function StepAcompanado({ season, temporadaKey }) {
@@ -36,6 +35,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [cmsPackages, setCmsPackages] = useState([])
     const [cmsDatesText, setCmsDatesText] = useState('')
+    const [cmsItinerarios, setCmsItinerarios] = useState([])
     const [isTokyoModalOpen, setIsTokyoModalOpen] = useState(false)
     const [allTours, setAllTours] = useState([])
 
@@ -49,7 +49,6 @@ export default function StepAcompanado({ season, temporadaKey }) {
                 (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
             )
             if (isMounted && filtered.length > 0) {
-                // Map packages for Completo (e.g. Explorador vs Grand Tour)
                 const mapped = filtered.map(p => {
                     const isGrandTour = p.tituloComercial.toUpperCase().includes('GRAND') || (p.dias || '').includes('14')
                     return {
@@ -77,6 +76,19 @@ export default function StepAcompanado({ season, temporadaKey }) {
         loadCmsPrices()
         return () => { isMounted = false }
     }, [season?.name, temporadaKey])
+
+    // Load CMS Day-by-Day Itineraries
+    useEffect(() => {
+        let isMounted = true
+        async function loadItineraries() {
+            const data = await fetchItinerariosCompletos()
+            if (isMounted && data.length > 0) {
+                setCmsItinerarios(data)
+            }
+        }
+        loadItineraries()
+        return () => { isMounted = false }
+    }, [])
 
     // Load individual tours for Tokyo modal
     useEffect(() => {
@@ -137,11 +149,29 @@ export default function StepAcompanado({ season, temporadaKey }) {
     const extraItems = selectedExps.slice(freeExpLimit)
     const extraTotal = extraItems.reduce((sum, item) => sum + (item.price || 0), 0)
 
-    const fullItinerario = season?.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : season?.key === 'sakura' ? ITINERARIO_ACOMPANADO_SAKURA : ITINERARIO_ACOMPANADO
-    // Filter itinerary timeline according to chosen pass (12 days vs 14 days)
+    // Select dynamic itinerary from CMS or fallback to local data
     const filteredItinerario = useMemo(() => {
+        const seasonNameLower = (season?.name || 'Sakura').toLowerCase()
+        const passName = activePass.name || 'PASE EXPLORADOR'
+
+        if (cmsItinerarios.length > 0) {
+            const matched = cmsItinerarios.filter(it => {
+                const seasonMatch = it.temporada.toLowerCase() === seasonNameLower || it.temporada.toLowerCase() === temporadaKey.toLowerCase()
+                const passMatch = it.tipoDePase.toUpperCase().includes('GRAND')
+                    ? passName.toUpperCase().includes('GRAND')
+                    : !it.tipoDePase.toUpperCase().includes('GRAND')
+                return seasonMatch && passMatch
+            })
+
+            if (matched.length > 0) {
+                return matched.sort((a, b) => a.day - b.day)
+            }
+        }
+
+        // Fallback to local files
+        const fullItinerario = season?.key === 'momiji' ? ITINERARIO_ACOMPANADO_MOMIJI : season?.key === 'sakura' ? ITINERARIO_ACOMPANADO_SAKURA : ITINERARIO_ACOMPANADO
         return fullItinerario.filter(item => item.day <= activePass.daysNum)
-    }, [fullItinerario, activePass.daysNum])
+    }, [cmsItinerarios, season?.name, season?.key, temporadaKey, activePass.name, activePass.daysNum])
 
     const todoIncluido = season?.key === 'momiji' ? ACOMPANADO_TODO_INCLUIDO_MOMIJI : ACOMPANADO_TODO_INCLUIDO
 
@@ -243,7 +273,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                                 style={{ padding: '24px 20px', cursor: 'pointer' }}
                                             >
                                                 <span className="libre-duration-card-badge">
-                                                    {pkg.freeTours === 1 ? '🎁 Incluye 1 Tour Extra Gratis' : '🎁 Incluye 2 Tours Extras Gratis'}
+                                                    {pkg.freeTours === 1 ? '🎁 Incluye 1 Experiencia Extra Gratis' : '🎁 Incluye 2 Experiencias Extras Gratis'}
                                                 </span>
                                                 <div className="libre-duration-check">{isSelected ? '✓' : ''}</div>
                                                 <span className="libre-duration-pass-name" style={{ fontSize: '1.25rem' }}>{pkg.name}</span>
@@ -257,7 +287,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                 </div>
                             </div>
 
-                            {/* 1. ITINERARIO DÍA POR DÍA PRIMERO (Filtered by pass duration) */}
+                            {/* ITINERARIO DÍA POR DÍA (From CMS Itinerariosdecompletos) */}
                             <div style={{ marginBottom: '50px' }}>
                                 <div className="step3-section-title">
                                     🚄 Ruta JR Line — Itinerario Completo ({activePass.name}: {activePass.days})
@@ -267,13 +297,15 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                     {filteredItinerario.map((item) => {
                                         const isTokyoFreeDay = (
                                             item.day === 11 ||
+                                            item.day === 12 ||
+                                            item.day === 13 ||
                                             (item.title && item.title.toLowerCase().includes('libre')) ||
-                                            (item.desc && item.desc.toLowerCase().includes('libre en tokio')) ||
                                             (item.desc && item.desc.toLowerCase().includes('libre'))
                                         ) && (
-                                            item.desc.toLowerCase().includes('tokio') ||
-                                            item.title.toLowerCase().includes('tokio') ||
+                                            (item.desc && item.desc.toLowerCase().includes('tokio')) ||
+                                            (item.title && item.title.toLowerCase().includes('tokio')) ||
                                             item.day === 11 ||
+                                            item.day === 12 ||
                                             item.day === 13
                                         )
 
@@ -285,7 +317,9 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                                 <div className="acomp-station-card" style={isTokyoFreeDay ? { border: `2px solid ${season.colors.primary}`, background: 'rgba(233,30,99,0.03)' } : {}}>
                                                     <div className="acomp-station-header">
                                                         <span className="acomp-station-icon">{item.icon}</span>
-                                                        <h4 className="acomp-station-title">Día {item.day}: {item.title}</h4>
+                                                        <h4 className="acomp-station-title">
+                                                            {item.title.startsWith('Día') ? item.title : `Día ${item.day}: ${item.title}`}
+                                                        </h4>
                                                     </div>
                                                     <p className="acomp-station-desc">{item.desc}</p>
                                                     
@@ -301,7 +335,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                                                 style={{ fontSize: '0.8rem', padding: '6px 16px', borderRadius: '100px', fontWeight: '750' }}
                                                                 onClick={() => setIsTokyoModalOpen(true)}
                                                             >
-                                                                ✨ Elegir Tour o Experiencia en Tokio
+                                                                ✨ Elegir Experiencias en Tokio
                                                             </button>
                                                         </div>
                                                     )}
@@ -312,23 +346,11 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                 </div>
                             </div>
 
-                            {/* 2. EXTRA TOURS SECTION (RecommendedExperiencesCMS) */}
-                            <div style={{ marginBottom: '40px' }}>
-                                <RecommendedExperiencesCMS
-                                    addedExperiences={selectedExps.map(e => e.id)}
-                                    onToggleExperience={(tourId, tourTitle, tourPriceNum) => {
-                                        toggleExperience({ id: tourId, title: tourTitle, priceNum: tourPriceNum })
-                                    }}
-                                    seasonName={`${season.name} (${activePass.name})`}
-                                    tourLimit={currentTourLimit}
-                                />
-                            </div>
-
-                            {/* Upsell */}
-                            <div>
-                                <div className="step3-section-title">✨ Complementos opcionales (selecciona para agregar)</div>
+                            {/* Complementos Adicionales (Opcionales) — Same as Esencial */}
+                            <div style={{ marginTop: '30px' }}>
+                                <div className="step3-section-title">✨ Complementos adicionales (opcionales)</div>
                                 <div className="jtb-extras-grid">
-                                    {ACOMPANADO_UPSELL.map((item, i) => {
+                                    {COMPLEMENTOS.map((item, i) => {
                                         const isSelected = selectedComps.includes(item.title)
                                         return (
                                             <div
@@ -367,7 +389,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                 </div>
             </section>
 
-            {/* Modal: Elegir Tour / Experiencia para Día Libre en Tokio */}
+            {/* Modal: Elegir Experiencias para Día Libre en Tokio */}
             {isTokyoModalOpen && (
                 <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 999999 }} onClick={() => setIsTokyoModalOpen(false)}>
                     <div className="jtb-modal-card" style={{ maxWidth: '800px', maxHeight: '88vh', overflowY: 'auto', padding: '32px 28px' }} onClick={e => e.stopPropagation()}>
@@ -376,10 +398,10 @@ export default function StepAcompanado({ season, temporadaKey }) {
                         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                             <span style={{ fontSize: '2.5rem' }}>🗼</span>
                             <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-heading)', margin: '8px 0 4px', color: 'var(--color-dark)' }}>
-                                Tours y Experiencias en Tokio para tu Día Libre
+                                Experiencias en Tokio para tu Día Libre
                             </h3>
                             <p style={{ fontSize: '0.88rem', color: '#666', margin: 0 }}>
-                                Selecciona la experiencia que te gustaría vivir en tu día libre en Tokio. Se agregará directamente a tu Pase de Abordar:
+                                Selecciona la experiencia que deseas vivir en tu día libre en Tokio. Se agregará directamente a tu Pase de Abordar:
                             </p>
                         </div>
 
@@ -459,11 +481,11 @@ export default function StepAcompanado({ season, temporadaKey }) {
                         <div style={{ fontSize: '3rem', marginBottom: '8px' }}>🌸</div>
                         
                         <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)', marginBottom: '10px', lineHeight: 1.3 }}>
-                            Has alcanzado el límite de {currentTourLimit} tours para tu {activePass.name}
+                            Has alcanzado el límite de {currentTourLimit} experiencias para tu {activePass.name}
                         </h3>
                         
                         <p style={{ fontSize: '0.95rem', color: '#555', marginBottom: '24px', lineHeight: '1.5' }}>
-                            Tu <strong>{activePass.name}</strong> incluye {freeExpLimit} tours extra gratis y permite hasta {currentTourLimit} tours en total. ¿Deseas ampliar a <strong>PASE GRAND TOUR (14 días)</strong> para obtener 2 tours gratis y mayor límite?
+                            Tu <strong>{activePass.name}</strong> incluye {freeExpLimit} experiencia extra gratis y permite hasta {currentTourLimit} experiencias en total. ¿Deseas ampliar a <strong>PASE GRAND TOUR (14 días)</strong> para obtener 2 experiencias gratis y mayor límite?
                         </p>
 
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
