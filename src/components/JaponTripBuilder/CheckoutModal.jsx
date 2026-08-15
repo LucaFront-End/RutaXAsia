@@ -11,7 +11,7 @@ import './StepStyles.css'
  *
  * For Tours Sueltos (Tours Individuales):
  *   Step 1: Modalidad de Asistencia (Locataria vs Anfitrión)
- *   Step 2: Información del Comprador y Viajantes
+ *   Step 2: Información del Comprador y Viajantes (con selector dinámico de asistentes)
  *   Step 3: Pagar Total Completo de los Tours
  */
 export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPrice, desglose }) {
@@ -30,8 +30,8 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     const [nombre, setNombre] = useState('')
     const [correo, setCorreo] = useState('')
     const [telefono, setTelefono] = useState('')
-    const [adultsCount, setAdultsCount] = useState(tripSearch?.adults || 2)
-    const [childrenCount, setChildrenCount] = useState(tripSearch?.children || 0)
+    const [adultsCount, setAdultsCount] = useState(isToursSueltos ? 1 : (tripSearch?.adults || 2))
+    const [childrenCount, setChildrenCount] = useState(isToursSueltos ? 0 : (tripSearch?.children || 0))
 
     const totalTravelers = Math.max(1, adultsCount + childrenCount)
 
@@ -104,7 +104,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         const errs = {}
         travelers.forEach((t, i) => {
             if (!t.fullName.trim()) {
-                errs[`traveler_${i}`] = `Ingresa el nombre del Viajero ${i + 1}.`
+                errs[`traveler_${i}`] = `Ingresa el nombre de la Persona ${i + 1}.`
             }
         })
         setErrors(errs)
@@ -141,7 +141,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
         const assistanceLabel = assistanceType === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'
         const travelersSummary = travelers
-            .map((t, i) => `Viajero ${i + 1}: ${t.fullName} (${t.type}${t.age ? `, ${t.age} años` : ''}${t.dietNotes ? ` - Notas: ${t.dietNotes}` : ''})`)
+            .map((t, i) => `Persona ${i + 1}: ${t.fullName} (${t.type}${t.age ? `, ${t.age} años` : ''}${t.dietNotes ? ` - Notas: ${t.dietNotes}` : ''})`)
             .join(' | ')
 
         try {
@@ -157,7 +157,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                     estilo: isToursSueltos ? `Tours Sueltos (${assistanceLabel})` : (estilo || 'Reserva'),
                     totalViaje: totalPrice,
                     montoAnticipo: paymentAmount,
-                    desglose: `${desglose || ''} [Modalidad: ${assistanceLabel}] [Viajeros: ${travelersSummary}]`,
+                    desglose: `${desglose || ''} [Modalidad: ${assistanceLabel}] [Asistentes: ${travelersSummary}]`,
                     viajeros: travelers,
                 })
             })
@@ -184,8 +184,8 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         'Tipo de Asistencia': isToursSueltos ? assistanceLabel : 'Incluida en paquete',
                         'Monto a Pagar': `${formatPrice(paymentAmount)} MXN (${isToursSueltos ? 'Pago Total Completo' : 'Anticipo de Apartado'})`,
                         'Total Estimado': `${formatPrice(totalPrice)} MXN`,
-                        'Total de Pasajeros': totalTravelers,
-                        'Detalle de Viajantes': travelersSummary,
+                        'Total de Asistentes': totalTravelers,
+                        'Detalle de Asistentes': travelersSummary,
                         'Desglose del Pedido': desglose,
                         'Fecha de Registro': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
                     }),
@@ -214,10 +214,10 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     }
 
     const assistanceLabel = assistanceType === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'
-    const travelersWaText = travelers.map((t, i) => `Viajero ${i + 1}: ${t.fullName || 'Pendiente'} (${t.type})`).join(', ')
+    const travelersWaText = travelers.map((t, i) => `Persona ${i + 1}: ${t.fullName || 'Pendiente'} (${t.type})`).join(', ')
     const waMsg = isToursSueltos
         ? `SW-Hola! Quiero reservar los siguientes Tours en Japón (${assistanceLabel}): ${desglose || ''}. ` +
-          `Comprador: ${nombre || 'Cliente'}. Pasajeros: ${travelersWaText}. Total a pagar: ${formatPrice(totalPrice)} MXN.`
+          `Comprador: ${nombre || 'Cliente'}. Asistentes: ${travelersWaText}. Total a pagar: ${formatPrice(totalPrice)} MXN.`
         : `SW-Hola! Quiero realizar mi apartado de $5,000 MXN para el viaje: ${season?.name || 'Japón'} (${estilo}). ` +
           `Comprador: ${nombre || 'Cliente'}. Pasajeros: ${travelersWaText}. Total: ${formatPrice(totalPrice)} MXN. ${desglose || ''}`
 
@@ -263,7 +263,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: step >= 2 ? 1 : 0.4 }}>
                                     <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: step >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
                                     <span style={{ fontSize: '0.8rem', fontWeight: step === 2 ? 800 : 600, color: step === 2 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
-                                        {isToursSueltos ? 'Datos & Viajeros' : `Viajeros (${totalTravelers})`}
+                                        {isToursSueltos ? `Datos & Asistentes (${totalTravelers})` : `Viajeros (${totalTravelers})`}
                                     </span>
                                 </div>
                                 <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>→</span>
@@ -369,7 +369,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                     style={{ width: '100%', padding: '14px', borderRadius: '100px', fontSize: '0.95rem', fontWeight: 800 }}
                                     onClick={() => setStep(2)}
                                 >
-                                    Continuar con Datos de Pasajeros →
+                                    Continuar con Datos de Asistentes →
                                 </button>
                             </div>
                         )}
@@ -529,9 +529,25 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                                         <h4 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0, color: 'var(--color-dark)' }}>
-                                            📋 Nombre(s) de Asistente(s) ({travelers.length})
+                                            📋 Nombre(s) de Asistente(s) ({totalTravelers})
                                         </h4>
-                                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Nombres para los tours</span>
+                                        {/* Dynamic Passenger Counter for Tours Sueltos */}
+                                        {isToursSueltos && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', border: '1px solid #cbd5e1', borderRadius: '100px', padding: '3px 8px' }}>
+                                                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>Cantidad:</span>
+                                                <button
+                                                    type="button"
+                                                    style={{ width: '22px', height: '22px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
+                                                    onClick={() => setAdultsCount(Math.max(1, adultsCount - 1))}
+                                                >-</button>
+                                                <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>{totalTravelers}</span>
+                                                <button
+                                                    type="button"
+                                                    style={{ width: '22px', height: '22px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
+                                                    onClick={() => setAdultsCount(adultsCount + 1)}
+                                                >+</button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '36vh', overflowY: 'auto', paddingRight: '4px' }}>

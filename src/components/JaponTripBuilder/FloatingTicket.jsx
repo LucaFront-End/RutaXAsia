@@ -19,6 +19,7 @@ export default function FloatingTicket({
     anticipoDisplay = null,
     hideQuantity = false,
     customReserveBtnText = null,
+    customWhatsAppBtnText = null,
     onOpenCheckout,
     onOpenDownloadPdf,
     onRemoveTour,
@@ -276,7 +277,7 @@ export default function FloatingTicket({
                             className="libre-calc-checkout-btn"
                             onClick={onOpenCheckout}
                         >
-                            💳 {customReserveBtnText || (anticipoDisplay ? `Apartar con Anticipo: ${anticipoDisplay}` : 'Apartar / Reservar en Línea')}
+                            {customReserveBtnText || (anticipoDisplay ? `💳 Apartar con Anticipo: ${anticipoDisplay}` : '💳 Apartar / Reservar en Línea')}
                         </button>
                     )}
                     <a
@@ -285,7 +286,7 @@ export default function FloatingTicket({
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        💬 {customReserveBtnText || (anticipoDisplay ? `Reservar con Anticipo: ${anticipoDisplay}` : 'Cotizar por WhatsApp')}
+                        {customWhatsAppBtnText || (anticipoDisplay ? `💬 Reservar con Anticipo: ${anticipoDisplay}` : '💬 Cotizar por WhatsApp')}
                     </a>
                     {onOpenDownloadPdf && (
                         <button
