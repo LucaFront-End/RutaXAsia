@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@wix/billing": "^1.0.105",
     "@wix/blog": "^1.0.588",
     "@wix/data": "^1.0.419",
     "@wix/ecom": "^1.0.2362",
+    "@wix/payments": "^1.0.264",
     "@wix/redirects": "^1.0.125",
     "@wix/sdk": "^1.21.4",
     "@wix/stores": "^1.0.856",

@@ -3,16 +3,19 @@ import { useTripSearch } from '../../context/TripContext'
 import './StepStyles.css'
 
 /**
- * CheckoutModal — Multi-Step Anticipation Booking & Checkout Modal
- * For Packages (Libre, Esencial, Completo):
- *   Step 1: Información del Comprador
- *   Step 2: Información de los Viajantes
- *   Step 3: Pagar Anticipo ($5,000 MXN)
+ * CheckoutModal — Multi-Step Anticipation & Full Booking Checkout Modal
  *
- * For Tours Sueltos (Tours Individuales):
- *   Step 1: Modalidad de Asistencia (Locataria vs Anfitrión)
- *   Step 2: Información del Comprador y Viajantes (con selector dinámico de asistentes)
- *   Step 3: Pagar Total Completo de los Tours
+ * 1. Tours Individuales:
+ *    - Step 1: Modalidad de Asistencia (Locataria vs Anfitrión)
+ *    - Step 2: Datos del Comprador y Asistentes
+ *    - Step 3: Pago Total Completo (100%) vía Wix Payments / Checkout
+ *
+ * 2. Paquetes / Viajes Completos:
+ *    - Step 1: Datos del Comprador y Pasajeros
+ *    - Step 2: Datos de los Viajeros
+ *    - Step 3: Modalidad de Pago:
+ *         a) 💳 Anticipo ($5,000 MXN) + 5 Facturas/Invoices mensuales automáticas (Wix Invoicing)
+ *         b) 💎 Pago Total Completo (100% Liquidación inmediata)
  */
 export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPrice, desglose }) {
     if (!isOpen) return null
@@ -25,6 +28,9 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
     // Assistance Type for Tours Sueltos
     const [assistanceType, setAssistanceType] = useState('locataria') // 'locataria' | 'anfitrion'
+
+    // Payment Mode for Packages: 'anticipo' ($5,000 + monthly invoices) | 'completo' (100% total)
+    const [packagePaymentMode, setPackagePaymentMode] = useState('anticipo')
 
     // Buyer Information
     const [nombre, setNombre] = useState('')
@@ -57,7 +63,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         })
     }, [totalTravelers, adultsCount])
 
-    // Update Traveler 1 name if Buyer name changes and Traveler 1 hasn't been manually diverged
+    // Update Traveler 1 name if Buyer name changes
     const handleBuyerNameChange = (val) => {
         setNombre(val)
         setTravelers(prev => {
@@ -81,11 +87,15 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     const [apiError, setApiError] = useState('')
     const [resultData, setResultData] = useState(null)
 
-    // Pricing details: Full price for Tours Sueltos, 5000 deposit for packages
-    const paymentAmount = isToursSueltos ? totalPrice : 5000
+    // Dynamic Pricing & Invoicing calculations
+    const paymentAmount = isToursSueltos
+        ? totalPrice
+        : (packagePaymentMode === 'anticipo' ? 5000 : totalPrice)
+
     const remainder = Math.max(0, totalPrice - paymentAmount)
-    const installmentsCount = 5
-    const monthlyInstallment = Math.round(remainder / installmentsCount)
+    const installmentsCount = (!isToursSueltos && packagePaymentMode === 'anticipo') ? 5 : 0
+    const monthlyInstallment = installmentsCount > 0 ? Math.round(remainder / installmentsCount) : 0
+    const generarInvoiceMensual = !isToursSueltos && packagePaymentMode === 'anticipo'
 
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
@@ -157,8 +167,10 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
             .map((t, i) => `Persona ${i + 1}: ${t.fullName} (${t.type}${t.age ? `, ${t.age} años` : ''}${t.dietNotes ? ` - Notas: ${t.dietNotes}` : ''})`)
             .join(' | ')
 
+        const currentTipoPago = isToursSueltos ? 'tours_total' : packagePaymentMode
+
         try {
-            // 1. Call serverless API to save reservation in Wix CMS and create Checkout session
+            // 1. Call serverless API to save reservation in Wix CMS, configure Invoices, and create Wix Checkout session
             const response = await fetch('/api/wix-checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -168,8 +180,13 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                     telefono,
                     temporada: isToursSueltos ? 'Tours Individuales' : (season?.name || 'Japón'),
                     estilo: isToursSueltos ? `Tours Sueltos (${assistanceLabel})` : (estilo || 'Reserva'),
+                    tipoPago: currentTipoPago,
                     totalViaje: totalPrice,
                     montoAnticipo: paymentAmount,
+                    saldoRestante: remainder,
+                    mensualidadesCount: installmentsCount,
+                    montoMensualidad: monthlyInstallment,
+                    generarInvoiceMensual: generarInvoiceMensual,
                     desglose: `${desglose || ''} [Modalidad: ${assistanceLabel}] [Asistentes: ${travelersSummary}]`,
                     viajeros: travelers,
                 })
@@ -179,13 +196,17 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
             // 2. Send notification email to reservas@rutaxasia.com via FormSubmit
             try {
+                const subjectText = isToursSueltos
+                    ? `🎟️ [Wix Payment] Pago Total Tours Individuales (${formatPrice(paymentAmount)} MXN) — ${nombre}`
+                    : (packagePaymentMode === 'anticipo'
+                        ? `💳 [Wix Invoicing] Nuevo Apartado ($5,000 MXN) + 5 Invoices Mensuales — ${nombre} (${season?.name || 'Japón'})`
+                        : `💎 [Wix Payment] Pago Total de Viaje (${formatPrice(paymentAmount)} MXN) — ${nombre} (${season?.name || 'Japón'})`)
+
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
-                        _subject: isToursSueltos
-                            ? `🎟️ Nueva Reserva de Tours Individuales (${formatPrice(paymentAmount)} MXN) — ${nombre}`
-                            : `💳 Nuevo Apartado de Viaje ($5,000 MXN) — ${nombre} (${season?.name || 'Japón'})`,
+                        _subject: subjectText,
                         _template: 'table',
                         _captcha: 'false',
                         _language: 'es',
@@ -194,9 +215,15 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         'Teléfono (WhatsApp)': telefono,
                         'Temporada / Sección': isToursSueltos ? 'Tours Individuales' : (season?.name || 'Japón'),
                         'Modalidad': isToursSueltos ? `Tours Sueltos (${assistanceLabel})` : (estilo || 'Reserva'),
-                        'Tipo de Asistencia': isToursSueltos ? assistanceLabel : 'Incluida en paquete',
-                        'Monto a Pagar': `${formatPrice(paymentAmount)} MXN (${isToursSueltos ? 'Pago Total Completo' : 'Anticipo de Apartado'})`,
-                        'Total Estimado': `${formatPrice(totalPrice)} MXN`,
+                        'Tipo de Cobro': isToursSueltos
+                            ? 'Pago Total Completo de Tours'
+                            : (packagePaymentMode === 'anticipo' ? 'Anticipo ($5,000 MXN) + Plan de Invoices Mensuales' : 'Pago Total Completo (100%)'),
+                        'Monto Cobrado Hoy': `${formatPrice(paymentAmount)} MXN`,
+                        'Total del Viaje': `${formatPrice(totalPrice)} MXN`,
+                        'Saldo Restante': `${formatPrice(remainder)} MXN`,
+                        'Plan de Facturación (Wix Invoices)': generarInvoiceMensual
+                            ? `5 facturas mensuales de ${formatPrice(monthlyInstallment)} MXN c/u emitidas al correo ${correo}`
+                            : 'Liquidado en su totalidad',
                         'Total de Asistentes': totalTravelers,
                         'Detalle de Asistentes': travelersSummary,
                         'Desglose del Pedido': desglose,
@@ -228,11 +255,15 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
     const assistanceLabel = assistanceType === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'
     const travelersWaText = travelers.map((t, i) => `Persona ${i + 1}: ${t.fullName || 'Pendiente'} (${t.type})`).join(', ')
+    
     const waMsg = isToursSueltos
-        ? `SW-Hola! Quiero reservar los siguientes Tours en Japón (${assistanceLabel}): ${desglose || ''}. ` +
+        ? `SW-Hola! Quiero reservar y pagar los siguientes Tours en Japón (${assistanceLabel}): ${desglose || ''}. ` +
           `Comprador: ${nombre || 'Cliente'}. Asistentes: ${travelersWaText}. Total a pagar: ${formatPrice(totalPrice)} MXN.`
-        : `SW-Hola! Quiero realizar mi apartado de $5,000 MXN para el viaje: ${season?.name || 'Japón'} (${estilo}). ` +
-          `Comprador: ${nombre || 'Cliente'}. Pasajeros: ${travelersWaText}. Total: ${formatPrice(totalPrice)} MXN. ${desglose || ''}`
+        : (packagePaymentMode === 'anticipo'
+            ? `SW-Hola! Quiero realizar mi apartado de $5,000 MXN para el viaje: ${season?.name || 'Japón'} (${estilo}) y programar mis invoices mensuales. ` +
+              `Comprador: ${nombre || 'Cliente'}. Pasajeros: ${travelersWaText}. Saldo restante: ${formatPrice(remainder)} MXN (5 cuotas de ${formatPrice(monthlyInstallment)} MXN).`
+            : `SW-Hola! Quiero realizar el pago TOTAL COMPLETO de ${formatPrice(totalPrice)} MXN para el viaje: ${season?.name || 'Japón'} (${estilo}). ` +
+              `Comprador: ${nombre || 'Cliente'}. Pasajeros: ${travelersWaText}.`)
 
     const waUrl = `https://wa.me/525657929121?text=${encodeURIComponent(waMsg)}`
 
@@ -246,12 +277,12 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         {/* Step Indicator Header */}
                         <div className="jtb-modal-header" style={{ marginBottom: '16px', textAlign: 'center' }}>
                             <h3 className="jtb-checkout-title">
-                                {isToursSueltos ? '🎟️ Reserva y Pago de Tours' : '💳 Apartado de Viaje con Anticipo'}
+                                {isToursSueltos ? '🎟️ Reserva y Pago de Tours' : '💳 Reserva y Pago de Viaje a Japón'}
                             </h3>
                             <p className="jtb-checkout-subtitle">
                                 {isToursSueltos
                                     ? 'Personaliza tu asistencia y completa tu pago seguro'
-                                    : 'Congela tu tarifa y aparta tus lugares pagando únicamente $5,000 MXN'}
+                                    : 'Aparta tus lugares con anticipo o liquida tu viaje de forma 100% segura'}
                             </p>
 
                             {/* 3 Steps Progress Bar */}
@@ -273,13 +304,13 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 3 ? 1 : 0.4 }}>
                                     <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 3 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</span>
                                     <span style={{ fontSize: '0.78rem', fontWeight: step === 3 ? 800 : 600, color: step === 3 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
-                                        {isToursSueltos ? 'Pagar Total' : 'Pago Anticipo'}
+                                        {isToursSueltos ? 'Pagar Total' : 'Modalidad de Pago'}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* ================= STEP 1: ASISTENCIA (FOR TOURS SUELTOS) OR COMPRADOR (FOR PACKAGES) ================= */}
+                        {/* ================= STEP 1: ASISTENCIA (FOR TOURS SUELTOS) ================= */}
                         {step === 1 && isToursSueltos && (
                             <div>
                                 <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '12px', color: 'var(--color-dark)' }}>
@@ -321,7 +352,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 Asistencia Locataria
                                             </h4>
                                             <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.35 }}>
-                                                Orientación y soporte local en destino. Disfruta tu recorrido con asistencia y recomendaciones de coordinadores locales en español.
+                                                Orientación y soporte local en destino con recomendaciones de coordinadores locales en español.
                                             </p>
                                         </div>
                                     </div>
@@ -360,7 +391,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 Anfitrión de Viaje
                                             </h4>
                                             <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.35 }}>
-                                                Acompañamiento cercano y personalizado durante todo el tour. Atención dedicada para una inmersión completa y sin preocupaciones.
+                                                Acompañamiento dedicado y personalizado durante todo el tour para una inmersión completa.
                                             </p>
                                         </div>
                                     </div>
@@ -377,7 +408,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                             </div>
                         )}
 
-                        {/* ================= STEP 1 (FOR PACKAGES) ================= */}
+                        {/* ================= STEP 1: COMPRADOR (FOR PACKAGES) ================= */}
                         {step === 1 && !isToursSueltos && (
                             <div>
                                 <div className="jtb-form-section" style={{ marginTop: '6px' }}>
@@ -488,7 +519,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         {step === 2 && (
                             <div>
                                 <div className="jtb-form-section" style={{ marginTop: '6px' }}>
-                                    {/* For Tours Sueltos, also capture buyer details in Step 2 */}
+                                    {/* For Tours Sueltos, capture buyer details in Step 2 */}
                                     {isToursSueltos && (
                                         <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid #e2e8f0' }}>
                                             <h4 style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0 0 10px', color: 'var(--color-dark)' }}>
@@ -624,10 +655,95 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                             </div>
                         )}
 
-                        {/* ================= STEP 3: PAGO DE TOTAL O ANTICIPO ================= */}
+                        {/* ================= STEP 3: MODALIDAD DE PAGO Y CHECKOUT ================= */}
                         {step === 3 && (
                             <form onSubmit={handleCheckoutSubmit}>
                                 <div style={{ marginTop: '6px' }}>
+
+                                    {/* Package Payment Options Selector (Only for full travel packages) */}
+                                    {!isToursSueltos && (
+                                        <div style={{ marginBottom: '14px' }}>
+                                            <label style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--color-dark)', display: 'block', marginBottom: '8px' }}>
+                                                💳 Elige tu Modalidad de Pago:
+                                            </label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                                {/* Option A: Anticipo + Monthly Invoices */}
+                                                <div
+                                                    onClick={() => setPackagePaymentMode('anticipo')}
+                                                    style={{
+                                                        border: packagePaymentMode === 'anticipo' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
+                                                        background: packagePaymentMode === 'anticipo' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                                        borderRadius: '14px',
+                                                        padding: '12px 10px',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'space-between',
+                                                        boxShadow: packagePaymentMode === 'anticipo' ? '0 4px 12px rgba(225,29,72,0.1)' : 'none'
+                                                    }}
+                                                >
+                                                    <div>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                                            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--color-primary, #e11d48)', background: 'rgba(225,29,72,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                                                                ✨ Recomendado
+                                                            </span>
+                                                            <input
+                                                                type="radio"
+                                                                name="packagePaymentMode"
+                                                                checked={packagePaymentMode === 'anticipo'}
+                                                                onChange={() => setPackagePaymentMode('anticipo')}
+                                                            />
+                                                        </div>
+                                                        <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a' }}>
+                                                            Anticipo $5,000 MXN
+                                                        </div>
+                                                        <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>
+                                                            Aparta hoy + 5 Invoices mensuales
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Option B: Full Payment */}
+                                                <div
+                                                    onClick={() => setPackagePaymentMode('completo')}
+                                                    style={{
+                                                        border: packagePaymentMode === 'completo' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
+                                                        background: packagePaymentMode === 'completo' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                                        borderRadius: '14px',
+                                                        padding: '12px 10px',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'space-between',
+                                                        boxShadow: packagePaymentMode === 'completo' ? '0 4px 12px rgba(225,29,72,0.1)' : 'none'
+                                                    }}
+                                                >
+                                                    <div>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                                            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#059669', background: '#ecfdf5', padding: '2px 6px', borderRadius: '4px' }}>
+                                                                100% Liquidado
+                                                            </span>
+                                                            <input
+                                                                type="radio"
+                                                                name="packagePaymentMode"
+                                                                checked={packagePaymentMode === 'completo'}
+                                                                onChange={() => setPackagePaymentMode('completo')}
+                                                            />
+                                                        </div>
+                                                        <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a' }}>
+                                                            Pago Total Completo
+                                                        </div>
+                                                        <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>
+                                                            {formatPrice(totalPrice)} MXN de contado
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Detailed Summary */}
                                     <div className="jtb-checkout-summary" style={{ marginBottom: '14px' }}>
                                         <div className="jtb-checkout-summary-row">
@@ -648,11 +764,31 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 <span style={{ color: 'var(--color-primary, #e11d48)', fontWeight: 800 }}>{assistanceLabel}</span>
                                             </div>
                                         )}
+
+                                        {!isToursSueltos && packagePaymentMode === 'anticipo' && (
+                                            <>
+                                                <div className="jtb-checkout-summary-row">
+                                                    <span>Total Estimado del Viaje:</span>
+                                                    <span>{formatPrice(totalPrice)} MXN</span>
+                                                </div>
+                                                <div className="jtb-checkout-summary-row">
+                                                    <span>Saldo Restante a Financiar:</span>
+                                                    <span>{formatPrice(remainder)} MXN</span>
+                                                </div>
+                                                <div className="jtb-checkout-summary-row">
+                                                    <span>Plan de Facturas Mensuales:</span>
+                                                    <span style={{ color: '#0284c7', fontWeight: 800 }}>5 cuotas de {formatPrice(monthlyInstallment)} MXN/mes</span>
+                                                </div>
+                                            </>
+                                        )}
+
                                         <div className="jtb-checkout-summary-divider" />
                                         
                                         <div className="jtb-checkout-summary-row highlight">
                                             <span style={{ fontSize: '0.9rem', fontWeight: 800 }}>
-                                                {isToursSueltos ? 'Total a Pagar en Línea:' : 'Monto de Anticipo (Hoy):'}
+                                                {isToursSueltos
+                                                    ? 'Total a Pagar en Línea (100%):'
+                                                    : (packagePaymentMode === 'anticipo' ? 'Monto a Pagar Hoy (Anticipo):' : 'Total a Pagar en Línea (100%):')}
                                             </span>
                                             <span style={{ color: 'var(--color-primary, #e11d48)', fontWeight: 900, fontSize: '1.25rem' }}>
                                                 {formatPrice(paymentAmount)} MXN
@@ -660,19 +796,32 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         </div>
                                     </div>
 
-                                    <div className="jtb-checkout-disclaimer" style={{ marginBottom: '14px', background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46', fontSize: '0.82rem', padding: '10px 14px', borderRadius: '12px' }}>
+                                    {/* Information Banner */}
+                                    <div className="jtb-checkout-disclaimer" style={{
+                                        marginBottom: '14px',
+                                        background: (!isToursSueltos && packagePaymentMode === 'anticipo') ? '#eff6ff' : '#ecfdf5',
+                                        borderColor: (!isToursSueltos && packagePaymentMode === 'anticipo') ? '#bfdbfe' : '#a7f3d0',
+                                        color: (!isToursSueltos && packagePaymentMode === 'anticipo') ? '#1e40af' : '#065f46',
+                                        fontSize: '0.82rem',
+                                        padding: '10px 14px',
+                                        borderRadius: '12px',
+                                    }}>
                                         {isToursSueltos ? (
-                                            <span>🔒 <strong>Confirmación Inmediata:</strong> Al pagar el total de <strong>{formatPrice(paymentAmount)} MXN</strong>, tus tours quedan confirmados y programados con los nombres de tus asistentes.</span>
+                                            <span>🔒 <strong>Pago Total 100%:</strong> Al liquidar <strong>{formatPrice(paymentAmount)} MXN</strong>, tus tours quedan confirmados y programados de inmediato.</span>
+                                        ) : (packagePaymentMode === 'anticipo' ? (
+                                            <span>📧 <strong>Wix Invoicing Automático:</strong> Tu anticipo de <strong>$5,000 MXN</strong> asegura tus lugares. El saldo restante se programará mediante <strong>5 facturas mensuales de {formatPrice(monthlyInstallment)} MXN</strong> enviadas a tu correo (<strong>{correo}</strong>).</span>
                                         ) : (
-                                            <span>🔒 <strong>Garantía de Lugar:</strong> Tu anticipo de <strong>{formatPrice(paymentAmount)} MXN</strong> congela la tarifa y asegura tus lugares. El saldo restante se liquida en mensualidades.</span>
-                                        )}
+                                            <span>🔒 <strong>Liquidación Total 100%:</strong> Al pagar <strong>{formatPrice(paymentAmount)} MXN</strong>, tu viaje queda 100% liquidado sin mensualidades ni facturas pendientes.</span>
+                                        ))}
                                     </div>
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                         <button type="submit" className="jtb-checkout-submit-btn">
                                             {isToursSueltos
                                                 ? `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Línea`
-                                                : `💳 Pagar Anticipo de ${formatPrice(paymentAmount)} MXN en Línea`}
+                                                : (packagePaymentMode === 'anticipo'
+                                                    ? `💳 Pagar Anticipo de $5,000 MXN y Programar Invoices`
+                                                    : `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Línea`)}
                                         </button>
 
                                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -692,7 +841,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 className="btn btn-outline"
                                                 style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '11px 14px', borderRadius: '100px', fontSize: '0.84rem', color: '#25D366', borderColor: '#25D366', fontWeight: 800 }}
                                             >
-                                                💬 {isToursSueltos ? 'Pagar por WhatsApp' : 'Apartar por WhatsApp'}
+                                                💬 {isToursSueltos ? 'Pagar por WhatsApp' : (packagePaymentMode === 'anticipo' ? 'Apartar por WhatsApp' : 'Pagar Total por WhatsApp')}
                                             </a>
                                         </div>
                                     </div>
@@ -726,9 +875,17 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                 <span>{formatPrice(resultData?.depositPaid || paymentAmount)} MXN</span>
                             </div>
                             <div className="ticket-line">
-                                <span>Estatus:</span>
-                                <span className="status-badge">Aprobado</span>
+                                <span>Modalidad:</span>
+                                <span className="status-badge">
+                                    {isToursSueltos ? 'Tours 100% Pagados' : (packagePaymentMode === 'anticipo' ? 'Anticipo + Invoices Mensuales' : 'Liquidación 100%')}
+                                </span>
                             </div>
+                            {generarInvoiceMensual && (
+                                <div className="ticket-line">
+                                    <span>Invoices Programados:</span>
+                                    <span className="status-highlight">5 mensualidades de {formatPrice(monthlyInstallment)} MXN</span>
+                                </div>
+                            )}
                             <div className="ticket-line">
                                 <span>Asistentes:</span>
                                 <span className="status-highlight">{travelers.map(t => t.fullName).join(', ')}</span>
@@ -736,11 +893,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         </div>
 
                         <p className="success-note">
-                            Hemos enviado un recibo a tu correo <strong>{correo}</strong> con todos los detalles.
+                            Hemos enviado un recibo a tu correo <strong>{correo}</strong> con todos los detalles de tu reservación.
                         </p>
 
                         <button className="jtb-success-close-btn" onClick={onClose}>
-                            Volver al Catálogo de Tours
+                            Volver al Catálogo
                         </button>
                     </div>
                 )}

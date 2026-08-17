@@ -8,6 +8,8 @@ dotenv.config();
 const app = express();
 const PORT = 3001;
 
+app.use(express.json());
+
 function makeWixClient() {
     return createClient({
         modules: { posts, categories },
@@ -360,6 +362,17 @@ app.get('/api/sitemap-landings.xml', async (req, res) => {
     } catch (error) {
         console.error('[API] Sitemap-landings error:', error.message);
         res.status(500).send('Error generating landings sitemap');
+    }
+});
+
+// ---- Wix Checkout & Invoicing Route ----
+app.post('/api/wix-checkout', async (req, res) => {
+    try {
+        const handler = (await import('./api/wix-checkout.js')).default;
+        return handler(req, res);
+    } catch (err) {
+        console.error('[API] /api/wix-checkout error:', err);
+        return res.status(500).json({ success: false, error: err.message });
     }
 });
 
