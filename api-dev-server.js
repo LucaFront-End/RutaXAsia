@@ -376,6 +376,17 @@ app.post('/api/wix-checkout', async (req, res) => {
     }
 });
 
+// ---- Wix Webhook & Payment Sync Route ----
+app.all('/api/wix-webhook', async (req, res) => {
+    try {
+        const handler = (await import('./api/wix-webhook.js')).default;
+        return handler(req, res);
+    } catch (err) {
+        console.error('[API] /api/wix-webhook error:', err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`[API] Blog API dev server running on http://localhost:${PORT}`);
     console.log(`[API] Site ID: ${process.env.VITE_WIX_SITE_ID?.substring(0, 8)}...`);
