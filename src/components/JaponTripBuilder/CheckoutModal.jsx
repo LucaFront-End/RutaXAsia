@@ -893,12 +893,28 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         </div>
 
                         <p className="success-note">
-                            Hemos enviado un recibo a tu correo <strong>{correo}</strong> con todos los detalles de tu reservación.
+                            Hemos registrado tu reserva y enviado un recibo a <strong>{correo}</strong>. Redirigiendo a la pasarela segura de Wix...
                         </p>
 
-                        <button className="jtb-success-close-btn" onClick={onClose}>
-                            Volver al Catálogo
-                        </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px', width: '100%' }}>
+                            {resultData?.checkoutUrl && (
+                                <a
+                                    href={resultData.checkoutUrl}
+                                    className="jtb-checkout-submit-btn"
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    💳 Ir a Pagar a Wix Checkout Ahora →
+                                </a>
+                            )}
+                            <button
+                                type="button"
+                                className="jtb-success-close-btn"
+                                onClick={onClose}
+                                style={{ background: '#f8fafc', color: '#64748b', border: '1px solid #cbd5e1' }}
+                            >
+                                Volver al Catálogo
+                            </button>
+                        </div>
                     </div>
                 )}
 
