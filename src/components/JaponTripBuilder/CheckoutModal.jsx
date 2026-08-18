@@ -82,7 +82,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         })
     }
 
-    const [status, setStatus] = useState('checkout') // checkout, processing, success, error
+    const [status, setStatus] = useState('checkout') // checkout, processing, redirecting, error
     const [errors, setErrors] = useState({})
     const [apiError, setApiError] = useState('')
     const [resultData, setResultData] = useState(null)
@@ -170,7 +170,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         const currentTipoPago = isToursSueltos ? 'tours_total' : packagePaymentMode
 
         try {
-            // 1. Call serverless API to save reservation in Wix CMS, configure Invoices, and create Wix Checkout session
+            // 1. Call serverless API to save reservation in Wix CMS and create Wix Checkout session
             const response = await fetch('/api/wix-checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -197,10 +197,10 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
             // 2. Send notification email to reservas@rutaxasia.com via FormSubmit
             try {
                 const subjectText = isToursSueltos
-                    ? `🎟️ [Wix Payment] Pago Total Tours Individuales (${formatPrice(paymentAmount)} MXN) — ${nombre}`
+                    ? `🎟️ [Wix Payment] Solicitud Pago Total Tours Individuales (${formatPrice(paymentAmount)} MXN) — ${nombre}`
                     : (packagePaymentMode === 'anticipo'
-                        ? `💳 [Wix Invoicing] Nuevo Apartado ($5,000 MXN) + 5 Invoices Mensuales — ${nombre} (${season?.name || 'Japón'})`
-                        : `💎 [Wix Payment] Pago Total de Viaje (${formatPrice(paymentAmount)} MXN) — ${nombre} (${season?.name || 'Japón'})`)
+                        ? `💳 [Wix Invoicing] Nueva Reserva Apartado ($5,000 MXN) + 5 Invoices Mensuales — ${nombre} (${season?.name || 'Japón'})`
+                        : `💎 [Wix Payment] Solicitud Pago Total de Viaje (${formatPrice(paymentAmount)} MXN) — ${nombre} (${season?.name || 'Japón'})`)
 
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
@@ -218,7 +218,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         'Tipo de Cobro': isToursSueltos
                             ? 'Pago Total Completo de Tours'
                             : (packagePaymentMode === 'anticipo' ? 'Anticipo ($5,000 MXN) + Plan de Invoices Mensuales' : 'Pago Total Completo (100%)'),
-                        'Monto Cobrado Hoy': `${formatPrice(paymentAmount)} MXN`,
+                        'Monto a Cobrar': `${formatPrice(paymentAmount)} MXN`,
                         'Total del Viaje': `${formatPrice(totalPrice)} MXN`,
                         'Saldo Restante': `${formatPrice(remainder)} MXN`,
                         'Plan de Facturación (Wix Invoices)': generarInvoiceMensual
@@ -236,11 +236,9 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
             if (result.success && result.checkoutUrl) {
                 setResultData(result)
-                setStatus('success')
-                // Redirect to exact checkout URL
-                setTimeout(() => {
-                    window.location.href = result.checkoutUrl
-                }, 1200)
+                setStatus('redirecting')
+                // Immediate redirect to real Wix checkout URL
+                window.location.href = result.checkoutUrl
             } else {
                 setApiError(result.error || 'Hubo un problema al conectar con la pasarela de pago.')
                 setStatus('error')
@@ -248,7 +246,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
         } catch (err) {
             console.error('Checkout error:', err)
-            setApiError('Error de conexión. Inténtalo de nuevo por favor.')
+            setApiError('Error de conexión con la pasarela de pago. Inténtalo de nuevo por favor.')
             setStatus('error')
         }
     }
@@ -807,21 +805,21 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         borderRadius: '12px',
                                     }}>
                                         {isToursSueltos ? (
-                                            <span>🔒 <strong>Pago Total 100%:</strong> Al liquidar <strong>{formatPrice(paymentAmount)} MXN</strong>, tus tours quedan confirmados y programados de inmediato.</span>
+                                            <span>🔒 <strong>Pago Seguro en Wix:</strong> Al hacer clic serás transferido a Wix Checkout para liquidar <strong>{formatPrice(paymentAmount)} MXN</strong> de forma 100% protegida.</span>
                                         ) : (packagePaymentMode === 'anticipo' ? (
-                                            <span>📧 <strong>Wix Invoicing Automático:</strong> Tu anticipo de <strong>$5,000 MXN</strong> asegura tus lugares. El saldo restante se programará mediante <strong>5 facturas mensuales de {formatPrice(monthlyInstallment)} MXN</strong> enviadas a tu correo (<strong>{correo}</strong>).</span>
+                                            <span>📧 <strong>Apartado + Invoicing Automático:</strong> Pagarás tu anticipo de <strong>$5,000 MXN</strong> en la pasarela segura de Wix para congelar tu tarifa. El saldo se liquidará mediante <strong>5 facturas mensuales de {formatPrice(monthlyInstallment)} MXN</strong> enviadas a <strong>{correo}</strong>.</span>
                                         ) : (
-                                            <span>🔒 <strong>Liquidación Total 100%:</strong> Al pagar <strong>{formatPrice(paymentAmount)} MXN</strong>, tu viaje queda 100% liquidado sin mensualidades ni facturas pendientes.</span>
+                                            <span>🔒 <strong>Liquidación Total:</strong> Pagarás <strong>{formatPrice(paymentAmount)} MXN</strong> en Wix Checkout para dejar tu viaje liquidado al 100% sin cuotas pendientes.</span>
                                         ))}
                                     </div>
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                         <button type="submit" className="jtb-checkout-submit-btn">
                                             {isToursSueltos
-                                                ? `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Línea`
+                                                ? `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`
                                                 : (packagePaymentMode === 'anticipo'
-                                                    ? `💳 Pagar Anticipo de $5,000 MXN y Programar Invoices`
-                                                    : `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Línea`)}
+                                                    ? `💳 Pagar Anticipo de $5,000 MXN en Wix`
+                                                    : `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`)}
                                         </button>
 
                                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -854,67 +852,29 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                 {status === 'processing' && (
                     <div className="jtb-modal-status-view">
                         <div className="jtb-checkout-loader" />
-                        <h3>Procesando Pago Seguro...</h3>
-                        <p>Estamos registrando tu reservación y preparando la pasarela de pago segura de Wix. No cierres esta ventana.</p>
+                        <h3 style={{ marginTop: '16px', fontSize: '1.2rem', fontWeight: 800 }}>Preparando Pago Seguro...</h3>
+                        <p style={{ color: '#64748b', fontSize: '0.88rem' }}>
+                            Estamos registrando tu reservación y conectando con la pasarela oficial de Wix Payments. Un momento por favor...
+                        </p>
                     </div>
                 )}
 
-                {status === 'success' && (
-                    <div className="jtb-modal-status-view success">
-                        <div className="jtb-success-checkmark">✓</div>
-                        <h3>¡Reserva Registrada Exitosamente!</h3>
-                        <p>Hola <strong>{nombre}</strong>, hemos registrado tu pedido correctamente para <strong>{travelers.length} persona(s)</strong>.</p>
-                        
-                        <div className="jtb-success-ticket animate-slide-in">
-                            <div className="ticket-line">
-                                <span>Código de Reserva:</span>
-                                <span>{resultData?.wixId || 'Registrado'}</span>
-                            </div>
-                            <div className="ticket-line">
-                                <span>Monto Cobrado:</span>
-                                <span>{formatPrice(resultData?.depositPaid || paymentAmount)} MXN</span>
-                            </div>
-                            <div className="ticket-line">
-                                <span>Modalidad:</span>
-                                <span className="status-badge">
-                                    {isToursSueltos ? 'Tours 100% Pagados' : (packagePaymentMode === 'anticipo' ? 'Anticipo + Invoices Mensuales' : 'Liquidación 100%')}
-                                </span>
-                            </div>
-                            {generarInvoiceMensual && (
-                                <div className="ticket-line">
-                                    <span>Invoices Programados:</span>
-                                    <span className="status-highlight">5 mensualidades de {formatPrice(monthlyInstallment)} MXN</span>
-                                </div>
-                            )}
-                            <div className="ticket-line">
-                                <span>Asistentes:</span>
-                                <span className="status-highlight">{travelers.map(t => t.fullName).join(', ')}</span>
-                            </div>
-                        </div>
-
-                        <p className="success-note">
-                            Hemos registrado tu reserva y enviado un recibo a <strong>{correo}</strong>. Redirigiendo a la pasarela segura de Wix...
+                {status === 'redirecting' && (
+                    <div className="jtb-modal-status-view">
+                        <div className="jtb-checkout-loader" />
+                        <h3 style={{ marginTop: '16px', fontSize: '1.2rem', fontWeight: 800 }}>Redirigiendo a Wix Checkout...</h3>
+                        <p style={{ color: '#64748b', fontSize: '0.88rem', marginBottom: '16px' }}>
+                            Te estamos transfiriendo a la pasarela segura de Wix para procesar tu pago de <strong>{formatPrice(paymentAmount)} MXN</strong>.
                         </p>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px', width: '100%' }}>
-                            {resultData?.checkoutUrl && (
-                                <a
-                                    href={resultData.checkoutUrl}
-                                    className="jtb-checkout-submit-btn"
-                                    style={{ textDecoration: 'none' }}
-                                >
-                                    💳 Ir a Pagar a Wix Checkout Ahora →
-                                </a>
-                            )}
-                            <button
-                                type="button"
-                                className="jtb-success-close-btn"
-                                onClick={onClose}
-                                style={{ background: '#f8fafc', color: '#64748b', border: '1px solid #cbd5e1' }}
+                        {resultData?.checkoutUrl && (
+                            <a
+                                href={resultData.checkoutUrl}
+                                className="jtb-checkout-submit-btn"
+                                style={{ display: 'inline-block', textDecoration: 'none', padding: '12px 24px', fontSize: '0.9rem' }}
                             >
-                                Volver al Catálogo
-                            </button>
-                        </div>
+                                💳 Hacer clic aquí si no redirige automáticamente →
+                            </a>
+                        )}
                     </div>
                 )}
 

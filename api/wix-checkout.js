@@ -4,11 +4,10 @@ import { checkout } from '@wix/ecom'
 
 /**
  * Serverless API handler for /api/wix-checkout
- * 1. Saves booking reservation to Wix CMS ('ReservasdeViaje')
- * 2. Connects to Wix Invoicing & Wix Payment Plan
- * 3. Generates Wix Store Checkout session and returns exact URL:
- *    https://dilodigitalmx.wixsite.com/rutaxasia/__ecom/checkout?checkoutId={checkoutId}&origin=https://www.rutaxasia.com
- * 4. Dispatches notification to reservas@rutaxasia.com with structured invoice details
+ * 1. Saves draft reservation to Wix CMS ('ReservasdeViaje') with 'Pendiente de Pago' status
+ * 2. Generates genuine Wix Checkout session using Wix Stores catalog
+ * 3. Obtains official checkout URL: https://dilodigitalmx.wixsite.com/rutaxasia/checkout?checkoutId=...
+ * 4. Dispatches booking and invoice notification to reservas@rutaxasia.com
  */
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -36,7 +35,7 @@ export default async function handler(req, res) {
             viajeros = [],
         } = req.body || {}
 
-        console.log('[Wix Checkout API] Booking payload:', {
+        console.log('[Wix Checkout API] Incoming booking request:', {
             nombre,
             correo,
             telefono,
@@ -54,11 +53,11 @@ export default async function handler(req, res) {
         const siteId = process.env.VITE_WIX_SITE_ID || 'eb570f22-c7fd-4816-9a7a-68911d31ff7b'
         const apiKey = process.env.VITE_WIX_API_KEY
         const anticipoProductId = process.env.VITE_WIX_ANTICIPO_PRODUCT_ID || '7f92cc67-8306-4612-bd0f-b95abbdb52e3'
-        const WIX_STORES_APP_ID = '1380b703-ce81-ff05-f115-39571d94dfd3'
+        // Official Wix Stores App ID for E-commerce catalog line items
+        const WIX_STORES_APP_ID = '215238eb-22a5-4c36-9e7b-e7c08025e04e'
         const wixBaseDomain = process.env.VITE_WIX_BASE_DOMAIN || 'https://dilodigitalmx.wixsite.com/rutaxasia'
-        const originUrl = process.env.VITE_SITE_ORIGIN || 'https://www.rutaxasia.com'
 
-        let checkoutUrl = process.env.VITE_WIX_CHECKOUT_URL || ''
+        let checkoutUrl = ''
 
         const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
@@ -69,14 +68,14 @@ export default async function handler(req, res) {
 
         // Detailed invoicing breakdown description
         const invoicePlanText = generarInvoiceMensual
-            ? `[Plan Invoicing: Anticipo de ${formatPrice(montoAnticipo)} MXN pagado hoy + ${mensualidadesCount} Invoices mensuales de ${formatPrice(montoMensualidad)} MXN c/u al correo ${correo}]`
-            : `[Pago Total: ${formatPrice(montoAnticipo)} MXN liquidado al 100% sin invoices pendientes]`
+            ? `[Plan Invoicing: Anticipo de ${formatPrice(montoAnticipo)} MXN + ${mensualidadesCount} Invoices mensuales de ${formatPrice(montoMensualidad)} MXN c/u al correo ${correo}]`
+            : `[Pago Total: ${formatPrice(montoAnticipo)} MXN liquidado al 100%]`
 
         const fullDescription = `${desglose || ''} ${invoicePlanText} [Asistentes: ${travelersSummary}]`
 
         const estadoReserva = tipoPago === 'anticipo'
-            ? 'Apartado - Anticipo $5,000 (Invoices Mensuales Programados)'
-            : 'Liquidación Total (100% Pagado)'
+            ? 'Pendiente de Pago Anticipo ($5,000 MXN) + Invoices Mensuales Programados'
+            : 'Pendiente de Pago Total (100%)'
 
         if (apiKey) {
             const wixClient = createClient({
@@ -98,7 +97,7 @@ export default async function handler(req, res) {
                     estadoReserva: estadoReserva,
                     fechaRegistro: new Date().toISOString(),
                 })
-                console.log('[Wix Checkout API] ✅ Saved to ReservasdeViaje CMS successfully. ID:', inserted?._id)
+                console.log('[Wix Checkout API] ✅ Saved to ReservasdeViaje CMS. ID:', inserted?._id)
             } catch (cmsErr) {
                 console.error('[Wix Checkout API] CMS error:', cmsErr.message)
             }
@@ -106,10 +105,10 @@ export default async function handler(req, res) {
             // 2. Send structured email notification to reservas@rutaxasia.com via FormSubmit
             try {
                 const emailSubject = tipoPago === 'anticipo'
-                    ? `💳 [Wix Invoicing] Nuevo Apartado ($5,000 MXN) + ${mensualidadesCount} Invoices Mensuales — ${nombre}`
+                    ? `💳 [Wix Invoicing] Nueva Reserva Apartado ($5,000 MXN) — ${nombre}`
                     : (tipoPago === 'tours_total'
-                        ? `🎟️ [Wix Payment] Pago Total de Tours Individuales (${formatPrice(montoAnticipo)} MXN) — ${nombre}`
-                        : `💎 [Wix Payment] Pago Total de Viaje (${formatPrice(montoAnticipo)} MXN) — ${nombre}`)
+                        ? `🎟️ [Wix Payment] Nueva Reserva Tours Individuales (${formatPrice(montoAnticipo)} MXN) — ${nombre}`
+                        : `💎 [Wix Payment] Nueva Reserva Pago Total (${formatPrice(montoAnticipo)} MXN) — ${nombre}`)
 
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
@@ -125,12 +124,12 @@ export default async function handler(req, res) {
                         'Temporada / Sección': temporada || 'Japón',
                         'Modalidad': estilo || 'Reserva',
                         'Tipo de Cobro': tipoPago === 'anticipo' ? 'Anticipo de Apartado ($5,000 MXN)' : 'Pago Total Completo (100%)',
-                        'Monto Cobrado Hoy': `${formatPrice(montoAnticipo)} MXN`,
+                        'Monto a Cobrar': `${formatPrice(montoAnticipo)} MXN`,
                         'Total del Viaje / Tours': `${formatPrice(totalViaje)} MXN`,
                         'Saldo Restante': `${formatPrice(saldoRestante)} MXN`,
                         'Programa de Facturas (Wix Invoices)': generarInvoiceMensual
                             ? `${mensualidadesCount} mensualidades de ${formatPrice(montoMensualidad)} MXN c/u enviadas al correo ${correo}`
-                            : 'N/A (Liquidado en su totalidad)',
+                            : 'N/A (Liquidación Total)',
                         'Total de Asistentes': viajeros.length || 1,
                         'Detalle de Asistentes': travelersSummary,
                         'Desglose del Pedido': fullDescription,
@@ -142,35 +141,36 @@ export default async function handler(req, res) {
                 console.error('[Wix Checkout API] FormSubmit notification error:', mailErr.message)
             }
 
-            // 3. Create Wix E-commerce / Payments Checkout Session
-            if (!checkoutUrl) {
-                try {
-                    const checkoutSession = await wixClient.checkout.createCheckout({
-                        channelType: 'WEB',
-                        lineItems: [
-                            {
-                                catalogReference: {
-                                    appId: WIX_STORES_APP_ID,
-                                    catalogItemId: anticipoProductId,
-                                },
-                                quantity: 1,
-                            }
-                        ],
-                    })
+            // 3. Create Wix E-commerce Checkout Session with real line items
+            try {
+                const checkoutSession = await wixClient.checkout.createCheckout({
+                    channelType: 'WEB',
+                    lineItems: [
+                        {
+                            catalogReference: {
+                                appId: WIX_STORES_APP_ID,
+                                catalogItemId: anticipoProductId,
+                            },
+                            quantity: 1,
+                        }
+                    ],
+                })
 
-                    if (checkoutSession && checkoutSession._id) {
-                        checkoutUrl = `${wixBaseDomain}/__ecom/checkout?checkoutId=${checkoutSession._id}&origin=${encodeURIComponent(originUrl)}`
-                        console.log('[Wix Checkout API] ✅ Generated Wix Checkout URL:', checkoutUrl)
+                if (checkoutSession && checkoutSession._id) {
+                    const urlResult = await wixClient.checkout.getCheckoutUrl(checkoutSession._id)
+                    if (urlResult && urlResult.checkoutUrl) {
+                        checkoutUrl = urlResult.checkoutUrl
+                        console.log('[Wix Checkout API] ✅ Generated Official Wix Checkout URL:', checkoutUrl)
                     }
-                } catch (chkErr) {
-                    console.error('[Wix Checkout API] Error generating checkoutId:', chkErr.message)
                 }
+            } catch (chkErr) {
+                console.error('[Wix Checkout API] Error generating checkout session:', chkErr.message)
             }
         }
 
-        // Fallback checkout URL format if API key is not present or error
+        // Fallback checkout URL format if API key is not present or session creation failed
         if (!checkoutUrl) {
-            checkoutUrl = `${wixBaseDomain}/cart`
+            checkoutUrl = `${wixBaseDomain}/p-gina-de-producto/anticipo-de-viaje`
         }
 
         return res.status(200).json({
@@ -182,7 +182,7 @@ export default async function handler(req, res) {
             mensualidadesCount: mensualidadesCount,
             montoMensualidad: montoMensualidad,
             generarInvoiceMensual: generarInvoiceMensual,
-            message: 'Reserva registrada con éxito. Redirigiendo a pasarela de pago segura de Wix...',
+            message: 'Redirigiendo a pasarela de pago segura de Wix...',
         })
     } catch (error) {
         console.error('[Wix Checkout API] Global error:', error)
