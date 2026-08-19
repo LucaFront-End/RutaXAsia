@@ -8,9 +8,10 @@ import { checkout } from '@wix/ecom'
  * 
  * 1. Calculates exact dynamic pricing & 5 monthly quotas
  * 2. Saves complete booking in Wix CMS 'ReservasdeViaje'
- * 3. Dispatches formal confirmation table to BOTH client (correo) & owner (reservas@rutaxasia.com)
- * 4. Dynamically sets product price in Wix Store Catalog to exact target amount
- * 5. Generates official Wix Checkout URL (e.g. /checkout?checkoutId=...)
+ * 3. Creates/Syncs Contact in Wix CRM Contacts
+ * 4. Dispatches internal agency notification table to reservas@rutaxasia.com
+ * 5. Dynamically sets product price in Wix Store Catalog to exact target amount
+ * 6. Generates official Wix Checkout URL (where Wix automatically sends the verified receipt to the customer)
  */
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -22,11 +23,11 @@ export default async function handler(req, res) {
 
     try {
         const {
-            nombre,
-            correo,
-            telefono,
-            temporada,
-            estilo,
+            nombre = '',
+            correo = '',
+            telefono = '',
+            temporada = '',
+            estilo = '',
             tipoPago = 'anticipo', // 'anticipo' | 'completo' | 'tours_total' | 'cuota_mensual'
             totalViaje = 0,
             montoAnticipo = 5000,
@@ -127,7 +128,33 @@ export default async function handler(req, res) {
                 console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
             }
 
-            // 2. Prepare FormSubmit payload
+            // 2. Create / Upsert Contact in Wix CRM Contacts
+            try {
+                const nameParts = (nombre || '').trim().split(' ')
+                const firstName = nameParts[0] || 'Viajero'
+                const lastName = nameParts.slice(1).join(' ') || ''
+
+                await fetch('https://www.wixapis.com/contacts/v4/contacts', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': apiKey,
+                        'wix-site-id': siteId,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        info: {
+                            name: { first: firstName, last: lastName },
+                            emails: { items: [{ tag: 'MAIN', email: correo, primary: true }] },
+                            phones: telefono ? { items: [{ tag: 'MOBILE', phone: telefono, primary: true }] } : undefined
+                        }
+                    })
+                })
+                console.log(`[Wix Invoicing Engine] ✅ Synced Contact in Wix CRM: ${nombre} (${correo})`)
+            } catch (contactErr) {
+                // Silently ignore if contact already exists
+            }
+
+            // 3. Dispatch internal agency notification table to reservas@rutaxasia.com (ONLY to agency)
             const emailSubject = tipoPago === 'anticipo'
                 ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
                 : (tipoPago === 'cuota_mensual'
@@ -154,7 +181,6 @@ export default async function handler(req, res) {
                 'Fecha de Emisión': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
             }
 
-            // Dispatch to reservas@rutaxasia.com (OWNER)
             try {
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
@@ -167,32 +193,9 @@ export default async function handler(req, res) {
                     },
                     body: JSON.stringify(notificationPayload),
                 })
-                console.log('[Wix Invoicing Engine] ✅ Dispatched notification to reservas@rutaxasia.com')
+                console.log('[Wix Invoicing Engine] ✅ Dispatched agency notification to reservas@rutaxasia.com')
             } catch (mailErr) {
                 console.error('[Wix Invoicing Engine] Mail owner error:', mailErr.message)
-            }
-
-            // Dispatch official receipt to CLIENT (correo)
-            if (correo && correo.includes('@')) {
-                try {
-                    await fetch(`https://formsubmit.co/ajax/${correo}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'Origin': 'https://rutaxasia.com',
-                            'Referer': 'https://rutaxasia.com/',
-                            'User-Agent': 'Mozilla/5.0'
-                        },
-                        body: JSON.stringify({
-                            ...notificationPayload,
-                            _subject: `✈️ Confirmación de Reserva y Calendario de Facturación — RutaXAsia (${temporada || 'Japón'})`,
-                        }),
-                    })
-                    console.log(`[Wix Invoicing Engine] ✅ Dispatched client receipt & invoice schedule to: ${correo}`)
-                } catch (clientMailErr) {
-                    console.error('[Wix Invoicing Engine] Mail client error:', clientMailErr.message)
-                }
             }
 
             // 4. Dynamically configure Wix Store Catalog Item with exact amount
