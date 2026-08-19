@@ -134,23 +134,62 @@ export default async function handler(req, res) {
             console.error('[Cron Invoicing Engine] Mail error:', mailErr.message)
         }
 
-        // Also attempt dispatch to Client (dessenaluca53@gmail.com)
-        if (targetEmail && targetEmail.includes('@')) {
+        // Send direct transactional HTML email to CLIENT via RESEND
+        const resendApiKey = process.env.RESEND_API_KEY
+        if (resendApiKey && targetEmail && targetEmail.includes('@')) {
             try {
-                await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+                const clientEmailHtml = `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f1f5f9; padding: 24px 10px; color: #1e293b;">
+                    <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+                        <div style="background: linear-gradient(135deg, #e11d48, #be123c); color: #fff; padding: 26px 20px; text-align: center;">
+                            <h1 style="margin:0; font-size: 1.4rem; font-weight: 900;">RutaXAsia</h1>
+                            <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 0.85rem;">Recordatorio de Facturación Mensual</p>
+                        </div>
+                        <div style="padding: 24px 20px;">
+                            <div style="display: inline-block; background: #fef2f2; color: #e11d48; font-weight: 800; padding: 4px 10px; border-radius: 100px; font-size: 0.76rem; margin-bottom: 12px;">📅 Vencimiento Programado</div>
+                            <h2 style="font-size: 1.2rem; font-weight: 800; margin: 0 0 8px 0; color: #0f172a;">¡Hola, ${targetNombre}!</h2>
+                            <p style="margin: 0; font-size: 0.9rem; line-height: 1.5; color: #475569;">
+                                Te recordamos que hoy está programada la liquidación de la <strong>Cuota ${targetCuota} de ${targetTotalCuotas}</strong> para tu viaje a <strong>${targetTemporada}</strong>.
+                            </p>
+                            
+                            <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0;">
+                                <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b;">Monto a Liquidar</div>
+                                <div style="font-size: 2rem; font-weight: 900; color: #0f172a; margin: 4px 0;">${formatPrice(targetMonto)} <span style="font-size: 0.9rem; color: #64748b;">MXN</span></div>
+                                <div style="font-size: 0.78rem; color: #059669; font-weight: 700;">Cuota ${targetCuota} de ${targetTotalCuotas}</div>
+                            </div>
+
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem;">
+                                <tr><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #64748b;">Titular:</td><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 700;">${targetNombre}</td></tr>
+                                <tr><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #64748b;">Viaje:</td><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 700;">${targetTemporada}</td></tr>
+                                <tr><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #64748b;">Estado:</td><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 700; color: #ea580c;">Pendiente de Pago</td></tr>
+                            </table>
+
+                            <a href="${checkoutUrl}" style="display: block; background: #e11d48; color: #ffffff !important; text-decoration: none; text-align: center; padding: 15px 20px; border-radius: 12px; font-weight: 800; font-size: 1rem; box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);">Pagar Cuota ${targetCuota} en Wix Payments (${formatPrice(targetMonto)} MXN) →</a>
+                            <p style="text-align: center; font-size: 0.76rem; color: #94a3b8; margin: 14px 0 0 0;">Aceptamos Tarjeta de Crédito/Débito, MercadoPago, SPEI y PayPal.</p>
+                        </div>
+                        <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 20px; text-align: center; font-size: 0.75rem; color: #64748b;">
+                            © RutaXAsia · Contacto: reservas@rutaxasia.com
+                        </div>
+                    </div>
+                </div>`
+
+                const resendRes = await fetch('https://api.resend.com/emails', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Origin': 'https://rutaxasia.com',
-                        'Referer': 'https://rutaxasia.com/',
-                        'User-Agent': 'Mozilla/5.0'
+                        'Authorization': `Bearer ${resendApiKey}`,
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(emailPayload),
+                    body: JSON.stringify({
+                        from: 'RutaXAsia <onboarding@resend.dev>',
+                        to: [targetEmail],
+                        subject: emailSubject,
+                        html: clientEmailHtml
+                    })
                 })
-                console.log(`[Cron Invoicing Engine] ✅ Dispatched notification to client: ${targetEmail}`)
+                const resendData = await resendRes.json()
+                console.log(`[Cron Invoicing Engine] ✅ Dispatched Resend reminder to client (${targetEmail}). ID:`, resendData?.id)
             } catch (clientErr) {
-                console.error('[Cron Invoicing Engine] Client mail error:', clientErr.message)
+                console.error('[Cron Invoicing Engine] Resend reminder error:', clientErr.message)
             }
         }
 

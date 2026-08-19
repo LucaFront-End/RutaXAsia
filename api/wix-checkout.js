@@ -154,11 +154,11 @@ export default async function handler(req, res) {
                 // Silently ignore if contact already exists
             }
 
-            // 3. Dispatch internal agency notification table to reservas@rutaxasia.com (ONLY to agency)
+            // 3. Dispatch internal agency notification table to reservas@rutaxasia.com
             const emailSubject = tipoPago === 'anticipo'
                 ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
                 : (tipoPago === 'cuota_mensual'
-                    ? `🧾 [Cuota Pagada] Cuota ${cuotaNumero}/5 (${formatPrice(chargeAmount)} MXN) — ${nombre}`
+                    ? `🧾 [Cuota Pagada] Cuota ${cuotaNumero}/${count} (${formatPrice(chargeAmount)} MXN) — ${nombre}`
                     : `💎 [Wix Payment] Nueva Reserva Pago Total (${formatPrice(chargeAmount)} MXN) — ${nombre}`)
 
             const notificationPayload = {
@@ -175,12 +175,13 @@ export default async function handler(req, res) {
                 'Monto Cobrado Hoy': `${formatPrice(chargeAmount)} MXN`,
                 'Total Estimado del Viaje': `${formatPrice(totalViaje)} MXN`,
                 'Saldo Restante por Liquidar': `${formatPrice(saldoRestante || remainder)} MXN`,
-                'Programa de Facturas (5 Meses)': generarInvoiceMensual ? scheduleSummary : 'N/A (Liquidación 100%)',
+                'Programa de Facturas': generarInvoiceMensual ? scheduleSummary : 'N/A (Liquidación 100%)',
                 'Asistentes Registrados': travelersSummary,
                 'Detalle Completo': fullDescription,
                 'Fecha de Emisión': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
             }
 
+            // A) Dispatched agency notification via FormSubmit
             try {
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
@@ -196,6 +197,58 @@ export default async function handler(req, res) {
                 console.log('[Wix Invoicing Engine] ✅ Dispatched agency notification to reservas@rutaxasia.com')
             } catch (mailErr) {
                 console.error('[Wix Invoicing Engine] Mail owner error:', mailErr.message)
+            }
+
+            // B) Dispatched direct transactional email to CLIENT via RESEND
+            const resendKey = process.env.RESEND_API_KEY
+            if (resendKey && correo && correo.includes('@')) {
+                try {
+                    const clientHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f8fafc; padding: 24px; color: #1e293b;">
+                        <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                            <div style="background: linear-gradient(135deg, #e11d48, #be123c); color: #fff; padding: 24px; text-align: center;">
+                                <h1 style="margin:0; font-size: 1.4rem; font-weight: 900;">RutaXAsia</h1>
+                                <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 0.85rem;">Confirmación de Reserva y Plan de Facturación</p>
+                            </div>
+                            <div style="padding: 24px;">
+                                <h2 style="font-size: 1.15rem; font-weight: 800; margin: 0 0 8px 0; color: #0f172a;">¡Hola, ${nombre}!</h2>
+                                <p style="margin: 0 0 16px 0; font-size: 0.88rem; line-height: 1.5; color: #475569;">
+                                    Tu solicitud de reserva para <strong>${temporada || 'Japón'}</strong> ha sido registrada con éxito.
+                                </p>
+                                <div style="background: #f1f5f9; padding: 14px; border-radius: 10px; margin-bottom: 16px; font-size: 0.85rem;">
+                                    <div><strong>Monto de Apartado:</strong> ${formatPrice(chargeAmount)} MXN</div>
+                                    <div><strong>Total del Viaje:</strong> ${formatPrice(totalViaje)} MXN</div>
+                                    <div><strong>Saldo a Financiar:</strong> ${formatPrice(saldoRestante || remainder)} MXN</div>
+                                    ${generarInvoiceMensual ? `<div style="margin-top: 6px; color: #0284c7; font-weight: 700;"><strong>Plan de Pagos:</strong> ${count} cuotas de ${formatPrice(quotaAmount)} MXN/mes</div>` : ''}
+                                </div>
+                                ${generarInvoiceMensual ? `
+                                <h4 style="font-size: 0.88rem; margin: 12px 0 6px 0;">📅 Calendario de Vencimientos:</h4>
+                                <ul style="font-size: 0.82rem; color: #334155; padding-left: 18px; margin: 0 0 16px 0;">
+                                    ${schedule.map(s => `<li>Cuota ${s.cuota}/${count}: <strong>${formatPrice(s.monto)} MXN</strong> — Vence el ${s.fecha}</li>`).join('')}
+                                </ul>` : ''}
+                                <p style="font-size: 0.8rem; color: #64748b; margin: 0;">Cada mes recibirás tu enlace oficial de cobro para liquidar tu cuota en línea en 1 clic.</p>
+                            </div>
+                        </div>
+                    </div>`
+
+                    const resendRes = await fetch('https://api.resend.com/emails', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${resendKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            from: 'RutaXAsia <onboarding@resend.dev>',
+                            to: [correo],
+                            subject: `✈️ Confirmación de Reserva y Plan de Pagos — ${temporada || 'Japón'}`,
+                            html: clientHtml
+                        })
+                    })
+                    const resendData = await resendRes.json()
+                    console.log(`[Wix Invoicing Engine] ✅ Dispatched Resend email to client (${correo}). ID:`, resendData?.id)
+                } catch (resendErr) {
+                    console.error('[Wix Invoicing Engine] Resend client email error:', resendErr.message)
+                }
             }
 
             // 4. Dynamically configure Wix Store Catalog Item with exact amount
