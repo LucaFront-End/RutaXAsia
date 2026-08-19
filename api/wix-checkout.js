@@ -127,7 +127,7 @@ export default async function handler(req, res) {
                 console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
             }
 
-            // 2. Dispatch structured billing notification to reservas@rutaxasia.com (OWNER)
+            // 2. Prepare FormSubmit payload
             const emailSubject = tipoPago === 'anticipo'
                 ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
                 : (tipoPago === 'cuota_mensual'
@@ -154,10 +154,17 @@ export default async function handler(req, res) {
                 'Fecha de Emisión': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
             }
 
+            // Dispatch to reservas@rutaxasia.com (OWNER)
             try {
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': 'https://rutaxasia.com',
+                        'Referer': 'https://rutaxasia.com/',
+                        'User-Agent': 'Mozilla/5.0'
+                    },
                     body: JSON.stringify(notificationPayload),
                 })
                 console.log('[Wix Invoicing Engine] ✅ Dispatched notification to reservas@rutaxasia.com')
@@ -165,12 +172,18 @@ export default async function handler(req, res) {
                 console.error('[Wix Invoicing Engine] Mail owner error:', mailErr.message)
             }
 
-            // 3. Dispatch official invoice & reservation receipt to CLIENT (correo)
+            // Dispatch official receipt to CLIENT (correo)
             if (correo && correo.includes('@')) {
                 try {
                     await fetch(`https://formsubmit.co/ajax/${correo}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Origin': 'https://rutaxasia.com',
+                            'Referer': 'https://rutaxasia.com/',
+                            'User-Agent': 'Mozilla/5.0'
+                        },
                         body: JSON.stringify({
                             ...notificationPayload,
                             _subject: `✈️ Confirmación de Reserva y Calendario de Facturación — RutaXAsia (${temporada || 'Japón'})`,
