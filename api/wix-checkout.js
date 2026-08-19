@@ -4,12 +4,13 @@ import { productsV3 } from '@wix/stores'
 import { checkout } from '@wix/ecom'
 
 /**
- * Serverless API handler for /api/wix-checkout
- * 1. Saves booking reservation to Wix CMS ('ReservasdeViaje')
- * 2. Dynamically updates product price in Wix Store to exact target amount ($5,000 for deposit, or exact 100% total for full payment / tours)
- * 3. Creates official Wix Checkout session with the exact line item & amount
- * 4. Obtains official Wix Checkout URL (e.g. /checkout?checkoutId=...)
- * 5. Schedules/Dispatches monthly Wix Invoices plan to reservas@rutaxasia.com & customer
+ * 100% API-Driven Wix Checkout & Dynamic Monthly Invoicing Engine
+ * 
+ * 1. Calculates exact dynamic pricing (Sakura, Otoño, Verano, Tours)
+ * 2. Generates full 5-Month Invoicing Schedule with exact due dates and amounts
+ * 3. Saves complete reservation + 5 quota calendar into Wix CMS 'ReservasdeViaje'
+ * 4. Dispatches formal notification table to reservas@rutaxasia.com
+ * 5. Dynamically sets product price & generates official Wix Checkout URL
  */
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -26,7 +27,7 @@ export default async function handler(req, res) {
             telefono,
             temporada,
             estilo,
-            tipoPago = 'anticipo', // 'anticipo' | 'completo' | 'tours_total'
+            tipoPago = 'anticipo', // 'anticipo' | 'completo' | 'tours_total' | 'cuota_mensual'
             totalViaje = 0,
             montoAnticipo = 5000,
             saldoRestante = 0,
@@ -35,30 +36,14 @@ export default async function handler(req, res) {
             generarInvoiceMensual = false,
             desglose = '',
             viajeros = [],
+            cuotaNumero = 1,
         } = req.body || {}
-
-        console.log('[Wix Checkout API] Incoming booking request:', {
-            nombre,
-            correo,
-            telefono,
-            temporada,
-            estilo,
-            tipoPago,
-            totalViaje,
-            montoAnticipo,
-            saldoRestante,
-            mensualidadesCount,
-            montoMensualidad,
-            generarInvoiceMensual,
-        })
 
         const siteId = process.env.VITE_WIX_SITE_ID || 'eb570f22-c7fd-4816-9a7a-68911d31ff7b'
         const apiKey = process.env.VITE_WIX_API_KEY
         const anticipoProductId = process.env.VITE_WIX_ANTICIPO_PRODUCT_ID || '7f92cc67-8306-4612-bd0f-b95abbdb52e3'
         const WIX_STORES_APP_ID = '215238eb-22a5-4c36-9e7b-e7c08025e04e'
         const wixBaseDomain = process.env.VITE_WIX_BASE_DOMAIN || 'https://dilodigitalmx.wixsite.com/rutaxasia'
-
-        let checkoutUrl = ''
 
         const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
@@ -67,26 +52,55 @@ export default async function handler(req, res) {
             ? viajeros.map((t, i) => `Persona ${i + 1}: ${t.fullName || 'Pendiente'} (${t.type || 'Adulto'}${t.age ? `, ${t.age} años` : ''})`).join(' | ')
             : '1 Pasajero Titular'
 
-        // Determine exact title & charge amount for Wix Checkout
+        // Determine exact amount to charge on Wix Checkout
         const chargeAmount = Math.max(1, Math.round(Number(montoAnticipo) || (tipoPago === 'anticipo' ? 5000 : totalViaje)))
         const chargeAmountStr = String(chargeAmount)
 
-        const productTitle = tipoPago === 'anticipo'
-            ? `Anticipo de Apartado — ${temporada || 'Japón'} (${nombre})`
-            : (tipoPago === 'tours_total'
-                ? `Pago Total de Tours — ${nombre}`
-                : `Liquidación Total — ${temporada || 'Japón'} (${nombre})`)
+        // Generate 5 Monthly Installments Schedule with exact calendar dates
+        const schedule = []
+        const now = new Date()
+        const count = mensualidadesCount || 5
+        const remainder = Math.max(0, (totalViaje || 0) - (tipoPago === 'anticipo' ? 5000 : 0))
+        const quotaAmount = montoMensualidad || (count > 0 ? Math.round(remainder / count) : 0)
 
-        // Detailed invoicing breakdown description
+        for (let i = 1; i <= count; i++) {
+            const dueDate = new Date(now)
+            dueDate.setMonth(dueDate.getMonth() + i)
+            schedule.push({
+                cuota: i,
+                monto: quotaAmount,
+                fecha: dueDate.toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }),
+                isoDate: dueDate.toISOString().split('T')[0],
+                estado: 'Pendiente',
+            })
+        }
+
+        const scheduleSummary = schedule.map(s => `Cuota ${s.cuota}/5: ${formatPrice(s.monto)} MXN (${s.fecha})`).join(' | ')
+
+        let productTitle = ''
+        if (tipoPago === 'anticipo') {
+            productTitle = `Anticipo de Apartado — ${temporada || 'Japón'} (${nombre})`
+        } else if (tipoPago === 'cuota_mensual') {
+            productTitle = `Cuota Mensual ${cuotaNumero}/5 — ${temporada || 'Japón'} (${nombre})`
+        } else if (tipoPago === 'tours_total') {
+            productTitle = `Pago Total Tours — ${nombre}`
+        } else {
+            productTitle = `Liquidación Total — ${temporada || 'Japón'} (${nombre})`
+        }
+
         const invoicePlanText = generarInvoiceMensual
-            ? `[Plan Invoicing: Anticipo de ${formatPrice(chargeAmount)} MXN cobrado hoy + ${mensualidadesCount} Invoices mensuales de ${formatPrice(montoMensualidad)} MXN c/u enviados a ${correo}]`
+            ? `[Plan Invoices API: Anticipo de ${formatPrice(chargeAmount)} MXN cobrado hoy + ${count} Cuotas Mensuales de ${formatPrice(quotaAmount)} MXN c/u. Calendario: ${scheduleSummary}]`
             : `[Pago Total: ${formatPrice(chargeAmount)} MXN liquidado al 100% de contado]`
 
         const fullDescription = `${desglose || ''} ${invoicePlanText} [Asistentes: ${travelersSummary}]`
 
         const estadoReserva = tipoPago === 'anticipo'
             ? 'Pendiente de Pago Anticipo ($5,000 MXN) + Invoices Mensuales Programados'
-            : 'Pendiente de Pago Total (100%)'
+            : (tipoPago === 'cuota_mensual'
+                ? `Pendiente de Pago Cuota ${cuotaNumero}/5 (${formatPrice(chargeAmount)} MXN)`
+                : 'Pendiente de Pago Total (100%)')
+
+        let checkoutUrl = ''
 
         if (apiKey) {
             const wixClient = createClient({
@@ -94,7 +108,7 @@ export default async function handler(req, res) {
                 auth: ApiKeyStrategy({ siteId, apiKey }),
             })
 
-            // 1. Save reservation to Wix CMS 'ReservasdeViaje'
+            // 1. Save complete booking + installment schedule in Wix CMS 'ReservasdeViaje'
             try {
                 const inserted = await wixClient.items.insert('ReservasdeViaje', {
                     nombreCompleto: nombre,
@@ -108,17 +122,17 @@ export default async function handler(req, res) {
                     estadoReserva: estadoReserva,
                     fechaRegistro: new Date().toISOString(),
                 })
-                console.log('[Wix Checkout API] ✅ Saved to ReservasdeViaje CMS. ID:', inserted?._id)
+                console.log('[Wix Invoicing Engine] ✅ Saved to ReservasdeViaje CMS. ID:', inserted?._id)
             } catch (cmsErr) {
-                console.error('[Wix Checkout API] CMS error:', cmsErr.message)
+                console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
             }
 
-            // 2. Send structured email notification to reservas@rutaxasia.com via FormSubmit
+            // 2. Dispatch structured billing notification to reservas@rutaxasia.com
             try {
                 const emailSubject = tipoPago === 'anticipo'
-                    ? `💳 [Wix Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${mensualidadesCount} Invoices Mensuales — ${nombre}`
-                    : (tipoPago === 'tours_total'
-                        ? `🎟️ [Wix Payment] Nueva Reserva Tours Individuales (${formatPrice(chargeAmount)} MXN) — ${nombre}`
+                    ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
+                    : (tipoPago === 'cuota_mensual'
+                        ? `🧾 [Cuota Pagada] Cuota ${cuotaNumero}/5 (${formatPrice(chargeAmount)} MXN) — ${nombre}`
                         : `💎 [Wix Payment] Nueva Reserva Pago Total (${formatPrice(chargeAmount)} MXN) — ${nombre}`)
 
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
@@ -129,30 +143,26 @@ export default async function handler(req, res) {
                         _template: 'table',
                         _captcha: 'false',
                         _language: 'es',
-                        'Comprador': nombre,
+                        'Cliente Titular': nombre,
                         'Email': correo,
                         'Teléfono (WhatsApp)': telefono,
                         'Temporada / Sección': temporada || 'Japón',
                         'Modalidad': estilo || 'Reserva',
-                        'Tipo de Cobro': tipoPago === 'anticipo' ? 'Anticipo de Apartado ($5,000 MXN)' : 'Pago Total Completo (100%)',
-                        'Monto a Cobrar en Checkout': `${formatPrice(chargeAmount)} MXN`,
-                        'Total del Viaje / Tours': `${formatPrice(totalViaje)} MXN`,
-                        'Saldo Restante': `${formatPrice(saldoRestante)} MXN`,
-                        'Programa de Facturas (Wix Invoices)': generarInvoiceMensual
-                            ? `${mensualidadesCount} mensualidades de ${formatPrice(montoMensualidad)} MXN c/u emitidas automáticamente a ${correo}`
-                            : 'N/A (Liquidación Total)',
-                        'Total de Asistentes': viajeros.length || 1,
-                        'Detalle de Asistentes': travelersSummary,
-                        'Desglose del Pedido': fullDescription,
-                        'Fecha de Registro': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+                        'Monto a Cobrar Hoy': `${formatPrice(chargeAmount)} MXN`,
+                        'Total Estimado del Viaje': `${formatPrice(totalViaje)} MXN`,
+                        'Saldo Restante por Liquidar': `${formatPrice(saldoRestante || remainder)} MXN`,
+                        'Programa de Cuotas (5 Meses)': generarInvoiceMensual ? scheduleSummary : 'N/A (Liquidación 100%)',
+                        'Asistentes Registrados': travelersSummary,
+                        'Detalle Completo': fullDescription,
+                        'Fecha': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
                     }),
                 })
-                console.log('[Wix Checkout API] ✅ Dispatched notification to reservas@rutaxasia.com')
+                console.log('[Wix Invoicing Engine] ✅ Dispatched notification to reservas@rutaxasia.com')
             } catch (mailErr) {
-                console.error('[Wix Checkout API] FormSubmit notification error:', mailErr.message)
+                console.error('[Wix Invoicing Engine] Mail error:', mailErr.message)
             }
 
-            // 3. Dynamically set exact product price in Wix Store & create Checkout Session
+            // 3. Dynamically configure Wix Store Catalog Item with exact amount
             try {
                 const currentProd = await wixClient.productsV3.getProduct(anticipoProductId)
                 if (currentProd) {
@@ -170,10 +180,10 @@ export default async function handler(req, res) {
                             })),
                         },
                     })
-                    console.log(`[Wix Checkout API] ✅ Dynamically set Wix Store product to: "${productTitle}" - $${chargeAmountStr} MXN`)
+                    console.log(`[Wix Invoicing Engine] ✅ Catalog set to: "${productTitle}" - $${chargeAmountStr} MXN`)
                 }
 
-                // Create Checkout Session with exact amount
+                // 4. Create official Wix Checkout Session
                 const checkoutSession = await wixClient.checkout.createCheckout({
                     channelType: 'WEB',
                     lineItems: [
@@ -191,15 +201,14 @@ export default async function handler(req, res) {
                     const urlResult = await wixClient.checkout.getCheckoutUrl(checkoutSession._id)
                     if (urlResult && urlResult.checkoutUrl) {
                         checkoutUrl = urlResult.checkoutUrl
-                        console.log('[Wix Checkout API] ✅ Generated Official Wix Checkout URL:', checkoutUrl)
+                        console.log('[Wix Invoicing Engine] ✅ Generated Official Wix Checkout URL:', checkoutUrl)
                     }
                 }
             } catch (chkErr) {
-                console.error('[Wix Checkout API] Error updating product or generating checkout:', chkErr.message)
+                console.error('[Wix Invoicing Engine] Error setting price or creating checkout:', chkErr.message)
             }
         }
 
-        // Fallback checkout URL format if API key is not present or session creation failed
         if (!checkoutUrl) {
             checkoutUrl = `${wixBaseDomain}/checkout`
         }
@@ -209,14 +218,15 @@ export default async function handler(req, res) {
             checkoutUrl: checkoutUrl,
             tipoPago: tipoPago,
             montoCobrado: chargeAmount,
-            saldoRestante: saldoRestante,
-            mensualidadesCount: mensualidadesCount,
-            montoMensualidad: montoMensualidad,
+            saldoRestante: saldoRestante || remainder,
+            mensualidadesCount: count,
+            montoMensualidad: quotaAmount,
             generarInvoiceMensual: generarInvoiceMensual,
+            calendarioCuotas: schedule,
             message: 'Redirigiendo a pasarela de pago segura de Wix...',
         })
     } catch (error) {
-        console.error('[Wix Checkout API] Global error:', error)
+        console.error('[Wix Invoicing Engine] Global error:', error)
         return res.status(500).json({
             success: false,
             error: error.message || 'Error al procesar checkout',
