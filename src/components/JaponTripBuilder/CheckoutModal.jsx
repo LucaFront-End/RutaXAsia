@@ -88,13 +88,52 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     const [apiError, setApiError] = useState('')
     const [resultData, setResultData] = useState(null)
 
+    // Calculate maximum allowed monthly installments based on departure date
+    const calculateMaxAllowedInstallments = () => {
+        const today = new Date()
+        let targetDate = null
+        const text = `${season?.name || ''} ${season?.key || ''} ${desglose || ''}`.toLowerCase()
+
+        if (text.includes('2026') && (text.includes('oct') || text.includes('otoño') || text.includes('momiji'))) {
+            targetDate = new Date(2026, 9, 15) // Oct 15, 2026 (2 months away)
+        } else if (text.includes('2026') && (text.includes('nov') || text.includes('noviembre'))) {
+            targetDate = new Date(2026, 10, 15)
+        } else if (text.includes('2026') && (text.includes('dic') || text.includes('diciembre'))) {
+            targetDate = new Date(2026, 11, 15)
+        } else if (text.includes('2027') && (text.includes('mar') || text.includes('sakura') || text.includes('primavera') || text.includes('abr'))) {
+            targetDate = new Date(2027, 2, 22) // Mar 22, 2027 (7 months away)
+        } else if (text.includes('2027') && (text.includes('jul') || text.includes('ago') || text.includes('verano'))) {
+            targetDate = new Date(2027, 6, 15) // Jul 15, 2027 (11 months away)
+        } else {
+            if (season?.key === 'momiji') targetDate = new Date(2026, 9, 15)
+            else if (season?.key === 'sakura') targetDate = new Date(2027, 2, 22)
+            else targetDate = new Date(today.getFullYear(), today.getMonth() + 6, 1)
+        }
+
+        const monthDiff = (targetDate.getFullYear() - today.getFullYear()) * 12 + (targetDate.getMonth() - today.getMonth())
+        return Math.max(1, monthDiff)
+    }
+
+    const maxInstallments = calculateMaxAllowedInstallments()
+    const allPossibleInstallments = [2, 3, 4, 5, 6, 7, 8, 10, 12]
+    const availableInstallments = allPossibleInstallments.filter(n => n <= maxInstallments)
+    if (availableInstallments.length === 0) availableInstallments.push(maxInstallments)
+
+    // Adjust selected installments if current selection exceeds allowed maximum
+    useEffect(() => {
+        if (!availableInstallments.includes(selectedInstallments)) {
+            setSelectedInstallments(availableInstallments[availableInstallments.length - 1] || 1)
+        }
+    }, [maxInstallments])
+
     // Dynamic Pricing & Invoicing calculations
     const paymentAmount = isToursSueltos
         ? totalPrice
         : (packagePaymentMode === 'anticipo' ? 5000 : totalPrice)
 
     const remainder = Math.max(0, totalPrice - paymentAmount)
-    const installmentsCount = (!isToursSueltos && packagePaymentMode === 'anticipo') ? selectedInstallments : 0
+    const effectiveInstallments = Math.min(selectedInstallments, maxInstallments)
+    const installmentsCount = (!isToursSueltos && packagePaymentMode === 'anticipo') ? effectiveInstallments : 0
     const monthlyInstallment = installmentsCount > 0 ? Math.round(remainder / installmentsCount) : 0
     const generarInvoiceMensual = !isToursSueltos && packagePaymentMode === 'anticipo'
 
@@ -744,11 +783,16 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             {/* Dynamic Monthly Installments Selector */}
                                             {packagePaymentMode === 'anticipo' && (
                                                 <div style={{ marginTop: '12px', background: '#f8fafc', padding: '12px 14px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                                                    <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1e293b', display: 'block', marginBottom: '8px' }}>
-                                                        📅 Elige la cantidad de Mensualidades:
-                                                    </label>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                        <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1e293b' }}>
+                                                            📅 Plazo de Cuotas Mensuales:
+                                                        </label>
+                                                        <span style={{ fontSize: '0.7rem', color: '#0369a1', background: '#e0f2fe', padding: '2px 8px', borderRadius: '100px', fontWeight: 700 }}>
+                                                            Máx. {maxInstallments} {maxInstallments === 1 ? 'mes' : 'meses'} antes del viaje
+                                                        </span>
+                                                    </div>
                                                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                                        {[3, 4, 5, 6, 8, 10].map(count => (
+                                                        {availableInstallments.map(count => (
                                                             <button
                                                                 key={count}
                                                                 type="button"
@@ -766,7 +810,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                                     transition: 'all 0.15s'
                                                                 }}
                                                             >
-                                                                {count} meses
+                                                                {count} {count === 1 ? 'mes' : 'meses'}
                                                             </button>
                                                         ))}
                                                     </div>
