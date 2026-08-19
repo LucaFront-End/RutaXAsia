@@ -8,9 +8,9 @@ import { checkout } from '@wix/ecom'
  * 
  * 1. Calculates exact dynamic pricing & 5 monthly quotas
  * 2. Saves complete booking in Wix CMS 'ReservasdeViaje'
- * 3. Triggers Native Wix Invoices creation via HTTP function (_functions/createMonthlyInvoice)
- * 4. Dispatches formal notification table to reservas@rutaxasia.com
- * 5. Dynamically sets product price & generates official Wix Checkout URL
+ * 3. Dispatches formal confirmation table to BOTH client (correo) & owner (reservas@rutaxasia.com)
+ * 4. Dynamically sets product price in Wix Store Catalog to exact target amount
+ * 5. Generates official Wix Checkout URL (e.g. /checkout?checkoutId=...)
  */
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -127,59 +127,58 @@ export default async function handler(req, res) {
                 console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
             }
 
-            // 2. Dispatch structured billing notification to reservas@rutaxasia.com
-            try {
-                const emailSubject = tipoPago === 'anticipo'
-                    ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
-                    : (tipoPago === 'cuota_mensual'
-                        ? `🧾 [Cuota Pagada] Cuota ${cuotaNumero}/5 (${formatPrice(chargeAmount)} MXN) — ${nombre}`
-                        : `💎 [Wix Payment] Nueva Reserva Pago Total (${formatPrice(chargeAmount)} MXN) — ${nombre}`)
+            // 2. Dispatch structured billing notification to reservas@rutaxasia.com (OWNER)
+            const emailSubject = tipoPago === 'anticipo'
+                ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
+                : (tipoPago === 'cuota_mensual'
+                    ? `🧾 [Cuota Pagada] Cuota ${cuotaNumero}/5 (${formatPrice(chargeAmount)} MXN) — ${nombre}`
+                    : `💎 [Wix Payment] Nueva Reserva Pago Total (${formatPrice(chargeAmount)} MXN) — ${nombre}`)
 
+            const notificationPayload = {
+                _subject: emailSubject,
+                _template: 'table',
+                _captcha: 'false',
+                _language: 'es',
+                'Cliente Titular': nombre,
+                'Email': correo,
+                'Teléfono (WhatsApp)': telefono,
+                'Temporada / Sección': temporada || 'Japón',
+                'Modalidad': estilo || 'Reserva',
+                'Tipo de Pago': tipoPago === 'anticipo' ? 'Anticipo de Apartado ($5,000 MXN)' : 'Pago Total (100%)',
+                'Monto Cobrado Hoy': `${formatPrice(chargeAmount)} MXN`,
+                'Total Estimado del Viaje': `${formatPrice(totalViaje)} MXN`,
+                'Saldo Restante por Liquidar': `${formatPrice(saldoRestante || remainder)} MXN`,
+                'Programa de Facturas (5 Meses)': generarInvoiceMensual ? scheduleSummary : 'N/A (Liquidación 100%)',
+                'Asistentes Registrados': travelersSummary,
+                'Detalle Completo': fullDescription,
+                'Fecha de Emisión': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+            }
+
+            try {
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        _subject: emailSubject,
-                        _template: 'table',
-                        _captcha: 'false',
-                        _language: 'es',
-                        'Cliente Titular': nombre,
-                        'Email': correo,
-                        'Teléfono (WhatsApp)': telefono,
-                        'Temporada / Sección': temporada || 'Japón',
-                        'Modalidad': estilo || 'Reserva',
-                        'Monto a Cobrar Hoy': `${formatPrice(chargeAmount)} MXN`,
-                        'Total Estimado del Viaje': `${formatPrice(totalViaje)} MXN`,
-                        'Saldo Restante por Liquidar': `${formatPrice(saldoRestante || remainder)} MXN`,
-                        'Programa de Cuotas (5 Meses)': generarInvoiceMensual ? scheduleSummary : 'N/A (Liquidación 100%)',
-                        'Asistentes Registrados': travelersSummary,
-                        'Detalle Completo': fullDescription,
-                        'Fecha': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
-                    }),
+                    body: JSON.stringify(notificationPayload),
                 })
                 console.log('[Wix Invoicing Engine] ✅ Dispatched notification to reservas@rutaxasia.com')
             } catch (mailErr) {
-                console.error('[Wix Invoicing Engine] Mail error:', mailErr.message)
+                console.error('[Wix Invoicing Engine] Mail owner error:', mailErr.message)
             }
 
-            // 3. Attempt direct creation on Wix Invoices Function endpoint
-            if (generarInvoiceMensual) {
+            // 3. Dispatch official invoice & reservation receipt to CLIENT (correo)
+            if (correo && correo.includes('@')) {
                 try {
-                    const invRes = await fetch(`${wixBaseDomain}/_functions/createMonthlyInvoice`, {
+                    await fetch(`https://formsubmit.co/ajax/${correo}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                         body: JSON.stringify({
-                            title: `Mensualidad 1 de 5 — ${temporada || 'Japón'} (${nombre})`,
-                            email: correo,
-                            name: nombre,
-                            temporada: temporada || 'Japón',
-                            price: quotaAmount,
-                        })
+                            ...notificationPayload,
+                            _subject: `✈️ Confirmación de Reserva y Calendario de Facturación — RutaXAsia (${temporada || 'Japón'})`,
+                        }),
                     })
-                    const invData = await invRes.json().catch(() => null)
-                    console.log('[Wix Invoicing Engine] Wix Invoice Function Response:', invData)
-                } catch (invErr) {
-                    // Silently continue if _functions is still being published
+                    console.log(`[Wix Invoicing Engine] ✅ Dispatched client receipt & invoice schedule to: ${correo}`)
+                } catch (clientMailErr) {
+                    console.error('[Wix Invoicing Engine] Mail client error:', clientMailErr.message)
                 }
             }
 
