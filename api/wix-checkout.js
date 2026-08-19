@@ -89,17 +89,35 @@ export default async function handler(req, res) {
             productTitle = `Liquidación Total — ${temporada || 'Japón'} (${nombre})`
         }
 
-        const invoicePlanText = generarInvoiceMensual
-            ? `[Plan Invoices API: Anticipo de ${formatPrice(chargeAmount)} MXN cobrado hoy + ${count} Cuotas Mensuales de ${formatPrice(quotaAmount)} MXN c/u. Calendario: ${scheduleSummary}]`
-            : `[Pago Total: ${formatPrice(chargeAmount)} MXN liquidado al 100% de contado]`
+        const formattedTravelersList = Array.isArray(viajeros) && viajeros.length > 0
+            ? viajeros.map((t, i) => `  • Persona ${i + 1} ${i === 0 ? '(Titular)' : ''}: ${t.fullName || 'Pendiente'} (${t.type || 'Adulto'}${t.age ? `, ${t.age} años` : ''})`).join('\n')
+            : `  • Persona 1 (Titular): ${nombre}`
 
-        const fullDescription = `${desglose || ''} ${invoicePlanText} [Asistentes: ${travelersSummary}]`
+        const formattedScheduleList = schedule.map(s => `  • Cuota ${s.cuota}/${count}: ${formatPrice(s.monto)} MXN — Vencimiento: ${s.fecha} (Estado: Pendiente)`).join('\n')
+
+        const detailedCmsText = [
+            `📍 RESUMEN DE RESERVA Y PLAN FINANCIERO:`,
+            `• Comprador Titular: ${nombre}`,
+            `• Correo Electrónico: ${correo}`,
+            `• Teléfono (WhatsApp): ${telefono}`,
+            `• Destino / Temporada: ${temporada || 'Japón'}`,
+            `• Pase / Modalidad: ${estilo || 'Reserva'}`,
+            `\n👥 PASAJEROS REGISTRADOS (${viajeros.length || 1}):`,
+            formattedTravelersList,
+            `\n💰 ESQUEMA DE PAGOS:`,
+            `• Costo Total del Viaje: ${formatPrice(totalViaje)} MXN`,
+            `• Monto de Apartado / Anticipo (Cobrado Hoy): ${formatPrice(chargeAmount)} MXN`,
+            `• Saldo Restante a Financiar: ${formatPrice(saldoRestante || remainder)} MXN`,
+            generarInvoiceMensual ? `• Plazo Seleccionado por el Cliente: ${count} Cuotas Mensuales de ${formatPrice(quotaAmount)} MXN/mes` : '• Modalidad: Liquidación Total al 100% de contado',
+            generarInvoiceMensual ? `\n📅 CALENDARIO DE FACTURACIÓN Y VENCIMIENTOS:\n${formattedScheduleList}` : '',
+            desglose ? `\n📝 Notas y Configuración del Viaje:\n${desglose}` : ''
+        ].filter(Boolean).join('\n')
 
         const estadoReserva = tipoPago === 'anticipo'
-            ? 'Pendiente de Pago Anticipo ($5,000 MXN) + Invoices Mensuales Programados'
+            ? `Pendiente de Pago Anticipo ($5,000 MXN) — Plan: ${count} Cuotas de ${formatPrice(quotaAmount)} MXN/mes`
             : (tipoPago === 'cuota_mensual'
-                ? `Pendiente de Pago Cuota ${cuotaNumero}/5 (${formatPrice(chargeAmount)} MXN)`
-                : 'Pendiente de Pago Total (100%)')
+                ? `Pendiente de Pago Cuota ${cuotaNumero}/${count} (${formatPrice(chargeAmount)} MXN)`
+                : `Pendiente de Pago Total (100% — ${formatPrice(chargeAmount)} MXN)`)
 
         let checkoutUrl = ''
 
@@ -119,11 +137,11 @@ export default async function handler(req, res) {
                     modalidad: estilo || 'Reserva',
                     totalEstimado: Number(totalViaje) || 0,
                     montoAnticipo: chargeAmount,
-                    desgloseCompleto: fullDescription,
+                    desgloseCompleto: detailedCmsText,
                     estadoReserva: estadoReserva,
                     fechaRegistro: new Date().toISOString(),
                 })
-                console.log('[Wix Invoicing Engine] ✅ Saved to ReservasdeViaje CMS. ID:', inserted?._id)
+                console.log('[Wix Invoicing Engine] ✅ Saved explicit record to ReservasdeViaje CMS. ID:', inserted?._id)
             } catch (cmsErr) {
                 console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
             }
@@ -175,9 +193,9 @@ export default async function handler(req, res) {
                 'Monto Cobrado Hoy': `${formatPrice(chargeAmount)} MXN`,
                 'Total Estimado del Viaje': `${formatPrice(totalViaje)} MXN`,
                 'Saldo Restante por Liquidar': `${formatPrice(saldoRestante || remainder)} MXN`,
-                'Programa de Facturas': generarInvoiceMensual ? scheduleSummary : 'N/A (Liquidación 100%)',
-                'Asistentes Registrados': travelersSummary,
-                'Detalle Completo': fullDescription,
+                'Programa de Facturas': generarInvoiceMensual ? formattedScheduleList : 'N/A (Liquidación 100%)',
+                'Asistentes Registrados': formattedTravelersList,
+                'Detalle Completo': detailedCmsText,
                 'Fecha de Emisión': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
             }
 
