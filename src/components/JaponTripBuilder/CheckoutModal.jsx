@@ -31,6 +31,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
     // Payment Mode for Packages: 'anticipo' ($5,000 + monthly invoices) | 'completo' (100% total)
     const [packagePaymentMode, setPackagePaymentMode] = useState('anticipo')
+    const [selectedInstallments, setSelectedInstallments] = useState(5) // 3, 4, 5, 6, 8, 10 months
 
     // Buyer Information
     const [nombre, setNombre] = useState('')
@@ -93,7 +94,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         : (packagePaymentMode === 'anticipo' ? 5000 : totalPrice)
 
     const remainder = Math.max(0, totalPrice - paymentAmount)
-    const installmentsCount = (!isToursSueltos && packagePaymentMode === 'anticipo') ? 5 : 0
+    const installmentsCount = (!isToursSueltos && packagePaymentMode === 'anticipo') ? selectedInstallments : 0
     const monthlyInstallment = installmentsCount > 0 ? Math.round(remainder / installmentsCount) : 0
     const generarInvoiceMensual = !isToursSueltos && packagePaymentMode === 'anticipo'
 
@@ -739,6 +740,38 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            {/* Dynamic Monthly Installments Selector */}
+                                            {packagePaymentMode === 'anticipo' && (
+                                                <div style={{ marginTop: '12px', background: '#f8fafc', padding: '12px 14px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                                                    <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1e293b', display: 'block', marginBottom: '8px' }}>
+                                                        📅 Elige la cantidad de Mensualidades:
+                                                    </label>
+                                                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                                        {[3, 4, 5, 6, 8, 10].map(count => (
+                                                            <button
+                                                                key={count}
+                                                                type="button"
+                                                                onClick={() => setSelectedInstallments(count)}
+                                                                style={{
+                                                                    flex: '1 1 auto',
+                                                                    padding: '6px 10px',
+                                                                    borderRadius: '8px',
+                                                                    border: selectedInstallments === count ? '2px solid var(--color-primary, #e11d48)' : '1px solid #cbd5e1',
+                                                                    background: selectedInstallments === count ? 'var(--color-primary, #e11d48)' : '#fff',
+                                                                    color: selectedInstallments === count ? '#fff' : '#334155',
+                                                                    fontWeight: 800,
+                                                                    fontSize: '0.78rem',
+                                                                    cursor: 'pointer',
+                                                                    transition: 'all 0.15s'
+                                                                }}
+                                                            >
+                                                                {count} meses
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
 
@@ -775,7 +808,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 </div>
                                                 <div className="jtb-checkout-summary-row">
                                                     <span>Plan de Facturas Mensuales:</span>
-                                                    <span style={{ color: '#0284c7', fontWeight: 800 }}>5 cuotas de {formatPrice(monthlyInstallment)} MXN/mes</span>
+                                                    <span style={{ color: '#0284c7', fontWeight: 800 }}>{selectedInstallments} cuotas de {formatPrice(monthlyInstallment)} MXN/mes</span>
                                                 </div>
                                             </>
                                         )}

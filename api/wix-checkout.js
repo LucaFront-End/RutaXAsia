@@ -76,13 +76,13 @@ export default async function handler(req, res) {
             })
         }
 
-        const scheduleSummary = schedule.map(s => `Cuota ${s.cuota}/5: ${formatPrice(s.monto)} MXN (${s.fecha})`).join(' | ')
+        const scheduleSummary = schedule.map(s => `Cuota ${s.cuota}/${count}: ${formatPrice(s.monto)} MXN (${s.fecha})`).join(' | ')
 
         let productTitle = ''
         if (tipoPago === 'anticipo') {
             productTitle = `Anticipo de Apartado — ${temporada || 'Japón'} (${nombre})`
         } else if (tipoPago === 'cuota_mensual') {
-            productTitle = `Cuota Mensual ${cuotaNumero}/5 — ${temporada || 'Japón'} (${nombre})`
+            productTitle = `Cuota Mensual ${cuotaNumero}/${count} — ${temporada || 'Japón'} (${nombre})`
         } else if (tipoPago === 'tours_total') {
             productTitle = `Pago Total Tours — ${nombre}`
         } else {
