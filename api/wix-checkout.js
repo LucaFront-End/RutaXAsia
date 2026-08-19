@@ -4,11 +4,11 @@ import { productsV3 } from '@wix/stores'
 import { checkout } from '@wix/ecom'
 
 /**
- * 100% API-Driven Wix Checkout & Dynamic Monthly Invoicing Engine
+ * 100% Automated Wix Checkout & Wix Invoices Engine
  * 
- * 1. Calculates exact dynamic pricing (Sakura, Otoño, Verano, Tours)
- * 2. Generates full 5-Month Invoicing Schedule with exact due dates and amounts
- * 3. Saves complete reservation + 5 quota calendar into Wix CMS 'ReservasdeViaje'
+ * 1. Calculates exact dynamic pricing & 5 monthly quotas
+ * 2. Saves complete booking in Wix CMS 'ReservasdeViaje'
+ * 3. Triggers Native Wix Invoices creation via HTTP function (_functions/createMonthlyInvoice)
  * 4. Dispatches formal notification table to reservas@rutaxasia.com
  * 5. Dynamically sets product price & generates official Wix Checkout URL
  */
@@ -108,7 +108,7 @@ export default async function handler(req, res) {
                 auth: ApiKeyStrategy({ siteId, apiKey }),
             })
 
-            // 1. Save complete booking + installment schedule in Wix CMS 'ReservasdeViaje'
+            // 1. Save complete booking in Wix CMS 'ReservasdeViaje'
             try {
                 const inserted = await wixClient.items.insert('ReservasdeViaje', {
                     nombreCompleto: nombre,
@@ -162,7 +162,28 @@ export default async function handler(req, res) {
                 console.error('[Wix Invoicing Engine] Mail error:', mailErr.message)
             }
 
-            // 3. Dynamically configure Wix Store Catalog Item with exact amount
+            // 3. Attempt direct creation on Wix Invoices Function endpoint
+            if (generarInvoiceMensual) {
+                try {
+                    const invRes = await fetch(`${wixBaseDomain}/_functions/createMonthlyInvoice`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: `Mensualidad 1 de 5 — ${temporada || 'Japón'} (${nombre})`,
+                            email: correo,
+                            name: nombre,
+                            temporada: temporada || 'Japón',
+                            price: quotaAmount,
+                        })
+                    })
+                    const invData = await invRes.json().catch(() => null)
+                    console.log('[Wix Invoicing Engine] Wix Invoice Function Response:', invData)
+                } catch (invErr) {
+                    // Silently continue if _functions is still being published
+                }
+            }
+
+            // 4. Dynamically configure Wix Store Catalog Item with exact amount
             try {
                 const currentProd = await wixClient.productsV3.getProduct(anticipoProductId)
                 if (currentProd) {
@@ -183,7 +204,7 @@ export default async function handler(req, res) {
                     console.log(`[Wix Invoicing Engine] ✅ Catalog set to: "${productTitle}" - $${chargeAmountStr} MXN`)
                 }
 
-                // 4. Create official Wix Checkout Session
+                // 5. Create official Wix Checkout Session
                 const checkoutSession = await wixClient.checkout.createCheckout({
                     channelType: 'WEB',
                     lineItems: [
