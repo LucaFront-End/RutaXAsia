@@ -87,6 +87,8 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     const [errors, setErrors] = useState({})
     const [apiError, setApiError] = useState('')
     const [resultData, setResultData] = useState(null)
+    const [cotizacionId, setCotizacionId] = useState(null)
+    const [memberId, setMemberId] = useState(null)
 
     // Calculate maximum allowed monthly installments based on departure date
     const calculateMaxAllowedInstallments = () => {
@@ -139,6 +141,47 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
     const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
 
+    // Synchronize Quotation & Create/Find Member in Wix Members
+    const syncCotizacion = async (actionType = 'step_advance', targetStep = step) => {
+        if (!correo || !correo.includes('@')) return
+        try {
+            const res = await fetch('/api/wix-cotizacion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cotizacionId,
+                    nombre,
+                    correo,
+                    telefono,
+                    temporada: isToursSueltos ? 'Tours Individuales' : (season?.name || 'Japón'),
+                    estilo: isToursSueltos ? `Tours Sueltos (${assistanceType})` : (estilo || 'Reserva'),
+                    totalPrice,
+                    paymentAmount,
+                    packagePaymentMode,
+                    selectedInstallments: effectiveInstallments,
+                    monthlyInstallment,
+                    travelers,
+                    desglose,
+                    step: targetStep,
+                    action: actionType,
+                })
+            })
+            const data = await res.json().catch(() => null)
+            if (data?.cotizacionId) setCotizacionId(data.cotizacionId)
+            if (data?.memberId) setMemberId(data.memberId)
+        } catch (err) {
+            console.error('[CheckoutModal] Cotizacion sync error:', err)
+        }
+    }
+
+    // Modal Close handler (updates COTIZACIONES as Abandoned Cart if closed)
+    const handleCloseModal = () => {
+        if (status === 'checkout' && correo && correo.includes('@')) {
+            syncCotizacion('modal_close', step)
+        }
+        onClose()
+    }
+
     // Validation for Buyer Information
     const validateBuyer = () => {
         const errs = {}
@@ -180,13 +223,22 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
             if (step === 1) {
                 setStep(2)
             } else if (step === 2) {
-                if (validateBuyer() && validateTravelers()) setStep(3)
+                if (validateBuyer() && validateTravelers()) {
+                    setStep(3)
+                    syncCotizacion('step_advance', 3)
+                }
             }
         } else {
             if (step === 1) {
-                if (validateBuyer()) setStep(2)
+                if (validateBuyer()) {
+                    setStep(2)
+                    syncCotizacion('step_advance', 2)
+                }
             } else if (step === 2) {
-                if (validateTravelers()) setStep(3)
+                if (validateTravelers()) {
+                    setStep(3)
+                    syncCotizacion('step_advance', 3)
+                }
             }
         }
     }
@@ -201,6 +253,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
         setStatus('processing')
         setApiError('')
+        syncCotizacion('checkout_initiated', 3)
 
         const assistanceLabel = assistanceType === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'
         const travelersSummary = travelers
@@ -308,7 +361,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     return (
         <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 999999 }}>
             <div className="jtb-checkout-modal-card">
-                <button className="jtb-modal-close" onClick={onClose}>&times;</button>
+                <button className="jtb-modal-close" onClick={handleCloseModal}>&times;</button>
 
                 {status === 'checkout' && (
                     <div className="jtb-checkout-form">
@@ -322,6 +375,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                     ? 'Personaliza tu asistencia y completa tu pago seguro'
                                     : 'Aparta tus lugares con anticipo o liquida tu viaje de forma 100% segura'}
                             </p>
+                            {memberId && (
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0', padding: '3px 10px', borderRadius: '100px', fontSize: '0.72rem', fontWeight: 800, marginTop: '6px' }}>
+                                    <span>✓ Cuenta Wix Member Activa (ID: {memberId.slice(0, 8)}...)</span>
+                                </div>
+                            )}
 
                             {/* 3 Steps Progress Bar */}
                             <div className="jtb-checkout-steps-bar">
