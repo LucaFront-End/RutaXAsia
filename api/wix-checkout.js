@@ -175,8 +175,8 @@ export default async function handler(req, res) {
             }
 
             // 3. Populate scheduled monthly installments into 'Pagosprogramados' CMS
+            const reservaCode = `RUTA-${(insertedReservaId || Math.random().toString(36).substring(2, 8)).slice(0, 6).toUpperCase()}`
             if (generarInvoiceMensual && Array.isArray(schedule) && schedule.length > 0) {
-                const reservaCode = `RUTA-${(insertedReservaId || Math.random().toString(36).substring(2, 8)).slice(0, 6).toUpperCase()}`
                 for (const s of schedule) {
                     try {
                         await wixClient.items.insert('Pagosprogramados', {
@@ -201,7 +201,90 @@ export default async function handler(req, res) {
                 console.log(`[Wix Invoicing Engine] ✅ Created ${schedule.length} quotas in Pagosprogramados CMS (${reservaCode})`)
             }
 
-            // 4. Dispatch internal agency notification table to reservas@rutaxasia.com
+            // 4. Populate Included & Extra Experiences into 'ExtrasReserva' CMS
+            try {
+                const travelersCount = Array.isArray(viajeros) && viajeros.length > 0 ? viajeros.length : 1
+                const parsedExtras = []
+
+                if (Array.isArray(req.body.extrasList) && req.body.extrasList.length > 0) {
+                    parsedExtras.push(...req.body.extrasList)
+                } else if (desglose) {
+                    // Extract Incluidas (Free)
+                    const incMatch = desglose.match(/Incluidas[^:]*:\s*([^.]+)/i)
+                    if (incMatch && incMatch[1] && !incMatch[1].toLowerCase().includes('ningun')) {
+                        incMatch[1].split(/,(?![^(]*\))/).map(s => s.trim()).filter(Boolean).forEach(expName => {
+                            parsedExtras.push({
+                                title: `EXP-INC-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+                                tipoDeTourExtra: 'Gratis (Incluida en Pase)',
+                                nombre: expName,
+                                ciudad: expName.toLowerCase().includes('kioto') ? 'Kioto' : (expName.toLowerCase().includes('osaka') ? 'Osaka' : 'Tokio'),
+                                precioUnitario: '$0 MXN',
+                                cantidad: String(travelersCount),
+                                subtotal: '$0 MXN',
+                            })
+                        })
+                    }
+
+                    // Extract Adicionales (Paid extras)
+                    const addMatch = desglose.match(/Adicionales[^:]*:\s*([^.]+)/i)
+                    if (addMatch && addMatch[1] && !addMatch[1].toLowerCase().includes('ningun')) {
+                        addMatch[1].split(/,(?![^(]*\))/).map(s => s.trim()).filter(Boolean).forEach(expName => {
+                            const priceMatch = expName.match(/\(\+([0-9,]+)\s*MXN\)/i)
+                            const unitPriceNum = priceMatch ? parseInt(priceMatch[1].replace(/,/g, ''), 10) : 0
+                            const cleanName = expName.replace(/\s*\(\+[^)]+\)/, '').trim()
+                            parsedExtras.push({
+                                title: `EXP-ADD-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+                                tipoDeTourExtra: 'Extra (De Pago)',
+                                nombre: cleanName,
+                                ciudad: cleanName.toLowerCase().includes('kioto') ? 'Kioto' : (cleanName.toLowerCase().includes('osaka') ? 'Osaka' : 'Tokio'),
+                                precioUnitario: unitPriceNum > 0 ? `$${unitPriceNum.toLocaleString('es-MX')} MXN` : 'Precio Adicional',
+                                cantidad: String(travelersCount),
+                                subtotal: unitPriceNum > 0 ? `$${(unitPriceNum * travelersCount).toLocaleString('es-MX')} MXN` : 'Adicional',
+                            })
+                        })
+                    }
+
+                    // Extract Extras / Complementos
+                    const extMatch = desglose.match(/Extras[^:]*:\s*([^.]+)/i)
+                    if (extMatch && extMatch[1] && !extMatch[1].toLowerCase().includes('ningun')) {
+                        extMatch[1].split(/,(?![^(]*\))/).map(s => s.trim()).filter(Boolean).forEach(expName => {
+                            parsedExtras.push({
+                                title: `EXP-COMP-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+                                tipoDeTourExtra: 'Extra (De Pago)',
+                                nombre: expName,
+                                ciudad: 'Japón',
+                                precioUnitario: 'Complemento',
+                                cantidad: String(travelersCount),
+                                subtotal: 'Complemento',
+                            })
+                        })
+                    }
+                }
+
+                for (const extraItem of parsedExtras) {
+                    try {
+                        await wixClient.items.insert('ExtrasReserva', {
+                            title: extraItem.title || `EXP-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+                            reserva: reservaCode,
+                            tipoDeTourExtra: extraItem.tipoDeTourExtra || 'Extra',
+                            nombre: extraItem.nombre || 'Experiencia',
+                            ciudad: extraItem.ciudad || 'Japón',
+                            precioUnitario: extraItem.precioUnitario || '$0 MXN',
+                            cantidad: String(extraItem.cantidad || travelersCount),
+                            subtotal: extraItem.subtotal || '$0 MXN',
+                        })
+                    } catch (insExtraErr) {
+                        console.error('[ExtrasReserva] Error inserting item:', insExtraErr.message)
+                    }
+                }
+                if (parsedExtras.length > 0) {
+                    console.log(`[Wix Invoicing Engine] ✅ Created ${parsedExtras.length} items in ExtrasReserva CMS (${reservaCode})`)
+                }
+            } catch (extrasProcErr) {
+                console.error('[ExtrasReserva] Processing error:', extrasProcErr.message)
+            }
+
+            // 5. Dispatch internal agency notification table to reservas@rutaxasia.com
             const emailSubject = tipoPago === 'anticipo'
                 ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
                 : (tipoPago === 'cuota_mensual'
