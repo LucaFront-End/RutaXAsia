@@ -113,13 +113,11 @@ export default async function handler(req, res) {
             desglose ? `\n📝 Notas y Configuración del Viaje:\n${desglose}` : ''
         ].filter(Boolean).join('\n')
 
-        const estadoReserva = tipoPago === 'anticipo'
-            ? `Pendiente de Pago Anticipo ($5,000 MXN) — Plan: ${count} Cuotas de ${formatPrice(quotaAmount)} MXN/mes`
-            : (tipoPago === 'cuota_mensual'
-                ? `Pendiente de Pago Cuota ${cuotaNumero}/${count} (${formatPrice(chargeAmount)} MXN)`
-                : `Pendiente de Pago Total (100% — ${formatPrice(chargeAmount)} MXN)`)
+        const estadoReserva = 'No pagado'
 
         let checkoutUrl = ''
+        let contactId = null
+        let memberId = null
 
         if (apiKey) {
             const wixClient = createClient({
@@ -127,32 +125,13 @@ export default async function handler(req, res) {
                 auth: ApiKeyStrategy({ siteId, apiKey }),
             })
 
-            // 1. Save complete booking in Wix CMS 'ReservasdeViaje'
-            try {
-                const inserted = await wixClient.items.insert('ReservasdeViaje', {
-                    nombreCompleto: nombre,
-                    correoElectrnico: correo,
-                    telfono: telefono,
-                    temporada: temporada || 'Japón',
-                    modalidad: estilo || 'Reserva',
-                    totalEstimado: Number(totalViaje) || 0,
-                    montoAnticipo: chargeAmount,
-                    desgloseCompleto: detailedCmsText,
-                    estadoReserva: estadoReserva,
-                    fechaRegistro: new Date().toISOString(),
-                })
-                console.log('[Wix Invoicing Engine] ✅ Saved explicit record to ReservasdeViaje CMS. ID:', inserted?._id)
-            } catch (cmsErr) {
-                console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
-            }
-
-            // 2. Create / Upsert Contact in Wix CRM Contacts
+            // 1. Create / Upsert Contact in Wix CRM Contacts first
             try {
                 const nameParts = (nombre || '').trim().split(' ')
                 const firstName = nameParts[0] || 'Viajero'
                 const lastName = nameParts.slice(1).join(' ') || ''
 
-                await fetch('https://www.wixapis.com/contacts/v4/contacts', {
+                const contactRes = await fetch('https://www.wixapis.com/contacts/v4/contacts', {
                     method: 'POST',
                     headers: {
                         'Authorization': apiKey,
@@ -167,12 +146,62 @@ export default async function handler(req, res) {
                         }
                     })
                 })
-                console.log(`[Wix Invoicing Engine] ✅ Synced Contact in Wix CRM: ${nombre} (${correo})`)
+                const contactData = await contactRes.json().catch(() => null)
+                contactId = contactData?.contact?.id
+                console.log(`[Wix Invoicing Engine] ✅ Synced Contact in Wix CRM: ${nombre} (${correo}) ID:`, contactId)
             } catch (contactErr) {
                 // Silently ignore if contact already exists
             }
 
-            // 3. Dispatch internal agency notification table to reservas@rutaxasia.com
+            // 2. Save complete booking in Wix CMS 'ReservasdeViaje'
+            let insertedReservaId = ''
+            try {
+                const inserted = await wixClient.items.insert('ReservasdeViaje', {
+                    nombreCompleto: nombre,
+                    correoElectrnico: correo,
+                    telfono: telefono,
+                    temporada: temporada || 'Japón',
+                    modalidad: estilo || 'Reserva',
+                    totalEstimado: Number(totalViaje) || 0,
+                    montoAnticipo: chargeAmount,
+                    desgloseCompleto: detailedCmsText,
+                    estadoReserva: estadoReserva, // 'No pagado'
+                    fechaRegistro: new Date().toISOString(),
+                })
+                insertedReservaId = inserted?._id || ''
+                console.log('[Wix Invoicing Engine] ✅ Saved record to ReservasdeViaje CMS. ID:', insertedReservaId)
+            } catch (cmsErr) {
+                console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
+            }
+
+            // 3. Populate scheduled monthly installments into 'Pagosprogramados' CMS
+            if (generarInvoiceMensual && Array.isArray(schedule) && schedule.length > 0) {
+                const reservaCode = `RUTA-${(insertedReservaId || Math.random().toString(36).substring(2, 8)).slice(0, 6).toUpperCase()}`
+                for (const s of schedule) {
+                    try {
+                        await wixClient.items.insert('Pagosprogramados', {
+                            title: contactId || correo,
+                            reserva: reservaCode,
+                            cliente: nombre,
+                            concepto: `Cuota ${s.cuota} de ${count} — ${temporada || 'Japón'}`,
+                            emailCliente: correo,
+                            contactId: contactId || '',
+                            nmeorDePagoNmero: Number(s.cuota),
+                            importeNmero: Number(s.monto),
+                            fechaDeFacturacin: s.isoDate,
+                            fechaDeVencimientoCalendario: s.isoDate,
+                            fechaDeVencimiento: s.fecha,
+                            estatus: 'Pendiente',
+                            facturaGenerada: false,
+                        })
+                    } catch (quotaErr) {
+                        console.error('[Pagosprogramados] Error inserting quota:', quotaErr.message)
+                    }
+                }
+                console.log(`[Wix Invoicing Engine] ✅ Created ${schedule.length} quotas in Pagosprogramados CMS (${reservaCode})`)
+            }
+
+            // 4. Dispatch internal agency notification table to reservas@rutaxasia.com
             const emailSubject = tipoPago === 'anticipo'
                 ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
                 : (tipoPago === 'cuota_mensual'

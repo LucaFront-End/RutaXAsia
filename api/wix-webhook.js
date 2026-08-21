@@ -52,10 +52,7 @@ export default async function handler(req, res) {
 
             if (results.items.length > 0) {
                 const reserva = results.items[0]
-                const isAnticipo = (Number(amountPaid) === 5000) || (reserva.montoAnticipo === 5000)
-                const nuevoEstado = isAnticipo
-                    ? 'PAGADO - Anticipo $5,000 Confirmado (Invoices Mensuales Activos)'
-                    : 'PAGADO - Liquidación Total Confirmada (100%)'
+                const nuevoEstado = 'Pagado'
 
                 await wixClient.items.update('ReservasdeViaje', {
                     ...reserva,
