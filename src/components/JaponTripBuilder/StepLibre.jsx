@@ -9,7 +9,7 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
-import { fetchPreciosCategoriasDias } from '../../lib/wixClient'
+import { fetchPreciosCategoriasDias, fetchTourIndividuales } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -19,6 +19,7 @@ import { useTripSearch } from '../../context/TripContext'
  * 1. Pass Selection (Pase Express, Pase Clásico, Pase Explorador, Pase Grand Tour)
  * 2. Date Selector (after pass selection, auto-calculates nights from start date)
  * 3. Calculation Banner & Floating Ticket
+ * 4. Dynamic CMS tour preselection if marked for Libre
  */
 export default function StepLibre({ season, temporadaKey }) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
@@ -53,6 +54,35 @@ export default function StepLibre({ season, temporadaKey }) {
         loadCmsPrices()
         return () => { isMounted = false }
     }, [season?.name, temporadaKey])
+
+    // Preload & Preselect any tours tagged for Libre dynamically from Wix CMS
+    useEffect(() => {
+        let isMounted = true
+        async function loadLibreTours() {
+            try {
+                const data = await fetchTourIndividuales()
+                if (isMounted && Array.isArray(data)) {
+                    const freeLibreTours = data.filter(t => Boolean(t.libre))
+                    if (freeLibreTours.length > 0) {
+                        setAddedExperiences(prev => {
+                            if (prev.length === 0) {
+                                return freeLibreTours.map(t => ({
+                                    id: t.id,
+                                    name: t.title || t.name,
+                                    price: 0
+                                }))
+                            }
+                            return prev
+                        })
+                    }
+                }
+            } catch (err) {
+                console.error('Error preloading tours for Libre:', err)
+            }
+        }
+        loadLibreTours()
+        return () => { isMounted = false }
+    }, [])
 
     const toggleComp = (title) => {
         setSelectedComps(prev =>
@@ -263,6 +293,18 @@ export default function StepLibre({ season, temporadaKey }) {
                                 seasonName={season.name}
                                 tourLimit={currentTourLimit}
                                 planStyle="Libre"
+                                onPreselectTours={(freeTours) => {
+                                    setAddedExperiences(prev => {
+                                        if (prev.length === 0) {
+                                            return freeTours.map(t => ({
+                                                id: t.id,
+                                                name: t.title || t.name,
+                                                price: 0
+                                            }))
+                                        }
+                                        return prev
+                                    })
+                                }}
                             />
 
                             {/* Complementos */}

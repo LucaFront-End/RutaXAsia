@@ -90,13 +90,26 @@ export default function StepAcompanado({ season, temporadaKey }) {
         return () => { isMounted = false }
     }, [])
 
-    // Load individual tours for Tokyo modal
+    // Load individual tours for Tokyo modal and preselect free tours
     useEffect(() => {
         let isMounted = true
         async function loadTours() {
             const data = await fetchTourIndividuales()
             if (isMounted) {
                 setAllTours(data || [])
+                const freeTours = (data || []).filter(t => Boolean(t.completo))
+                if (freeTours.length > 0) {
+                    setSelectedExps(prev => {
+                        if (prev.length === 0) {
+                            return freeTours.map(t => ({
+                                id: t.id,
+                                name: t.title || t.name,
+                                price: 0
+                            }))
+                        }
+                        return prev
+                    })
+                }
             }
         }
         loadTours()

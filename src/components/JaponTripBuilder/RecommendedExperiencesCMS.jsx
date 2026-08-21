@@ -38,6 +38,16 @@ export default function RecommendedExperiencesCMS({
     const [loading, setLoading] = useState(true)
     const [openCategories, setOpenCategories] = useState(['rutas'])
 
+    const checkIsFreeForThisPlan = (tour) => {
+        if (!tour) return false
+        const s = (planStyle || '').toLowerCase()
+        if (s.includes('esencial') || s.includes('guiado')) return Boolean(tour.esencial)
+        if (s.includes('completo') || s.includes('acompañado') || s.includes('acompanado')) return Boolean(tour.completo)
+        if (s.includes('libre')) return Boolean(tour.libre)
+        if (s.includes('signature') || s.includes('vip')) return Boolean(tour.signature)
+        return false
+    }
+
     useEffect(() => {
         let isMounted = true
         async function loadData() {
@@ -47,16 +57,9 @@ export default function RecommendedExperiencesCMS({
                 setTours(data)
                 setLoading(false)
 
-                // Auto pre-select tours that are tagged for this active plan
+                // Auto pre-select tours that are tagged for this active plan dynamically from CMS
                 if (onPreselectTours && Array.isArray(data)) {
-                    const freeTours = data.filter(t => {
-                        const s = (planStyle || '').toLowerCase()
-                        if (s.includes('esencial')) return t.esencial
-                        if (s.includes('completo') || s.includes('acompañado')) return t.completo
-                        if (s.includes('libre')) return t.libre
-                        if (s.includes('signature') || s.includes('vip')) return t.signature
-                        return false
-                    })
+                    const freeTours = data.filter(t => checkIsFreeForThisPlan(t))
                     if (freeTours.length > 0) {
                         onPreselectTours(freeTours)
                     }
@@ -66,37 +69,6 @@ export default function RecommendedExperiencesCMS({
         loadData()
         return () => { isMounted = false }
     }, [planStyle])
-
-    const toggleCategory = (key, event) => {
-        const headerEl = event?.currentTarget
-        const isOpening = !openCategories.includes(key)
-
-        setOpenCategories(prev =>
-            prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
-        )
-
-        if (headerEl && isOpening) {
-            setTimeout(() => {
-                const rect = headerEl.getBoundingClientRect()
-                const navbarHeight = 110
-                if (rect.top < navbarHeight || rect.top > window.innerHeight - 100) {
-                    const y = rect.top + window.scrollY - navbarHeight - 20
-                    window.scrollTo({ top: y, behavior: 'smooth' })
-                }
-            }, 80)
-        }
-    }
-
-    const isLimitReached = tourLimit !== null && addedExperiences.length >= tourLimit
-
-    const checkIsFreeForThisPlan = (tour) => {
-        const s = (planStyle || '').toLowerCase()
-        if (s.includes('esencial')) return Boolean(tour.esencial)
-        if (s.includes('completo') || s.includes('acompañado')) return Boolean(tour.completo)
-        if (s.includes('libre')) return Boolean(tour.libre)
-        if (s.includes('signature') || s.includes('vip')) return Boolean(tour.signature)
-        return false
-    }
 
     return (
         <div className="rec-cms-wrapper">
