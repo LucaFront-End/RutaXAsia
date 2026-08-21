@@ -131,6 +131,7 @@ export default async function handler(req, res) {
                 const firstName = nameParts[0] || 'Viajero'
                 const lastName = nameParts.slice(1).join(' ') || ''
 
+                // Contact sync
                 const contactRes = await fetch('https://www.wixapis.com/contacts/v4/contacts', {
                     method: 'POST',
                     headers: {
@@ -148,10 +149,58 @@ export default async function handler(req, res) {
                 })
                 const contactData = await contactRes.json().catch(() => null)
                 contactId = contactData?.contact?.id
-                console.log(`[Wix Invoicing Engine] ✅ Synced Contact in Wix CRM: ${nombre} (${correo}) ID:`, contactId)
+
+                // Member sync / creation in Wix Members
+                try {
+                    const searchRes = await fetch(`https://www.wixapis.com/members/v1/members?filter=${encodeURIComponent(JSON.stringify({ "loginEmail": correo }))}`, {
+                        headers: { 'Authorization': apiKey, 'wix-site-id': siteId }
+                    })
+                    const searchData = await searchRes.json().catch(() => null)
+                    if (searchData?.members?.length > 0) {
+                        memberId = searchData.members[0].id
+                        contactId = searchData.members[0].contactId || contactId
+                    } else {
+                        const createMemberRes = await fetch('https://www.wixapis.com/members/v1/members', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': apiKey,
+                                'wix-site-id': siteId,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                member: {
+                                    loginEmail: correo,
+                                    profile: {
+                                        nickname: nombre,
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        phones: telefono ? [telefono] : []
+                                    },
+                                    contactId: contactId
+                                }
+                            })
+                        })
+                        const createMemberData = await createMemberRes.json().catch(() => null)
+                        memberId = createMemberData?.member?.id || ''
+                    }
+                } catch (memberErr) {
+                    console.log('[Wix Invoicing Engine] Member lookup warning:', memberErr.message)
+                }
+
+                console.log(`[Wix Invoicing Engine] ✅ Synced Wix Member: ${nombre} (${correo}) MemberID: ${memberId} ContactID: ${contactId}`)
             } catch (contactErr) {
                 // Silently ignore if contact already exists
             }
+
+            // 2. Compute Sequential Order Number (e.g. 1001, 1002...)
+            let orderNumber = 1001
+            try {
+                const totalReservas = await wixClient.items.query('ReservasdeViaje').count()
+                orderNumber = 1000 + (totalReservas || 0) + 1
+            } catch (countErr) {
+                orderNumber = Math.floor(1000 + Math.random() * 8999)
+            }
+            const baseReservaCode = `RUTA-${orderNumber}`
 
             // 2. Save complete booking in Wix CMS 'ReservasdeViaje'
             let insertedReservaId = ''
@@ -169,23 +218,24 @@ export default async function handler(req, res) {
                     fechaRegistro: new Date().toISOString(),
                 })
                 insertedReservaId = inserted?._id || ''
-                console.log('[Wix Invoicing Engine] ✅ Saved record to ReservasdeViaje CMS. ID:', insertedReservaId)
+                console.log(`[Wix Invoicing Engine] ✅ Saved record to ReservasdeViaje CMS (${baseReservaCode}). ID:`, insertedReservaId)
             } catch (cmsErr) {
                 console.error('[Wix Invoicing Engine] CMS error:', cmsErr.message)
             }
 
             // 3. Populate scheduled monthly installments into 'Pagosprogramados' CMS
-            const reservaCode = `RUTA-${(insertedReservaId || Math.random().toString(36).substring(2, 8)).slice(0, 6).toUpperCase()}`
+            // Format: RUTA-{numPedido}-{numeroCuota} (e.g. RUTA-1001-1, RUTA-1001-2, RUTA-1001-3)
             if (generarInvoiceMensual && Array.isArray(schedule) && schedule.length > 0) {
                 for (const s of schedule) {
+                    const quotaReservaCode = `${baseReservaCode}-${s.cuota}`
                     try {
                         await wixClient.items.insert('Pagosprogramados', {
-                            title: contactId || correo,
-                            reserva: reservaCode,
+                            title: memberId || contactId || correo,
+                            reserva: quotaReservaCode,
                             cliente: nombre,
                             concepto: `Cuota ${s.cuota} de ${count} — ${temporada || 'Japón'}`,
                             emailCliente: correo,
-                            contactId: contactId || '',
+                            contactId: contactId || memberId || '',
                             nmeorDePagoNmero: Number(s.cuota),
                             importeNmero: Number(s.monto),
                             fechaDeFacturacin: s.isoDate,
@@ -198,7 +248,7 @@ export default async function handler(req, res) {
                         console.error('[Pagosprogramados] Error inserting quota:', quotaErr.message)
                     }
                 }
-                console.log(`[Wix Invoicing Engine] ✅ Created ${schedule.length} quotas in Pagosprogramados CMS (${reservaCode})`)
+                console.log(`[Wix Invoicing Engine] ✅ Created ${schedule.length} quotas in Pagosprogramados CMS (${baseReservaCode}-1 a ${baseReservaCode}-${schedule.length})`)
             }
 
             // 4. Populate Included & Extra Experiences into 'ExtrasReserva' CMS
@@ -265,7 +315,7 @@ export default async function handler(req, res) {
                     try {
                         await wixClient.items.insert('ExtrasReserva', {
                             title: extraItem.title || `EXP-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
-                            reserva: reservaCode,
+                            reserva: baseReservaCode,
                             tipoDeTourExtra: extraItem.tipoDeTourExtra || 'Extra',
                             nombre: extraItem.nombre || 'Experiencia',
                             ciudad: extraItem.ciudad || 'Japón',
@@ -278,7 +328,7 @@ export default async function handler(req, res) {
                     }
                 }
                 if (parsedExtras.length > 0) {
-                    console.log(`[Wix Invoicing Engine] ✅ Created ${parsedExtras.length} items in ExtrasReserva CMS (${reservaCode})`)
+                    console.log(`[Wix Invoicing Engine] ✅ Created ${parsedExtras.length} items in ExtrasReserva CMS (${baseReservaCode})`)
                 }
             } catch (extrasProcErr) {
                 console.error('[ExtrasReserva] Processing error:', extrasProcErr.message)
