@@ -147,6 +147,14 @@ export default function UserPortalPage() {
         setLoginInput('')
     }
 
+    const handleReservaSelect = (reservaId) => {
+        setSelectedReservaId(reservaId)
+        const target = portalData?.reservas?.find(r => r._id === reservaId)
+        if (target) {
+            initPassengersFromReserva(target)
+        }
+    }
+
     const handlePassengerChange = (index, field, value) => {
         setPassengersList(prev => {
             const updated = [...prev]
@@ -193,10 +201,15 @@ export default function UserPortalPage() {
             })
             const data = await res.json()
             if (!res.ok || data.error) {
-                throw new Error(data.error || 'Error al guardar los datos en el CMS')
+                throw new Error(data.error || 'Error al guardar los datos')
             }
-            setSaveSuccessMsg('✨ ¡Datos de pasajeros y pasaportes guardados con éxito en Wix CMS!')
+            setSaveSuccessMsg('✨ ¡Datos de pasajeros y pasaportes actualizados con éxito!')
             setTimeout(() => setSaveSuccessMsg(''), 6000)
+
+            // Re-fetch portal data dynamically
+            if (sessionUser?.email) {
+                fetchPortalData(sessionUser.email)
+            }
         } catch (err) {
             alert('Error: ' + err.message)
         } finally {
@@ -267,7 +280,7 @@ export default function UserPortalPage() {
                                     <div className="portal-user-meta">
                                         <span>📧 {portalData.user.email}</span>
                                         {portalData.user.memberId && (
-                                            <span>🆔 Miembro: <code>{portalData.user.memberId.substring(0, 8)}...</code></span>
+                                            <span>🆔 ID de Viajero: <code>{portalData.user.memberId.substring(0, 8)}...</code></span>
                                         )}
                                         <span>🎒 {portalData.reservas.length} viaje{portalData.reservas.length !== 1 ? 's' : ''} registrado{portalData.reservas.length !== 1 ? 's' : ''}</span>
                                     </div>
@@ -463,7 +476,7 @@ export default function UserPortalPage() {
                                             👥 Gestión de Pasajeros & Documentación
                                         </h3>
                                         <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem' }}>
-                                            Mantén actualizados los nombres completos, pasaportes y preferencias de tu grupo. Los cambios se sincronizan en vivo con Wix CMS.
+                                            Mantén actualizados los nombres completos, pasaportes y preferencias de tu grupo. Los cambios se sincronizan de forma segura con tu reserva.
                                         </p>
                                     </div>
                                     <button
@@ -475,6 +488,25 @@ export default function UserPortalPage() {
                                         + Agregar Acompañante
                                     </button>
                                 </div>
+
+                                {/* Multi-reserva selector if user has > 1 booking */}
+                                {portalData.reservas.length > 1 && (
+                                    <div style={{ marginBottom: '20px', background: 'rgba(15, 23, 42, 0.7)', padding: '14px 18px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                        <span style={{ fontSize: '0.9rem', color: '#cbd5e1', fontWeight: 700 }}>Seleccionar Viaje:</span>
+                                        <select
+                                            className="portal-input"
+                                            style={{ maxWidth: '320px', padding: '8px 12px' }}
+                                            value={selectedReservaId}
+                                            onChange={(e) => handleReservaSelect(e.target.value)}
+                                        >
+                                            {portalData.reservas.map((r, i) => (
+                                                <option key={r._id} value={r._id}>
+                                                    Viaje #{i + 1}: {r.temporada || 'Japón'} ({r.modalidad || 'Reserva'})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
 
                                 {saveSuccessMsg && (
                                     <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '14px 20px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)', marginBottom: '20px', fontWeight: 700 }}>
@@ -576,7 +608,7 @@ export default function UserPortalPage() {
                                         onClick={handleSavePassengers}
                                         disabled={isSavingPassengers}
                                     >
-                                        {isSavingPassengers ? 'Guardando en Wix CMS...' : '💾 Guardar Datos en Wix CMS'}
+                                        {isSavingPassengers ? 'Guardando datos...' : '💾 Guardar Datos de Pasajeros'}
                                     </button>
                                 </div>
                             </div>

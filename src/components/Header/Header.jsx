@@ -202,33 +202,28 @@ function Header() {
                     </li>
 
                     <li><Link to="/contacto" onClick={closeMenu}>Contacto</Link></li>
-                    <li className="nav-portal-item">
-                        <Link to="/mi-cuenta" onClick={closeMenu} style={{ color: 'var(--color-primary, #e91e63)', fontWeight: 800 }}>
-                            👤 Mi Cuenta
+                    <li className="navbar-mobile-account">
+                        <Link to="/mi-cuenta" onClick={closeMenu} className="navbar-mobile-account-link">
+                            <span className="nav-dropdown-item-icon">👤</span>
+                            <div>
+                                <span className="nav-dropdown-title">Mi Cuenta</span>
+                                <span className="nav-dropdown-sub">Consulta tus viajes y cuotas</span>
+                            </div>
                         </Link>
                     </li>
                 </ul>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="navbar-actions">
                     <Link
                         to="/mi-cuenta"
-                        className="navbar-user-btn"
-                        style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            background: 'rgba(255, 255, 255, 0.08)',
-                            color: '#fff',
-                            padding: '9px 14px',
-                            borderRadius: '10px',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            fontSize: '0.85rem',
-                            fontWeight: 700,
-                            textDecoration: 'none',
-                            transition: 'all 0.2s ease'
-                        }}
+                        className="navbar-account-btn"
+                        title="Mi Cuenta de Viajero"
                     >
-                        <span>👤</span> Mi Cuenta
+                        <svg className="navbar-account-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <span>Mi Cuenta</span>
                     </Link>
 
                     <a href={WHATSAPP_URL} className="btn btn-primary navbar-cta" target="_blank" rel="noopener noreferrer">

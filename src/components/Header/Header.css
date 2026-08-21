@@ -495,4 +495,75 @@
   .nav-jac-season-dates {
     margin-left: 0;
   }
+
+  .navbar-account-btn {
+    display: none !important;
+  }
+
+  .navbar-mobile-account {
+    display: block !important;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .navbar-mobile-account-link {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(233, 30, 99, 0.12);
+    border: 1px solid rgba(233, 30, 99, 0.3);
+    border-radius: 12px;
+    text-decoration: none;
+  }
+
+  .navbar-mobile-account-link::after {
+    display: none !important;
+  }
+}
+
+/* Desktop Navbar Actions & Account Button */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-account-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.55rem 1.1rem;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar-account-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-account-icon {
+  stroke: var(--color-primary, #e91e63);
+  transition: transform 0.2s ease;
+}
+
+.navbar-account-btn:hover .navbar-account-icon {
+  transform: scale(1.15);
+}
+
+.navbar-mobile-account {
+  display: none;
 }
