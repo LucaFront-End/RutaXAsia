@@ -59,11 +59,26 @@ export default function UserPortalPage() {
                 memberId: data.user.memberId,
             }))
 
-            // Init passengers from first reservation if available
+            // Init passengers directly from data.pasajeros or fallback to reservation
+            if (data.pasajeros && data.pasajeros.length > 0) {
+                const mapped = data.pasajeros.map((p, idx) => ({
+                    id: p._id || idx + 1,
+                    fullName: p.nombreCompleto || '',
+                    passport: p.pasaporte || '',
+                    age: p.edad || '',
+                    birthDate: '',
+                    nationality: 'Mexicana',
+                    phone: '',
+                    dietary: '',
+                    type: idx === 0 ? 'Titular' : 'Acompañante'
+                }))
+                setPassengersList(mapped)
+            } else if (data.reservas && data.reservas.length > 0) {
+                initPassengersFromReserva(data.reservas[0])
+            }
+
             if (data.reservas && data.reservas.length > 0) {
-                const firstRes = data.reservas[0]
-                setSelectedReservaId(firstRes._id)
-                initPassengersFromReserva(firstRes)
+                setSelectedReservaId(data.reservas[0]._id)
             }
         } catch (err) {
             setAuthError(err.message)

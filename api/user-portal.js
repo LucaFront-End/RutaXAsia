@@ -3,7 +3,7 @@ import { items } from '@wix/data'
 
 /**
  * GET /api/user-portal?email=...&memberId=...&reserva=...
- * Consolidates all user data: Profile, Bookings (ReservasdeViaje), Installments (Pagosprogramados), Extras (ExtrasReserva)
+ * Consolidates all user data: Profile, Bookings (ReservasdeViaje), Installments (Pagosprogramados), Extras (ExtrasReserva), Pasajeros (PASAJEROS)
  */
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -12,8 +12,8 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end()
 
     const { email, memberId, reserva } = req.query || {}
-    const queryEmail = (email || '').trim().toLowerCase()
-    const queryMemberId = (memberId || '').trim()
+    let queryEmail = (email || '').trim().toLowerCase()
+    let queryMemberId = (memberId || '').trim()
     const queryReserva = (reserva || '').trim().toUpperCase()
 
     if (!queryEmail && !queryMemberId && !queryReserva) {
@@ -28,7 +28,21 @@ export default async function handler(req, res) {
             auth: ApiKeyStrategy({ siteId, apiKey }),
         })
 
-        // 1. Fetch Member Info from Wix Members API
+        // 1. If searching by reservation code, resolve associated email and memberId from Pagosprogramados or PASAJEROS first
+        if (queryReserva) {
+            try {
+                const pagosMatch = await wixClient.items.query('Pagosprogramados').startsWith('reserva', queryReserva).find()
+                if (pagosMatch.items && pagosMatch.items.length > 0) {
+                    const firstP = pagosMatch.items[0]
+                    if (!queryEmail && firstP.emailCliente) queryEmail = firstP.emailCliente.toLowerCase()
+                    if (!queryMemberId && firstP.title && firstP.title.length > 10) queryMemberId = firstP.title
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        // 2. Fetch Member Info from Wix Members API
         let memberProfile = null
         if (queryEmail || queryMemberId) {
             try {
@@ -52,24 +66,6 @@ export default async function handler(req, res) {
         const effectiveEmail = queryEmail || memberProfile?.loginEmail || ''
         const effectiveMemberId = queryMemberId || memberProfile?.id || ''
 
-        // 2. Fetch Bookings from 'ReservasdeViaje' CMS
-        let reservas = []
-        try {
-            const query = wixClient.items.query('ReservasdeViaje')
-            const allItemsRes = await query.descending('_createdDate').limit(50).find()
-            const allItems = allItemsRes.items || []
-
-            reservas = allItems.filter(r => {
-                const rEmail = (r.correoElectrnico || '').toLowerCase().trim()
-                const rText = (r.desgloseCompleto || '') + ' ' + (r._id || '')
-                if (effectiveEmail && rEmail === effectiveEmail) return true
-                if (queryReserva && rText.includes(queryReserva)) return true
-                return false
-            })
-        } catch (rErr) {
-            console.error('[UserPortal] Error fetching ReservasdeViaje:', rErr.message)
-        }
-
         // 3. Fetch Scheduled Payments from 'Pagosprogramados' CMS
         let pagosProgramados = []
         try {
@@ -82,32 +78,75 @@ export default async function handler(req, res) {
                 const pTitle = (p.title || '').trim()
                 const pReserva = (p.reserva || '').trim().toUpperCase()
 
+                if (queryReserva) {
+                    return pReserva.includes(queryReserva)
+                }
                 if (effectiveEmail && pEmail === effectiveEmail) return true
                 if (effectiveMemberId && pTitle === effectiveMemberId) return true
-                if (queryReserva && pReserva.includes(queryReserva)) return true
                 return false
             })
         } catch (pErr) {
             console.error('[UserPortal] Error fetching Pagosprogramados:', pErr.message)
         }
 
-        // Compute matched reservation codes
+        // 4. Compute matched reservation codes
         const matchedReservaCodes = new Set()
-        if (queryReserva) matchedReservaCodes.add(queryReserva)
-        pagosProgramados.forEach(p => {
-            if (p.reserva) {
-                const baseCode = p.reserva.split('-').slice(0, 2).join('-')
-                matchedReservaCodes.add(baseCode)
-                matchedReservaCodes.add(p.reserva)
-            }
-        })
-        reservas.forEach(r => {
-            const codeMatch = (r.desgloseCompleto || '').match(/RUTA-\w+/i)
-            if (codeMatch) matchedReservaCodes.add(codeMatch[0].toUpperCase())
-            if (r._id) matchedReservaCodes.add(`RUTA-${r._id.slice(0, 6).toUpperCase()}`)
-        })
+        if (queryReserva) {
+            matchedReservaCodes.add(queryReserva)
+        } else {
+            pagosProgramados.forEach(p => {
+                if (p.reserva) {
+                    const baseCode = p.reserva.split('-').slice(0, 2).join('-')
+                    matchedReservaCodes.add(baseCode)
+                    matchedReservaCodes.add(p.reserva)
+                }
+            })
+        }
 
-        // 4. Fetch Extras & Experiences from 'ExtrasReserva' CMS
+        // 5. Fetch Bookings from 'ReservasdeViaje' CMS
+        let reservas = []
+        try {
+            const query = wixClient.items.query('ReservasdeViaje')
+            const allItemsRes = await query.descending('_createdDate').limit(50).find()
+            const allItems = allItemsRes.items || []
+
+            reservas = allItems.filter(r => {
+                const rEmail = (r.correoElectrnico || '').toLowerCase().trim()
+                const rText = (r.desgloseCompleto || '') + ' ' + (r._id || '')
+
+                if (queryReserva) {
+                    return rText.includes(queryReserva)
+                }
+                if (effectiveEmail && rEmail === effectiveEmail) return true
+                for (const code of matchedReservaCodes) {
+                    if (rText.includes(code)) return true
+                }
+                return false
+            })
+
+            // If searching by queryReserva or specific booking and no exact record matched text, create synthetic reserva from payments
+            if (reservas.length === 0 && pagosProgramados.length > 0) {
+                const firstP = pagosProgramados[0]
+                const totalEstimated = pagosProgramados.reduce((sum, p) => sum + (Number(p.importeNmero) || 0), 5000)
+                reservas.push({
+                    _id: firstP._id || 'reserva-synthetic',
+                    nombreCompleto: firstP.cliente || memberProfile?.profile?.nickname || 'Viajero',
+                    correoElectrnico: firstP.emailCliente || effectiveEmail,
+                    telfono: memberProfile?.profile?.phones?.[0] || '',
+                    temporada: firstP.concepto?.split('—')?.[1]?.trim() || 'Japón Sakura 2027',
+                    modalidad: 'Plan en Cuotas Mensuales',
+                    totalEstimado: totalEstimated,
+                    montoAnticipo: 5000,
+                    desgloseCompleto: `[Código de Reserva: ${queryReserva || firstP.reserva?.split('-').slice(0, 2).join('-')}]\n${firstP.concepto}`,
+                    estadoReserva: 'No pagado',
+                    fechaRegistro: firstP._createdDate || new Date().toISOString()
+                })
+            }
+        } catch (rErr) {
+            console.error('[UserPortal] Error fetching ReservasdeViaje:', rErr.message)
+        }
+
+        // 6. Fetch Extras & Experiences from 'ExtrasReserva' CMS
         let extras = []
         try {
             const queryExtras = wixClient.items.query('ExtrasReserva')
@@ -117,6 +156,9 @@ export default async function handler(req, res) {
             extras = allExtras.filter(ex => {
                 if (!ex.reserva) return false
                 const exRes = ex.reserva.toUpperCase()
+                if (queryReserva) {
+                    return exRes.includes(queryReserva) || queryReserva.includes(exRes)
+                }
                 for (const code of matchedReservaCodes) {
                     if (exRes.includes(code) || code.includes(exRes)) return true
                 }
@@ -126,7 +168,7 @@ export default async function handler(req, res) {
             console.error('[UserPortal] Error fetching ExtrasReserva:', exErr.message)
         }
 
-        // 5. Fetch Passengers from 'PASAJEROS' CMS
+        // 7. Fetch Passengers from 'PASAJEROS' CMS
         let pasajeros = []
         try {
             const queryPas = wixClient.items.query('PASAJEROS')
@@ -136,6 +178,9 @@ export default async function handler(req, res) {
             pasajeros = allPas.filter(pas => {
                 if (!pas.title) return false
                 const pasRes = pas.title.toUpperCase()
+                if (queryReserva) {
+                    return pasRes.includes(queryReserva) || queryReserva.includes(pasRes)
+                }
                 for (const code of matchedReservaCodes) {
                     if (pasRes.includes(code) || code.includes(pasRes)) return true
                 }
@@ -145,7 +190,7 @@ export default async function handler(req, res) {
             console.error('[UserPortal] Error fetching PASAJEROS:', pasErr.message)
         }
 
-        // 6. Fetch Active Quotes from 'COTIZACIONES' CMS
+        // 8. Fetch Active Quotes from 'COTIZACIONES' CMS
         let cotizaciones = []
         try {
             const queryCot = wixClient.items.query('COTIZACIONES')
@@ -168,7 +213,7 @@ export default async function handler(req, res) {
             user: {
                 memberId: effectiveMemberId,
                 email: effectiveEmail,
-                name: memberProfile?.profile?.nickname || memberProfile?.profile?.firstName || reservas[0]?.nombreCompleto || 'Viajero RutaXAsia',
+                name: memberProfile?.profile?.nickname || memberProfile?.profile?.firstName || reservas[0]?.nombreCompleto || pagosProgramados[0]?.cliente || 'Viajero RutaXAsia',
                 phone: memberProfile?.profile?.phones?.[0] || reservas[0]?.telfono || '',
                 profile: memberProfile?.profile || null
             },

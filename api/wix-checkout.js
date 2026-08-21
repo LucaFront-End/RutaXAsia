@@ -213,7 +213,7 @@ export default async function handler(req, res) {
                     modalidad: estilo || 'Reserva',
                     totalEstimado: Number(totalViaje) || 0,
                     montoAnticipo: chargeAmount,
-                    desgloseCompleto: detailedCmsText,
+                    desgloseCompleto: `[Código de Reserva: ${baseReservaCode}]\n${detailedCmsText}`,
                     estadoReserva: estadoReserva, // 'No pagado'
                     fechaRegistro: new Date().toISOString(),
                 })
