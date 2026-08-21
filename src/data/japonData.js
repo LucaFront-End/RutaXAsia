@@ -466,3 +466,46 @@ export const ACOMPANADO_TODO_INCLUIDO = [
 ]
 
 export const ACOMPANADO_TODO_INCLUIDO_MOMIJI = ACOMPANADO_TODO_INCLUIDO
+
+/* ==========================================
+   SIGNATURE — Experiences & Hospedaje
+   ========================================== */
+export const SIGNATURE_EXPERIENCIAS = [
+    { title: 'Ryokan Tradicional', icon: '🏯', desc: 'Hospédate en un ryokan auténtico con tatami, onsen y cena kaiseki.' },
+    { title: 'Cena Kaiseki', icon: '🍣', desc: 'Gastronomía japonesa de alta cocina con múltiples tiempos y presentación artística.' },
+    { title: 'Onsen Privado', icon: '♨️', desc: 'Baños termales privados en entornos naturales espectaculares.' },
+    { title: 'Helicóptero', icon: '🚁', desc: 'Sobrevuela el Monte Fuji o la bahía de Tokio en helicóptero privado.' },
+    { title: 'Chef Privado', icon: '👨‍🍳', desc: 'Un chef preparará una experiencia gastronómica exclusiva para ti.' },
+    { title: 'Transporte Ejecutivo', icon: '🚗', desc: 'Traslados en vehículos premium con chofer privado.' },
+    { title: 'Guía Privado', icon: '🎌', desc: 'Un guía exclusivo dedicado a tu grupo durante todo el viaje.' },
+    { title: 'Reservas Exclusivas', icon: '⭐', desc: 'Acceso a restaurantes, eventos y lugares que no están abiertos al público general.' },
+]
+
+export const SIGNATURE_HOSPEDAJE = [
+    { category: '4 Estrellas Superior', stars: 4, icon: '🏨', desc: 'Hoteles de categoría superior con servicios premium.' },
+    { category: '5 Estrellas', stars: 5, icon: '🌟', desc: 'Los mejores hoteles de Japón con servicio excepcional.' },
+    { category: 'Boutique Hotels', stars: 5, icon: '💎', desc: 'Hoteles boutique con diseño único y atención personalizada.' },
+    { category: 'Ryokan Premium', stars: 5, icon: '🏯', desc: 'La experiencia tradicional japonesa al más alto nivel.' },
+]
+
+export const SIGNATURE_JUAN = {
+    name: 'Juan Santiago',
+    title: 'Fundador de RutaXAsia',
+    experience: '+20 años creando experiencias únicas en Japón',
+    desc: 'Con más de dos décadas de experiencia viajando y organizando viajes a Japón, Juan Santiago diseña personalmente cada experiencia Signature, combinando su profundo conocimiento del país con un servicio excepcional.',
+    highlights: [
+        'Más de 20 años de experiencia en Japón',
+        'Cientos de viajes realizados',
+        'Conexiones locales exclusivas',
+        'Diseño personalizado de cada experiencia',
+    ],
+}
+
+/* ==========================================
+   GUIADO — Asistencia Features
+   ========================================== */
+export const GUIADO_ASISTENCIA = [
+    { title: 'Soporte durante el viaje', icon: '🛡️', desc: 'Nuestro equipo estará disponible para ayudarte en cualquier momento.' },
+    { title: 'Recomendaciones locales', icon: '🗺️', desc: 'Te compartimos nuestras mejores recomendaciones de restaurantes, tiendas y lugares secretos.' },
+    { title: 'Ayuda logística', icon: '🗂️', desc: 'Coordinamos tus traslados, reservaciones y tiempos para que todo fluya perfecto.' },
+]
