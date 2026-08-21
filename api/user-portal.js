@@ -91,23 +91,28 @@ export default async function handler(req, res) {
             console.error('[UserPortal] Error fetching Pagosprogramados:', pErr.message)
         }
 
+        // Compute matched reservation codes
+        const matchedReservaCodes = new Set()
+        if (queryReserva) matchedReservaCodes.add(queryReserva)
+        pagosProgramados.forEach(p => {
+            if (p.reserva) {
+                const baseCode = p.reserva.split('-').slice(0, 2).join('-')
+                matchedReservaCodes.add(baseCode)
+                matchedReservaCodes.add(p.reserva)
+            }
+        })
+        reservas.forEach(r => {
+            const codeMatch = (r.desgloseCompleto || '').match(/RUTA-\w+/i)
+            if (codeMatch) matchedReservaCodes.add(codeMatch[0].toUpperCase())
+            if (r._id) matchedReservaCodes.add(`RUTA-${r._id.slice(0, 6).toUpperCase()}`)
+        })
+
         // 4. Fetch Extras & Experiences from 'ExtrasReserva' CMS
         let extras = []
         try {
             const queryExtras = wixClient.items.query('ExtrasReserva')
             const allExtrasRes = await queryExtras.descending('_createdDate').limit(100).find()
             const allExtras = allExtrasRes.items || []
-
-            // Match by booking codes in reservas or pagosProgramados
-            const matchedReservaCodes = new Set()
-            if (queryReserva) matchedReservaCodes.add(queryReserva)
-            pagosProgramados.forEach(p => {
-                if (p.reserva) {
-                    const baseCode = p.reserva.split('-').slice(0, 2).join('-')
-                    matchedReservaCodes.add(baseCode)
-                    matchedReservaCodes.add(p.reserva)
-                }
-            })
 
             extras = allExtras.filter(ex => {
                 if (!ex.reserva) return false
@@ -121,7 +126,26 @@ export default async function handler(req, res) {
             console.error('[UserPortal] Error fetching ExtrasReserva:', exErr.message)
         }
 
-        // 5. Fetch Active Quotes from 'COTIZACIONES' CMS
+        // 5. Fetch Passengers from 'PASAJEROS' CMS
+        let pasajeros = []
+        try {
+            const queryPas = wixClient.items.query('PASAJEROS')
+            const allPasRes = await queryPas.descending('_createdDate').limit(100).find()
+            const allPas = allPasRes.items || []
+
+            pasajeros = allPas.filter(pas => {
+                if (!pas.title) return false
+                const pasRes = pas.title.toUpperCase()
+                for (const code of matchedReservaCodes) {
+                    if (pasRes.includes(code) || code.includes(pasRes)) return true
+                }
+                return false
+            })
+        } catch (pasErr) {
+            console.error('[UserPortal] Error fetching PASAJEROS:', pasErr.message)
+        }
+
+        // 6. Fetch Active Quotes from 'COTIZACIONES' CMS
         let cotizaciones = []
         try {
             const queryCot = wixClient.items.query('COTIZACIONES')
@@ -151,6 +175,7 @@ export default async function handler(req, res) {
             reservas,
             pagosProgramados,
             extras,
+            pasajeros,
             cotizaciones
         })
     } catch (error) {

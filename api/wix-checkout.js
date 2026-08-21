@@ -334,7 +334,29 @@ export default async function handler(req, res) {
                 console.error('[ExtrasReserva] Processing error:', extrasProcErr.message)
             }
 
-            // 5. Dispatch internal agency notification table to reservas@rutaxasia.com
+            // 5. Populate Individual Passengers into 'PASAJEROS' CMS
+            try {
+                const listToInsert = Array.isArray(viajeros) && viajeros.length > 0
+                    ? viajeros
+                    : [{ fullName: nombre, age: 'Adulto' }]
+
+                for (const v of listToInsert) {
+                    try {
+                        await wixClient.items.insert('PASAJEROS', {
+                            title: baseReservaCode,
+                            nombreCompleto: v.fullName || v.nombre || nombre,
+                            edad: String(v.age || v.edad || (v.type ? `${v.type} (${v.age || ''})` : 'Adulto')).trim(),
+                        })
+                    } catch (passErr) {
+                        console.error('[PASAJEROS] Error inserting passenger:', passErr.message)
+                    }
+                }
+                console.log(`[Wix Invoicing Engine] ✅ Created ${listToInsert.length} passengers in PASAJEROS CMS (${baseReservaCode})`)
+            } catch (pProcErr) {
+                console.error('[PASAJEROS] Processing error:', pProcErr.message)
+            }
+
+            // 6. Dispatch internal agency notification table to reservas@rutaxasia.com
             const emailSubject = tipoPago === 'anticipo'
                 ? `💳 [Plan Invoicing] Nueva Reserva Apartado ($5,000 MXN) + ${count} Cuotas Mensuales — ${nombre}`
                 : (tipoPago === 'cuota_mensual'

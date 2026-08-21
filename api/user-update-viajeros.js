@@ -58,11 +58,41 @@ export default async function handler(req, res) {
 
         const savedResult = await wixClient.items.update('ReservasdeViaje', updatedItem)
 
+        // 4. Extract booking code (e.g. RUTA-1043)
+        const codeMatch = (currentItem.desgloseCompleto || '').match(/RUTA-\w+/i)
+        const reservaCode = codeMatch ? codeMatch[0].toUpperCase() : (currentItem._id ? `RUTA-${currentItem._id.slice(0, 6).toUpperCase()}` : 'RUTA-1001')
+
+        // 5. Update/Insert in 'PASAJEROS' CMS
+        try {
+            // Check existing passengers for this reservaCode
+            const existingPas = await wixClient.items.query('PASAJEROS').eq('title', reservaCode).find()
+            if (existingPas.items && existingPas.items.length > 0) {
+                for (const oldP of existingPas.items) {
+                    try {
+                        await wixClient.items.remove('PASAJEROS', oldP._id)
+                    } catch (remErr) {
+                        // ignore remove error
+                    }
+                }
+            }
+
+            for (const v of viajeros) {
+                await wixClient.items.insert('PASAJEROS', {
+                    title: reservaCode,
+                    nombreCompleto: v.fullName || 'Viajero',
+                    edad: String(v.age || (v.type ? `${v.type} (${v.age || ''})` : 'Adulto')).trim(),
+                })
+            }
+            console.log(`[UserUpdateViajeros] ✅ Synced ${viajeros.length} rows in PASAJEROS CMS (${reservaCode})`)
+        } catch (cmsPasErr) {
+            console.error('[UserUpdateViajeros] Error updating PASAJEROS collection:', cmsPasErr.message)
+        }
+
         console.log(`[UserUpdateViajeros] ✅ Updated ${viajeros.length} passengers for Reserva ${reservaId}`)
 
         return res.status(200).json({
             success: true,
-            message: 'Datos de pasajeros actualizados correctamente en Wix CMS.',
+            message: 'Datos de pasajeros actualizados correctamente.',
             reservaId: savedResult._id,
             viajerosActualizados: viajeros.length
         })
