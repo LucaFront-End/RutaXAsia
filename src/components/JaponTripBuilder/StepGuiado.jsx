@@ -8,7 +8,7 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
-import { fetchPreciosCategoriasDias } from '../../lib/wixClient'
+import { fetchPreciosCategoriasDias, fetchTourIndividuales } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -18,7 +18,7 @@ import { useTripSearch } from '../../context/TripContext'
  * - 4 Pass Options (Express 8d, Clásico 10d, Explorador 12d, Grand Tour 14d) loaded from Wix CMS
  * - Exact date calculation with dual calendar
  * - Free experience limit (6 or 8) + selectable extra tours up to pass limit
- * - Auto-trim selected tours when switching to a lower pass
+ * - Auto-preselect free tours tagged for Esencial
  * - FloatingTicket & CheckoutModal
  */
 export default function StepGuiado({ season, temporadaKey }) {
@@ -64,6 +64,35 @@ export default function StepGuiado({ season, temporadaKey }) {
         loadCmsPrices()
         return () => { isMounted = false }
     }, [season?.name, temporadaKey])
+
+    // Preload & Preselect all free tours tagged for Esencial immediately
+    useEffect(() => {
+        let isMounted = true
+        async function loadInitialFreeTours() {
+            try {
+                const allTours = await fetchTourIndividuales()
+                if (isMounted && Array.isArray(allTours)) {
+                    const freeTours = allTours.filter(t => Boolean(t.esencial))
+                    if (freeTours.length > 0) {
+                        setSelectedExps(prev => {
+                            if (prev.length === 0) {
+                                return freeTours.map(t => ({
+                                    id: t.id,
+                                    name: t.title || t.name,
+                                    price: 0
+                                }))
+                            }
+                            return prev
+                        })
+                    }
+                }
+            } catch (err) {
+                console.error('Error preloading free tours for Esencial:', err)
+            }
+        }
+        loadInitialFreeTours()
+        return () => { isMounted = false }
+    }, [])
 
     const defaultPackages = [
         { name: 'PASE EXPRESS', days: '8 días 6 noches', daysNum: 8, nightsNum: 6, priceNum: 43490, price: '$43,490.00 MXN', freeTours: 6, limiteDeTours: 6 },
@@ -273,6 +302,18 @@ export default function StepGuiado({ season, temporadaKey }) {
                                 seasonName={`${season.name} (${activePkg.name})`}
                                 tourLimit={currentTourLimit}
                                 planStyle="Esencial"
+                                onPreselectTours={(freeTours) => {
+                                    setSelectedExps(prev => {
+                                        if (prev.length === 0) {
+                                            return freeTours.map(t => ({
+                                                id: t.id,
+                                                name: t.title || t.name,
+                                                price: 0
+                                            }))
+                                        }
+                                        return prev
+                                    })
+                                }}
                             />
 
                             {/* Complementos */}
