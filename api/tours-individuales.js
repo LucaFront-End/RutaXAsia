@@ -64,18 +64,31 @@ export default async function handler(req, res) {
                 if (!isNaN(parsed)) priceNum = parsed
             }
 
+            const isEsencial = Boolean(
+                it.esenciales === true ||
+                it.esencial === true ||
+                String(it.categoras || '').toLowerCase().includes('esencial') ||
+                String(it.tipoDeViaje || '').toLowerCase().includes('esencial')
+            )
+
             return {
                 id: it._id,
                 title: it.title || 'Tour Individual',
                 excerpt: it.excerptDeTour || '',
+                description: it.descripcinAmplia || '',
                 image: formatWixImageUrl(it.image),
                 priceText: it.precioEnTexto || (priceNum > 0 ? `$${priceNum.toLocaleString('es-MX')} MXN` : ''),
                 priceNum: priceNum,
+                priceAnfitrion: it.precioAnfitrin || '',
+                priceLocatario: it.tipoDeAnfitrin || '',
                 days: it.dasDeViaje || '',
                 hours: it.horasDeViaje || '',
+                city: it.ciudad || 'Japón',
                 observations: it.observaciones || '',
                 category: category,
                 rawCategory: rawCat,
+                categorias: it.categoras || '',
+                esencial: isEsencial,
             }
         })
 
