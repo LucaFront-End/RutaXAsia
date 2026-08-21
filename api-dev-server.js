@@ -409,6 +409,28 @@ app.all('/api/wix-cotizacion', async (req, res) => {
     }
 });
 
+// ---- User Portal & Client Dashboard Route ----
+app.all('/api/user-portal', async (req, res) => {
+    try {
+        const handler = (await import('./api/user-portal.js')).default;
+        return handler(req, res);
+    } catch (err) {
+        console.error('[API] /api/user-portal error:', err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ---- Update Passengers in CMS Route ----
+app.all('/api/user-update-viajeros', async (req, res) => {
+    try {
+        const handler = (await import('./api/user-update-viajeros.js')).default;
+        return handler(req, res);
+    } catch (err) {
+        console.error('[API] /api/user-update-viajeros error:', err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`[API] Blog API dev server running on http://localhost:${PORT}`);
     console.log(`[API] Site ID: ${process.env.VITE_WIX_SITE_ID?.substring(0, 8)}...`);

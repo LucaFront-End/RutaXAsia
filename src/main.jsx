@@ -22,6 +22,7 @@ import ViajesCorea from './pages/ViajesCorea'
 import ViajesChina from './pages/ViajesChina'
 import Zonas from './pages/Zonas'
 import ToursIndividualesPage from './pages/ToursIndividualesPage'
+import UserPortalPage from './pages/UserPortalPage'
 
 import { TripProvider } from './context/TripContext'
 
@@ -35,6 +36,8 @@ createRoot(document.getElementById('root')).render(
                         <Route index element={<Home />} />
                         <Route path="tours/:slug" element={<TourDetail />} />
                         <Route path="tours-individuales" element={<ToursIndividualesPage />} />
+                        <Route path="portal-viajero" element={<UserPortalPage />} />
+                        <Route path="mi-cuenta" element={<UserPortalPage />} />
                         <Route path="nosotros" element={<AboutUs />} />
                         <Route path="faq" element={<FAQ />} />
                         <Route path="contacto" element={<Contact />} />
