@@ -432,3 +432,37 @@ export const EXP_HEROES = {
         message: 'Japón como nunca nadie te lo contó.',
     },
 }
+
+/* ==========================================
+   ACOMPAÑADO — Itinerarios
+   ========================================== */
+export const ITINERARIO_ACOMPANADO = [
+    { day: 1, title: 'Salida y Vuelo a Japón', desc: 'Vuelo internacional desde CDMX hacia Japón.', icon: '✈️' },
+    { day: 2, title: 'Llegada a Shin Osaka', desc: 'Recepción en el aeropuerto y traslado a Shin Osaka.', icon: '🛬' },
+    { day: 3, title: 'Osaka: Castillo y Dotonbori', desc: 'Visita al Parque y Castillo de Osaka. Por la tarde, Dotonbori.', icon: '🏯' },
+    { day: 4, title: 'Nara', desc: 'Parque Nacional de Nara y Gran Buda en Templo Todaiji.', icon: '🦌' },
+    { day: 5, title: 'Kioto Clásico', desc: 'Mercado Nishiki, Templo Kiyomizudera y barrio Higashiyama.', icon: '⛩️' },
+    { day: 6, title: 'Hiroshima y Miyajima', desc: 'Parque de la Paz y Torii Flotante de Miyajima.', icon: '🕊️' },
+    { day: 7, title: 'Uji — Capital del Té Verde', desc: 'Cata de té y templos tradicionales en Uji.', icon: '🍵' },
+    { day: 8, title: 'Traslado a Tokio — Shibuya y Shinjuku', desc: 'Tren bala Shinkansen a Tokio y noche en Shinjuku.', icon: '🚄' },
+    { day: 9, title: 'Tokio Clásico: Asakusa, Sky Tree y Akihabara', desc: 'Templo Senso-ji, Tokyo Sky Tree y barrio otaku Akihabara.', icon: '🗼' },
+    { day: 10, title: 'Hakone, Monte Fuji y Lago Ashi', desc: 'Ruta por Hakone, teleférico, vistas al Fuji y barco pirata.', icon: '🗻' },
+    { day: 11, title: 'Día Libre en Tokio', desc: 'Día libre para actividades especiales, parques Disney o compras.', icon: '🗺️' },
+    { day: 12, title: 'Regreso a México', desc: 'Check out y traslado al aeropuerto para vuelo de retorno.', icon: '🛫' },
+]
+
+export const ITINERARIO_ACOMPANADO_MOMIJI = ITINERARIO_ACOMPANADO
+export const ITINERARIO_ACOMPANADO_SAKURA = ITINERARIO_ACOMPANADO
+
+export const ACOMPANADO_TODO_INCLUIDO = [
+    { item: 'Vuelo redondo desde CDMX', icon: '✈️' },
+    { item: 'Hospedaje de alta valoración con desayuno', icon: '🏨' },
+    { item: 'Todos los tours con entradas y transportación', icon: '🗺️' },
+    { item: 'JR Pass / Tren bala Shinkansen', icon: '🚄' },
+    { item: 'Coordinador en español 24/7', icon: '🗣️' },
+    { item: 'Seguro de viajero internacional', icon: '🛡️' },
+    { item: 'Traslados aeropuerto — hotel', icon: '🚌' },
+    { item: 'Todos los impuestos incluidos', icon: '📋' },
+]
+
+export const ACOMPANADO_TODO_INCLUIDO_MOMIJI = ACOMPANADO_TODO_INCLUIDO
