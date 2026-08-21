@@ -489,6 +489,36 @@ export default async function handler(req, res) {
                 })
 
                 if (checkoutSession && checkoutSession._id) {
+                    // Pre-fill Buyer and Billing Details in Wix Checkout
+                    const nameParts = (nombre || '').trim().split(' ')
+                    const buyerFirstName = nameParts[0] || 'Viajero'
+                    const buyerLastName = nameParts.slice(1).join(' ') || ' '
+                    const buyerPhone = telefono ? (telefono.startsWith('+') ? telefono : `+52 ${telefono}`) : ''
+
+                    try {
+                        await wixClient.checkout.updateCheckout(checkoutSession._id, {
+                            buyerInfo: {
+                                email: correo,
+                            },
+                            billingInfo: {
+                                address: {
+                                    firstName: buyerFirstName,
+                                    lastName: buyerLastName,
+                                    phone: buyerPhone,
+                                    country: 'MX',
+                                },
+                                contactDetails: {
+                                    firstName: buyerFirstName,
+                                    lastName: buyerLastName,
+                                    phone: buyerPhone,
+                                }
+                            }
+                        })
+                        console.log(`[Wix Invoicing Engine] ✅ Pre-filled checkout for ${buyerFirstName} ${buyerLastName} (${correo})`)
+                    } catch (prefillErr) {
+                        console.warn('[Wix Invoicing Engine] Note on prefill:', prefillErr.message)
+                    }
+
                     const urlResult = await wixClient.checkout.getCheckoutUrl(checkoutSession._id)
                     if (urlResult && urlResult.checkoutUrl) {
                         checkoutUrl = urlResult.checkoutUrl

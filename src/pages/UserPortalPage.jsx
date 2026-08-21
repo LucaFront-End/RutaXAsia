@@ -14,7 +14,12 @@ export default function UserPortalPage() {
         return saved ? JSON.parse(saved) : null
     })
 
+    const [authMode, setAuthMode] = useState('login') // 'login' | 'register'
     const [loginInput, setLoginInput] = useState(urlEmail || urlReserva || '')
+    const [regName, setRegName] = useState('')
+    const [regEmail, setRegEmail] = useState('')
+    const [regPhone, setRegPhone] = useState('')
+
     const [loading, setLoading] = useState(false)
     const [authError, setAuthError] = useState('')
 
@@ -155,6 +160,37 @@ export default function UserPortalPage() {
         fetchPortalData(loginInput.trim())
     }
 
+    const handleRegisterSubmit = async (e) => {
+        e.preventDefault()
+        if (!regEmail.trim() || !regName.trim()) {
+            setAuthError('Por favor completa tu nombre y correo electrónico.')
+            return
+        }
+        setLoading(true)
+        setAuthError('')
+        try {
+            const res = await fetch('/api/user-register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullName: regName.trim(),
+                    email: regEmail.trim(),
+                    phone: regPhone.trim(),
+                })
+            })
+            const data = await res.json()
+            if (!res.ok || data.error) {
+                throw new Error(data.error || 'Error al registrar la cuenta')
+            }
+
+            // Immediately load their dashboard with their new account
+            await fetchPortalData(regEmail.trim())
+        } catch (err) {
+            setAuthError(err.message)
+            setLoading(false)
+        }
+    }
+
     const handleLogout = () => {
         localStorage.removeItem('rutaxasia_user_session')
         setSessionUser(null)
@@ -201,7 +237,12 @@ export default function UserPortalPage() {
     }
 
     const handleSavePassengers = async () => {
-        if (!selectedReservaId) return
+        if (!selectedReservaId && portalData?.reservas?.[0]?._id) {
+            setSelectedReservaId(portalData.reservas[0]._id)
+        }
+        const targetId = selectedReservaId || portalData?.reservas?.[0]?._id
+        if (!targetId) return
+
         setIsSavingPassengers(true)
         setSaveSuccessMsg('')
         try {
@@ -209,7 +250,7 @@ export default function UserPortalPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    reservaId: selectedReservaId,
+                    reservaId: targetId,
                     viajeros: passengersList,
                     notasAdicionales: travelNotes
                 })
@@ -240,43 +281,118 @@ export default function UserPortalPage() {
             </Helmet>
 
             <div className="portal-wrap">
-                {/* 1. AUTH SCREEN IF NOT LOGGED IN */}
+                {/* 1. AUTH SCREEN (LOGIN OR REGISTER) */}
                 {!portalData ? (
                     <div className="portal-auth-card">
                         <div className="portal-auth-icon">⛩️</div>
                         <h1 className="portal-auth-title">Portal del Viajero</h1>
                         <p className="portal-auth-desc">
-                            Ingresa con el correo electrónico registrado en tu reserva o con tu código de reserva (ej. <code>RUTA-1043</code>) para consultar tus paquetes y mensualidades.
+                            Gestiona tus viajes a Japón, consulta tus cuotas mensuales y mantén actualizados los datos de tus acompañantes.
                         </p>
 
-                        <form onSubmit={handleLoginSubmit} className="portal-auth-form">
-                            <div className="portal-input-group">
-                                <label htmlFor="login-input">Correo Electrónico o Código de Reserva</label>
-                                <input
-                                    id="login-input"
-                                    type="text"
-                                    className="portal-input"
-                                    placeholder="ej. viajero@gmail.com o RUTA-1043"
-                                    value={loginInput}
-                                    onChange={(e) => setLoginInput(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            {authError && (
-                                <div style={{ color: '#ef4444', fontSize: '0.85rem', background: 'rgba(239,68,68,0.1)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.25)' }}>
-                                    ⚠️ {authError}
-                                </div>
-                            )}
-
+                        {/* Auth Mode Toggle Tabs (Ya tengo cuenta vs Crear mi cuenta) */}
+                        <div className="portal-auth-tabs">
                             <button
-                                type="submit"
-                                className="portal-auth-btn"
-                                disabled={loading}
+                                type="button"
+                                className={`portal-auth-tab-btn${authMode === 'login' ? ' portal-auth-tab-btn--active' : ''}`}
+                                onClick={() => { setAuthMode('login'); setAuthError('') }}
                             >
-                                {loading ? 'Accediendo a tu cuenta...' : 'Ver Mi Cuenta de Viajero →'}
+                                🔑 Ya tengo Reserva o Cuenta
                             </button>
-                        </form>
+                            <button
+                                type="button"
+                                className={`portal-auth-tab-btn${authMode === 'register' ? ' portal-auth-tab-btn--active' : ''}`}
+                                onClick={() => { setAuthMode('register'); setAuthError('') }}
+                            >
+                                ✨ Crear mi Cuenta
+                            </button>
+                        </div>
+
+                        {/* MODE 1: LOGIN / LOOKUP BY EMAIL OR CODE */}
+                        {authMode === 'login' && (
+                            <form onSubmit={handleLoginSubmit} className="portal-auth-form">
+                                <div className="portal-input-group">
+                                    <label htmlFor="login-input">Correo Electrónico o Código de Reserva</label>
+                                    <input
+                                        id="login-input"
+                                        type="text"
+                                        className="portal-input"
+                                        placeholder="ej. viajero@gmail.com o RUTA-1045"
+                                        value={loginInput}
+                                        onChange={(e) => setLoginInput(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                {authError && (
+                                    <div style={{ color: '#ef4444', fontSize: '0.85rem', background: 'rgba(239,68,68,0.1)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.25)' }}>
+                                        ⚠️ {authError}
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    className="portal-auth-btn"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Accediendo a tu cuenta...' : 'Acceder a Mi Cuenta →'}
+                                </button>
+                            </form>
+                        )}
+
+                        {/* MODE 2: REGISTER NEW TRAVELER */}
+                        {authMode === 'register' && (
+                            <form onSubmit={handleRegisterSubmit} className="portal-auth-form">
+                                <div className="portal-input-group">
+                                    <label>Nombre Completo (Nombre y Apellidos)</label>
+                                    <input
+                                        type="text"
+                                        className="portal-input"
+                                        placeholder="ej. Carlos Santana"
+                                        value={regName}
+                                        onChange={(e) => setRegName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="portal-input-group">
+                                    <label>Correo Electrónico</label>
+                                    <input
+                                        type="email"
+                                        className="portal-input"
+                                        placeholder="ej. viajero@gmail.com"
+                                        value={regEmail}
+                                        onChange={(e) => setRegEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="portal-input-group">
+                                    <label>Teléfono (WhatsApp)</label>
+                                    <input
+                                        type="tel"
+                                        className="portal-input"
+                                        placeholder="ej. +52 55 1234 5678"
+                                        value={regPhone}
+                                        onChange={(e) => setRegPhone(e.target.value)}
+                                    />
+                                </div>
+
+                                {authError && (
+                                    <div style={{ color: '#ef4444', fontSize: '0.85rem', background: 'rgba(239,68,68,0.1)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.25)' }}>
+                                        ⚠️ {authError}
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    className="portal-auth-btn"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Creando tu cuenta de viajero...' : 'Registrarme y Acceder →'}
+                                </button>
+                            </form>
+                        )}
                     </div>
                 ) : (
                     /* 2. DASHBOARD VIEW WHEN LOGGED IN */
@@ -349,7 +465,7 @@ export default function UserPortalPage() {
                                     <div className="portal-empty-state" style={{ gridColumn: '1 / -1' }}>
                                         <div className="portal-empty-icon">⛩️</div>
                                         <h3>No encontramos viajes registrados</h3>
-                                        <p>Cuando realices una reserva aparecerá aquí con todo su itinerario.</p>
+                                        <p>Cuando realices una reserva o compres tus tours aparecerán aquí con todo su itinerario.</p>
                                     </div>
                                 ) : (
                                     portalData.reservas.map((res) => {
@@ -402,8 +518,8 @@ export default function UserPortalPage() {
                                 {portalData.pagosProgramados.length === 0 ? (
                                     <div className="portal-empty-state">
                                         <div className="portal-empty-icon">💳</div>
-                                        <h3>No hay cuotas programadas activas</h3>
-                                        <p>Tus mensualidades aparecerán aquí cuando reserves con pago en cuotas.</p>
+                                        <h3>No hay cuotas programadas pendientes</h3>
+                                        <p>Tus mensualidades aparecerán aquí cuando reserves un paquete con plan de pagos.</p>
                                     </div>
                                 ) : (
                                     portalData.pagosProgramados.map((pago) => {

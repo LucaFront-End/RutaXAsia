@@ -136,7 +136,7 @@ function Header() {
                             <div className="nav-jac-season-group">
                                 <Link to="/viajes/japon/verano" className="nav-jac-season-header" onClick={closeMenu}>
                                     <span className="nav-jac-season-emoji">☀️</span>
-                                    <span className="nav-jac-season-name">Verano</span>
+                                    <span className="nav-jac-season-name">Akari</span>
                                     <span className="nav-jac-season-dates">Jun — Ago</span>
                                 </Link>
                                 <div className="nav-jac-exp-row">
@@ -151,7 +151,7 @@ function Header() {
                             <div className="nav-jac-season-group">
                                 <Link to="/viajes/japon/momiji" className="nav-jac-season-header" onClick={closeMenu}>
                                     <span className="nav-jac-season-emoji">🍁</span>
-                                    <span className="nav-jac-season-name">Momiji</span>
+                                    <span className="nav-jac-season-name">Kamakura</span>
                                     <span className="nav-jac-season-dates">Oct — Nov</span>
                                 </Link>
                                 <div className="nav-jac-exp-row">

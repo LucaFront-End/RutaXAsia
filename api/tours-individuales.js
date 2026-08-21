@@ -13,6 +13,14 @@ function formatWixImageUrl(wixUrl) {
     return wixUrl
 }
 
+function parsePrice(val) {
+    if (typeof val === 'number' && !isNaN(val)) return val
+    if (!val) return 0
+    const cleaned = String(val).replace(/[^0-9.]/g, '')
+    const parsed = parseFloat(cleaned)
+    return isNaN(parsed) ? 0 : parsed
+}
+
 /**
  * GET /api/tours-individuales — Fetch all tours from Wix CMS collection "TourIndividuales"
  */
@@ -59,10 +67,11 @@ export default async function handler(req, res) {
             if (typeof it.precioNmero === 'number' && !isNaN(it.precioNmero) && it.precioNmero > 0) {
                 priceNum = it.precioNmero
             } else if (it.precioEnTexto) {
-                const cleaned = String(it.precioEnTexto).replace(/[^0-9.]/g, '')
-                const parsed = parseFloat(cleaned)
-                if (!isNaN(parsed)) priceNum = parsed
+                priceNum = parsePrice(it.precioEnTexto)
             }
+
+            const priceAnfitrionNum = parsePrice(it.precioAnfitrin) || priceNum || 800
+            const priceLocatarioNum = parsePrice(it.tipoDeAnfitrin) || Math.round(priceAnfitrionNum * 1.5)
 
             const rawCategorias = String(it.categoras || '').toLowerCase()
             const rawTipo = String(it.tipoDeViaje || '').toLowerCase()
@@ -91,9 +100,11 @@ export default async function handler(req, res) {
                 description: it.descripcinAmplia || '',
                 image: formatWixImageUrl(it.image),
                 priceText: it.precioEnTexto || (priceNum > 0 ? `$${priceNum.toLocaleString('es-MX')} MXN` : ''),
-                priceNum: priceNum,
-                priceAnfitrion: it.precioAnfitrin || '',
-                priceLocatario: it.tipoDeAnfitrin || '',
+                priceNum: priceNum || priceAnfitrionNum,
+                priceAnfitrion: it.precioAnfitrin || `$${priceAnfitrionNum.toLocaleString('es-MX')} MXN`,
+                priceAnfitrionNum: priceAnfitrionNum,
+                priceLocatario: it.tipoDeAnfitrin || `$${priceLocatarioNum.toLocaleString('es-MX')} MXN`,
+                priceLocatarioNum: priceLocatarioNum,
                 days: it.dasDeViaje || '',
                 hours: it.horasDeViaje || '',
                 city: it.ciudad || 'Japón',

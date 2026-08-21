@@ -431,6 +431,17 @@ app.all('/api/user-update-viajeros', async (req, res) => {
     }
 });
 
+// ---- Register New Traveler in Wix Members Route ----
+app.all('/api/user-register', async (req, res) => {
+    try {
+        const handler = (await import('./api/user-register.js')).default;
+        return handler(req, res);
+    } catch (err) {
+        console.error('[API] /api/user-register error:', err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`[API] Blog API dev server running on http://localhost:${PORT}`);
     console.log(`[API] Site ID: ${process.env.VITE_WIX_SITE_ID?.substring(0, 8)}...`);

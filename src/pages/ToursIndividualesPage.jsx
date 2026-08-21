@@ -16,14 +16,23 @@ export default function ToursIndividualesPage() {
     const [selectedCategory, setSelectedCategory] = useState('Todas')
     const [sortBy, setSortBy] = useState('price-asc') // 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc'
 
-    // Selected Individual Tours Cart: [{ id, name, price, date, quantity }]
+    // Selected Individual Tours Cart: [{ id, name, modality: 'locatario'|'anfitrion', price, date, quantity }]
     const [selectedTours, setSelectedTours] = useState([])
+    // Chosen modality for each tour card: { [tourId]: 'locatario' | 'anfitrion' }
+    const [tourModalities, setTourModalities] = useState({})
     // Chosen date for each tour card: { [tourId]: '2026-10-18' }
     const [tourDates, setTourDates] = useState({})
     // Chosen quantity for each tour card: { [tourId]: 1 }
     const [tourQuantities, setTourQuantities] = useState({})
 
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
+    // Tomorrow date as default minimum date
+    const tomorrowStr = useMemo(() => {
+        const d = new Date()
+        d.setDate(d.getDate() + 1)
+        return d.toISOString().split('T')[0]
+    }, [])
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -39,6 +48,27 @@ export default function ToursIndividualesPage() {
         loadData()
         return () => { isMounted = false }
     }, [])
+
+    // Handle modality change for a tour card
+    const handleModalityChange = (tour, newModality) => {
+        setTourModalities(prev => ({ ...prev, [tour.id]: newModality }))
+
+        const unitPrice = newModality === 'anfitrion'
+            ? (tour.priceAnfitrionNum || tour.priceNum || 800)
+            : (tour.priceLocatarioNum || Math.round((tour.priceAnfitrionNum || tour.priceNum || 800) * 1.5))
+
+        // If already added in ticket, update modality and price in selectedTours
+        setSelectedTours(prev => prev.map(item =>
+            item.id === tour.id
+                ? {
+                    ...item,
+                    modality: newModality,
+                    modalityLabel: newModality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+                    price: unitPrice
+                }
+                : item
+        ))
+    }
 
     // Handle date change for a tour card
     const handleDateChange = (tourId, dateStr) => {
@@ -68,14 +98,21 @@ export default function ToursIndividualesPage() {
             // Already added -> remove directly
             setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
         } else {
-            // Add tour directly with the date and quantity selected on the card
-            const chosenDate = tourDates[tour.id] || new Date().toISOString().split('T')[0]
+            // Add tour directly with the modality, date and quantity selected on the card
+            const chosenModality = tourModalities[tour.id] || 'locatario'
+            const chosenDate = tourDates[tour.id] || tomorrowStr
             const chosenQty = tourQuantities[tour.id] || 1
+
+            const unitPrice = chosenModality === 'anfitrion'
+                ? (tour.priceAnfitrionNum || tour.priceNum || 800)
+                : (tour.priceLocatarioNum || Math.round((tour.priceAnfitrionNum || tour.priceNum || 800) * 1.5))
 
             setSelectedTours(prev => [...prev, {
                 id: tour.id,
                 name: tour.title,
-                price: tour.priceNum || 0,
+                modality: chosenModality,
+                modalityLabel: chosenModality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+                price: unitPrice,
                 date: chosenDate,
                 quantity: chosenQty,
             }])
@@ -100,9 +137,9 @@ export default function ToursIndividualesPage() {
         }
 
         if (sortBy === 'price-asc') {
-            result.sort((a, b) => a.priceNum - b.priceNum)
+            result.sort((a, b) => (a.priceLocatarioNum || a.priceNum) - (b.priceLocatarioNum || b.priceNum))
         } else if (sortBy === 'price-desc') {
-            result.sort((a, b) => b.priceNum - a.priceNum)
+            result.sort((a, b) => (b.priceLocatarioNum || b.priceNum) - (a.priceLocatarioNum || a.priceNum))
         } else if (sortBy === 'alpha-asc') {
             result.sort((a, b) => a.title.localeCompare(b.title))
         } else if (sortBy === 'alpha-desc') {
@@ -141,7 +178,7 @@ export default function ToursIndividualesPage() {
                     <span className="tours-indiv-tag">⛩️ Viajeros Independientes</span>
                     <h1 className="tours-indiv-title">Tours en Japón</h1>
                     <p className="tours-indiv-excerpt">
-                        Excursiones de 1 día y actividades sueltas para personas que ya se encuentran en Japón o cuentan con su propio hospedaje. Selecciona tus tours libremente, elige el día, la cantidad de personas y agrégalos a tu boleto de reserva.
+                        Excursiones de 1 día y actividades sueltas. Elige tu modalidad de acompañamiento (<strong>Asistencia Locataria</strong> o <strong>Anfitrión de Viaje</strong>), selecciona la fecha y agrégalos a tu boleto de reserva.
                     </p>
                 </div>
             </div>
@@ -201,7 +238,7 @@ export default function ToursIndividualesPage() {
                             includedExps={[]}
                             addedItems={selectedTours.map(t => ({
                                 id: t.id,
-                                name: `${t.name} (📅 ${formatDateLabel(t.date)}${(t.quantity || 1) > 1 ? ` × ${t.quantity} pers.` : ''})`,
+                                name: `${t.name} [${t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria'}] (📅 ${formatDateLabel(t.date)}${(t.quantity || 1) > 1 ? ` × ${t.quantity} pers.` : ''})`,
                                 price: t.price * (t.quantity || 1)
                             }))}
                             selectedComps={[]}
@@ -241,9 +278,15 @@ export default function ToursIndividualesPage() {
                             <div className="tours-indiv-cards-grid">
                                 {filteredTours.map((tour) => {
                                     const isAdded = selectedTours.some(item => item.id === tour.id)
-                                    const currentDate = tourDates[tour.id] || new Date().toISOString().split('T')[0]
+                                    const currentModality = tourModalities[tour.id] || 'locatario'
+                                    const currentDate = tourDates[tour.id] || tomorrowStr
                                     const currentQty = tourQuantities[tour.id] || 1
-                                    const tourTotalForQty = (tour.priceNum || 0) * currentQty
+
+                                    const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
+                                    const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
+
+                                    const unitPrice = currentModality === 'anfitrion' ? priceAnfitrion : priceLocatario
+                                    const tourTotalForQty = unitPrice * currentQty
 
                                     return (
                                         <div
@@ -270,22 +313,43 @@ export default function ToursIndividualesPage() {
                                                     <p className="tours-indiv-card-excerpt">{tour.excerpt}</p>
                                                 )}
 
+                                                {/* Modality Selector Bar (Locataria vs Anfitrión) */}
+                                                <div className="tours-indiv-modality-selector">
+                                                    <button
+                                                        type="button"
+                                                        className={`tours-modality-pill${currentModality === 'locatario' ? ' tours-modality-pill--active' : ''}`}
+                                                        onClick={() => handleModalityChange(tour, 'locatario')}
+                                                    >
+                                                        <span className="modality-pill-icon">🏮</span>
+                                                        <div className="modality-pill-text">
+                                                            <span className="modality-pill-title">Locataria</span>
+                                                            <span className="modality-pill-price">{formatPrice(priceLocatario)}</span>
+                                                        </div>
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className={`tours-modality-pill${currentModality === 'anfitrion' ? ' tours-modality-pill--active' : ''}`}
+                                                        onClick={() => handleModalityChange(tour, 'anfitrion')}
+                                                    >
+                                                        <span className="modality-pill-icon">👑</span>
+                                                        <div className="modality-pill-text">
+                                                            <span className="modality-pill-title">Anfitrión</span>
+                                                            <span className="modality-pill-price">{formatPrice(priceAnfitrion)}</span>
+                                                        </div>
+                                                    </button>
+                                                </div>
+
                                                 {/* Date and Quantity Controls Bar */}
                                                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '12px' }}>
-                                                    {/* Elegant Custom Date Selector Pill */}
-                                                    <div
+                                                    {/* Custom Interactive Date Selector Pill */}
+                                                    <label
                                                         className={`tours-indiv-date-chip${isAdded ? ' tours-indiv-date-chip--added' : ''}`}
-                                                        style={{ flex: 1, margin: 0 }}
-                                                        onClick={(e) => {
-                                                            const input = e.currentTarget.querySelector('input[type="date"]')
-                                                            if (input) {
-                                                                try { input.showPicker() } catch (err) { input.focus() }
-                                                            }
-                                                        }}
+                                                        style={{ flex: 1, margin: 0, cursor: 'pointer' }}
                                                     >
                                                         <span className="tours-indiv-date-chip-icon">📅</span>
                                                         <div className="tours-indiv-date-chip-info">
-                                                            <span className="tours-indiv-date-chip-label">Fecha</span>
+                                                            <span className="tours-indiv-date-chip-label">Fecha del Tour</span>
                                                             <span className="tours-indiv-date-chip-value">
                                                                 {formatDateLabel(currentDate)}
                                                             </span>
@@ -294,11 +358,10 @@ export default function ToursIndividualesPage() {
                                                             type="date"
                                                             className="tours-indiv-date-chip-native"
                                                             value={currentDate}
-                                                            min={new Date().toISOString().split('T')[0]}
-                                                            onClick={(e) => e.stopPropagation()}
+                                                            min={tomorrowStr}
                                                             onChange={(e) => handleDateChange(tour.id, e.target.value)}
                                                         />
-                                                    </div>
+                                                    </label>
 
                                                     {/* Quantity / Person Selector Pill */}
                                                     <div style={{
@@ -331,11 +394,9 @@ export default function ToursIndividualesPage() {
                                                 <div className="tours-indiv-card-footer">
                                                     <div className="tours-indiv-card-price">
                                                         {formatPrice(tourTotalForQty)}
-                                                        {currentQty > 1 && (
-                                                            <span style={{ fontSize: '0.72rem', color: '#888', fontWeight: 600, display: 'block' }}>
-                                                                ({formatPrice(tour.priceNum || 0)} × {currentQty})
-                                                            </span>
-                                                        )}
+                                                        <span style={{ fontSize: '0.72rem', color: '#888', fontWeight: 600, display: 'block' }}>
+                                                            {formatPrice(unitPrice)} × {currentQty} pers.
+                                                        </span>
                                                     </div>
                                                     <button
                                                         type="button"
@@ -363,7 +424,7 @@ export default function ToursIndividualesPage() {
                 totalPrice={totalPrice}
                 desglose={
                     `Tours seleccionados (${selectedTours.length}): ` +
-                    selectedTours.map(t => `${t.name} (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [${formatPrice((t.price || 0) * (t.quantity || 1))} MXN]`).join('; ')
+                    selectedTours.map(t => `${t.name} [${t.modalityLabel || (t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria')}] (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [${formatPrice((t.price || 0) * (t.quantity || 1))} MXN]`).join('; ')
                 }
             />
         </div>

@@ -377,7 +377,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                             </p>
                             {memberId && (
                                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0', padding: '3px 10px', borderRadius: '100px', fontSize: '0.72rem', fontWeight: 800, marginTop: '6px' }}>
-                                    <span>✓ Cuenta Wix Member Activa (ID: {memberId.slice(0, 8)}...)</span>
+                                    <span>✓ Cuenta de Viajero Activa</span>
                                 </div>
                             )}
 
@@ -386,7 +386,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 1 ? 1 : 0.4 }}>
                                     <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</span>
                                     <span style={{ fontSize: '0.78rem', fontWeight: step === 1 ? 800 : 600, color: step === 1 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
-                                        {isToursSueltos ? 'Asistencia' : 'Comprador'}
+                                        Comprador
                                     </span>
                                 </div>
                                 <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>→</span>
@@ -406,106 +406,8 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                             </div>
                         </div>
 
-                        {/* ================= STEP 1: ASISTENCIA (FOR TOURS SUELTOS) ================= */}
-                        {step === 1 && isToursSueltos && (
-                            <div>
-                                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '12px', color: 'var(--color-dark)' }}>
-                                    🏮 1. Elige tu Modalidad de Acompañamiento:
-                                </h4>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-                                    {/* Card 1: Asistencia Locataria */}
-                                    <div
-                                        onClick={() => setAssistanceType('locataria')}
-                                        style={{
-                                            border: assistanceType === 'locataria' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
-                                            background: assistanceType === 'locataria' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
-                                            borderRadius: '16px',
-                                            padding: '16px 14px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'space-between',
-                                            boxShadow: assistanceType === 'locataria' ? '0 8px 20px rgba(225,29,72,0.12)' : 'none'
-                                        }}
-                                    >
-                                        <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                                                <span style={{ fontSize: '1.8rem' }}>🏮</span>
-                                                <span style={{
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 800,
-                                                    padding: '2px 7px',
-                                                    borderRadius: '6px',
-                                                    background: assistanceType === 'locataria' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
-                                                    color: assistanceType === 'locataria' ? '#fff' : '#64748b'
-                                                }}>
-                                                    {assistanceType === 'locataria' ? '✓ Elegido' : 'Elegir'}
-                                                </span>
-                                            </div>
-                                            <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: 'var(--color-dark)' }}>
-                                                Asistencia Locataria
-                                            </h4>
-                                            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.35 }}>
-                                                Orientación y soporte local en destino con recomendaciones de coordinadores locales en español.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Card 2: Anfitrión de Viaje */}
-                                    <div
-                                        onClick={() => setAssistanceType('anfitrion')}
-                                        style={{
-                                            border: assistanceType === 'anfitrion' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
-                                            background: assistanceType === 'anfitrion' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
-                                            borderRadius: '16px',
-                                            padding: '16px 14px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'space-between',
-                                            boxShadow: assistanceType === 'anfitrion' ? '0 8px 20px rgba(225,29,72,0.12)' : 'none'
-                                        }}
-                                    >
-                                        <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                                                <span style={{ fontSize: '1.8rem' }}>👑</span>
-                                                <span style={{
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 800,
-                                                    padding: '2px 7px',
-                                                    borderRadius: '6px',
-                                                    background: assistanceType === 'anfitrion' ? 'var(--color-primary, #e11d48)' : '#f1f5f9',
-                                                    color: assistanceType === 'anfitrion' ? '#fff' : '#64748b'
-                                                }}>
-                                                    {assistanceType === 'anfitrion' ? '✓ Elegido' : 'Elegir'}
-                                                </span>
-                                            </div>
-                                            <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: 'var(--color-dark)' }}>
-                                                Anfitrión de Viaje
-                                            </h4>
-                                            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.35 }}>
-                                                Acompañamiento dedicado y personalizado durante todo el tour para una inmersión completa.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    style={{ width: '100%', padding: '13px', borderRadius: '100px', fontSize: '0.92rem', fontWeight: 800 }}
-                                    onClick={() => setStep(2)}
-                                >
-                                    Continuar con Datos de Asistentes →
-                                </button>
-                            </div>
-                        )}
-
-                        {/* ================= STEP 1: COMPRADOR (FOR PACKAGES) ================= */}
-                        {step === 1 && !isToursSueltos && (
+                        {/* ================= STEP 1: COMPRADOR ================= */}
+                        {step === 1 && (
                             <div>
                                 <div className="jtb-form-section" style={{ marginTop: '6px' }}>
                                     <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '12px', color: 'var(--color-dark)' }}>

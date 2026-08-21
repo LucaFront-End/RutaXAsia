@@ -54,8 +54,44 @@
 .portal-auth-desc {
     font-size: 0.95rem;
     color: #94a3b8;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     line-height: 1.5;
+}
+
+/* Auth Mode Toggle Tabs */
+.portal-auth-tabs {
+    display: flex;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 22px;
+}
+
+.portal-auth-tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.portal-auth-tab-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.portal-auth-tab-btn--active {
+    background: var(--color-primary, #e91e63);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
 }
 
 .portal-auth-form {
