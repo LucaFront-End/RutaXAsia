@@ -272,6 +272,7 @@ export default function StepGuiado({ season, temporadaKey }) {
                                 }}
                                 seasonName={`${season.name} (${activePkg.name})`}
                                 tourLimit={currentTourLimit}
+                                planStyle="Esencial"
                             />
 
                             {/* Complementos */}

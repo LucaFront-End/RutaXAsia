@@ -262,6 +262,7 @@ export default function StepLibre({ season, temporadaKey }) {
                                 }}
                                 seasonName={season.name}
                                 tourLimit={currentTourLimit}
+                                planStyle="Libre"
                             />
 
                             {/* Complementos */}

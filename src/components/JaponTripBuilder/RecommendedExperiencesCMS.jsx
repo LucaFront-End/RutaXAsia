@@ -26,10 +26,17 @@ const CATEGORIES_CONFIG = [
     },
 ]
 
-export default function RecommendedExperiencesCMS({ addedExperiences = [], onToggleExperience, seasonName = 'tu viaje', tourLimit = null }) {
+export default function RecommendedExperiencesCMS({ 
+    addedExperiences = [], 
+    onToggleExperience, 
+    seasonName = 'tu viaje', 
+    tourLimit = null,
+    planStyle = 'Esencial',
+    onPreselectTours = null
+}) {
     const [tours, setTours] = useState([])
     const [loading, setLoading] = useState(true)
-    const [openCategories, setOpenCategories] = useState(['rutas']) // "Rutas por Japón" open by default
+    const [openCategories, setOpenCategories] = useState(['rutas'])
 
     useEffect(() => {
         let isMounted = true
@@ -39,11 +46,26 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
             if (isMounted) {
                 setTours(data)
                 setLoading(false)
+
+                // Auto pre-select tours that are tagged for this active plan
+                if (onPreselectTours && Array.isArray(data)) {
+                    const freeTours = data.filter(t => {
+                        const s = (planStyle || '').toLowerCase()
+                        if (s.includes('esencial')) return t.esencial
+                        if (s.includes('completo') || s.includes('acompañado')) return t.completo
+                        if (s.includes('libre')) return t.libre
+                        if (s.includes('signature') || s.includes('vip')) return t.signature
+                        return false
+                    })
+                    if (freeTours.length > 0) {
+                        onPreselectTours(freeTours)
+                    }
+                }
             }
         }
         loadData()
         return () => { isMounted = false }
-    }, [])
+    }, [planStyle])
 
     const toggleCategory = (key, event) => {
         const headerEl = event?.currentTarget
@@ -67,6 +89,15 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
 
     const isLimitReached = tourLimit !== null && addedExperiences.length >= tourLimit
 
+    const checkIsFreeForThisPlan = (tour) => {
+        const s = (planStyle || '').toLowerCase()
+        if (s.includes('esencial')) return Boolean(tour.esencial)
+        if (s.includes('completo') || s.includes('acompañado')) return Boolean(tour.completo)
+        if (s.includes('libre')) return Boolean(tour.libre)
+        if (s.includes('signature') || s.includes('vip')) return Boolean(tour.signature)
+        return false
+    }
+
     return (
         <div className="rec-cms-wrapper">
             <div className="rec-cms-header">
@@ -79,7 +110,7 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                     )}
                 </div>
                 <p className="rec-cms-subtitle">
-                    Catálogo oficial de experiencias. Explora nuestras 3 categorías y selecciona tus experiencias:
+                    Catálogo oficial de experiencias. Los tours marcados para tu plan <strong>{planStyle}</strong> son <strong>100% Gratis</strong>. Los demás tours se agregan como extras adicionales:
                 </p>
             </div>
 
@@ -99,10 +130,17 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                 key={catConfig.key}
                                 className={`rec-cms-acc-item${isOpen ? ' rec-cms-acc-item--open' : ''}`}
                             >
-                                {/* Accordion Header */}
                                 <div
                                     className="rec-cms-acc-header"
                                     onClick={(e) => toggleCategory(catConfig.key, e)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault()
+                                            toggleCategory(catConfig.key, e)
+                                        }
+                                    }}
                                 >
                                     <div className="rec-cms-acc-title-wrap">
                                         <span className="rec-cms-acc-icon">{catConfig.icon}</span>
@@ -118,7 +156,6 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                     </div>
                                 </div>
 
-                                {/* Accordion Body Collapsible */}
                                 {isOpen && (
                                     <div className="rec-cms-acc-body">
                                         <p className="rec-cms-cat-desc">{catConfig.desc}</p>
@@ -129,10 +166,15 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                                 {catTours.map((tour) => {
                                                     const isAdded = addedExperiences.includes(tour.id) || addedExperiences.includes(tour.title)
                                                     const isDisabled = isLimitReached && !isAdded
+                                                    const isFreeForPlan = checkIsFreeForThisPlan(tour)
+
                                                     return (
                                                         <div
                                                             key={tour.id}
                                                             className={`rec-cms-card${isAdded ? ' rec-cms-card--added' : ''}`}
+                                                            style={{
+                                                                border: isFreeForPlan ? '2px solid #10b981' : undefined
+                                                            }}
                                                         >
                                                             <div className="rec-cms-card-img-box">
                                                                 <img
@@ -143,6 +185,22 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                                                         e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
                                                                     }}
                                                                 />
+                                                                {isFreeForPlan && (
+                                                                    <span style={{
+                                                                        position: 'absolute',
+                                                                        top: '8px',
+                                                                        left: '8px',
+                                                                        background: '#059669',
+                                                                        color: '#fff',
+                                                                        padding: '3px 8px',
+                                                                        borderRadius: '6px',
+                                                                        fontSize: '0.7rem',
+                                                                        fontWeight: 800,
+                                                                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                                                                    }}>
+                                                                        ✨ Incluido Gratis en {planStyle}
+                                                                    </span>
+                                                                )}
                                                                 {(tour.days || tour.hours) && (
                                                                     <span className="rec-cms-duration-badge">
                                                                         ⏱️ {tour.days ? `${tour.days}` : ''} {tour.hours ? `(${tour.hours})` : ''}
@@ -156,15 +214,20 @@ export default function RecommendedExperiencesCMS({ addedExperiences = [], onTog
                                                                 )}
                                                                 <div className="rec-cms-card-footer">
                                                                     <div className="rec-cms-card-price">
-                                                                        {tour.priceText || (tour.priceNum ? `$${tour.priceNum.toLocaleString('es-MX')} MXN` : 'Consultar')}
+                                                                        {isFreeForPlan ? (
+                                                                            <span style={{ color: '#059669', fontWeight: 800 }}>$0 MXN (Gratis)</span>
+                                                                        ) : (
+                                                                            <span>+{tour.priceText || (tour.priceNum ? `$${tour.priceNum.toLocaleString('es-MX')} MXN` : 'Consultar')}</span>
+                                                                        )}
                                                                     </div>
                                                                     {onToggleExperience && (
                                                                         <button
                                                                             type="button"
                                                                             className={`rec-cms-add-btn${isAdded ? ' rec-cms-add-btn--added' : isDisabled ? ' rec-cms-add-btn--disabled' : ''}`}
-                                                                            onClick={() => onToggleExperience(tour.id, tour.title, tour.priceNum)}
+                                                                            onClick={() => onToggleExperience(tour.id, tour.title, isFreeForPlan ? 0 : tour.priceNum)}
+                                                                            style={isFreeForPlan && isAdded ? { background: '#059669', borderColor: '#059669' } : undefined}
                                                                         >
-                                                                            {isAdded ? '✓ Agregado' : isDisabled ? 'Límite alcanzado' : '+ Agregar'}
+                                                                            {isAdded ? (isFreeForPlan ? '✓ Incluido' : '✓ Agregado') : isDisabled ? 'Límite alcanzado' : (isFreeForPlan ? '+ Incluir Gratis' : '+ Agregar Extra')}
                                                                         </button>
                                                                     )}
                                                                 </div>
