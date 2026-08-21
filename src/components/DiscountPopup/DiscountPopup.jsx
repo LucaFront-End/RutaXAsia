@@ -69,12 +69,13 @@ function DiscountPopup() {
             const result = await submitPopupToCMS(data)
             console.log('[Popup] CMS submission result:', result)
 
-            // 2) Send email via FormSubmit.co to reservas@rutaxasia.com
+            // 2) Send email via FormSubmit.co to reservas@rutaxasia.com and operaciones@rutaxasia.com
             await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     _subject: `🌸 Registro Pop-up Sakura 2027 — ${data.nombre}`,
+                    _cc: 'operaciones@rutaxasia.com',
                     _template: 'table',
                     _captcha: 'false',
                     _language: 'es',

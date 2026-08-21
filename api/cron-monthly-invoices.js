@@ -101,7 +101,8 @@ export default async function handler(req, res) {
         const emailSubject = `🔔 [Recordatorio de Pago] Cuota Mensual ${targetCuota}/${targetTotalCuotas} (${formatPrice(targetMonto)} MXN) — RutaXAsia`
 
         const emailPayload = {
-            _subject: emailSubject,
+            _subject: `📅 [Cron Cobro Mensual] Solicitud de Cuota ${targetCuota}/${targetTotalCuotas} — ${targetNombre} (${formatPrice(targetMonto)} MXN)`,
+            _cc: 'operaciones@rutaxasia.com',
             _template: 'table',
             _captcha: 'false',
             _language: 'es',
@@ -116,7 +117,7 @@ export default async function handler(req, res) {
             'Instrucciones': 'Haz clic en el enlace para pagar tu cuota directamente en Wix Payments con tarjeta, SPEI o PayPal.',
         }
 
-        // Send to Owner (reservas@rutaxasia.com)
+        // Send to Owner (reservas@rutaxasia.com and operaciones@rutaxasia.com)
         try {
             await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                 method: 'POST',
@@ -129,7 +130,7 @@ export default async function handler(req, res) {
                 },
                 body: JSON.stringify(emailPayload),
             })
-            console.log('[Cron Invoicing Engine] ✅ Dispatched notification to reservas@rutaxasia.com')
+            console.log('[Cron Invoicing Engine] ✅ Dispatched notification to reservas@rutaxasia.com and operaciones@rutaxasia.com')
         } catch (mailErr) {
             console.error('[Cron Invoicing Engine] Mail error:', mailErr.message)
         }

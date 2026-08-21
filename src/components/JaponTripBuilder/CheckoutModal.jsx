@@ -287,7 +287,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
             const result = await response.json()
 
-            // 2. Send notification email to reservas@rutaxasia.com via FormSubmit
+            // 2. Send notification email to reservas@rutaxasia.com and operaciones@rutaxasia.com via FormSubmit
             try {
                 const subjectText = isToursSueltos
                     ? `🎟️ [Wix Payment] Solicitud Pago Total Tours Individuales (${formatPrice(paymentAmount)} MXN) — ${nombre}`
@@ -300,6 +300,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
                         _subject: subjectText,
+                        _cc: 'operaciones@rutaxasia.com',
                         _template: 'table',
                         _captcha: 'false',
                         _language: 'es',

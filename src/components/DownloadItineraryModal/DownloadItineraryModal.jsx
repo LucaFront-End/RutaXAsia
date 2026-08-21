@@ -65,12 +65,13 @@ export default function DownloadItineraryModal({ isOpen, onClose, tour }) {
                 mensaje: `Descarga de itinerario PDF: ${tour.title}`,
             })
 
-            // 2. Send email notification to reservas@rutaxasia.com
+            // 2. Send email notification to reservas@rutaxasia.com and operaciones@rutaxasia.com
             await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     _subject: `📥 Descarga de Itinerario PDF — ${tour.title} — ${formData.nombre}`,
+                    _cc: 'operaciones@rutaxasia.com',
                     _template: 'table',
                     _captcha: 'false',
                     _language: 'es',

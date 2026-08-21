@@ -365,6 +365,7 @@ export default async function handler(req, res) {
 
             const notificationPayload = {
                 _subject: emailSubject,
+                _cc: 'operaciones@rutaxasia.com',
                 _template: 'table',
                 _captcha: 'false',
                 _language: 'es',
@@ -383,7 +384,7 @@ export default async function handler(req, res) {
                 'Fecha de Emisión': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
             }
 
-            // A) Dispatched agency notification via FormSubmit
+            // A) Dispatched agency notification via FormSubmit to reservas@rutaxasia.com and operaciones@rutaxasia.com
             try {
                 await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
                     method: 'POST',
@@ -396,7 +397,7 @@ export default async function handler(req, res) {
                     },
                     body: JSON.stringify(notificationPayload),
                 })
-                console.log('[Wix Invoicing Engine] ✅ Dispatched agency notification to reservas@rutaxasia.com')
+                console.log('[Wix Invoicing Engine] ✅ Dispatched agency notification to reservas@rutaxasia.com and operaciones@rutaxasia.com')
             } catch (mailErr) {
                 console.error('[Wix Invoicing Engine] Mail owner error:', mailErr.message)
             }

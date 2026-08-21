@@ -89,12 +89,13 @@ export default function Contact() {
                 origen: formData.origen,
             })
 
-            // 2) Send email via FormSubmit.co to reservas@rutaxasia.com
+            // 2) Send email via FormSubmit.co to reservas@rutaxasia.com and operaciones@rutaxasia.com
             await fetch(FORMSUBMIT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     _subject: `Nuevo contacto RutaXAsia — ${formData.nombre}`,
+                    _cc: 'operaciones@rutaxasia.com',
                     _template: 'table',
                     _captcha: 'false',
                     _language: 'es',
