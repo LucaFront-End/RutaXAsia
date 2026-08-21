@@ -64,11 +64,24 @@ export default async function handler(req, res) {
                 if (!isNaN(parsed)) priceNum = parsed
             }
 
+            const rawCategorias = String(it.categoras || '').toLowerCase()
+            const rawTipo = String(it.tipoDeViaje || '').toLowerCase()
+
             const isEsencial = Boolean(
-                it.esenciales === true ||
-                it.esencial === true ||
-                String(it.categoras || '').toLowerCase().includes('esencial') ||
-                String(it.tipoDeViaje || '').toLowerCase().includes('esencial')
+                it.esenciales === true || it.esencial === true ||
+                rawCategorias.includes('esencial') || rawTipo.includes('esencial')
+            )
+            const isCompleto = Boolean(
+                it.completo === true || it.acompanado === true ||
+                rawCategorias.includes('completo') || rawCategorias.includes('acompañado') || rawCategorias.includes('acompanado') || rawTipo.includes('completo')
+            )
+            const isLibre = Boolean(
+                it.libre === true ||
+                rawCategorias.includes('libre') || rawTipo.includes('libre')
+            )
+            const isSignature = Boolean(
+                it.signature === true || it.vip === true ||
+                rawCategorias.includes('signature') || rawCategorias.includes('vip') || rawTipo.includes('signature') || rawTipo.includes('vip')
             )
 
             return {
@@ -89,6 +102,9 @@ export default async function handler(req, res) {
                 rawCategory: rawCat,
                 categorias: it.categoras || '',
                 esencial: isEsencial,
+                completo: isCompleto,
+                libre: isLibre,
+                signature: isSignature,
             }
         })
 
