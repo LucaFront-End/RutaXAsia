@@ -2951,5 +2951,105 @@
     }
 }
 
+/* ===== JTB MOBILE BOTTOM FLOATING CTA BAR (Franja Roja Abajo) ===== */
+.jtb-mobile-floating-bar {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .jtb-mobile-floating-bar {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 9999 !important;
+        background: rgba(10, 12, 16, 0.96) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+        padding: 10px 16px !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 12px !important;
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45) !important;
+        box-sizing: border-box !important;
+    }
+
+    .jtb-mobile-bar-left {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .jtb-mobile-bar-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #94a3b8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.15;
+    }
+
+    .jtb-mobile-bar-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .jtb-mobile-bar-price {
+        font-size: 1.05rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.3px;
+        line-height: 1.2;
+    }
+
+    .jtb-mobile-bar-anticipo {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--color-primary, #e11d48);
+        white-space: nowrap;
+    }
+
+    .jtb-mobile-bar-right {
+        flex-shrink: 0;
+    }
+
+    .jtb-mobile-bar-btn {
+        background: var(--color-primary, #e11d48) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 100px !important;
+        padding: 10px 18px !important;
+        font-size: 0.85rem !important;
+        font-weight: 800 !important;
+        cursor: pointer !important;
+        box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4) !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        white-space: nowrap !important;
+        transition: transform 0.2s, background 0.2s !important;
+    }
+
+    .jtb-mobile-bar-btn:active {
+        transform: scale(0.96);
+    }
+
+    /* Add bottom offset so content isn't covered by bottom bar on mobile */
+    .jtb-wrapper,
+    .tours-indiv-page {
+        padding-bottom: 85px !important;
+    }
+}
+
 
 

@@ -2305,7 +2305,19 @@
         align-items: center;
     }
     .jac-selection-path {
-        top: 69px; /* Adjust to small mobile navbar height */
+        position: static !important;
+        top: auto !important;
+        padding-top: 75px !important;
+        padding-bottom: 12px !important;
+        background: #0a0c10 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .jac-path-container {
+        gap: 0.4rem;
+        padding: 0 10px;
+    }
+    .jac-path-step {
+        font-size: 0.72rem;
     }
 }
 

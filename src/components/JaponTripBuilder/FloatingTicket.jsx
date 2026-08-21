@@ -333,6 +333,46 @@ export default function FloatingTicket({
                     )}
                 </div>
             </div>
+
+            {/* ===== MOBILE BOTTOM FLOATING CTA BAR (Franja Roja Abajo) ===== */}
+            <div className="jtb-mobile-floating-bar">
+                <div className="jtb-mobile-bar-left">
+                    <span className="jtb-mobile-bar-title">
+                        {selectedPkg?.name || estilo}
+                        {datesText && datesText !== 'Fechas seleccionadas' ? ` · ${datesText}` : ''}
+                    </span>
+                    <div className="jtb-mobile-bar-price-row">
+                        <span className="jtb-mobile-bar-price">
+                            {totalPrice > 0 ? `${formatPrice(totalPrice)} MXN` : 'Cotizar'}
+                        </span>
+                        {anticipoDisplay && (
+                            <span className="jtb-mobile-bar-anticipo">
+                                (Aparta con {anticipoDisplay})
+                            </span>
+                        )}
+                    </div>
+                </div>
+                <div className="jtb-mobile-bar-right">
+                    {onOpenCheckout ? (
+                        <button
+                            type="button"
+                            className="jtb-mobile-bar-btn"
+                            onClick={onOpenCheckout}
+                        >
+                            {customReserveBtnText ? '💳 Pagar' : (anticipoDisplay ? `💳 Apartar` : '💳 Reservar')}
+                        </button>
+                    ) : (
+                        <a
+                            href={`${WHATSAPP_BASE}${encodeURIComponent(waMsg)}`}
+                            className="jtb-mobile-bar-btn"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            💬 Cotizar
+                        </a>
+                    )}
+                </div>
+            </div>
         </div>
     )
 }
