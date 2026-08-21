@@ -582,18 +582,18 @@ function Home({ cityOverride } = {}) {
                                         <span className="hm-season-link-arrow">→</span>
                                     </Link>
                                     
-                                    <Link to="/viajes/japon/verano" className="hm-season-link" style={{ '--season-primary': '#2d6a4f' }}>
+                                    <Link to="/viajes/japon/akari" className="hm-season-link" style={{ '--season-primary': '#2d6a4f' }}>
                                         <div className="hm-season-link-label">
                                             <span className="hm-season-link-emoji">☀️</span>
-                                            <span className="hm-season-link-name">Verano — Festivales y Neón</span>
+                                            <span className="hm-season-link-name">Akari — Verano, Festivales y Hanabi</span>
                                         </div>
                                         <span className="hm-season-link-arrow">→</span>
                                     </Link>
                                     
-                                    <Link to="/viajes/japon/momiji" className="hm-season-link" style={{ '--season-primary': '#c44900' }}>
+                                    <Link to="/viajes/japon/kamakura" className="hm-season-link" style={{ '--season-primary': '#c44900' }}>
                                         <div className="hm-season-link-label">
                                             <span className="hm-season-link-emoji">🍁</span>
-                                            <span className="hm-season-link-name">Momiji — Hojas de Otoño</span>
+                                            <span className="hm-season-link-name">Kamakura — Otoño y Templos Dorados</span>
                                         </div>
                                         <span className="hm-season-link-arrow">→</span>
                                     </Link>

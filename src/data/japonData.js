@@ -28,10 +28,10 @@ export const TEMPORADAS = {
         },
         highlights: ['Cerezos en flor (Hanami)', 'Festivales de primavera', 'Clima perfecto para caminar'],
     },
-    verano: {
-        key: 'verano',
-        name: 'Verano',
-        fullName: 'Verano',
+    akari: {
+        key: 'akari',
+        name: 'Akari',
+        fullName: 'Akari',
         emoji: '☀️',
         months: 'Junio — Agosto',
         description: 'Festivales vibrantes, fuegos artificiales Hanabi y la energía del verano japonés. Vive Japón en su máximo esplendor.',
@@ -46,10 +46,10 @@ export const TEMPORADAS = {
         },
         highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Universal Studios & Disney'],
     },
-    momiji: {
-        key: 'momiji',
-        name: 'Momiji',
-        fullName: 'Momiji',
+    kamakura: {
+        key: 'kamakura',
+        name: 'Kamakura',
+        fullName: 'Kamakura',
         emoji: '🍁',
         months: 'Octubre — Noviembre',
         description: 'Los colores del otoño transforman Japón. Templos dorados, gastronomía de temporada y paisajes que te dejan sin aliento.',
@@ -66,7 +66,12 @@ export const TEMPORADAS = {
     },
 }
 
-export const TEMPORADA_ORDER = ['sakura', 'verano', 'momiji']
+// Aliases for backward compatibility
+TEMPORADAS.verano = TEMPORADAS.akari
+TEMPORADAS.momiji = TEMPORADAS.kamakura
+TEMPORADAS.koyo = TEMPORADAS.kamakura
+
+export const TEMPORADA_ORDER = ['sakura', 'akari', 'kamakura']
 
 /* ==========================================
    EXPERIENCIAS (Travel Styles)
@@ -115,8 +120,8 @@ export const EXPERIENCIAS = {
             },
         ],
     },
-    guiado: {
-        key: 'guiado',
+    esencial: {
+        key: 'esencial',
         name: 'Esencial',
         icon: '⛩️',
         tagline: 'Itinerario organizado para que vivas Japón sin perderte nada.',
@@ -153,8 +158,8 @@ export const EXPERIENCIAS = {
             },
         ],
     },
-    acompanado: {
-        key: 'acompanado',
+    completo: {
+        key: 'completo',
         name: 'Completo',
         icon: '🏯',
         tagline: 'Viaja con tranquilidad y acompañamiento constante.',
@@ -234,13 +239,17 @@ export const EXPERIENCIAS = {
     },
 }
 
-export const EXPERIENCIA_ORDER = ['libre', 'guiado', 'acompanado', 'signature']
+// Backward-compat aliases
+EXPERIENCIAS.guiado = EXPERIENCIAS.esencial
+EXPERIENCIAS.acompanado = EXPERIENCIAS.completo
+
+export const EXPERIENCIA_ORDER = ['libre', 'esencial', 'completo', 'signature']
 
 /* ==========================================
    PRECIOS (por temporada y experiencia)
    ========================================== */
 export const PRECIOS = {
-    verano: {
+    akari: {
         libre: {
             packages: [
                 { days: '8 días 6 noches', price: '$21,790', priceNum: 21790 },
@@ -248,10 +257,10 @@ export const PRECIOS = {
                 { days: '12 días 10 noches', price: '$34,790', priceNum: 34790 },
                 { days: '14 días 12 noches', price: '$38,490', priceNum: 38490 },
             ],
-            note: 'Precios por persona en base a ocupación doble. Todos los impuestos incluidos. Los precios pueden variar según fechas y disponibilidad.',
+            note: 'Precios por persona en base a ocupación doble. Todos los impuestos incluidos.',
             startingPrice: '$21,790',
         },
-        guiado: {
+        esencial: {
             packages: [
                 { days: '8 días 6 noches', price: '$42,890', priceNum: 42890, freeTours: 6 },
                 { days: '10 días 8 noches', price: '$47,890', priceNum: 47890, freeTours: 6 },
@@ -261,7 +270,7 @@ export const PRECIOS = {
             note: 'Precios por persona en base a ocupación doble. Todos los impuestos incluidos.',
             startingPrice: '$42,890',
         },
-        acompanado: { startingPrice: 'Cotizar', packages: [] },
+        completo: { startingPrice: 'Cotizar', packages: [] },
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
     sakura: {
@@ -275,23 +284,23 @@ export const PRECIOS = {
             note: 'Precios por persona en base a ocupación doble durante temporada alta de Sakura. Todos los impuestos incluidos.',
             startingPrice: '$24,790',
         },
-        guiado: {
+        esencial: {
             packages: [
                 { days: '8 días 6 noches', price: '$43,490', priceNum: 43490, freeTours: 6 },
                 { days: '10 días 8 noches', price: '$49,490', priceNum: 49490, freeTours: 6 },
                 { days: '12 días 10 noches', price: '$58,490', priceNum: 58490, freeTours: 6 },
                 { days: '14 días 12 noches', price: '$64,790', priceNum: 64790, freeTours: 6 },
             ],
-            note: 'Precios por persona en base a ocupación doble durante temporada Sakura 2027 (22 de marzo al 10 de abril de 2027). Todos los impuestos incluidos.',
+            note: 'Precios por persona en base a ocupación doble durante temporada Sakura 2027. Todos los impuestos incluidos.',
             startingPrice: '$43,490',
         },
-        acompanado: { startingPrice: '$67,490', packages: [
+        completo: { startingPrice: '$67,490', packages: [
             { days: '12 días 10 noches', price: '$67,490', priceNum: 67490 },
             { days: '14 días 12 noches', price: '$72,290', priceNum: 72290 },
         ] },
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
-    momiji: {
+    kamakura: {
         libre: {
             packages: [
                 { days: '8 días 6 noches', price: '$22,490', priceNum: 22490 },
@@ -299,27 +308,36 @@ export const PRECIOS = {
                 { days: '12 días 10 noches', price: '$35,490', priceNum: 35490 },
                 { days: '14 días 12 noches', price: '$39,190', priceNum: 39190 },
             ],
-            note: 'Precios por persona en base a ocupación doble durante temporada de otoño Momiji. Todos los impuestos incluidos.',
+            note: 'Precios por persona en base a ocupación doble durante temporada Kamakura. Todos los impuestos incluidos.',
             startingPrice: '$22,490',
         },
-        guiado: {
+        esencial: {
             packages: [
                 { days: '8 días 6 noches', price: '$43,490', priceNum: 43490, freeTours: 6 },
                 { days: '10 días 8 noches', price: '$49,490', priceNum: 49490, freeTours: 6 },
                 { days: '12 días 10 noches', price: '$58,490', priceNum: 58490, freeTours: 6 },
                 { days: '14 días 12 noches', price: '$64,790', priceNum: 64790, freeTours: 6 },
             ],
-            note: 'Precios por persona en base a ocupación doble durante temporada de otoño Momiji. Todos los impuestos incluidos.',
+            note: 'Precios por persona en base a ocupación doble durante temporada Kamakura. Todos los impuestos incluidos.',
             startingPrice: '$43,490',
         },
-        acompanado: { startingPrice: 'Cotizar', packages: [] },
+        completo: { startingPrice: 'Cotizar', packages: [] },
         signature: { startingPrice: 'Cotizar', packages: [] },
     },
 }
 
+// Aliases for PRECIOS
+PRECIOS.verano = PRECIOS.akari
+PRECIOS.momiji = PRECIOS.kamakura
+PRECIOS.akari.guiado = PRECIOS.akari.esencial
+PRECIOS.akari.acompanado = PRECIOS.akari.completo
+PRECIOS.sakura.guiado = PRECIOS.sakura.esencial
+PRECIOS.sakura.acompanado = PRECIOS.sakura.completo
+PRECIOS.kamakura.guiado = PRECIOS.kamakura.esencial
+PRECIOS.kamakura.acompanado = PRECIOS.kamakura.completo
+
 /* ==========================================
    DESTINOS / EXPERIENCIAS DISPONIBLES
-   (with prices for Libre calculator)
    ========================================== */
 export const EXPERIENCIAS_DISPONIBLES = [
     { id: 'fuji', name: 'Monte Fuji & Hakone', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&h=400&fit=crop', price: 3500, desc: 'Excursión al icónico Monte Fuji con parada en Hakone.' },
@@ -336,7 +354,6 @@ export const EXPERIENCIAS_DISPONIBLES = [
     { id: 'inari', name: 'Fushimi Inari', img: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=400&h=400&fit=crop', price: 2000, desc: 'Miles de torii rojos en el famoso santuario.' },
 ]
 
-// Backward-compat alias for components that still use this
 export const DESTINOS_DISPONIBLES = EXPERIENCIAS_DISPONIBLES.map(e => ({ name: e.name, img: e.img }))
 
 /* ==========================================
@@ -350,212 +367,68 @@ export const COMPLEMENTOS = [
     { title: 'Accesos VIP', icon: '⭐', desc: 'Acceso prioritario a atracciones, eventos y lugares exclusivos.' },
 ]
 
-export const ACTIVIDADES_EXTRAS = [
-    { name: 'Renta Kimono', icon: '👘' },
-    { name: 'Ceremonia de Té', icon: '🍵', price: 2500 },
-    { name: 'Show de Geisha', icon: '🎭' },
-    { name: 'Miradores', icon: '🏙️' },
-    { name: 'Accesos VIP', icon: '⭐' },
-    { name: 'Actividades Especiales', icon: '🎎' },
-    { name: 'Vuelos', icon: '✈️' },
-    { name: 'Restaurantes', icon: '🍣' },
-]
-
-export const EXTENSIONES = [
-    { name: 'Tokio Extra', duration: '2 noches', icon: '🗼' },
-    { name: 'Osaka / Kioto Extra', duration: '2 noches', icon: '⛩️' },
-    { name: 'Universal Studios Japan', duration: '', icon: '🎢' },
-    { name: 'Corea del Sur (Seúl)', duration: '3 a 4 noches', icon: '🇰🇷' },
-]
-
+/* ==========================================
+   FLEXIBILIDAD
+   ========================================== */
 export const FLEXIBILIDAD = [
-    { title: 'Día Libre Asistido en Tokio', desc: 'Rutas recomendadas y apoyo de nuestro equipo.' },
-    { title: 'Día Libre en Kioto / Osaka', desc: 'Explora a tu ritmo con nuestras recomendaciones.' },
+    { title: 'Tú eliges las fechas', desc: 'Salidas disponibles durante toda la temporada. Adaptamos el viaje a tu calendario.', icon: '📅' },
+    { title: 'Modifica tu itinerario', desc: 'Agrega días, cambia ciudades o suma experiencias. El viaje es 100% tuyo.', icon: '✏️' },
+    { title: 'Paga a tu ritmo', desc: 'Aparta con anticipo y liquida en cómodas cuotas sin intereses antes de viajar.', icon: '💳' },
+    { title: 'Cancelación flexible', desc: 'Políticas claras y flexibles para que reserves con total tranquilidad.', icon: '🛡️' },
 ]
 
 /* ==========================================
-   SIGNATURE — Experiencias Premium
+   EXTENSIONES
    ========================================== */
-export const SIGNATURE_EXPERIENCIAS = [
-    { title: 'Ryokan Tradicional', icon: '🏯', desc: 'Hospédate en un ryokan auténtico con tatami, onsen y cena kaiseki.' },
-    { title: 'Cena Kaiseki', icon: '🍱', desc: 'Gastronomía japonesa de alta cocina con múltiples tiempos y presentación artística.' },
-    { title: 'Onsen Privado', icon: '♨️', desc: 'Baños termales privados en entornos naturales espectaculares.' },
-    { title: 'Helicóptero', icon: '🚁', desc: 'Sobrevuela el Monte Fuji o la bahía de Tokio en helicóptero privado.' },
-    { title: 'Chef Privado', icon: '👨‍🍳', desc: 'Un chef preparará una experiencia gastronómica exclusiva para ti.' },
-    { title: 'Transporte Ejecutivo', icon: '🚗', desc: 'Traslados en vehículos premium con chofer privado.' },
-    { title: 'Guía Privado', icon: '🎌', desc: 'Un guía exclusivo dedicado a tu grupo durante todo el viaje.' },
-    { title: 'Reservas Exclusivas', icon: '🎫', desc: 'Acceso a restaurantes, eventos y lugares que no están abiertos al público general.' },
+export const EXTENSIONES = [
+    { name: 'Corea del Sur', days: '+4 a 6 días', desc: 'Seúl, Busan, K-Culture, gastronomía callejera y palacios históricos.', img: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?w=600&h=400&fit=crop', highlight: 'K-Drama & K-Pop' },
+    { name: 'Playas de Okinawa', days: '+3 a 5 días', desc: 'Aguas cristalinas, arrecifes de coral, buceo y la cultura Ryukyu.', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?w=600&h=400&fit=crop', highlight: 'Paraíso tropical' },
+    { name: 'Alpes Japoneses', days: '+3 a 4 días', desc: 'Takayama, Shirakawa-go, aguas termales onsen y aldeas tradicionales.', img: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600&h=400&fit=crop', highlight: 'Aldeas UNESCO' },
 ]
-
-export const SIGNATURE_HOSPEDAJE = [
-    { category: '4 Estrellas Superior', stars: 4, icon: '🏨', desc: 'Hoteles de categoría superior con servicios premium.' },
-    { category: '5 Estrellas', stars: 5, icon: '🌟', desc: 'Los mejores hoteles de Japón con servicio excepcional.' },
-    { category: 'Boutique Hotels', stars: 5, icon: '🎨', desc: 'Hoteles boutique con diseño único y atención personalizada.' },
-    { category: 'Ryokan Premium', stars: 5, icon: '🏯', desc: 'La experiencia tradicional japonesa al más alto nivel.' },
-]
-
-export const SIGNATURE_JUAN = {
-    name: 'Juan Santiago',
-    title: 'Fundador de RutaXAsia',
-    experience: '+20 años creando experiencias únicas en Japón',
-    desc: 'Con más de dos décadas de experiencia viajando y organizando viajes a Japón, Juan Santiago diseña personalmente cada experiencia Signature, combinando su profundo conocimiento del país con un servicio excepcional.',
-    highlights: [
-        'Más de 20 años de experiencia en Japón',
-        'Cientos de viajes realizados',
-        'Conexiones locales exclusivas',
-        'Diseño personalizado de cada experiencia',
-    ],
-}
 
 /* ==========================================
-   GUIADO — Asistencia Features
+   HIGHLIGHTS STRIP (Bottom banner)
    ========================================== */
-export const GUIADO_ASISTENCIA = [
-    { title: 'Soporte durante el viaje', icon: '🛡️', desc: 'Nuestro equipo estará disponible para ayudarte en cualquier momento.' },
-    { title: 'Recomendaciones locales', icon: '📍', desc: 'Te compartimos nuestras mejores recomendaciones de restaurantes, tiendas y lugares secretos.' },
-    { title: 'Ayuda logística', icon: '🗂️', desc: 'Coordinamos tus traslados, reservaciones y tiempos para que todo fluya perfecto.' },
+export const HIGHLIGHTS_STRIP = [
+    { icon: '🌸', text: 'Temporadas únicas' },
+    { icon: '⛩️', text: '4 formas de viajar' },
+    { icon: '👥', text: 'Grupos reducidos' },
+    { icon: '🛡️', text: 'Asistencia 24/7' },
+    { icon: '💳', text: 'Plan de pagos' },
 ]
 
 /* ==========================================
-   ACOMPAÑADO — Itinerario Día por Día
-   Verano: Based on "VERANO JAPÓN 2026" PDF
-   ========================================== */
-export const ITINERARIO_ACOMPANADO = [
-    { day: 1, title: 'Salida y vuelo a Japón', desc: 'Vuelo internacional desde CDMX hacia Japón.', icon: '✈️' },
-    { day: 2, title: 'Llegada a Shin Osaka', desc: 'Llegada al aeropuerto de Narita, trámites y tren bala hacia Shin Osaka. Resto de la tarde libre.', icon: '🛬' },
-    { day: 3, title: 'Parque y Castillo de Osaka', desc: 'Visita al Castillo de Osaka, una de las joyas de Japón. Por la tarde, el fabuloso barrio de Dotonbori con sus luminosas calles y restaurantes.', icon: '🏯' },
-    { day: 4, title: 'Universal Studios Japan', desc: 'Día completo de diversión en Universal Studios Japan, Nintendo World, Mario Bros y Harry Potter.', icon: '🎢' },
-    { day: 5, title: 'Parque Nacional de Nara', desc: 'Recorrido al Parque Nacional de Nara, visitando el majestuoso Templo Todaiji. Convivir con los ciervos al aire libre será parte de la experiencia.', icon: '🦌' },
-    { day: 6, title: 'Fushimi Inari y Kioto', desc: 'Exploramos Kioto visitando el Santuario de Inari, recorremos el barrio de Higashiyama hasta llegar al majestuoso templo de Kiyomizudera al atardecer.', icon: '⛩️' },
-    { day: 7, title: 'Traslado a Tokio — Shinjuku', desc: 'Tren bala a Tokio. Al llegar, visitamos Shinjuku, uno de los barrios más icónicos de la ciudad.', icon: '🚄' },
-    { day: 8, title: 'Kamakura', desc: 'Viajamos a la costa de Kamakura para visitar el templo con un Buda sentado al aire libre de más de 13 metros. Tiempo para explorar sus calles, tiendas y restaurantes.', icon: '🙏' },
-    { day: 9, title: 'Tokio: Palacio Imperial, Ginza y Shibuya', desc: 'Recorrido a la zona contemporánea de Tokio: Estación Central, Jardines del Palacio Imperial, barrio de la moda Ginza, estatua de Hachiko y el gran cruce de Shibuya.', icon: '🏙️' },
-    { day: 10, title: 'Asakusa, Sky Tree y Akihabara', desc: 'Caminamos junto al Río Sumida hasta el antiguo barrio de Asakusa y el templo Senso-ji. Después al Sky Tree y Akihabara, ideal para las compras.', icon: '🗼' },
-    { day: 11, title: 'Disneyland Tokio', desc: 'Día completo en Tokyo Disneyland, uno de los parques más famosos del mundo.', icon: '🏰' },
-    { day: 12, title: 'Disney Sea Tokio', desc: 'Disney Sea Tokio, fabuloso por su estilo único a la orilla del mar. Un parque único en el mundo.', icon: '🎡' },
-    { day: 13, title: 'Día libre', desc: 'Diseña el día a tu gusto: compras, visitas opcionales o simplemente disfrutar Tokio a tu ritmo.', icon: '🗺️' },
-    { day: 14, title: 'Regreso a México', desc: 'Check out del hotel y traslado al aeropuerto de Narita. Vuelo de regreso a la Ciudad de México.', icon: '🛫' },
-]
-
-/* ==========================================
-   ACOMPAÑADO — Itinerario Sakura Completo 2027
-   Based on "Sakura Completo 2027.pdf"
-   12 días, 10 noches (22 de marzo al 2 de abril)
-   ========================================== */
-export const ITINERARIO_ACOMPANADO_SAKURA = [
-    { day: 1, title: 'Vuelo Internacional a Japón', desc: 'Vuelo internacional desde la CDMX hacia Japón. ¡Comienza la gran aventura!', icon: '✈️' },
-    { day: 2, title: 'Llegada a Narita / Traslado a Osaka', desc: 'Llegada al aeropuerto de Narita, recepción y trámites varios para el viaje. Traslado al hotel en Shin Osaka, check in y tarde libre en Osaka. Noche en Shin Osaka.', icon: '🛬' },
-    { day: 3, title: 'Castillo de Osaka y Dotonbori', desc: 'Iniciamos el día visitando la estación, el fabuloso museo y castillo de Osaka, así como el parque que lo rodea. Posteriormente nos vamos a Dotonbori, el barrio clásico de gastronomía y restaurantes más famoso de Japón. Noche en Shin Osaka.', icon: '🏯' },
-    { day: 4, title: 'Parque Nacional de Nara', desc: 'Tour a la primera capital y cuna del budismo en Japón, la ciudad de Nara, donde visitaremos el majestuoso templo Todaiji con uno de los Budas más grandes del país, rodeado de miles de ciervos sagrados. Noche en Shin Osaka.', icon: '🦌' },
-    { day: 5, title: 'City Tour Kioto (Inari & Kiyomizudera)', desc: 'La capital cultural de Japón. Visitaremos Fushimi Inari, el tradicional barrio de Gion e Higashiyama, el parque Maruyama (famoso por el festejo Hanami de floración de cerezos) y el Templo Kiyomizudera. Noche en Shin Osaka.', icon: '⛩️' },
-    { day: 6, title: 'Castillo de Himeji y Kobe', desc: 'Visitamos el Castillo de Himeji, tesoro nacional famoso por su estructura blanca y los árboles de cerezos. Después viajamos a la ciudad de Kobe a probar su exquisita y mundialmente famosa carne. Noche en Shin Osaka.', icon: '🏰' },
-    { day: 7, title: 'Tren Bala a Tokio & Akihabara', desc: 'Check out. Tomamos el tren bala Shinkansen con destino a Tokio. Resguardo de equipaje en el hotel y visita al famoso barrio tecnológico y de electrónica, Akihabara. Noche en Tokio.', icon: '🚄' },
-    { day: 8, title: 'City Tour Tokio I: Palacio Imperial, Ginza & Shibuya', desc: 'Iniciamos en la Gran Estación de Tokio, Jardines Este del Palacio Imperial, caminata por Marunouchi hasta Ginza para compras. Por la tarde-noche, nos vamos al cruce más famoso del mundo en Shibuya y foto con la estatua de Hachiko. Noche en Tokio.', icon: '🏙️' },
-    { day: 9, title: 'City Tour Tokio II: Harajuku, Omotesando & Shinjuku', desc: 'Visitamos Takeshita Street en Harajuku, el exclusivo barrio de Omotesando y sus tiendas. Por la tarde-noche exploramos Shinjuku, uno de los barrios con mejor vida nocturna e iluminación espectaculares. Noche en Tokio.', icon: '✨' },
-    { day: 10, title: 'Asakusa, Sensoji & Sky Tree', desc: 'Caminata junto al río Sumida hasta el templo más antiguo de Tokio, Sensoji en Asakusa (ideal para fotos con kimono). Después visitamos el centro comercial y miradores del Tokio Sky Tree. Noche en Tokio.', icon: '🗼' },
-    { day: 11, title: 'Día Libre o Tour Adicional', desc: 'Día libre en Tokio para programar actividades a tu gusto con nuestro apoyo: compras, visitas libres, tours adicionales opcionales o parques de atracciones. Noche en Tokio.', icon: '🗺️' },
-    { day: 12, title: 'Regreso a México', desc: 'Desayuno y check out del hotel. Traslado al aeropuerto de Narita, check in y vuelo de regreso a la CDMX.', icon: '🛫' },
-]
-
-/* ==========================================
-   ACOMPAÑADO — Itinerario Momiji (Ruta Dorada)
-   Based on "OTOÑO EN JAPÓN 2026" PDF
-   12 días, 10 noches
-   ========================================== */
-export const ITINERARIO_ACOMPANADO_MOMIJI = [
-    { day: 1, title: 'Salida y vuelo a Japón', desc: 'Vuelo internacional desde CDMX hacia Japón.', icon: '✈️' },
-    { day: 2, title: 'Llegada a Shin Osaka', desc: 'Recepción en el aeropuerto, trámites necesarios y primer tren bala a Shin Osaka.', icon: '🛬' },
-    { day: 3, title: 'Osaka: Castillo y Dotonbori', desc: 'Visita al Parque y Castillo de Osaka, uno de los más representativos en la unificación de Japón. Por la tarde, el tradicional barrio de Dotonbori.', icon: '🏯' },
-    { day: 4, title: 'Nara', desc: 'Recorrido al Parque Nacional de Nara, visitando el majestuoso Templo Todaiji y su complejo. Convivir con los ciervos al aire libre será parte de la experiencia.', icon: '🦌' },
-    { day: 5, title: 'Kioto Clásico', desc: 'Recorrido por la capital cultural de Japón: mercado Nishiki, templo Kiyomizudera, barrio de Higashiyama y todos sus atractivos.', icon: '⛩️' },
-    { day: 6, title: 'Hiroshima y Miyajima', desc: 'Parque y Museo de la Paz de Hiroshima. Visita al Santuario de Miyajima con su Torii Flotante y el Monte Misen.', icon: '🕊️' },
-    { day: 7, title: 'Uji — Capital del Té Verde', desc: 'Visita a Uji, la capital del té verde japonés. Check out y resguardo de equipaje. Preparación para el traslado.', icon: '🍵' },
-    { day: 8, title: 'Traslado a Tokio — Shibuya y Shinjuku', desc: 'Tren bala a Tokio. Visitamos Shibuya y Shinjuku, barrios modernos llenos de actividades.', icon: '🚄' },
-    { day: 9, title: 'Tokio Clásico: Asakusa, Sky Tree y Akihabara', desc: 'Caminamos junto al río Sumida hacia Asakusa, Templo Senso-ji, Sky Tree y el barrio de la electrónica Akihabara.', icon: '🗼' },
-    { day: 10, title: 'Hakone, Monte Fuji y Lago Ashi', desc: 'Ruta por Hakone con el Free Pass: teleférico, Monte Fuji, Lago Ashi y los paisajes otoñales más espectaculares.', icon: '🗻' },
-    { day: 11, title: 'Día libre en Tokio', desc: 'Elige entre Disney, algún tour adicional, Monte Fuji extra o ir de últimas compras.', icon: '🗺️' },
-    { day: 12, title: 'Regreso a México', desc: 'Check out del hotel y traslado al aeropuerto. Vuelo de regreso a la Ciudad de México.', icon: '🛫' },
-]
-
-export const ACOMPANADO_TODO_INCLUIDO = [
-    { item: 'Vuelo redondo desde CDMX', icon: '✈️' },
-    { item: '12 noches de hospedaje con desayuno buffet', icon: '🏨' },
-    { item: 'Todos los tours con entradas y transportación', icon: '🗺️' },
-    { item: 'Universal Studios Japan', icon: '🎢' },
-    { item: 'Disneyland Tokio', icon: '🏰' },
-    { item: 'Disney Sea Tokio', icon: '🎡' },
-    { item: 'JR Pass 7 días — Tren bala', icon: '🚄' },
-    { item: 'Guía y atención personalizada en español', icon: '🗣️' },
-    { item: 'Envío de equipaje (aplican condiciones)', icon: '🧳' },
-    { item: 'Seguro de viajero', icon: '🛡️' },
-    { item: 'Traslados aeropuerto — hotel — aeropuerto', icon: '🚌' },
-    { item: 'Todos los impuestos incluidos', icon: '📋' },
-]
-
-export const ACOMPANADO_TODO_INCLUIDO_MOMIJI = [
-    { item: 'Vuelo internacional redondo', icon: '✈️' },
-    { item: '10 noches de hospedaje con desayuno', icon: '🏨' },
-    { item: 'Todos los tours con entradas y transportación', icon: '🗺️' },
-    { item: 'Un parque Disney de tu elección (Disneyland o Disney Sea)', icon: '🏰' },
-    { item: 'JR Pass 7 días — Tren bala', icon: '🚄' },
-    { item: 'Free Pass Hakone', icon: '🗻' },
-    { item: 'Guía y atención personalizada en español', icon: '🗣️' },
-    { item: 'Envío de equipaje (aplican condiciones)', icon: '🧳' },
-    { item: 'Seguro de viajero', icon: '🛡️' },
-    { item: 'Traslados aeropuerto — hotel — aeropuerto', icon: '🚌' },
-    { item: 'Todos los impuestos incluidos', icon: '📋' },
-]
-
-export const ACOMPANADO_UPSELL = [
-    { title: 'Ceremonia del Té', icon: '🍵', desc: 'Participa en una auténtica ceremonia del té japonesa.' },
-    { title: 'Renta de Kimono', icon: '👘', desc: 'Viste un kimono tradicional y pasea por Kioto.' },
-    { title: 'Concierge Premium', icon: '🎩', desc: 'Servicios especiales, restaurantes y reservaciones exclusivas.' },
-    { title: 'Restaurantes Seleccionados', icon: '🍣', desc: 'Cenas en restaurantes de alta cocina japonesa.' },
-]
-
-/* ==========================================
-   EXPERIENCE HERO — Content per style
+   EXP_HEROES (Hero content for Step 3)
    ========================================== */
 export const EXP_HEROES = {
     libre: {
         headline: 'Diseña tu propia aventura en Japón',
         subheadline: 'Elige la duración de tu viaje y agrega únicamente las experiencias que realmente quieres vivir.',
-        cta: 'Arma tu viaje',
         message: 'Tú decides cómo vivir Japón.',
-        heroImg: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=1920&h=900&fit=crop&q=85',
+    },
+    esencial: {
+        headline: 'Japón organizado, a tu ritmo',
+        subheadline: 'Un itinerario estructurado con las mejores experiencias incluidas para que aproveches cada momento.',
+        message: 'Lo mejor de Japón, sin complicaciones.',
     },
     guiado: {
-        headline: 'Japón con libertad y acompañamiento',
-        subheadline: 'Disfruta Japón con una experiencia flexible que incluye acompañamiento y dos experiencias seleccionadas por ti.',
-        cta: 'Elige tus experiencias',
-        message: 'Viaja con libertad, pero nunca solo.',
-        heroImg: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&h=900&fit=crop&q=85',
+        headline: 'Japón organizado, a tu ritmo',
+        subheadline: 'Un itinerario estructurado con las mejores experiencias incluidas para que aproveches cada momento.',
+        message: 'Lo mejor de Japón, sin complicaciones.',
+    },
+    completo: {
+        headline: 'Japón con acompañamiento total',
+        subheadline: 'Viaja con un coordinador que cuida cada detalle de tu viaje desde que aterrizas.',
+        message: 'La tranquilidad de viajar acompañado.',
     },
     acompanado: {
-        headline: 'Todo resuelto. Llegas y disfrutas.',
-        subheadline: 'Nuestro itinerario más completo para quienes desean descubrir Japón sin preocuparse por la planeación.',
-        cta: 'Ver itinerario completo',
-        message: 'Solo preocúpate por disfrutar Japón.',
-        heroImg: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=1920&h=900&fit=crop&q=85',
+        headline: 'Japón con acompañamiento total',
+        subheadline: 'Viaja con un coordinador que cuida cada detalle de tu viaje desde que aterrizas.',
+        message: 'La tranquilidad de viajar acompañado.',
     },
     signature: {
-        headline: 'Un viaje diseñado personalmente para ti',
-        subheadline: 'Combinando más de 20 años de experiencia creando experiencias únicas en Japón. No se vende un paquete, se vende una experiencia.',
-        cta: 'Solicitar diseño personalizado',
-        message: 'La experiencia original de Juan Santiago.',
-        heroImg: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&h=900&fit=crop&q=85',
+        headline: 'La experiencia definitiva en Japón',
+        subheadline: 'Viaja con Juan y Ale en un grupo ultra-reducido con acceso a experiencias que no encontrarás en ningún otro lugar.',
+        message: 'Japón como nunca nadie te lo contó.',
     },
 }
-
-/* ==========================================
-   HIGHLIGHTS STRIP (Bottom bar)
-   ========================================== */
-export const HIGHLIGHTS_STRIP = [
-    { icon: '✈️', text: 'Vuelos Internacionales' },
-    { icon: '🏨', text: 'Hoteles Seleccionados' },
-    { icon: '🚄', text: 'Transporte en Japón' },
-    { icon: '🛡️', text: 'Soporte 24/7 en destino' },
-    { icon: '💖', text: 'Seguridad y Respaldo' },
-    { icon: '✨', text: 'Experiencias que Enamoran' },
-]
-

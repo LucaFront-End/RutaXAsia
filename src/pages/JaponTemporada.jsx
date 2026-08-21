@@ -22,7 +22,14 @@ import './pages.css'
 
 export default function JaponTemporada() {
     const { temporada } = useParams()
-    const season = TEMPORADAS[temporada]
+    const rawTemp = (temporada || '').toLowerCase()
+    const seasonKey = (rawTemp === 'verano' || rawTemp === 'akari')
+        ? 'akari'
+        : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono')
+            ? 'kamakura'
+            : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
+
+    const season = TEMPORADAS[seasonKey]
 
     useEffect(() => { window.scrollTo(0, 0) }, [temporada])
 
@@ -43,7 +50,7 @@ export default function JaponTemporada() {
                 <div className="jac-hero-bg">
                     <img src={season.heroImage} alt={season.name} />
                     <div className="jac-hero-overlay" />
-                    <FallingElements type={temporada} />
+                    <FallingElements type={seasonKey} />
                 </div>
                 <div className="jac-hero-content container">
                     <Link to="/viajes/japon" className="jac-hero-breadcrumb">
@@ -86,7 +93,7 @@ export default function JaponTemporada() {
                             const exp = EXPERIENCIAS[key]
                             return (
                                 <Link
-                                    to={`/viajes/japon/${temporada}/${key}`}
+                                    to={`/viajes/japon/${seasonKey}/${key}`}
                                     className={`jac-exp-card${exp.isSignature ? ' jac-exp-card--signature' : ''}`}
                                     key={key}
                                     style={{ '--season-primary': season.colors.primary, textDecoration: 'none' }}

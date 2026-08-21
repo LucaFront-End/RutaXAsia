@@ -34,7 +34,7 @@ export default function StepGuiado({ season, temporadaKey }) {
         async function loadCmsPrices() {
             const allPrices = await fetchPreciosCategoriasDias()
             const filtered = allPrices.filter(p =>
-                p.categoria.toLowerCase().includes('esencial') &&
+                (p.categoria.toLowerCase().includes('esencial') || p.categoria.toLowerCase().includes('guiado')) &&
                 (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
             )
             if (isMounted && filtered.length > 0) {

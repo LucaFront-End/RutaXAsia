@@ -45,7 +45,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
         async function loadCmsPrices() {
             const allPrices = await fetchPreciosCategoriasDias()
             const filtered = allPrices.filter(p =>
-                p.categoria.toLowerCase().includes('completo') &&
+                (p.categoria.toLowerCase().includes('completo') || p.categoria.toLowerCase().includes('acompañado') || p.categoria.toLowerCase().includes('acompanado')) &&
                 (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
             )
             if (isMounted && filtered.length > 0) {

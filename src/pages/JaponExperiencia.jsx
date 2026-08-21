@@ -16,15 +16,30 @@ import './pages.css'
 /**
  * JaponExperiencia — Individual experience landing page.
  * Route: /viajes/japon/:temporada/:experiencia
- * Example: /viajes/japon/verano/libre
- *
- * Integrates the high-fidelity, interactive step builders to offer
- * a cohesive, premium visual experience for direct landing visitors.
+ * Example: /viajes/japon/akari/esencial | /viajes/japon/sakura/completo
  */
 export default function JaponExperiencia() {
     const { temporada, experiencia } = useParams()
-    const season = TEMPORADAS[temporada]
-    const exp = EXPERIENCIAS[experiencia]
+
+    const rawTemp = (temporada || '').toLowerCase()
+    const rawExp = (experiencia || '').toLowerCase()
+
+    // Normalize Season Aliases (akari/verano, kamakura/momiji/koyo, sakura)
+    const seasonKey = (rawTemp === 'verano' || rawTemp === 'akari')
+        ? 'akari'
+        : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono')
+            ? 'kamakura'
+            : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
+
+    // Normalize Experience Aliases (esencial/guiado, completo/acompanado, libre, signature)
+    const expKey = (rawExp === 'guiado' || rawExp === 'esencial')
+        ? 'esencial'
+        : (rawExp === 'acompanado' || rawExp === 'completo')
+            ? 'completo'
+            : (rawExp === 'libre' || rawExp === 'signature' ? rawExp : rawExp)
+
+    const season = TEMPORADAS[seasonKey]
+    const exp = EXPERIENCIAS[expKey]
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -46,7 +61,7 @@ export default function JaponExperiencia() {
                         🇯🇵 Japón a la Carta
                     </Link>
                     <span className="jac-path-divider">/</span>
-                    <Link to={`/viajes/japon/${temporada}`} className="jac-path-step">
+                    <Link to={`/viajes/japon/${seasonKey}`} className="jac-path-step">
                         {season.emoji} {season.name}
                     </Link>
                     <span className="jac-path-divider">/</span>
@@ -61,10 +76,10 @@ export default function JaponExperiencia() {
                 '--jtb-primary': season.colors.primary,
                 '--jtb-bg': season.colors.bg
             }}>
-                {experiencia === 'libre' && <StepLibre season={season} temporadaKey={temporada} />}
-                {experiencia === 'guiado' && <StepGuiado season={season} temporadaKey={temporada} />}
-                {experiencia === 'acompanado' && <StepAcompanado season={season} temporadaKey={temporada} />}
-                {experiencia === 'signature' && <StepSignature season={season} />}
+                {expKey === 'libre' && <StepLibre season={season} temporadaKey={seasonKey} />}
+                {expKey === 'esencial' && <StepGuiado season={season} temporadaKey={seasonKey} />}
+                {expKey === 'completo' && <StepAcompanado season={season} temporadaKey={seasonKey} />}
+                {expKey === 'signature' && <StepSignature season={season} />}
             </div>
 
             {/* ===== HIGHLIGHTS STRIP ===== */}
