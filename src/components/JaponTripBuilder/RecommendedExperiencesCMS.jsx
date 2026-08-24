@@ -54,7 +54,7 @@ export default function RecommendedExperiencesCMS({
             setLoading(true)
             const data = await fetchTourIndividuales()
             if (isMounted) {
-                setTours(data)
+                setTours(data || [])
                 setLoading(false)
 
                 // Auto pre-select tours that are tagged for this active plan dynamically from CMS
@@ -69,6 +69,28 @@ export default function RecommendedExperiencesCMS({
         loadData()
         return () => { isMounted = false }
     }, [planStyle])
+
+    const toggleCategory = (key, event) => {
+        const headerEl = event?.currentTarget
+        const isOpening = !openCategories.includes(key)
+
+        setOpenCategories(prev =>
+            prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+        )
+
+        if (headerEl && isOpening) {
+            setTimeout(() => {
+                const rect = headerEl.getBoundingClientRect()
+                const navbarHeight = 110
+                if (rect.top < navbarHeight || rect.top > window.innerHeight - 100) {
+                    const y = rect.top + window.scrollY - navbarHeight - 20
+                    window.scrollTo({ top: y, behavior: 'smooth' })
+                }
+            }, 80)
+        }
+    }
+
+    const isLimitReached = tourLimit !== null && addedExperiences.length >= tourLimit
 
     return (
         <div className="rec-cms-wrapper">
@@ -94,7 +116,7 @@ export default function RecommendedExperiencesCMS({
             ) : (
                 <div className="rec-cms-accordion-list">
                     {CATEGORIES_CONFIG.map((catConfig) => {
-                        const catTours = tours.filter(catConfig.matchFn)
+                        const catTours = (tours || []).filter(catConfig.matchFn)
                         const isOpen = openCategories.includes(catConfig.key)
 
                         return (
