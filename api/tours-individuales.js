@@ -21,6 +21,16 @@ function parsePrice(val) {
     return isNaN(parsed) ? 0 : parsed
 }
 
+function generateSlug(title, id) {
+    if (!title) return id || 'tour'
+    return String(title)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '')
+}
+
 /**
  * GET /api/tours-individuales — Fetch all tours from Wix CMS collection "TourIndividuales"
  */
@@ -93,8 +103,11 @@ export default async function handler(req, res) {
                 rawCategorias.includes('signature') || rawCategorias.includes('vip') || rawTipo.includes('signature') || rawTipo.includes('vip')
             )
 
+            const slug = generateSlug(it.title, it._id)
+
             return {
                 id: it._id,
+                slug: slug,
                 title: it.title || 'Tour Individual',
                 excerpt: it.excerptDeTour || it.excerpt || '',
                 description: it.descripcinAmplia || it.descripcionAmplia || it.descripcion_amplia || it.descripcion || it.itinerario || it.description || it.observaciones || '',

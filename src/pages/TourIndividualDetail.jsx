@@ -1,0 +1,502 @@
+import { useState, useEffect, useMemo } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import { fetchTourIndividuales } from '../lib/wixClient'
+import './TourIndividualDetail.css'
+
+const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
+
+// Default fallback tour for showcase purposes
+const FALLBACK_SHOWCASE_TOUR = {
+    id: 'showcase-harry-potter',
+    slug: 'the-wizarding-world-of-harry-potter-tokyo',
+    title: 'The Wizarding World of Harry Potter (Tokyo)',
+    category: 'Parques temáticos',
+    city: 'Tokio',
+    days: '1 día',
+    hours: '8 horas',
+    priceAnfitrion: '$800 MXN',
+    priceAnfitrionNum: 800,
+    priceLocatario: '$1,200 MXN',
+    priceLocatarioNum: 1200,
+    image: 'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1200&fit=crop&q=85',
+    excerpt: 'Pase normal de acceso al parque temático y recorrido interactivo por los sets de filmación originales.',
+    description: `Sumérgete en el universo mágico de Warner Bros Studio Tour Tokyo - The Making of Harry Potter. 
+
+Este increíble recorrido te permitirá caminar por el Gran Comedor de Hogwarts, abordar el Expreso de Hogwarts en el Andén 9 ¾, recorrer el Callejón Diagon y descubrir los secretos mejor guardados de los efectos especiales y vestuario de la saga.
+
+La experiencia incluye la coordinación de tus accesos con horarios garantizados, recomendaciones exclusivas de transporte en el metro de Tokio y el respaldo permanente del equipo de RutaXAsia durante tu visita.`,
+    observaciones: 'Te recomendamos llegar 20 minutos antes de tu horario asignado. El parque cuenta con lockers y restaurantes temáticos para disfrutar de la famosa cerveza de mantequilla.',
+}
+
+function generateSlug(title, id) {
+    if (!title) return id || 'tour'
+    return String(title)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '')
+}
+
+export default function TourIndividualDetail() {
+    const { slug } = useParams()
+    const navigate = useNavigate()
+    const [tours, setTours] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [currentTour, setCurrentTour] = useState(null)
+
+    // Interactive booking state
+    const [modality, setModality] = useState('anfitrion') // 'anfitrion' | 'locatario'
+    const [travelers, setTravelers] = useState(2)
+    const [openFaq, setOpenFaq] = useState(null)
+
+    // Minimum date is tomorrow
+    const tomorrowStr = useMemo(() => {
+        const d = new Date()
+        d.setDate(d.getDate() + 1)
+        return d.toISOString().split('T')[0]
+    }, [])
+    const [selectedDate, setSelectedDate] = useState(tomorrowStr)
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [slug])
+
+    useEffect(() => {
+        let isMounted = true
+        async function loadTours() {
+            setLoading(true)
+            const data = await fetchTourIndividuales()
+            if (isMounted) {
+                setTours(data || [])
+                
+                // Find tour by slug or ID
+                let match = null
+                if (data && data.length > 0) {
+                    match = data.find(t => 
+                        t.slug === slug || 
+                        t.id === slug || 
+                        generateSlug(t.title) === slug || 
+                        (t.title && t.title.toLowerCase().includes((slug || '').toLowerCase()))
+                    )
+                }
+
+                // If not found in CMS, use the showcase tour so the page ALWAYS displays cleanly
+                setCurrentTour(match || (slug ? { ...FALLBACK_SHOWCASE_TOUR, slug, title: slug.replace(/-/g, ' ') } : FALLBACK_SHOWCASE_TOUR))
+                setLoading(false)
+            }
+        }
+        loadTours()
+        return () => { isMounted = false }
+    }, [slug])
+
+    const tour = currentTour || FALLBACK_SHOWCASE_TOUR
+    const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
+    const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
+    const unitPrice = modality === 'anfitrion' ? priceAnfitrion : priceLocatario
+    const totalPrice = unitPrice * travelers
+
+    const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
+
+    const formatDateLabel = (dStr) => {
+        if (!dStr) return 'Fecha a coordinar'
+        const parts = dStr.split('-')
+        if (parts.length === 3) {
+            const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+            const mIdx = parseInt(parts[1], 10) - 1
+            return `${parseInt(parts[2], 10)} ${months[mIdx]} ${parts[0]}`
+        }
+        return dStr
+    }
+
+    const modalityLabel = modality === 'anfitrion' 
+        ? '👑 Anfitrión de Viaje (Coordinador RutaXAsia)' 
+        : '🏮 Asistencia Locataria (Guía local experto)'
+
+    // Construct WhatsApp reservation URL
+    const waMessage = `SW-Hola RutaXAsia! Quiero reservar la siguiente experiencia individual en Japón:
+
+🎟️ TOUR: ${tour.title}
+📍 Destino: ${tour.city || 'Japón'}
+🎎 Modalidad: ${modalityLabel}
+📅 Fecha deseada: ${formatDateLabel(selectedDate)}
+👥 Pasajeros: ${travelers} persona${travelers > 1 ? 's' : ''}
+💰 Total Estimado: ${formatPrice(totalPrice)} MXN (${formatPrice(unitPrice)} MXN c/u)
+
+¿Me podrían confirmar disponibilidad y los pasos para asegurar los lugares?`
+
+    const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waMessage)}`
+
+    // Related tours (same category or random other tours)
+    const relatedTours = useMemo(() => {
+        if (!tours || tours.length === 0) return []
+        return tours
+            .filter(t => t.id !== tour.id && t.title !== tour.title)
+            .slice(0, 3)
+    }, [tours, tour.id, tour.title])
+
+    const faqs = [
+        {
+            q: '¿Cómo funciona la reserva por WhatsApp?',
+            a: 'Al hacer clic en el botón de reserva, se enviarán todos los datos de tu tour (fecha, personas y modalidad elegida) directamente a nuestro equipo por WhatsApp. Te confirmaremos disponibilidad inmediata y te guiaremos en todo el proceso.'
+        },
+        {
+            q: '¿Cuál es la diferencia entre Anfitrión y Asistencia Locataria?',
+            a: 'El Anfitrión de Viaje es un coordinador oficial de RutaXAsia que te acompaña y orienta en todo el recorrido. La Asistencia Locataria es un guía local nativo o experto en la zona específica que brinda una inmersión cultural profunda.'
+        },
+        {
+            q: '¿Puedo cambiar la fecha de mi tour después de reservar?',
+            a: 'Sí, sujeto a disponibilidad del parque o experiencia. Siempre recomendamos coordinar con nuestro equipo de atención con al menos 72 horas de anticipación.'
+        },
+        {
+            q: '¿Las entradas a las atracciones ya están garantizadas?',
+            a: 'Sí, todas las experiencias y accesos a parques temáticos gestionados por RutaXAsia son emitidos oficialmente con fecha y horario garantizados.'
+        }
+    ]
+
+    return (
+        <div className="tour-detail-page-wrap">
+            <Helmet>
+                <title>{tour.title} | Tours Individuales en Japón — RutaXAsia</title>
+                <meta name="description" content={tour.excerpt || `Conoce los detalles, precios y reserva para ${tour.title} en ${tour.city || 'Japón'}.`} />
+                {/* NO INDEX TAG AS REQUESTED */}
+                <meta name="robots" content="noindex, nofollow" />
+                <meta name="googlebot" content="noindex, nofollow" />
+            </Helmet>
+
+            {/* Breadcrumb Header Strip */}
+            <div className="tour-detail-breadcrumb-bar">
+                <div className="container">
+                    <nav className="tour-detail-breadcrumb">
+                        <Link to="/">Inicio</Link>
+                        <span>›</span>
+                        <Link to="/tours-individuales">Tours Individuales</Link>
+                        <span>›</span>
+                        <span className="tour-detail-breadcrumb-active">{tour.title}</span>
+                    </nav>
+                </div>
+            </div>
+
+            {/* Main Content Layout */}
+            <div className="container tour-detail-container">
+                <div className="tour-detail-layout">
+                    {/* LEFT COLUMN: Main Tour Showcase */}
+                    <div className="tour-detail-main-col">
+                        {/* Title and Badges Section */}
+                        <div className="tour-detail-header-block">
+                            <div className="tour-detail-tags-row">
+                                {tour.city && (
+                                    <span className="tour-tag-pill tour-tag-city">
+                                        📍 {tour.city}
+                                    </span>
+                                )}
+                                {tour.category && (
+                                    <span className="tour-tag-pill tour-tag-cat">
+                                        ⛩️ {tour.category}
+                                    </span>
+                                )}
+                                {(tour.days || tour.hours) && (
+                                    <span className="tour-tag-pill tour-tag-dur">
+                                        ⏱️ {tour.days || '1 día'} {tour.hours ? `(${tour.hours})` : ''}
+                                    </span>
+                                )}
+                            </div>
+
+                            <h1 className="tour-detail-h1">{tour.title}</h1>
+                            {tour.excerpt && (
+                                <p className="tour-detail-excerpt">{tour.excerpt}</p>
+                            )}
+                        </div>
+
+                        {/* High-Resolution Hero Banner */}
+                        <div className="tour-detail-hero-banner">
+                            <img
+                                src={tour.image}
+                                alt={tour.title}
+                                className="tour-detail-hero-img"
+                                onError={(e) => {
+                                    e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&fit=crop'
+                                }}
+                            />
+                            <div className="tour-detail-hero-badge-overlay">
+                                <span>🇯🇵 Experiencia Oficial en Japón</span>
+                            </div>
+                        </div>
+
+                        {/* Highlights Grid */}
+                        <div className="tour-detail-highlights-grid">
+                            <div className="tour-hl-card">
+                                <span className="tour-hl-icon">📍</span>
+                                <div>
+                                    <span className="tour-hl-label">Destino</span>
+                                    <strong className="tour-hl-val">{tour.city || 'Japón'}</strong>
+                                </div>
+                            </div>
+                            <div className="tour-hl-card">
+                                <span className="tour-hl-icon">⏱️</span>
+                                <div>
+                                    <span className="tour-hl-label">Duración</span>
+                                    <strong className="tour-hl-val">{tour.days || '1 día'} {tour.hours ? `(${tour.hours})` : ''}</strong>
+                                </div>
+                            </div>
+                            <div className="tour-hl-card">
+                                <span className="tour-hl-icon">💬</span>
+                                <div>
+                                    <span className="tour-hl-label">Atención</span>
+                                    <strong className="tour-hl-val">Español 24/7</strong>
+                                </div>
+                            </div>
+                            <div className="tour-hl-card">
+                                <span className="tour-hl-icon">🎟️</span>
+                                <div>
+                                    <span className="tour-hl-label">Modalidad</span>
+                                    <strong className="tour-hl-val">Personalizada</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section: Description */}
+                        <div className="tour-detail-card-section">
+                            <h2 className="tour-sec-title">⛩️ Acerca de esta Experiencia</h2>
+                            <div className="tour-sec-desc">
+                                {(tour.description || tour.excerpt || 'Disfruta de una experiencia única e inmersiva en Japón con la coordinación experta de RutaXAsia.')
+                                    .split('\n')
+                                    .filter(p => p.trim())
+                                    .map((paragraph, idx) => (
+                                        <p key={idx}>{paragraph}</p>
+                                    ))}
+                            </div>
+                        </div>
+
+                        {/* Section: Modality Explanation */}
+                        <div className="tour-detail-card-section">
+                            <h2 className="tour-sec-title">🎎 Modalidades de Acompañamiento Disponibles</h2>
+                            <div className="tour-modalities-showcase">
+                                <div 
+                                    className={`tour-mod-box${modality === 'anfitrion' ? ' tour-mod-box--selected' : ''}`}
+                                    onClick={() => setModality('anfitrion')}
+                                >
+                                    <div className="tour-mod-box-header">
+                                        <div className="tour-mod-icon-title">
+                                            <span className="tour-mod-icon">👑</span>
+                                            <div>
+                                                <h4>Anfitrión de Viaje RutaXAsia</h4>
+                                                <span className="tour-mod-badge">Opción Más Recomendada</span>
+                                            </div>
+                                        </div>
+                                        <span className="tour-mod-box-price">{formatPrice(priceAnfitrion)} MXN</span>
+                                    </div>
+                                    <p className="tour-mod-box-desc">
+                                        Coordinador oficial de RutaXAsia que te acompaña, orienta en transporte y asiste en cada momento para que disfrutes sin preocupaciones.
+                                    </p>
+                                </div>
+
+                                <div 
+                                    className={`tour-mod-box${modality === 'locatario' ? ' tour-mod-box--selected' : ''}`}
+                                    onClick={() => setModality('locatario')}
+                                >
+                                    <div className="tour-mod-box-header">
+                                        <div className="tour-mod-icon-title">
+                                            <span className="tour-mod-icon">🏮</span>
+                                            <div>
+                                                <h4>Asistencia Locataria</h4>
+                                                <span className="tour-mod-badge tour-mod-badge--local">Guía Local de la Zona</span>
+                                            </div>
+                                        </div>
+                                        <span className="tour-mod-box-price">{formatPrice(priceLocatario)} MXN</span>
+                                    </div>
+                                    <p className="tour-mod-box-desc">
+                                        Guía especializado de la zona que te sumerge en la historia, tradiciones y rincones auténticos del destino.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section: Observations from CMS */}
+                        {tour.observaciones && (
+                            <div className="tour-detail-card-section tour-sec-obs-card">
+                                <h3 className="tour-obs-title">📝 Observaciones y Recomendaciones</h3>
+                                <p className="tour-obs-text">{tour.observaciones}</p>
+                            </div>
+                        )}
+
+                        {/* Section: FAQs */}
+                        <div className="tour-detail-card-section">
+                            <h2 className="tour-sec-title">❓ Preguntas Frecuentes</h2>
+                            <div className="tour-faqs-list">
+                                {faqs.map((faq, i) => (
+                                    <div key={i} className={`tour-faq-item${openFaq === i ? ' tour-faq-item--open' : ''}`}>
+                                        <button 
+                                            type="button" 
+                                            className="tour-faq-question"
+                                            onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                                        >
+                                            <span>{faq.q}</span>
+                                            <span className="tour-faq-toggle">{openFaq === i ? '−' : '+'}</span>
+                                        </button>
+                                        {openFaq === i && (
+                                            <div className="tour-faq-answer">
+                                                <p>{faq.a}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* RIGHT COLUMN: Interactive Booking & Pricing Sticky Widget */}
+                    <div className="tour-detail-sidebar-col">
+                        <div className="tour-booking-sticky-card">
+                            <div className="tour-booking-header">
+                                <span className="tour-booking-label">Precio por persona</span>
+                                <div className="tour-booking-price-row">
+                                    <strong className="tour-booking-main-price">{formatPrice(unitPrice)}</strong>
+                                    <span className="tour-booking-currency">MXN</span>
+                                </div>
+                                <span className="tour-booking-subtext">Impuestos y coordinación incluidos</span>
+                            </div>
+
+                            <div className="tour-booking-form">
+                                {/* Modality Selector */}
+                                <div className="tour-booking-field">
+                                    <label className="tour-field-label">1. Modalidad de Acompañamiento</label>
+                                    <div className="tour-booking-mod-switch">
+                                        <button
+                                            type="button"
+                                            className={`tour-booking-mod-btn${modality === 'anfitrion' ? ' tour-booking-mod-btn--active' : ''}`}
+                                            onClick={() => setModality('anfitrion')}
+                                        >
+                                            <span>👑 Anfitrión</span>
+                                            <strong>{formatPrice(priceAnfitrion)}</strong>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`tour-booking-mod-btn${modality === 'locatario' ? ' tour-booking-mod-btn--active' : ''}`}
+                                            onClick={() => setModality('locatario')}
+                                        >
+                                            <span>🏮 Locataria</span>
+                                            <strong>{formatPrice(priceLocatario)}</strong>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Date Selector */}
+                                <div className="tour-booking-field">
+                                    <label className="tour-field-label">2. Fecha del Tour</label>
+                                    <div className="tour-booking-date-wrap">
+                                        <input
+                                            type="date"
+                                            min={tomorrowStr}
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            className="tour-booking-date-input"
+                                        />
+                                        <span className="tour-booking-date-display">
+                                            📅 {formatDateLabel(selectedDate)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Travelers Counter */}
+                                <div className="tour-booking-field">
+                                    <label className="tour-field-label">3. Número de Personas</label>
+                                    <div className="tour-booking-qty-control">
+                                        <button
+                                            type="button"
+                                            className="tour-qty-btn"
+                                            disabled={travelers <= 1}
+                                            onClick={() => setTravelers(prev => Math.max(1, prev - 1))}
+                                        >
+                                            −
+                                        </button>
+                                        <span className="tour-qty-val">
+                                            {travelers} persona{travelers > 1 ? 's' : ''}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            className="tour-qty-btn"
+                                            disabled={travelers >= 12}
+                                            onClick={() => setTravelers(prev => Math.min(12, prev + 1))}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Summary & Calculation */}
+                                <div className="tour-booking-calc-summary">
+                                    <div className="tour-calc-row">
+                                        <span>{formatPrice(unitPrice)} MXN × {travelers} pers.</span>
+                                        <strong>{formatPrice(totalPrice)} MXN</strong>
+                                    </div>
+                                    <div className="tour-calc-total-row">
+                                        <span>Total Estimado:</span>
+                                        <strong className="tour-calc-total-val">{formatPrice(totalPrice)} MXN</strong>
+                                    </div>
+                                </div>
+
+                                {/* Primary WhatsApp Action Button */}
+                                <a
+                                    href={waLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="tour-booking-wa-btn"
+                                >
+                                    💬 Reservar y Coordinar por WhatsApp
+                                </a>
+
+                                <div className="tour-booking-guarantee-strip">
+                                    <span>🔒 Atención directa y confirmación en tiempo real</span>
+                                </div>
+
+                                {/* Back Link */}
+                                <Link to="/tours-individuales" className="tour-booking-back-btn">
+                                    ← Ver todos los Tours en Japón
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Related Experiences Section */}
+                {relatedTours.length > 0 && (
+                    <div className="tour-related-section">
+                        <div className="tour-related-header">
+                            <h2>🌸 Otras Experiencias Recomendadas en Japón</h2>
+                            <Link to="/tours-individuales" className="tour-related-see-all">
+                                Explorar catálogo completo →
+                            </Link>
+                        </div>
+                        <div className="tour-related-grid">
+                            {relatedTours.map((relTour) => (
+                                <div 
+                                    key={relTour.id} 
+                                    className="tour-related-card"
+                                    onClick={() => navigate(`/tours-individuales/${relTour.slug || relTour.id}`)}
+                                >
+                                    <div className="tour-related-img-box">
+                                        <img src={relTour.image} alt={relTour.title} />
+                                        {relTour.city && (
+                                            <span className="tour-related-city-badge">📍 {relTour.city}</span>
+                                        )}
+                                    </div>
+                                    <div className="tour-related-body">
+                                        <h4>{relTour.title}</h4>
+                                        <div className="tour-related-footer">
+                                            <span className="tour-related-price">
+                                                Desde <strong>{relTour.priceAnfitrion || relTour.priceText || '$800 MXN'}</strong>
+                                            </span>
+                                            <span className="tour-related-btn">Ver Tour →</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
