@@ -442,26 +442,14 @@ export default function ToursIndividualesPage() {
                                                         e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
                                                     }}
                                                 />
-                                                <span className="tours-indiv-badge">
-                                                    ⏱️ {tour.days ? tour.days : '1 día'} {tour.hours ? `(${tour.hours})` : ''}
-                                                </span>
-
                                                 {tour.city && (
-                                                    <span className="tours-indiv-city-badge" style={{
-                                                        position: 'absolute',
-                                                        bottom: '10px',
-                                                        left: '10px',
-                                                        background: 'rgba(15, 23, 42, 0.75)',
-                                                        backdropFilter: 'blur(4px)',
-                                                        color: '#fff',
-                                                        fontSize: '0.68rem',
-                                                        fontWeight: 700,
-                                                        padding: '3px 8px',
-                                                        borderRadius: '6px'
-                                                    }}>
+                                                    <span className="tours-indiv-city-badge">
                                                         📍 {tour.city}
                                                     </span>
                                                 )}
+                                                <span className="tours-indiv-badge">
+                                                    ⏱️ {tour.days ? tour.days : '1 día'} {tour.hours ? `(${tour.hours})` : ''}
+                                                </span>
                                                 
                                                 {/* Top Right '+' Quick Info Button */}
                                                 <button
@@ -593,7 +581,7 @@ export default function ToursIndividualesPage() {
 
             {/* Right Slide-in Info Drawer Backdrop & Panel */}
             <div
-                className={`tours-drawer-backdrop${detailDrawerTour ? ' tours-drawer-backdrop--open' : ''}`}
+                className={`tours-drawer-overlay${detailDrawerTour ? ' tours-drawer-overlay--open' : ''}`}
                 onClick={() => setDetailDrawerTour(null)}
             />
 
@@ -603,14 +591,14 @@ export default function ToursIndividualesPage() {
                         {/* Drawer Header */}
                         <div className="tours-drawer-header">
                             <div>
-                                <span className="tours-drawer-category">
+                                <span className="tours-drawer-badge">
                                     {detailDrawerTour.category || 'Tour'} • 📍 {detailDrawerTour.city || 'Japón'}
                                 </span>
                                 <h2 className="tours-drawer-title">{detailDrawerTour.title}</h2>
                             </div>
                             <button
                                 type="button"
-                                className="tours-drawer-close-btn"
+                                className="tours-drawer-close"
                                 onClick={() => setDetailDrawerTour(null)}
                                 aria-label="Cerrar detalles"
                             >
