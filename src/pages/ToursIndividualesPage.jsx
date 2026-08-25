@@ -102,31 +102,64 @@ export default function ToursIndividualesPage() {
         ))
     }
 
-    // Add tour and immediately open multi-step checkout popup
+    const [pendingTour, setPendingTour] = useState(null)
+
+    // Open checkout modal staging this tour (does NOT commit to selectedTours until confirmed)
     const handleAddAndOpenCheckout = (tour) => {
-        const existing = selectedTours.find(t => t.id === tour.id)
         const chosenModality = tourModalities[tour.id] || 'locatario'
         const chosenDate = tourDates[tour.id] || tomorrowStr
         const chosenQty = tourQuantities[tour.id] || 1
+        const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
+        const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
+        const unitPrice = chosenModality === 'anfitrion' ? priceAnfitrion : priceLocatario
 
-        const unitPrice = chosenModality === 'anfitrion'
-            ? (tour.priceAnfitrionNum || tour.priceNum || 800)
-            : (tour.priceLocatarioNum || Math.round((tour.priceAnfitrionNum || tour.priceNum || 800) * 1.5))
-
-        if (!existing) {
-            setSelectedTours(prev => [...prev, {
-                id: tour.id,
-                name: tour.title,
-                modality: chosenModality,
-                modalityLabel: chosenModality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
-                price: unitPrice,
-                date: chosenDate,
-                quantity: chosenQty,
-            }])
+        const staged = {
+            id: tour.id,
+            name: tour.title,
+            modality: chosenModality,
+            modalityLabel: chosenModality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+            price: unitPrice,
+            priceAnfitrionNum: priceAnfitrion,
+            priceLocatarioNum: priceLocatario,
+            date: chosenDate,
+            quantity: chosenQty,
         }
 
+        setPendingTour(staged)
         setDetailDrawerTour(null)
         setIsCheckoutOpen(true)
+    }
+
+    const handleCloseCheckout = () => {
+        setPendingTour(null)
+        setIsCheckoutOpen(false)
+    }
+
+    const handleConfirmTour = (tourToCommit, chosenAssistance) => {
+        if (!tourToCommit) return
+        const isAnfitrion = chosenAssistance === 'anfitrion'
+        const unitPrice = isAnfitrion
+            ? (tourToCommit.priceAnfitrionNum || 800)
+            : (tourToCommit.priceLocatarioNum || 1200)
+
+        setSelectedTours(prev => {
+            const exists = prev.some(t => t.id === tourToCommit.id)
+            if (exists) {
+                return prev.map(t => t.id === tourToCommit.id ? {
+                    ...t,
+                    ...tourToCommit,
+                    price: unitPrice,
+                    modality: chosenAssistance,
+                    modalityLabel: isAnfitrion ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+                } : t)
+            }
+            return [...prev, {
+                ...tourToCommit,
+                price: unitPrice,
+                modality: chosenAssistance,
+                modalityLabel: isAnfitrion ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+            }]
+        })
     }
 
     // Toggle tour freely directly from ticket or card
@@ -626,14 +659,16 @@ export default function ToursIndividualesPage() {
 
             <CheckoutModal
                 isOpen={isCheckoutOpen}
-                onClose={() => setIsCheckoutOpen(false)}
+                onClose={handleCloseCheckout}
                 season={{ name: 'Tours Individuales', colors: { primary: '#e91e63' } }}
                 estilo="Tours Sueltos"
                 totalPrice={totalPrice}
                 selectedTours={selectedTours}
+                pendingTour={pendingTour}
+                onConfirmTour={handleConfirmTour}
                 desglose={
-                    `Tours seleccionados (${selectedTours.length}): ` +
-                    selectedTours.map(t => `${t.name} [${t.modalityLabel || (t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria')}] (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [${formatPrice((t.price || 0) * (t.quantity || 1))} MXN]`).join('; ')
+                    `Tours seleccionados (${(pendingTour && !selectedTours.some(t => t.id === pendingTour.id) ? [...selectedTours, pendingTour] : selectedTours).length}): ` +
+                    (pendingTour && !selectedTours.some(t => t.id === pendingTour.id) ? [...selectedTours, pendingTour] : selectedTours).map(t => `${t.name} [${t.modalityLabel || (t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria')}] (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [${formatPrice((t.price || 0) * (t.quantity || 1))} MXN]`).join('; ')
                 }
             />
         </div>

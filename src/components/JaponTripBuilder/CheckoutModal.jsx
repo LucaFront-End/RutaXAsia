@@ -18,7 +18,17 @@ import './StepStyles.css'
  *         a) 💳 Anticipo ($5,000 MXN) + Invoices mensuales automáticas (Wix Invoicing)
  *         b) 💎 Pago Total Completo (100% Liquidación inmediata)
  */
-export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPrice, desglose, selectedTours = [] }) {
+export default function CheckoutModal({
+    isOpen,
+    onClose,
+    season,
+    estilo,
+    totalPrice,
+    desglose,
+    selectedTours = [],
+    pendingTour = null,
+    onConfirmTour = () => {},
+}) {
     if (!isOpen) return null
 
     const { tripSearch } = useTripSearch() || {}
@@ -38,13 +48,32 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     const [nombre, setNombre] = useState('')
     const [correo, setCorreo] = useState('')
     const [telefono, setTelefono] = useState('')
-    const [adultsCount, setAdultsCount] = useState(isToursSueltos ? 1 : (tripSearch?.adults || 2))
+    const [adultsCount, setAdultsCount] = useState(
+        isToursSueltos
+            ? (pendingTour?.quantity || (selectedTours[0]?.quantity || 1))
+            : (tripSearch?.adults || 2)
+    )
     const [childrenCount, setChildrenCount] = useState(isToursSueltos ? 0 : (tripSearch?.children || 0))
 
     const totalTravelers = Math.max(1, adultsCount + childrenCount)
 
     // Travelers Information list
     const [travelers, setTravelers] = useState([])
+
+    // Reset to Step 1 and clear status every time the modal is opened
+    useEffect(() => {
+        if (isOpen) {
+            setStep(1)
+            setStatus('checkout')
+            setErrors({})
+            setApiError('')
+            if (pendingTour?.quantity) {
+                setAdultsCount(pendingTour.quantity)
+            } else if (selectedTours.length > 0 && selectedTours[0]?.quantity) {
+                setAdultsCount(selectedTours[0].quantity)
+            }
+        }
+    }, [isOpen, pendingTour])
 
     // Synchronize travelers array when totalTravelers changes
     useEffect(() => {
@@ -91,6 +120,19 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     const [cotizacionId, setCotizacionId] = useState(null)
     const [memberId, setMemberId] = useState(null)
 
+    // Calculate active tours list considering pendingTour
+    const activeToursList = useMemo(() => {
+        if (!isToursSueltos) return selectedTours
+        if (pendingTour) {
+            const exists = selectedTours.some(t => t.id === pendingTour.id)
+            if (exists) {
+                return selectedTours.map(t => t.id === pendingTour.id ? { ...t, ...pendingTour } : t)
+            }
+            return [...selectedTours, pendingTour]
+        }
+        return selectedTours
+    }, [isToursSueltos, selectedTours, pendingTour])
+
     // Calculate maximum allowed monthly installments based on departure date
     const calculateMaxAllowedInstallments = () => {
         const today = new Date()
@@ -131,8 +173,8 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     // Recalculate dynamic total based on chosen assistanceType for Tours Sueltos
     const effectiveTotalPrice = useMemo(() => {
         if (!isToursSueltos) return totalPrice || 0
-        if (selectedTours && selectedTours.length > 0) {
-            return selectedTours.reduce((sum, t) => {
+        if (activeToursList && activeToursList.length > 0) {
+            return activeToursList.reduce((sum, t) => {
                 const priceAnfitrion = t.priceAnfitrionNum || (t.modality === 'anfitrion' ? t.price : (t.priceNum || 800))
                 const priceLocatario = t.priceLocatarioNum || (t.modality === 'locatario' ? t.price : Math.round(priceAnfitrion * 1.5))
                 const unit = assistanceType === 'anfitrion' ? priceAnfitrion : priceLocatario
@@ -140,7 +182,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
             }, 0)
         }
         return totalPrice || 0
-    }, [isToursSueltos, selectedTours, totalPrice, assistanceType])
+    }, [isToursSueltos, activeToursList, totalPrice, assistanceType])
 
     // Dynamic Pricing & Invoicing calculations
     const paymentAmount = isToursSueltos
@@ -234,6 +276,10 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         if (e) e.preventDefault()
         if (isToursSueltos) {
             if (step === 1) {
+                // Confirm the staged tour with the chosen assistance type
+                if (pendingTour) {
+                    onConfirmTour(pendingTour, assistanceType)
+                }
                 setStep(2)
                 syncCotizacion('step_advance', 2)
             } else if (step === 2) {
