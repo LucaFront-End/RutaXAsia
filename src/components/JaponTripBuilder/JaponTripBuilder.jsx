@@ -282,11 +282,18 @@ export default function JaponTripBuilder() {
                 {season && style && (
                     <>
                         <div id="jtb-step-3">
-                            {selectedStyle === 'libre' && <StepLibre season={season} temporadaKey={selectedSeason} />}
-                            {selectedStyle === 'guiado' && <StepGuiado season={season} temporadaKey={selectedSeason} />}
-                            {selectedStyle === 'acompanado' && <StepAcompanado season={season} temporadaKey={selectedSeason} />}
-                            {selectedStyle === 'signature' && <StepSignature season={season} />}
-
+                            {(selectedStyle === 'libre' || selectedStyle === 'Libre') && (
+                                <StepLibre season={season} temporadaKey={selectedSeason} />
+                            )}
+                            {(selectedStyle === 'esencial' || selectedStyle === 'Esencial' || selectedStyle === 'guiado' || selectedStyle === 'Guiado') && (
+                                <StepGuiado season={season} temporadaKey={selectedSeason} />
+                            )}
+                            {(selectedStyle === 'completo' || selectedStyle === 'Completo' || selectedStyle === 'acompanado' || selectedStyle === 'Acompañado' || selectedStyle === 'acompañado') && (
+                                <StepAcompanado season={season} temporadaKey={selectedSeason} />
+                            )}
+                            {(selectedStyle === 'signature' || selectedStyle === 'Signature') && (
+                                <StepSignature season={season} />
+                            )}
                         </div>
 
                         {/* Highlights strip */}

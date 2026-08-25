@@ -1,10 +1,73 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { fetchTourIndividuales } from '../lib/wixClient'
 import { useTripSearch } from '../context/TripContext'
 import FloatingTicket from '../components/JaponTripBuilder/FloatingTicket'
 import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
 import './ToursIndividualesPage.css'
+
+/**
+ * Custom modern Dropdown selector for filters
+ */
+function CustomDropdown({ value, onChange, options, ariaLabel }) {
+    const [isOpen, setIsOpen] = useState(false)
+    const dropdownRef = useRef(null)
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setIsOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    const currentOption = options.find(o => o.value === value) || options[0]
+
+    return (
+        <div className="custom-dropdown-wrap" ref={dropdownRef}>
+            <button
+                type="button"
+                className={`custom-dropdown-btn${isOpen ? ' custom-dropdown-btn--open' : ''}`}
+                onClick={() => setIsOpen(prev => !prev)}
+                aria-label={ariaLabel}
+                aria-expanded={isOpen}
+            >
+                <span className="custom-dropdown-btn-label">
+                    {currentOption?.icon && <span className="custom-dropdown-icon">{currentOption.icon}</span>}
+                    <span>{currentOption?.label || value}</span>
+                </span>
+                <span className={`custom-dropdown-arrow${isOpen ? ' custom-dropdown-arrow--up' : ''}`}>▾</span>
+            </button>
+
+            {isOpen && (
+                <div className="custom-dropdown-menu">
+                    {options.map((opt) => {
+                        const isSelected = opt.value === value
+                        return (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                className={`custom-dropdown-item${isSelected ? ' custom-dropdown-item--active' : ''}`}
+                                onClick={() => {
+                                    onChange(opt.value)
+                                    setIsOpen(false)
+                                }}
+                            >
+                                <span className="custom-dropdown-item-text">
+                                    {opt.icon && <span className="custom-dropdown-item-icon">{opt.icon}</span>}
+                                    <span>{opt.label}</span>
+                                </span>
+                                {isSelected && <span className="custom-dropdown-check">✓</span>}
+                            </button>
+                        )
+                    })}
+                </div>
+            )}
+        </div>
+    )
+}
 
 export default function ToursIndividualesPage() {
     const { tripSearch: selectorData } = useTripSearch()
@@ -85,6 +148,26 @@ export default function ToursIndividualesPage() {
         })
         return ['Todas', ...Array.from(citySet).sort()]
     }, [tours])
+
+    // Dropdown options
+    const cityOptions = useMemo(() => [
+        { value: 'Todas', label: 'Todas las ciudades', icon: '📍' },
+        ...availableCities.filter(c => c !== 'Todas').map(c => ({ value: c, label: c, icon: '📍' }))
+    ], [availableCities])
+
+    const categoryOptions = useMemo(() => [
+        { value: 'Todas', label: 'Todas las categorías', icon: '⛩️' },
+        { value: 'Rutas por Japón', label: 'Rutas por Japón', icon: '🗾' },
+        { value: 'Parques temáticos', label: 'Parques temáticos', icon: '🎢' },
+        { value: 'Experiencias Vip', label: 'Experiencias VIP', icon: '✨' },
+    ], [])
+
+    const sortOptions = useMemo(() => [
+        { value: 'price-asc', label: 'Precio: Menor a Mayor', icon: '🏷️' },
+        { value: 'price-desc', label: 'Precio: Mayor a Menor', icon: '💎' },
+        { value: 'alpha-asc', label: 'Nombre: A - Z', icon: '🔤' },
+        { value: 'alpha-desc', label: 'Nombre: Z - A', icon: '🔡' },
+    ], [])
 
     // Handle modality change for a tour
     const handleModalityChange = (tour, newModality) => {
@@ -312,44 +395,29 @@ export default function ToursIndividualesPage() {
                     </div>
 
                     <div className="tours-indiv-selects-group">
-                        {/* City Filter */}
-                        <select
-                            className="tours-indiv-select"
+                        {/* Custom City Filter Dropdown */}
+                        <CustomDropdown
                             value={selectedCity}
-                            onChange={(e) => setSelectedCity(e.target.value)}
-                            aria-label="Filtrar por ciudad"
-                        >
-                            <option value="Todas">📍 Todas las ciudades</option>
-                            {availableCities.filter(c => c !== 'Todas').map(c => (
-                                <option key={c} value={c}>📍 {c}</option>
-                            ))}
-                        </select>
+                            onChange={setSelectedCity}
+                            options={cityOptions}
+                            ariaLabel="Filtrar por ciudad"
+                        />
 
-                        {/* Category Filter */}
-                        <select
-                            className="tours-indiv-select"
+                        {/* Custom Category Filter Dropdown */}
+                        <CustomDropdown
                             value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            aria-label="Filtrar por categoría"
-                        >
-                            <option value="Todas">⛩️ Todas las categorías</option>
-                            <option value="Rutas por Japón">Rutas por Japón</option>
-                            <option value="Parques temáticos">Parques temáticos</option>
-                            <option value="Experiencias Vip">Experiencias VIP</option>
-                        </select>
+                            onChange={setSelectedCategory}
+                            options={categoryOptions}
+                            ariaLabel="Filtrar por categoría"
+                        />
 
-                        {/* Sort Filter */}
-                        <select
-                            className="tours-indiv-select"
+                        {/* Custom Sort Filter Dropdown */}
+                        <CustomDropdown
                             value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            aria-label="Ordenar tours"
-                        >
-                            <option value="price-asc">Precio: Menor a Mayor</option>
-                            <option value="price-desc">Precio: Mayor a Menor</option>
-                            <option value="alpha-asc">Nombre: A - Z</option>
-                            <option value="alpha-desc">Nombre: Z - A</option>
-                        </select>
+                            onChange={setSortBy}
+                            options={sortOptions}
+                            ariaLabel="Ordenar tours"
+                        />
                     </div>
                 </div>
 
