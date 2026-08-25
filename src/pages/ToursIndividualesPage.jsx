@@ -396,9 +396,24 @@ export default function ToursIndividualesPage() {
                                                 {/* Compact Date and Quantity Controls Bar */}
                                                 <div className="tours-indiv-compact-controls">
                                                     {/* Date Selector Chip */}
-                                                    <label
+                                                    <div
                                                         className={`tours-indiv-date-chip${isAdded ? ' tours-indiv-date-chip--added' : ''}`}
                                                         style={{ flex: 1, margin: 0, cursor: 'pointer' }}
+                                                        onClick={(e) => {
+                                                            const input = e.currentTarget.querySelector('input[type="date"]')
+                                                            if (input) {
+                                                                try {
+                                                                    if (typeof input.showPicker === 'function') {
+                                                                        input.showPicker()
+                                                                    } else {
+                                                                        input.focus()
+                                                                    }
+                                                                } catch (err) {
+                                                                    input.focus()
+                                                                }
+                                                            }
+                                                        }}
+                                                        title="Haz clic para seleccionar fecha del tour"
                                                     >
                                                         <span className="tours-indiv-date-chip-icon">📅</span>
                                                         <div className="tours-indiv-date-chip-info">
@@ -412,9 +427,17 @@ export default function ToursIndividualesPage() {
                                                             className="tours-indiv-date-chip-native"
                                                             value={currentDate}
                                                             min={tomorrowStr}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                try {
+                                                                    if (typeof e.target.showPicker === 'function') {
+                                                                        e.target.showPicker()
+                                                                    }
+                                                                } catch (err) {}
+                                                            }}
                                                             onChange={(e) => handleDateChange(tour.id, e.target.value)}
                                                         />
-                                                    </label>
+                                                    </div>
 
                                                     {/* Quantity / Person Selector Chip */}
                                                     <div className={`tours-indiv-qty-chip${isAdded ? ' tours-indiv-qty-chip--added' : ''}`}>
@@ -607,6 +630,7 @@ export default function ToursIndividualesPage() {
                 season={{ name: 'Tours Individuales', colors: { primary: '#e91e63' } }}
                 estilo="Tours Sueltos"
                 totalPrice={totalPrice}
+                selectedTours={selectedTours}
                 desglose={
                     `Tours seleccionados (${selectedTours.length}): ` +
                     selectedTours.map(t => `${t.name} [${t.modalityLabel || (t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria')}] (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [${formatPrice((t.price || 0) * (t.quantity || 1))} MXN]`).join('; ')

@@ -376,7 +376,7 @@
     width: 100%;
     height: 100%;
     opacity: 0;
-    cursor: pointer;
+    pointer-events: none;
 }
 
 /* Quantity / Person Chip */

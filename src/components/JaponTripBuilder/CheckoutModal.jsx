@@ -1,37 +1,38 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTripSearch } from '../../context/TripContext'
 import './StepStyles.css'
 
 /**
  * CheckoutModal — Multi-Step Anticipation & Full Booking Checkout Modal
  *
- * 1. Tours Individuales:
- *    - Step 1: Modalidad de Asistencia (Locataria vs Anfitrión)
- *    - Step 2: Datos del Comprador y Asistentes
- *    - Step 3: Pago Total Completo (100%) vía Wix Payments / Checkout
+ * 1. Tours Individuales (4 PASOS):
+ *    - Step 1: Modalidad de Acompañamiento (🏮 Asistencia Locataria vs 👑 Anfitrión RutaXAsia)
+ *    - Step 2: Datos del Comprador (Titular) y Cantidad de Personas
+ *    - Step 3: Datos de los Viajeros / Asistentes
+ *    - Step 4: Resumen de Tours y Pago Total en Línea (Wix Payments / WhatsApp)
  *
- * 2. Paquetes / Viajes Completos:
+ * 2. Paquetes / Viajes Completos (3 PASOS):
  *    - Step 1: Datos del Comprador y Pasajeros
  *    - Step 2: Datos de los Viajeros
  *    - Step 3: Modalidad de Pago:
- *         a) 💳 Anticipo ($5,000 MXN) + 5 Facturas/Invoices mensuales automáticas (Wix Invoicing)
+ *         a) 💳 Anticipo ($5,000 MXN) + Invoices mensuales automáticas (Wix Invoicing)
  *         b) 💎 Pago Total Completo (100% Liquidación inmediata)
  */
-export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPrice, desglose }) {
+export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPrice, desglose, selectedTours = [] }) {
     if (!isOpen) return null
 
     const { tripSearch } = useTripSearch() || {}
     const isToursSueltos = estilo === 'Tours Sueltos'
 
-    // Step state: 1, 2, 3
+    // Step state: 1, 2, 3, 4
     const [step, setStep] = useState(1)
 
-    // Assistance Type for Tours Sueltos
-    const [assistanceType, setAssistanceType] = useState('locataria') // 'locataria' | 'anfitrion'
+    // Assistance Type for Tours Sueltos: 'locataria' | 'anfitrion'
+    const [assistanceType, setAssistanceType] = useState('locataria')
 
     // Payment Mode for Packages: 'anticipo' ($5,000 + monthly invoices) | 'completo' (100% total)
     const [packagePaymentMode, setPackagePaymentMode] = useState('anticipo')
-    const [selectedInstallments, setSelectedInstallments] = useState(5) // 3, 4, 5, 6, 8, 10 months
+    const [selectedInstallments, setSelectedInstallments] = useState(5)
 
     // Buyer Information
     const [nombre, setNombre] = useState('')
@@ -97,15 +98,15 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         const text = `${season?.name || ''} ${season?.key || ''} ${desglose || ''}`.toLowerCase()
 
         if (text.includes('2026') && (text.includes('oct') || text.includes('otoño') || text.includes('momiji'))) {
-            targetDate = new Date(2026, 9, 15) // Oct 15, 2026 (2 months away)
+            targetDate = new Date(2026, 9, 15)
         } else if (text.includes('2026') && (text.includes('nov') || text.includes('noviembre'))) {
             targetDate = new Date(2026, 10, 15)
         } else if (text.includes('2026') && (text.includes('dic') || text.includes('diciembre'))) {
             targetDate = new Date(2026, 11, 15)
         } else if (text.includes('2027') && (text.includes('mar') || text.includes('sakura') || text.includes('primavera') || text.includes('abr'))) {
-            targetDate = new Date(2027, 2, 22) // Mar 22, 2027 (7 months away)
+            targetDate = new Date(2027, 2, 22)
         } else if (text.includes('2027') && (text.includes('jul') || text.includes('ago') || text.includes('verano'))) {
-            targetDate = new Date(2027, 6, 15) // Jul 15, 2027 (11 months away)
+            targetDate = new Date(2027, 6, 15)
         } else {
             if (season?.key === 'momiji') targetDate = new Date(2026, 9, 15)
             else if (season?.key === 'sakura') targetDate = new Date(2027, 2, 22)
@@ -121,19 +122,32 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     const availableInstallments = allPossibleInstallments.filter(n => n <= maxInstallments)
     if (availableInstallments.length === 0) availableInstallments.push(maxInstallments)
 
-    // Adjust selected installments if current selection exceeds allowed maximum
     useEffect(() => {
         if (!availableInstallments.includes(selectedInstallments)) {
             setSelectedInstallments(availableInstallments[availableInstallments.length - 1] || 1)
         }
     }, [maxInstallments])
 
+    // Recalculate dynamic total based on chosen assistanceType for Tours Sueltos
+    const effectiveTotalPrice = useMemo(() => {
+        if (!isToursSueltos) return totalPrice || 0
+        if (selectedTours && selectedTours.length > 0) {
+            return selectedTours.reduce((sum, t) => {
+                const priceAnfitrion = t.priceAnfitrionNum || (t.modality === 'anfitrion' ? t.price : (t.priceNum || 800))
+                const priceLocatario = t.priceLocatarioNum || (t.modality === 'locatario' ? t.price : Math.round(priceAnfitrion * 1.5))
+                const unit = assistanceType === 'anfitrion' ? priceAnfitrion : priceLocatario
+                return sum + (unit * (t.quantity || 1))
+            }, 0)
+        }
+        return totalPrice || 0
+    }, [isToursSueltos, selectedTours, totalPrice, assistanceType])
+
     // Dynamic Pricing & Invoicing calculations
     const paymentAmount = isToursSueltos
-        ? totalPrice
-        : (packagePaymentMode === 'anticipo' ? 5000 : totalPrice)
+        ? effectiveTotalPrice
+        : (packagePaymentMode === 'anticipo' ? 5000 : effectiveTotalPrice)
 
-    const remainder = Math.max(0, totalPrice - paymentAmount)
+    const remainder = Math.max(0, effectiveTotalPrice - paymentAmount)
     const effectiveInstallments = Math.min(selectedInstallments, maxInstallments)
     const installmentsCount = (!isToursSueltos && packagePaymentMode === 'anticipo') ? effectiveInstallments : 0
     const monthlyInstallment = installmentsCount > 0 ? Math.round(remainder / installmentsCount) : 0
@@ -154,8 +168,8 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                     correo,
                     telefono,
                     temporada: isToursSueltos ? 'Tours Individuales' : (season?.name || 'Japón'),
-                    estilo: isToursSueltos ? `Tours Sueltos (${assistanceType})` : (estilo || 'Reserva'),
-                    totalPrice,
+                    estilo: isToursSueltos ? `Tours Sueltos (${assistanceType === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'})` : (estilo || 'Reserva'),
+                    totalPrice: effectiveTotalPrice,
                     paymentAmount,
                     packagePaymentMode,
                     selectedInstallments: effectiveInstallments,
@@ -174,7 +188,6 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         }
     }
 
-    // Modal Close handler (updates COTIZACIONES as Abandoned Cart if closed)
     const handleCloseModal = () => {
         if (status === 'checkout' && correo && correo.includes('@')) {
             syncCotizacion('modal_close', step)
@@ -218,14 +231,20 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     }
 
     const handleNextStep = (e) => {
-        e.preventDefault()
+        if (e) e.preventDefault()
         if (isToursSueltos) {
             if (step === 1) {
                 setStep(2)
+                syncCotizacion('step_advance', 2)
             } else if (step === 2) {
-                if (validateBuyer() && validateTravelers()) {
+                if (validateBuyer()) {
                     setStep(3)
                     syncCotizacion('step_advance', 3)
+                }
+            } else if (step === 3) {
+                if (validateTravelers()) {
+                    setStep(4)
+                    syncCotizacion('step_advance', 4)
                 }
             }
         } else {
@@ -248,12 +267,12 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     }
 
     const handleCheckoutSubmit = async (e) => {
-        e.preventDefault()
+        if (e) e.preventDefault()
         if (!validateBuyer() || !validateTravelers()) return
 
         setStatus('processing')
         setApiError('')
-        syncCotizacion('checkout_initiated', 3)
+        syncCotizacion('checkout_initiated', isToursSueltos ? 4 : 3)
 
         const assistanceLabel = assistanceType === 'anfitrion' ? 'Anfitrión de Viaje' : 'Asistencia Locataria'
         const travelersSummary = travelers
@@ -263,7 +282,6 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
         const currentTipoPago = isToursSueltos ? 'tours_total' : packagePaymentMode
 
         try {
-            // 1. Call serverless API to save reservation in Wix CMS and create Wix Checkout session
             const response = await fetch('/api/wix-checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -274,7 +292,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                     temporada: isToursSueltos ? 'Tours Individuales' : (season?.name || 'Japón'),
                     estilo: isToursSueltos ? `Tours Sueltos (${assistanceLabel})` : (estilo || 'Reserva'),
                     tipoPago: currentTipoPago,
-                    totalViaje: totalPrice,
+                    totalViaje: effectiveTotalPrice,
                     montoAnticipo: paymentAmount,
                     saldoRestante: remainder,
                     mensualidadesCount: installmentsCount,
@@ -287,7 +305,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
 
             const result = await response.json()
 
-            // 2. Send notification email to reservas@rutaxasia.com and operaciones@rutaxasia.com via FormSubmit
+            // Notification email via FormSubmit
             try {
                 const subjectText = isToursSueltos
                     ? `🎟️ [Wix Payment] Solicitud Pago Total Tours Individuales (${formatPrice(paymentAmount)} MXN) — ${nombre}`
@@ -313,7 +331,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                             ? 'Pago Total Completo de Tours'
                             : (packagePaymentMode === 'anticipo' ? 'Anticipo ($5,000 MXN) + Plan de Invoices Mensuales' : 'Pago Total Completo (100%)'),
                         'Monto a Cobrar': `${formatPrice(paymentAmount)} MXN`,
-                        'Total del Viaje': `${formatPrice(totalPrice)} MXN`,
+                        'Total del Viaje': `${formatPrice(effectiveTotalPrice)} MXN`,
                         'Saldo Restante': `${formatPrice(remainder)} MXN`,
                         'Plan de Facturación (Wix Invoices)': generarInvoiceMensual
                             ? `5 facturas mensuales de ${formatPrice(monthlyInstallment)} MXN c/u emitidas al correo ${correo}`
@@ -331,7 +349,6 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
             if (result.success && result.checkoutUrl) {
                 setResultData(result)
                 setStatus('redirecting')
-                // Immediate redirect to real Wix checkout URL
                 window.location.href = result.checkoutUrl
             } else {
                 setApiError(result.error || 'Hubo un problema al conectar con la pasarela de pago.')
@@ -350,11 +367,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
     
     const waMsg = isToursSueltos
         ? `SW-Hola! Quiero reservar y pagar los siguientes Tours en Japón (${assistanceLabel}): ${desglose || ''}. ` +
-          `Comprador: ${nombre || 'Cliente'}. Asistentes: ${travelersWaText}. Total a pagar: ${formatPrice(totalPrice)} MXN.`
+          `Comprador: ${nombre || 'Cliente'}. Asistentes: ${travelersWaText}. Total a pagar: ${formatPrice(effectiveTotalPrice)} MXN.`
         : (packagePaymentMode === 'anticipo'
             ? `SW-Hola! Quiero realizar mi apartado de $5,000 MXN para el viaje: ${season?.name || 'Japón'} (${estilo}) y programar mis invoices mensuales. ` +
               `Comprador: ${nombre || 'Cliente'}. Pasajeros: ${travelersWaText}. Saldo restante: ${formatPrice(remainder)} MXN (5 cuotas de ${formatPrice(monthlyInstallment)} MXN).`
-            : `SW-Hola! Quiero realizar el pago TOTAL COMPLETO de ${formatPrice(totalPrice)} MXN para el viaje: ${season?.name || 'Japón'} (${estilo}). ` +
+            : `SW-Hola! Quiero realizar el pago TOTAL COMPLETO de ${formatPrice(effectiveTotalPrice)} MXN para el viaje: ${season?.name || 'Japón'} (${estilo}). ` +
               `Comprador: ${nombre || 'Cliente'}. Pasajeros: ${travelersWaText}.`)
 
     const waUrl = `https://wa.me/525657929121?text=${encodeURIComponent(waMsg)}`
@@ -369,11 +386,11 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                         {/* Step Indicator Header */}
                         <div className="jtb-modal-header" style={{ marginBottom: '16px', textAlign: 'center' }}>
                             <h3 className="jtb-checkout-title">
-                                {isToursSueltos ? '🎟️ Reserva y Pago de Tours' : '💳 Reserva y Pago de Viaje a Japón'}
+                                {isToursSueltos ? '🎟️ Configuración y Pago de Tours' : '💳 Reserva y Pago de Viaje a Japón'}
                             </h3>
                             <p className="jtb-checkout-subtitle">
                                 {isToursSueltos
-                                    ? 'Personaliza tu asistencia y completa tu pago seguro'
+                                    ? 'Completa los 4 sencillos pasos para asegurar tus lugares y guías'
                                     : 'Aparta tus lugares con anticipo o liquida tu viaje de forma 100% segura'}
                             </p>
                             {memberId && (
@@ -382,37 +399,176 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                 </div>
                             )}
 
-                            {/* 3 Steps Progress Bar */}
-                            <div className="jtb-checkout-steps-bar">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 1 ? 1 : 0.4 }}>
-                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</span>
-                                    <span style={{ fontSize: '0.78rem', fontWeight: step === 1 ? 800 : 600, color: step === 1 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
-                                        Comprador
-                                    </span>
+                            {/* Multi-Step Progress Bar */}
+                            {isToursSueltos ? (
+                                /* 4 Steps Progress Bar for Tours Sueltos */
+                                <div className="jtb-checkout-steps-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '12px', flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: step >= 1 ? 1 : 0.4 }}>
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: step === 1 ? 800 : 600, color: step === 1 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                            🎎 Modalidad
+                                        </span>
+                                    </div>
+                                    <span style={{ color: '#cbd5e1', fontSize: '0.7rem' }}>→</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: step >= 2 ? 1 : 0.4 }}>
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: step === 2 ? 800 : 600, color: step === 2 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                            👤 Comprador
+                                        </span>
+                                    </div>
+                                    <span style={{ color: '#cbd5e1', fontSize: '0.7rem' }}>→</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: step >= 3 ? 1 : 0.4 }}>
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 3 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: step === 3 ? 800 : 600, color: step === 3 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                            👥 Viajeros ({totalTravelers})
+                                        </span>
+                                    </div>
+                                    <span style={{ color: '#cbd5e1', fontSize: '0.7rem' }}>→</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: step >= 4 ? 1 : 0.4 }}>
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 4 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>4</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: step === 4 ? 800 : 600, color: step === 4 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                            💳 Pago
+                                        </span>
+                                    </div>
                                 </div>
-                                <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>→</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 2 ? 1 : 0.4 }}>
-                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>2</span>
-                                    <span style={{ fontSize: '0.78rem', fontWeight: step === 2 ? 800 : 600, color: step === 2 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
-                                        Viajeros ({totalTravelers})
-                                    </span>
+                            ) : (
+                                /* 3 Steps Progress Bar for Travel Packages */
+                                <div className="jtb-checkout-steps-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '12px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 1 ? 1 : 0.4 }}>
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 1 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
+                                        <span style={{ fontSize: '0.78rem', fontWeight: step === 1 ? 800 : 600, color: step === 1 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                            Comprador
+                                        </span>
+                                    </div>
+                                    <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>→</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 2 ? 1 : 0.4 }}>
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 2 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
+                                        <span style={{ fontSize: '0.78rem', fontWeight: step === 2 ? 800 : 600, color: step === 2 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                            Viajeros ({totalTravelers})
+                                        </span>
+                                    </div>
+                                    <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>→</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 3 ? 1 : 0.4 }}>
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 3 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
+                                        <span style={{ fontSize: '0.78rem', fontWeight: step === 3 ? 800 : 600, color: step === 3 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
+                                            Modalidad de Pago
+                                        </span>
+                                    </div>
                                 </div>
-                                <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>→</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: step >= 3 ? 1 : 0.4 }}>
-                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 3 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</span>
-                                    <span style={{ fontSize: '0.78rem', fontWeight: step === 3 ? 800 : 600, color: step === 3 ? 'var(--color-primary, #e11d48)' : '#64748b', whiteSpace: 'nowrap' }}>
-                                        {isToursSueltos ? 'Pagar Total' : 'Modalidad de Pago'}
-                                    </span>
-                                </div>
-                            </div>
+                            )}
                         </div>
 
-                        {/* ================= STEP 1: COMPRADOR ================= */}
-                        {step === 1 && (
+                        {/* =========================================================================
+                            TOURS INDIVIDUALES: PASO 1 (MODALIDAD DE ACOMPAÑAMIENTO)
+                           ========================================================================= */}
+                        {isToursSueltos && step === 1 && (
+                            <div>
+                                <div className="jtb-form-section" style={{ marginTop: '6px' }}>
+                                    <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '6px', color: 'var(--color-dark)' }}>
+                                        🎎 Paso 1 de 4: Elige la Modalidad de Acompañamiento
+                                    </h4>
+                                    <p style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '14px' }}>
+                                        Selecciona el tipo de guía y asistencia para tus tours en Japón:
+                                    </p>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        {/* Option A: Asistencia Locataria */}
+                                        <div
+                                            onClick={() => setAssistanceType('locataria')}
+                                            style={{
+                                                border: assistanceType === 'locataria' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
+                                                background: assistanceType === 'locataria' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                                borderRadius: '14px',
+                                                padding: '14px 16px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                boxShadow: assistanceType === 'locataria' ? '0 4px 14px rgba(225, 29, 72, 0.12)' : 'none'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <span style={{ fontSize: '1.4rem' }}>🏮</span>
+                                                    <div>
+                                                        <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>Asistencia Locataria</strong>
+                                                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Guía local experto de la zona</span>
+                                                    </div>
+                                                </div>
+                                                <input
+                                                    type="radio"
+                                                    name="assistanceType"
+                                                    checked={assistanceType === 'locataria'}
+                                                    onChange={() => setAssistanceType('locataria')}
+                                                />
+                                            </div>
+                                            <p style={{ fontSize: '0.8rem', color: '#475569', margin: '4px 0 0', lineHeight: 1.45 }}>
+                                                Te acompañamos con un locatario bilingüe especializado que conoce las mejores rutas, transportes y gastronomía del lugar.
+                                            </p>
+                                        </div>
+
+                                        {/* Option B: Anfitrión RutaXAsia */}
+                                        <div
+                                            onClick={() => setAssistanceType('anfitrion')}
+                                            style={{
+                                                border: assistanceType === 'anfitrion' ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e2e8f0',
+                                                background: assistanceType === 'anfitrion' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                                borderRadius: '14px',
+                                                padding: '14px 16px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                boxShadow: assistanceType === 'anfitrion' ? '0 4px 14px rgba(225, 29, 72, 0.12)' : 'none'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <span style={{ fontSize: '1.4rem' }}>👑</span>
+                                                    <div>
+                                                        <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>Anfitrión RutaXAsia</strong>
+                                                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Coordinador exclusivo de nuestro equipo</span>
+                                                    </div>
+                                                </div>
+                                                <input
+                                                    type="radio"
+                                                    name="assistanceType"
+                                                    checked={assistanceType === 'anfitrion'}
+                                                    onChange={() => setAssistanceType('anfitrion')}
+                                                />
+                                            </div>
+                                            <p style={{ fontSize: '0.8rem', color: '#475569', margin: '4px 0 0', lineHeight: 1.45 }}>
+                                                Un anfitrión de nuestro equipo te acompañará durante todo el recorrido brindando asistencia VIP personalizada.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Estimated Total Price Preview */}
+                                    <div style={{ marginTop: '16px', background: '#f8fafc', padding: '12px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>Total con esta modalidad:</span>
+                                        <strong style={{ fontSize: '1.15rem', color: 'var(--color-primary, #e11d48)' }}>
+                                            {formatPrice(effectiveTotalPrice)} MXN
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div style={{ marginTop: '20px' }}>
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        style={{ width: '100%', padding: '13px', borderRadius: '100px', fontSize: '0.92rem', fontWeight: 800 }}
+                                        onClick={handleNextStep}
+                                    >
+                                        Continuar a Datos del Comprador (Paso 2) →
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* =========================================================================
+                            STEP 2 PARA TOURS SUELTOS (O STEP 1 PARA PAQUETES): DATOS COMPRADOR
+                           ========================================================================= */}
+                        {((isToursSueltos && step === 2) || (!isToursSueltos && step === 1)) && (
                             <div>
                                 <div className="jtb-form-section" style={{ marginTop: '6px' }}>
                                     <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '12px', color: 'var(--color-dark)' }}>
-                                        👤 1. Información del Comprador (Titular)
+                                        👤 {isToursSueltos ? 'Paso 2 de 4: Información del Comprador (Titular)' : '1. Información del Comprador (Titular)'}
                                     </h4>
 
                                     <div className="jtb-input-group" style={{ marginBottom: '12px' }}>
@@ -461,7 +617,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                     {/* Number of Passengers Adjuster */}
                                     <div style={{ background: '#f8fafc', padding: '14px 16px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '8px' }}>
                                         <label style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--color-dark)', display: 'block', marginBottom: '8px' }}>
-                                            👥 Cantidad de Pasajeros para este Viaje:
+                                            👥 Cantidad de Pasajeros / Asistentes:
                                         </label>
                                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -495,17 +651,27 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             </div>
 
                                             <span style={{ fontSize: '0.8rem', color: 'var(--color-primary, #e11d48)', fontWeight: 800, marginLeft: 'auto' }}>
-                                                Total: {totalTravelers} {totalTravelers === 1 ? 'Viajero' : 'Viajeros'}
+                                                Total: {totalTravelers} {totalTravelers === 1 ? 'Persona' : 'Personas'}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div style={{ marginTop: '20px' }}>
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
+                                    {isToursSueltos && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline"
+                                            style={{ padding: '12px 16px', borderRadius: '100px', fontSize: '0.85rem', color: '#64748b', borderColor: '#cbd5e1' }}
+                                            onClick={handlePrevStep}
+                                        >
+                                            ← Modalidad
+                                        </button>
+                                    )}
                                     <button
                                         type="button"
                                         className="btn btn-primary"
-                                        style={{ width: '100%', padding: '13px', borderRadius: '100px', fontSize: '0.92rem', fontWeight: 800 }}
+                                        style={{ flex: 1, padding: '13px', borderRadius: '100px', fontSize: '0.92rem', fontWeight: 800 }}
                                         onClick={handleNextStep}
                                     >
                                         Continuar con Datos de los {totalTravelers} Viajeros →
@@ -514,80 +680,20 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                             </div>
                         )}
 
-                        {/* ================= STEP 2: DATOS COMPRADOR & VIAJEROS ================= */}
-                        {step === 2 && (
+                        {/* =========================================================================
+                            STEP 3 PARA TOURS SUELTOS (O STEP 2 PARA PAQUETES): DATOS VIAJEROS
+                           ========================================================================= */}
+                        {((isToursSueltos && step === 3) || (!isToursSueltos && step === 2)) && (
                             <div>
                                 <div className="jtb-form-section" style={{ marginTop: '6px' }}>
-                                    {/* For Tours Sueltos, capture buyer details in Step 2 */}
-                                    {isToursSueltos && (
-                                        <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid #e2e8f0' }}>
-                                            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0 0 10px', color: 'var(--color-dark)' }}>
-                                                👤 Información del Comprador
-                                            </h4>
-                                            <div className="jtb-input-group" style={{ marginBottom: '8px' }}>
-                                                <label style={{ fontSize: '0.76rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Nombre Completo</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Nombre y apellidos"
-                                                    value={nombre}
-                                                    onChange={(e) => handleBuyerNameChange(e.target.value)}
-                                                    style={{ width: '100%', padding: '9px 11px', borderRadius: '10px', border: errors.nombre ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
-                                                />
-                                                {errors.nombre && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors.nombre}</span>}
-                                            </div>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                                <div>
-                                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Correo Electrónico</label>
-                                                    <input
-                                                        type="email"
-                                                        placeholder="correo@ejemplo.com"
-                                                        value={correo}
-                                                        onChange={(e) => setCorreo(e.target.value)}
-                                                        style={{ width: '100%', padding: '9px 11px', borderRadius: '10px', border: errors.correo ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
-                                                    />
-                                                    {errors.correo && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors.correo}</span>}
-                                                </div>
-                                                <div>
-                                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, display: 'block', marginBottom: '2px' }}>Teléfono (WhatsApp)</label>
-                                                    <input
-                                                        type="tel"
-                                                        inputMode="numeric"
-                                                        maxLength={10}
-                                                        placeholder="10 dígitos"
-                                                        value={telefono}
-                                                        onChange={(e) => handlePhoneChange(e.target.value)}
-                                                        style={{ width: '100%', padding: '9px 11px', borderRadius: '10px', border: errors.telefono ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
-                                                    />
-                                                    {errors.telefono && <span style={{ color: '#ef4444', fontSize: '0.7rem' }}>{errors.telefono}</span>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
+                                    <h4 className="jtb-checkout-section-title">
+                                        📋 {isToursSueltos ? `Paso 3 de 4: Datos de los ${totalTravelers} Asistentes` : `2. Datos de los ${totalTravelers} Viajeros`}
+                                    </h4>
+                                    <p style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '10px' }}>
+                                        Ingresa los nombres tal como aparecen en su identificación oficial o pasaporte:
+                                    </p>
 
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                        <h4 className="jtb-checkout-section-title">
-                                            📋 Datos de Viajeros ({totalTravelers})
-                                        </h4>
-                                        {/* Dynamic Passenger Counter for Tours Sueltos */}
-                                        {isToursSueltos && (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff', border: '1px solid #cbd5e1', borderRadius: '100px', padding: '2px 8px' }}>
-                                                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700 }}>Total:</span>
-                                                <button
-                                                    type="button"
-                                                    style={{ width: '20px', height: '20px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
-                                                    onClick={() => setAdultsCount(Math.max(1, adultsCount - 1))}
-                                                >-</button>
-                                                <span style={{ fontWeight: 800, minWidth: '14px', textAlign: 'center', fontSize: '0.82rem' }}>{totalTravelers}</span>
-                                                <button
-                                                    type="button"
-                                                    style={{ width: '20px', height: '20px', borderRadius: '50%', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontWeight: 900, color: '#333' }}
-                                                    onClick={() => setAdultsCount(adultsCount + 1)}
-                                                >+</button>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '36vh', overflowY: 'auto', paddingRight: '4px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '38vh', overflowY: 'auto', paddingRight: '4px' }}>
                                         {travelers.map((t, idx) => (
                                             <div key={idx} style={{
                                                 background: '#f8fafc',
@@ -640,7 +746,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         style={{ padding: '12px 16px', borderRadius: '100px', fontSize: '0.85rem', color: '#64748b', borderColor: '#cbd5e1' }}
                                         onClick={handlePrevStep}
                                     >
-                                        ← Volver
+                                        ← Comprador
                                     </button>
                                     <button
                                         type="button"
@@ -648,14 +754,16 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                         style={{ flex: 1, padding: '12px 16px', borderRadius: '100px', fontSize: '0.88rem', fontWeight: 800, whiteSpace: 'nowrap' }}
                                         onClick={handleNextStep}
                                     >
-                                        Continuar al Pago →
+                                        Continuar al Resumen y Pago →
                                     </button>
                                 </div>
                             </div>
                         )}
 
-                        {/* ================= STEP 3: MODALIDAD DE PAGO Y CHECKOUT ================= */}
-                        {step === 3 && (
+                        {/* =========================================================================
+                            STEP 4 PARA TOURS SUELTOS (O STEP 3 PARA PAQUETES): RESUMEN & PAGO
+                           ========================================================================= */}
+                        {((isToursSueltos && step === 4) || (!isToursSueltos && step === 3)) && (
                             <form onSubmit={handleCheckoutSubmit}>
                                 <div style={{ marginTop: '6px' }}>
 
@@ -666,7 +774,6 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 💳 Elige tu Modalidad de Pago:
                                             </label>
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                                {/* Option A: Anticipo + Monthly Invoices */}
                                                 <div
                                                     onClick={() => setPackagePaymentMode('anticipo')}
                                                     style={{
@@ -703,7 +810,6 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                     </div>
                                                 </div>
 
-                                                {/* Option B: Full Payment */}
                                                 <div
                                                     onClick={() => setPackagePaymentMode('completo')}
                                                     style={{
@@ -735,13 +841,12 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                             Pago Total Completo
                                                         </div>
                                                         <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>
-                                                            {formatPrice(totalPrice)} MXN de contado
+                                                            {formatPrice(effectiveTotalPrice)} MXN de contado
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Dynamic Monthly Installments Selector */}
                                             {packagePaymentMode === 'anticipo' && (
                                                 <div style={{ marginTop: '12px', background: '#f8fafc', padding: '12px 14px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -791,12 +896,12 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             <span>{nombre} ({telefono})</span>
                                         </div>
                                         <div className="jtb-checkout-summary-row">
-                                            <span>Viajeros Registrados ({travelers.length}):</span>
+                                            <span>Asistentes / Pasajeros ({travelers.length}):</span>
                                             <span>{travelers.map(t => t.fullName || 'Persona').join(', ')}</span>
                                         </div>
                                         {isToursSueltos && (
                                             <div className="jtb-checkout-summary-row">
-                                                <span>Modalidad:</span>
+                                                <span>Modalidad Seleccionada:</span>
                                                 <span style={{ color: 'var(--color-primary, #e11d48)', fontWeight: 800 }}>{assistanceLabel}</span>
                                             </div>
                                         )}
@@ -805,7 +910,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                             <>
                                                 <div className="jtb-checkout-summary-row">
                                                     <span>Total Estimado del Viaje:</span>
-                                                    <span>{formatPrice(totalPrice)} MXN</span>
+                                                    <span>{formatPrice(effectiveTotalPrice)} MXN</span>
                                                 </div>
                                                 <div className="jtb-checkout-summary-row">
                                                     <span>Saldo Restante a Financiar:</span>
@@ -867,7 +972,7 @@ export default function CheckoutModal({ isOpen, onClose, season, estilo, totalPr
                                                 style={{ padding: '11px 16px', borderRadius: '100px', fontSize: '0.82rem', color: '#64748b', borderColor: '#cbd5e1' }}
                                                 onClick={handlePrevStep}
                                             >
-                                                ← Editar Datos
+                                                ← Viajeros
                                             </button>
                                             
                                             <a
