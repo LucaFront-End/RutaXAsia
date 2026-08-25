@@ -36,19 +36,51 @@ export default function StepLibre({ season, temporadaKey }) {
     useEffect(() => {
         let isMounted = true
         async function loadCmsPrices() {
-            const allPrices = await fetchPreciosCategoriasDias()
-            const filtered = allPrices.filter(p =>
-                p.categoria.toLowerCase().includes('libre') &&
-                (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
-            )
-            if (isMounted && filtered.length > 0) {
-                setCmsPackages(filtered.map(p => ({
-                    days: p.diasYNochesCompletos || `${p.dias} ${p.noches}`,
-                    price: p.precioText,
-                    priceNum: p.precioNum,
-                    name: p.tituloComercial,
-                    limiteDeTours: p.limiteDeTours || 6
-                })))
+            try {
+                const allPrices = await fetchPreciosCategoriasDias()
+                const sName = (season?.name || '').toLowerCase()
+                const tKey = (temporadaKey || '').toLowerCase()
+
+                const isMatchingSeason = (t) => {
+                    const temp = String(t || '').toLowerCase()
+                    return temp === sName || temp === tKey ||
+                        (tKey === 'akari' && (temp === 'verano' || temp === 'akari')) ||
+                        (tKey === 'verano' && (temp === 'verano' || temp === 'akari')) ||
+                        (tKey === 'kamakura' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono')) ||
+                        (tKey === 'momiji' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono'))
+                }
+
+                const filtered = (allPrices || []).filter(p => {
+                    const cat = String(p.categoria || '').toLowerCase()
+                    return cat.includes('libre') && isMatchingSeason(p.temporada)
+                })
+
+                if (isMounted && filtered.length > 0) {
+                    const mapped = filtered.map(p => {
+                        const daysMatch = String(p.dias || p.diasYNochesCompletos || '').match(/\d+/)
+                        const nightsMatch = String(p.noches || p.diasYNochesCompletos || '').match(/(\d+)\s*noche/i)
+                        const titleCom = String(p.tituloComercial || '')
+                        const daysNum = daysMatch ? parseInt(daysMatch[0], 10) : (titleCom.includes('EXPRESS') || titleCom.includes('8') ? 8 : titleCom.includes('CLÁSICO') || titleCom.includes('10') ? 10 : titleCom.includes('EXPLORADOR') || titleCom.includes('12') ? 12 : 14)
+                        const nightsNum = nightsMatch ? parseInt(nightsMatch[1], 10) : (daysNum - 2)
+
+                        return {
+                            id: p.id,
+                            name: p.tituloComercial || `Pase ${daysNum} Días`,
+                            days: p.diasYNochesCompletos || `${daysNum} días ${nightsNum} noches`,
+                            daysNum: daysNum,
+                            nightsNum: nightsNum,
+                            price: p.precioText || `$${(p.precioNum || 0).toLocaleString('es-MX')} MXN`,
+                            priceNum: p.precioNum,
+                            limiteDeTours: p.limiteDeTours || 6
+                        }
+                    })
+
+                    // ALWAYS sort ascending by daysNum (8d, 10d, 12d, 14d)
+                    mapped.sort((a, b) => a.daysNum - b.daysNum)
+                    setCmsPackages(mapped)
+                }
+            } catch (err) {
+                console.error('[StepLibre] Error loading prices:', err)
             }
         }
         loadCmsPrices()
@@ -233,9 +265,9 @@ export default function StepLibre({ season, temporadaKey }) {
                                                 <span className="libre-duration-card-badge">{passBadges[i]}</span>
                                             )}
                                             <div className="libre-duration-check">✓</div>
-                                            <span className="libre-duration-pass-name">{passNames[i]}</span>
-                                            <div className="libre-duration-days">{pkg.days.split(' ')[0]} días</div>
-                                            <div className="libre-duration-nights">{pkg.days.split(' ').slice(1).join(' ')}</div>
+                                            <span className="libre-duration-pass-name">{pkg.name || passNames[i]}</span>
+                                            <div className="libre-duration-days">{pkg.daysNum || pkg.days.split(' ')[0]} días</div>
+                                            <div className="libre-duration-nights">{pkg.nightsNum ? `${pkg.nightsNum} noches` : pkg.days.split(' ').slice(1).join(' ')}</div>
                                             <div className="libre-duration-price">{pkg.price}</div>
                                             <span className="libre-duration-per">MXN / persona</span>
                                         </div>

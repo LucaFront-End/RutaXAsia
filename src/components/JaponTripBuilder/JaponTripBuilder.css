@@ -210,10 +210,16 @@
 }
 
 .jtb-season-card--dimmed {
-    opacity: 0.35;
-    filter: grayscale(0.6) blur(2px);
-    transform: scale(0.96);
-    pointer-events: none;
+    opacity: 0.6;
+    filter: grayscale(0.3);
+    transform: scale(0.98);
+    cursor: pointer;
+}
+
+.jtb-season-card--dimmed:hover {
+    opacity: 0.95;
+    filter: grayscale(0);
+    transform: translateY(-6px) scale(1.01);
 }
 
 .jtb-season-card-img {
@@ -421,10 +427,17 @@
 }
 
 .jtb-style-card--dimmed {
-    opacity: 0.35;
-    filter: grayscale(0.4) blur(1px);
-    transform: scale(0.96);
-    pointer-events: none;
+    opacity: 0.6;
+    filter: grayscale(0.2);
+    transform: scale(0.98);
+    cursor: pointer;
+}
+
+.jtb-style-card--dimmed:hover {
+    opacity: 0.95;
+    filter: grayscale(0);
+    transform: translateY(-4px) scale(1);
+    border-color: rgba(12, 14, 22, 0.15);
 }
 
 /* Signature luxury style */

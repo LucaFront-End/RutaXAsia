@@ -32,33 +32,52 @@ export default function StepGuiado({ season, temporadaKey }) {
     useEffect(() => {
         let isMounted = true
         async function loadCmsPrices() {
-            const allPrices = await fetchPreciosCategoriasDias()
-            const filtered = allPrices.filter(p =>
-                (p.categoria.toLowerCase().includes('esencial') || p.categoria.toLowerCase().includes('guiado')) &&
-                (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
-            )
-            if (isMounted && filtered.length > 0) {
-                const mapped = filtered.map(p => {
-                    const daysMatch = (p.dias || '').match(/\d+/)
-                    const nightsMatch = (p.noches || '').match(/\d+/)
-                    const daysNum = daysMatch ? parseInt(daysMatch[0], 10) : (p.tituloComercial.includes('EXPRESS') ? 8 : p.tituloComercial.includes('CLÁSICO') ? 10 : p.tituloComercial.includes('EXPLORADOR') ? 12 : 14)
-                    const nightsNum = nightsMatch ? parseInt(nightsMatch[0], 10) : (daysNum - 2)
+            try {
+                const allPrices = await fetchPreciosCategoriasDias()
+                const sName = (season?.name || '').toLowerCase()
+                const tKey = (temporadaKey || '').toLowerCase()
 
-                    return {
-                        id: p.id,
-                        name: p.tituloComercial || `Pase ${daysNum} Días`,
-                        days: p.diasYNochesCompletos || `${daysNum} días ${nightsNum} noches`,
-                        daysNum: daysNum,
-                        nightsNum: nightsNum,
-                        price: p.precioText || `$${(p.precioNum || 0).toLocaleString('es-MX')} MXN`,
-                        priceNum: p.precioNum,
-                        freeTours: p.tourGratisQueIncluira || (daysNum === 14 ? 8 : 6),
-                        limiteDeTours: p.limiteDeTours || (daysNum === 8 ? 6 : daysNum === 10 ? 8 : daysNum === 12 ? 10 : 12),
-                    }
+                const isMatchingSeason = (t) => {
+                    const temp = String(t || '').toLowerCase()
+                    return temp === sName || temp === tKey ||
+                        (tKey === 'akari' && (temp === 'verano' || temp === 'akari')) ||
+                        (tKey === 'verano' && (temp === 'verano' || temp === 'akari')) ||
+                        (tKey === 'kamakura' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono')) ||
+                        (tKey === 'momiji' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono'))
+                }
+
+                const filtered = (allPrices || []).filter(p => {
+                    const cat = String(p.categoria || '').toLowerCase()
+                    const isCat = cat.includes('esencial') || cat.includes('guiado')
+                    return isCat && isMatchingSeason(p.temporada)
                 })
-                // Sort ascending by daysNum
-                mapped.sort((a, b) => a.daysNum - b.daysNum)
-                setCmsPackages(mapped)
+
+                if (isMounted && filtered.length > 0) {
+                    const mapped = filtered.map(p => {
+                        const daysMatch = String(p.dias || '').match(/\d+/)
+                        const nightsMatch = String(p.noches || '').match(/\d+/)
+                        const titleCom = String(p.tituloComercial || '')
+                        const daysNum = daysMatch ? parseInt(daysMatch[0], 10) : (titleCom.includes('EXPRESS') ? 8 : titleCom.includes('CLÁSICO') ? 10 : titleCom.includes('EXPLORADOR') ? 12 : 14)
+                        const nightsNum = nightsMatch ? parseInt(nightsMatch[0], 10) : (daysNum - 2)
+
+                        return {
+                            id: p.id,
+                            name: p.tituloComercial || `Pase ${daysNum} Días`,
+                            days: p.diasYNochesCompletos || `${daysNum} días ${nightsNum} noches`,
+                            daysNum: daysNum,
+                            nightsNum: nightsNum,
+                            price: p.precioText || `$${(p.precioNum || 0).toLocaleString('es-MX')} MXN`,
+                            priceNum: p.precioNum,
+                            freeTours: p.tourGratisQueIncluira || (daysNum === 14 ? 8 : 6),
+                            limiteDeTours: p.limiteDeTours || (daysNum === 8 ? 6 : daysNum === 10 ? 8 : daysNum === 12 ? 10 : 12),
+                        }
+                    })
+                    // Sort ascending by daysNum (8d, 10d, 12d, 14d)
+                    mapped.sort((a, b) => a.daysNum - b.daysNum)
+                    setCmsPackages(mapped)
+                }
+            } catch (err) {
+                console.error('[StepGuiado] Error loading prices:', err)
             }
         }
         loadCmsPrices()

@@ -43,34 +43,53 @@ export default function StepAcompanado({ season, temporadaKey }) {
     useEffect(() => {
         let isMounted = true
         async function loadCmsPrices() {
-            const allPrices = await fetchPreciosCategoriasDias()
-            const filtered = allPrices.filter(p =>
-                (p.categoria.toLowerCase().includes('completo') || p.categoria.toLowerCase().includes('acompañado') || p.categoria.toLowerCase().includes('acompanado')) &&
-                (p.temporada.toLowerCase() === (season?.name || '').toLowerCase() || p.temporada.toLowerCase() === temporadaKey.toLowerCase())
-            )
-            if (isMounted && filtered.length > 0) {
-                const mapped = filtered.map(p => {
-                    const isGrandTour = p.tituloComercial.toUpperCase().includes('GRAND') || (p.dias || '').includes('14')
-                    return {
-                        id: p.id,
-                        name: p.tituloComercial || (isGrandTour ? 'PASE GRAND TOUR' : 'PASE EXPLORADOR'),
-                        days: p.diasYNochesCompletos || (isGrandTour ? '14 días 12 noches' : '12 días 10 noches'),
-                        daysNum: isGrandTour ? 14 : 12,
-                        priceNum: p.precioNum || (isGrandTour ? 72290 : 67490),
-                        priceText: p.precioText,
-                        freeTours: p.tourGratisQueIncluira || (isGrandTour ? 2 : 1),
-                        limiteDeTours: p.limiteDeTours || (isGrandTour ? 12 : 10),
-                        fechasDeInicio: p.fechasDeInicio,
-                        fechaEntre: p.fechaEntre,
-                    }
-                })
-                // Sort so Explorador comes first, then Grand Tour
-                mapped.sort((a, b) => a.daysNum - b.daysNum)
-                setCmsPackages(mapped)
+            try {
+                const allPrices = await fetchPreciosCategoriasDias()
+                const sName = (season?.name || '').toLowerCase()
+                const tKey = (temporadaKey || '').toLowerCase()
 
-                if (mapped[0]?.fechasDeInicio && mapped[0]?.fechaEntre) {
-                    setCmsDatesText(`${mapped[0].fechasDeInicio} al ${mapped[0].fechaEntre} (Salida Grupal)`)
+                const isMatchingSeason = (t) => {
+                    const temp = String(t || '').toLowerCase()
+                    return temp === sName || temp === tKey ||
+                        (tKey === 'akari' && (temp === 'verano' || temp === 'akari')) ||
+                        (tKey === 'verano' && (temp === 'verano' || temp === 'akari')) ||
+                        (tKey === 'kamakura' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono')) ||
+                        (tKey === 'momiji' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono'))
                 }
+
+                const filtered = (allPrices || []).filter(p => {
+                    const cat = String(p.categoria || '').toLowerCase()
+                    const isCat = cat.includes('completo') || cat.includes('acompañado') || cat.includes('acompanado')
+                    return isCat && isMatchingSeason(p.temporada)
+                })
+
+                if (isMounted && filtered.length > 0) {
+                    const mapped = filtered.map(p => {
+                        const titleCom = String(p.tituloComercial || '')
+                        const isGrandTour = titleCom.toUpperCase().includes('GRAND') || String(p.dias || '').includes('14')
+                        return {
+                            id: p.id,
+                            name: p.tituloComercial || (isGrandTour ? 'PASE GRAND TOUR' : 'PASE EXPLORADOR'),
+                            days: p.diasYNochesCompletos || (isGrandTour ? '14 días 12 noches' : '12 días 10 noches'),
+                            daysNum: isGrandTour ? 14 : 12,
+                            priceNum: p.precioNum || (isGrandTour ? 72290 : 67490),
+                            priceText: p.precioText,
+                            freeTours: p.tourGratisQueIncluira || (isGrandTour ? 2 : 1),
+                            limiteDeTours: p.limiteDeTours || (isGrandTour ? 12 : 10),
+                            fechasDeInicio: p.fechasDeInicio,
+                            fechaEntre: p.fechaEntre,
+                        }
+                    })
+                    // Sort so Explorador (12d) comes first, then Grand Tour (14d)
+                    mapped.sort((a, b) => a.daysNum - b.daysNum)
+                    setCmsPackages(mapped)
+
+                    if (mapped[0]?.fechasDeInicio && mapped[0]?.fechaEntre) {
+                        setCmsDatesText(`${mapped[0].fechasDeInicio} al ${mapped[0].fechaEntre} (Salida Grupal)`)
+                    }
+                }
+            } catch (err) {
+                console.error('[StepAcompanado] Error loading prices:', err)
             }
         }
         loadCmsPrices()
