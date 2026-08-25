@@ -433,11 +433,11 @@ export default function CheckoutModal({
                         {/* Step Indicator Header */}
                         <div className="jtb-modal-header" style={{ marginBottom: '16px', textAlign: 'center' }}>
                             <h3 className="jtb-checkout-title">
-                                {isToursSueltos ? '🎟️ Configuración y Pago de Tours' : '💳 Reserva y Pago de Viaje a Japón'}
+                                {isToursSueltos ? '🎟️ Configuración y Reserva de Tours' : '💳 Reserva y Pago de Viaje a Japón'}
                             </h3>
                             <p className="jtb-checkout-subtitle">
                                 {isToursSueltos
-                                    ? 'Completa los 4 sencillos pasos para asegurar tus lugares y guías'
+                                    ? 'Completa los 4 pasos para coordinar y asegurar tus lugares directamente por WhatsApp'
                                     : 'Aparta tus lugares con anticipo o liquida tu viaje de forma 100% segura'}
                             </p>
                             {memberId && (
@@ -472,9 +472,9 @@ export default function CheckoutModal({
                                     </div>
                                     <span style={{ color: '#cbd5e1', fontSize: '0.7rem' }}>→</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: step >= 4 ? 1 : 0.4 }}>
-                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 4 ? 'var(--color-primary, #e11d48)' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>4</span>
-                                        <span style={{ fontSize: '0.75rem', fontWeight: step === 4 ? 800 : 600, color: step === 4 ? 'var(--color-primary, #e11d48)' : '#64748b' }}>
-                                            💳 Pago
+                                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: step >= 4 ? '#25D366' : '#ccc', color: '#fff', fontSize: '0.72rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>4</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: step === 4 ? 800 : 600, color: step === 4 ? '#059669' : '#64748b' }}>
+                                            💬 WhatsApp
                                         </span>
                                     </div>
                                 </div>
@@ -975,7 +975,7 @@ export default function CheckoutModal({
                                         <div className="jtb-checkout-summary-row highlight">
                                             <span style={{ fontSize: '0.9rem', fontWeight: 800 }}>
                                                 {isToursSueltos
-                                                    ? 'Total a Pagar en Línea (100%):'
+                                                    ? 'Total Estimado de Tours:'
                                                     : (packagePaymentMode === 'anticipo' ? 'Monto a Pagar Hoy (Anticipo):' : 'Total a Pagar en Línea (100%):')}
                                             </span>
                                             <span style={{ color: 'var(--color-primary, #e11d48)', fontWeight: 900, fontSize: '1.25rem' }}>
@@ -987,15 +987,15 @@ export default function CheckoutModal({
                                     {/* Information Banner */}
                                     <div className="jtb-checkout-disclaimer" style={{
                                         marginBottom: '14px',
-                                        background: (!isToursSueltos && packagePaymentMode === 'anticipo') ? '#eff6ff' : '#ecfdf5',
-                                        borderColor: (!isToursSueltos && packagePaymentMode === 'anticipo') ? '#bfdbfe' : '#a7f3d0',
-                                        color: (!isToursSueltos && packagePaymentMode === 'anticipo') ? '#1e40af' : '#065f46',
+                                        background: isToursSueltos ? '#ecfdf5' : ((packagePaymentMode === 'anticipo') ? '#eff6ff' : '#ecfdf5'),
+                                        borderColor: isToursSueltos ? '#a7f3d0' : ((packagePaymentMode === 'anticipo') ? '#bfdbfe' : '#a7f3d0'),
+                                        color: isToursSueltos ? '#065f46' : ((packagePaymentMode === 'anticipo') ? '#1e40af' : '#065f46'),
                                         fontSize: '0.82rem',
                                         padding: '10px 14px',
                                         borderRadius: '12px',
                                     }}>
                                         {isToursSueltos ? (
-                                            <span>🔒 <strong>Pago Seguro en Wix:</strong> Al hacer clic serás transferido a Wix Checkout para liquidar <strong>{formatPrice(paymentAmount)} MXN</strong> de forma 100% protegida.</span>
+                                            <span>💬 <strong>Atención Directa por WhatsApp:</strong> Al hacer clic serás transferido a nuestro WhatsApp oficial con tu itinerario listo. Nuestro equipo te confirmará disponibilidad y te brindará asistencia personalizada inmediata.</span>
                                         ) : (packagePaymentMode === 'anticipo' ? (
                                             <span>📧 <strong>Apartado + Invoicing Automático:</strong> Pagarás tu anticipo de <strong>$5,000 MXN</strong> en la pasarela segura de Wix para congelar tu tarifa. El saldo se liquidará mediante <strong>5 facturas mensuales de {formatPrice(monthlyInstallment)} MXN</strong> enviadas a <strong>{correo}</strong>.</span>
                                         ) : (
@@ -1003,36 +1003,107 @@ export default function CheckoutModal({
                                         ))}
                                     </div>
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <button type="submit" className="jtb-checkout-submit-btn">
-                                            {isToursSueltos
-                                                ? `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`
-                                                : (packagePaymentMode === 'anticipo'
-                                                    ? `💳 Pagar Anticipo de $5,000 MXN en Wix`
-                                                    : `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`)}
-                                        </button>
+                                    {/* Action Buttons */}
+                                    {isToursSueltos ? (
+                                        /* Tours Sueltos: Direct WhatsApp Booking */
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <button
+                                                type="button"
+                                                className="jtb-checkout-submit-btn"
+                                                style={{
+                                                    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                                                    boxShadow: '0 4px 15px rgba(37, 211, 102, 0.35)',
+                                                    border: 'none',
+                                                    color: '#fff',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    gap: '8px',
+                                                    fontSize: '1rem',
+                                                    fontWeight: 800,
+                                                    padding: '14px 20px',
+                                                    borderRadius: '100px',
+                                                    cursor: 'pointer',
+                                                    width: '100%'
+                                                }}
+                                                onClick={async () => {
+                                                    syncCotizacion('whatsapp_booking_initiated', 4)
+                                                    try {
+                                                        const travelersSummary = travelers
+                                                            .map((t, i) => `Persona ${i + 1}: ${t.fullName} (${t.type}${t.age ? `, ${t.age} años` : ''}${t.dietNotes ? ` - Notas: ${t.dietNotes}` : ''})`)
+                                                            .join(' | ')
 
-                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                        await fetch('https://formsubmit.co/ajax/reservas@rutaxasia.com', {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                                                            body: JSON.stringify({
+                                                                _subject: `🎟️ [WhatsApp Booking] Nueva Reserva Tours Individuales (${formatPrice(effectiveTotalPrice)} MXN) — ${nombre}`,
+                                                                _cc: 'operaciones@rutaxasia.com',
+                                                                _template: 'table',
+                                                                _captcha: 'false',
+                                                                _language: 'es',
+                                                                'Comprador': nombre,
+                                                                'Email': correo,
+                                                                'Teléfono (WhatsApp)': telefono,
+                                                                'Temporada / Sección': 'Tours Individuales',
+                                                                'Modalidad': `Tours Sueltos (${assistanceLabel})`,
+                                                                'Tipo de Cobro': 'Cotización y Reserva por WhatsApp',
+                                                                'Monto Total Estimado': `${formatPrice(effectiveTotalPrice)} MXN`,
+                                                                'Total de Asistentes': totalTravelers,
+                                                                'Detalle de Asistentes': travelersSummary,
+                                                                'Desglose del Pedido': desglose,
+                                                                'Fecha de Registro': new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+                                                            }),
+                                                        })
+                                                    } catch (fsErr) {
+                                                        console.error('[CheckoutModal] FormSubmit error:', fsErr)
+                                                    }
+                                                    window.open(waUrl, '_blank')
+                                                }}
+                                            >
+                                                💬 Enviar y Reservar Tours por WhatsApp ({formatPrice(effectiveTotalPrice)} MXN)
+                                            </button>
+
                                             <button
                                                 type="button"
                                                 className="btn btn-outline"
-                                                style={{ padding: '11px 16px', borderRadius: '100px', fontSize: '0.82rem', color: '#64748b', borderColor: '#cbd5e1' }}
+                                                style={{ padding: '11px 16px', borderRadius: '100px', fontSize: '0.84rem', color: '#64748b', borderColor: '#cbd5e1', width: '100%' }}
                                                 onClick={handlePrevStep}
                                             >
-                                                ← Viajeros
+                                                ← Volver a Datos de Viajeros
                                             </button>
-                                            
-                                            <a
-                                                href={waUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="btn btn-outline"
-                                                style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '11px 14px', borderRadius: '100px', fontSize: '0.84rem', color: '#25D366', borderColor: '#25D366', fontWeight: 800 }}
-                                            >
-                                                💬 {isToursSueltos ? 'Pagar por WhatsApp' : (packagePaymentMode === 'anticipo' ? 'Apartar por WhatsApp' : 'Pagar Total por WhatsApp')}
-                                            </a>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        /* Travel Packages: Online Payment Options */
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <button type="submit" className="jtb-checkout-submit-btn">
+                                                {packagePaymentMode === 'anticipo'
+                                                    ? `💳 Pagar Anticipo de $5,000 MXN en Wix`
+                                                    : `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`}
+                                            </button>
+
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline"
+                                                    style={{ padding: '11px 16px', borderRadius: '100px', fontSize: '0.82rem', color: '#64748b', borderColor: '#cbd5e1' }}
+                                                    onClick={handlePrevStep}
+                                                >
+                                                    ← Viajeros
+                                                </button>
+                                                
+                                                <a
+                                                    href={waUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-outline"
+                                                    style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '11px 14px', borderRadius: '100px', fontSize: '0.84rem', color: '#25D366', borderColor: '#25D366', fontWeight: 800 }}
+                                                >
+                                                    💬 {packagePaymentMode === 'anticipo' ? 'Apartar por WhatsApp' : 'Pagar Total por WhatsApp'}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </form>
                         )}

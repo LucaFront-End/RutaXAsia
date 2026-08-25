@@ -14,6 +14,7 @@ export default function ToursIndividualesPage() {
     // Filter & Sort State
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedCategory, setSelectedCategory] = useState('Todas')
+    const [selectedCity, setSelectedCity] = useState('Todas')
     const [sortBy, setSortBy] = useState('price-asc') // 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc'
 
     // Selected Individual Tours Cart: [{ id, name, modality: 'locatario'|'anfitrion', price, date, quantity }]
@@ -59,6 +60,31 @@ export default function ToursIndividualesPage() {
         loadData()
         return () => { isMounted = false }
     }, [])
+
+    // Extract dynamic unique cities from CMS data
+    const availableCities = useMemo(() => {
+        const citySet = new Set()
+        tours.forEach(t => {
+            if (t.city) {
+                const parts = t.city.split(/,| y |\//).map(c => c.trim()).filter(Boolean)
+                parts.forEach(p => {
+                    const low = p.toLowerCase()
+                    if (low.includes('tokio') || low.includes('tokyo')) citySet.add('Tokio')
+                    else if (low.includes('kioto') || low.includes('kyoto')) citySet.add('Kioto')
+                    else if (low.includes('osaka')) citySet.add('Osaka')
+                    else if (low.includes('nara')) citySet.add('Nara')
+                    else if (low.includes('hiroshima')) citySet.add('Hiroshima')
+                    else if (low.includes('hakone') || low.includes('fuji')) citySet.add('Monte Fuji / Hakone')
+                    else if (low.includes('kobe')) citySet.add('Kobe')
+                    else if (low.includes('himeji')) citySet.add('Himeji')
+                    else if (low.includes('kamakura')) citySet.add('Kamakura')
+                    else if (low.includes('nikko')) citySet.add('Nikko')
+                    else citySet.add(p)
+                })
+            }
+        })
+        return ['Todas', ...Array.from(citySet).sort()]
+    }, [tours])
 
     // Handle modality change for a tour
     const handleModalityChange = (tour, newModality) => {
@@ -190,10 +216,22 @@ export default function ToursIndividualesPage() {
             result = result.filter(t => t.category === selectedCategory)
         }
 
+        if (selectedCity !== 'Todas') {
+            result = result.filter(t => {
+                if (!t.city) return false
+                const cLow = t.city.toLowerCase()
+                const selLow = selectedCity.toLowerCase()
+                if (selLow.includes('tokio') || selLow.includes('tokyo')) return cLow.includes('tokio') || cLow.includes('tokyo')
+                if (selLow.includes('kioto') || selLow.includes('kyoto')) return cLow.includes('kioto') || cLow.includes('kyoto')
+                if (selLow.includes('fuji') || selLow.includes('hakone')) return cLow.includes('fuji') || cLow.includes('hakone')
+                return cLow.includes(selLow)
+            })
+        }
+
         if (sortBy === 'price-asc') {
-            result.sort((a, b) => (a.priceLocatarioNum || a.priceNum) - (b.priceLocatarioNum || b.priceNum))
+            result.sort((a, b) => (a.priceAnfitrionNum || a.priceNum) - (b.priceAnfitrionNum || b.priceNum))
         } else if (sortBy === 'price-desc') {
-            result.sort((a, b) => (b.priceLocatarioNum || b.priceNum) - (a.priceLocatarioNum || a.priceNum))
+            result.sort((a, b) => (b.priceAnfitrionNum || b.priceNum) - (a.priceAnfitrionNum || a.priceNum))
         } else if (sortBy === 'alpha-asc') {
             result.sort((a, b) => a.title.localeCompare(b.title))
         } else if (sortBy === 'alpha-desc') {
@@ -201,7 +239,7 @@ export default function ToursIndividualesPage() {
         }
 
         return result
-    }, [tours, searchTerm, selectedCategory, sortBy])
+    }, [tours, searchTerm, selectedCategory, selectedCity, sortBy])
 
     // Total price of selected individual tours
     const totalPrice = useMemo(() => {
@@ -221,7 +259,7 @@ export default function ToursIndividualesPage() {
     }
 
     // Active drawer tour calculations
-    const drawerTourModality = detailDrawerTour ? (tourModalities[detailDrawerTour.id] || 'locatario') : 'locatario'
+    const drawerTourModality = detailDrawerTour ? (tourModalities[detailDrawerTour.id] || 'anfitrion') : 'anfitrion'
     const drawerTourDate = detailDrawerTour ? (tourDates[detailDrawerTour.id] || tomorrowStr) : tomorrowStr
     const drawerTourQty = detailDrawerTour ? (tourQuantities[detailDrawerTour.id] || 1) : 1
     const drawerPriceAnfitrion = detailDrawerTour ? (detailDrawerTour.priceAnfitrionNum || detailDrawerTour.priceNum || 800) : 800
@@ -274,21 +312,38 @@ export default function ToursIndividualesPage() {
                     </div>
 
                     <div className="tours-indiv-selects-group">
+                        {/* City Filter */}
+                        <select
+                            className="tours-indiv-select"
+                            value={selectedCity}
+                            onChange={(e) => setSelectedCity(e.target.value)}
+                            aria-label="Filtrar por ciudad"
+                        >
+                            <option value="Todas">📍 Todas las ciudades</option>
+                            {availableCities.filter(c => c !== 'Todas').map(c => (
+                                <option key={c} value={c}>📍 {c}</option>
+                            ))}
+                        </select>
+
+                        {/* Category Filter */}
                         <select
                             className="tours-indiv-select"
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
+                            aria-label="Filtrar por categoría"
                         >
-                            <option value="Todas">Todas las categorías</option>
+                            <option value="Todas">⛩️ Todas las categorías</option>
                             <option value="Rutas por Japón">Rutas por Japón</option>
                             <option value="Parques temáticos">Parques temáticos</option>
                             <option value="Experiencias Vip">Experiencias VIP</option>
                         </select>
 
+                        {/* Sort Filter */}
                         <select
                             className="tours-indiv-select"
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
+                            aria-label="Ordenar tours"
                         >
                             <option value="price-asc">Precio: Menor a Mayor</option>
                             <option value="price-desc">Precio: Mayor a Menor</option>
@@ -324,11 +379,11 @@ export default function ToursIndividualesPage() {
                             selectedComps={[]}
                             basePrice={0}
                             extraTotal={totalPrice}
-                            customReserveBtnText="💳 Pagar Tours en Línea"
+                            customReserveBtnText="💬 Reservar Tours por WhatsApp"
                             customWhatsAppBtnText="💬 Cotizar por WhatsApp"
                             onOpenCheckout={() => {
                                 if (selectedTours.length === 0) {
-                                    alert('Por favor selecciona al menos un tour antes de proceder al pago.')
+                                    alert('Por favor selecciona al menos un tour antes de proceder.')
                                     return
                                 }
                                 setIsCheckoutOpen(true)
@@ -349,7 +404,7 @@ export default function ToursIndividualesPage() {
                                 <p>No se encontraron tours con los filtros seleccionados.</p>
                                 <button
                                     className="btn btn-outline"
-                                    onClick={() => { setSearchTerm(''); setSelectedCategory('Todas'); setSortBy('price-asc') }}
+                                    onClick={() => { setSearchTerm(''); setSelectedCategory('Todas'); setSelectedCity('Todas'); setSortBy('price-asc') }}
                                 >
                                     Restablecer filtros
                                 </button>
@@ -390,6 +445,23 @@ export default function ToursIndividualesPage() {
                                                 <span className="tours-indiv-badge">
                                                     ⏱️ {tour.days ? tour.days : '1 día'} {tour.hours ? `(${tour.hours})` : ''}
                                                 </span>
+
+                                                {tour.city && (
+                                                    <span className="tours-indiv-city-badge" style={{
+                                                        position: 'absolute',
+                                                        bottom: '10px',
+                                                        left: '10px',
+                                                        background: 'rgba(15, 23, 42, 0.75)',
+                                                        backdropFilter: 'blur(4px)',
+                                                        color: '#fff',
+                                                        fontSize: '0.68rem',
+                                                        fontWeight: 700,
+                                                        padding: '3px 8px',
+                                                        borderRadius: '6px'
+                                                    }}>
+                                                        📍 {tour.city}
+                                                    </span>
+                                                )}
                                                 
                                                 {/* Top Right '+' Quick Info Button */}
                                                 <button
@@ -460,65 +532,54 @@ export default function ToursIndividualesPage() {
                                                             className="tours-indiv-date-chip-native"
                                                             value={currentDate}
                                                             min={tomorrowStr}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                try {
-                                                                    if (typeof e.target.showPicker === 'function') {
-                                                                        e.target.showPicker()
-                                                                    }
-                                                                } catch (err) {}
-                                                            }}
                                                             onChange={(e) => handleDateChange(tour.id, e.target.value)}
                                                         />
                                                     </div>
 
-                                                    {/* Quantity / Person Selector Chip */}
-                                                    <div className={`tours-indiv-qty-chip${isAdded ? ' tours-indiv-qty-chip--added' : ''}`}>
+                                                    {/* Quantity / Persons Chip */}
+                                                    <div className="tours-indiv-qty-chip">
                                                         <button
                                                             type="button"
-                                                            onClick={(e) => { e.stopPropagation(); handleQuantityChange(tour.id, -1) }}
-                                                            className="tours-qty-btn"
+                                                            className="tours-indiv-qty-btn"
+                                                            onClick={() => handleQuantityChange(tour.id, -1)}
+                                                            disabled={currentQty <= 1}
                                                             aria-label="Restar persona"
-                                                        >-</button>
-                                                        <div className="tours-qty-text">
-                                                            <span className="tours-qty-label">Pers.</span>
-                                                            <span className="tours-qty-val">{currentQty}</span>
+                                                        >
+                                                            -
+                                                        </button>
+                                                        <div className="tours-indiv-qty-display">
+                                                            <span className="tours-indiv-qty-num">{currentQty}</span>
+                                                            <span className="tours-indiv-qty-unit">{currentQty === 1 ? 'pers' : 'pers'}</span>
                                                         </div>
                                                         <button
                                                             type="button"
-                                                            onClick={(e) => { e.stopPropagation(); handleQuantityChange(tour.id, 1) }}
-                                                            className="tours-qty-btn"
+                                                            className="tours-indiv-qty-btn"
+                                                            onClick={() => handleQuantityChange(tour.id, 1)}
                                                             aria-label="Sumar persona"
-                                                        >+</button>
+                                                        >
+                                                            +
+                                                        </button>
                                                     </div>
                                                 </div>
 
-                                                {/* Card Footer: Price & Action Buttons */}
+                                                {/* Card Footer: Price & Add Button */}
                                                 <div className="tours-indiv-card-footer">
-                                                    <div className="tours-indiv-card-price">
-                                                        {formatPrice(tourTotalForQty)}
-                                                        <span className="tours-indiv-card-unit-price">
-                                                            {formatPrice(unitPrice)} × {currentQty} pers.
+                                                    <div className="tours-indiv-price-col">
+                                                        <span className="tours-indiv-price-label">
+                                                            {currentQty > 1 ? `${formatPrice(unitPrice)} × ${currentQty}` : 'Desde'}
                                                         </span>
+                                                        <strong className="tours-indiv-price-val">
+                                                            {formatPrice(tourTotalForQty)}
+                                                        </strong>
                                                     </div>
 
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                        <button
-                                                            type="button"
-                                                            className="tours-indiv-info-pill-btn"
-                                                            onClick={() => setDetailDrawerTour(tour)}
-                                                            title="Ver información completa del tour"
-                                                        >
-                                                            + Info
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className={`tours-indiv-btn${isAdded ? ' tours-indiv-btn--added' : ''}`}
-                                                            onClick={() => toggleTour(tour)}
-                                                        >
-                                                            {isAdded ? '✓ Agregado' : '+ Agregar'}
-                                                        </button>
-                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className={`tours-indiv-add-btn${isAdded ? ' tours-indiv-add-btn--added' : ''}`}
+                                                        onClick={() => toggleTour(tour)}
+                                                    >
+                                                        {isAdded ? '✓ Agregado' : '+ Agregar'}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -530,9 +591,9 @@ export default function ToursIndividualesPage() {
                 </div>
             </div>
 
-            {/* SIDE DRAWER (DESPLEGABLE LATERAL DEL LADO DERECHO - SIN NAVEGAR A OTRA PÁGINA) */}
-            <div 
-                className={`tours-drawer-overlay${detailDrawerTour ? ' tours-drawer-overlay--open' : ''}`}
+            {/* Right Slide-in Info Drawer Backdrop & Panel */}
+            <div
+                className={`tours-drawer-backdrop${detailDrawerTour ? ' tours-drawer-backdrop--open' : ''}`}
                 onClick={() => setDetailDrawerTour(null)}
             />
 
@@ -542,14 +603,14 @@ export default function ToursIndividualesPage() {
                         {/* Drawer Header */}
                         <div className="tours-drawer-header">
                             <div>
-                                <span className="tours-drawer-badge">
-                                    📍 {detailDrawerTour.city || 'Japón'} • {detailDrawerTour.category || 'Rutas por Japón'}
+                                <span className="tours-drawer-category">
+                                    {detailDrawerTour.category || 'Tour'} • 📍 {detailDrawerTour.city || 'Japón'}
                                 </span>
                                 <h2 className="tours-drawer-title">{detailDrawerTour.title}</h2>
                             </div>
                             <button
                                 type="button"
-                                className="tours-drawer-close"
+                                className="tours-drawer-close-btn"
                                 onClick={() => setDetailDrawerTour(null)}
                                 aria-label="Cerrar detalles"
                             >
@@ -604,32 +665,40 @@ export default function ToursIndividualesPage() {
                                 {detailDrawerTour.description ? (
                                     <div className="tours-drawer-desc-content">
                                         {detailDrawerTour.description.split('\n').filter(p => p.trim()).map((para, pIdx) => (
-                                            <p key={pIdx}>{para}</p>
+                                            <p key={pIdx} style={{ marginBottom: '10px', lineHeight: 1.6, color: '#334155' }}>{para}</p>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p style={{ color: '#666', lineHeight: 1.6 }}>
+                                    <p style={{ color: '#64748b', lineHeight: 1.6 }}>
                                         {detailDrawerTour.excerpt || 'Disfruta de esta experiencia única por los rincones más emblemáticos de Japón con el acompañamiento de nuestro equipo.'}
                                     </p>
                                 )}
                             </div>
 
+                            {/* Observaciones / Notas si existen */}
+                            {detailDrawerTour.observations && (
+                                <div className="tours-drawer-section" style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '14px 16px', marginTop: '10px' }}>
+                                    <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#92400e', margin: '0 0 6px' }}>📝 Observaciones y Recomendaciones</h4>
+                                    <p style={{ fontSize: '0.82rem', color: '#78350f', margin: 0, lineHeight: 1.5 }}>{detailDrawerTour.observations}</p>
+                                </div>
+                            )}
+
                             {/* Quick Price Reference */}
-                            <div className="tours-drawer-section">
-                                <h3>🏮 Modalidades Disponibles en el Checkout</h3>
+                            <div className="tours-drawer-section" style={{ marginTop: '14px' }}>
+                                <h3>🏮 Modalidades Disponibles en la Reserva</h3>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
-                                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', display: 'block' }}>🏮 Asistencia Locataria</span>
-                                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Guía local de la zona</span>
-                                        <strong style={{ fontSize: '0.95rem', color: 'var(--color-primary, #e11d48)', display: 'block', marginTop: '4px' }}>
-                                            {formatPrice(drawerPriceLocatario)}
-                                        </strong>
-                                    </div>
                                     <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
                                         <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', display: 'block' }}>👑 Anfitrión de Viaje</span>
                                         <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Coordinador RutaXAsia</span>
                                         <strong style={{ fontSize: '0.95rem', color: 'var(--color-primary, #e11d48)', display: 'block', marginTop: '4px' }}>
                                             {formatPrice(drawerPriceAnfitrion)}
+                                        </strong>
+                                    </div>
+                                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', display: 'block' }}>🏮 Asistencia Locataria</span>
+                                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Guía local de la zona</span>
+                                        <strong style={{ fontSize: '0.95rem', color: 'var(--color-primary, #e11d48)', display: 'block', marginTop: '4px' }}>
+                                            {formatPrice(drawerPriceLocatario)}
                                         </strong>
                                     </div>
                                 </div>
