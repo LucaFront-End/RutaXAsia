@@ -64,22 +64,38 @@ export default function UserPortalPage() {
                 memberId: data.user.memberId,
             }))
 
-            // Init passengers directly from data.pasajeros or fallback to reservation
+            // Init passengers directly from data.pasajeros or fallback to reservation or user
             if (data.pasajeros && data.pasajeros.length > 0) {
                 const mapped = data.pasajeros.map((p, idx) => ({
                     id: p._id || idx + 1,
-                    fullName: p.nombreCompleto || '',
-                    passport: p.pasaporte || '',
+                    fullName: p.nombreCompleto || p.nombre || '',
+                    passport: p.numeroPasaporte || p.pasaporte || p.passport || '',
+                    passportExpiry: p.fechaVigenciaPasaporte || p.vigenciaPasaporte || p.passportExpiry || '',
                     age: p.edad || '',
-                    birthDate: '',
-                    nationality: 'Mexicana',
-                    phone: '',
-                    dietary: '',
+                    birthDate: p.fechaNacimiento || p.birthDate || '',
+                    nationality: p.nacionalidad || 'Mexicana',
+                    phone: p.telefono || p.phone || '',
+                    dietary: p.preferencias || p.dietary || '',
                     type: idx === 0 ? 'Titular' : 'Acompañante'
                 }))
                 setPassengersList(mapped)
             } else if (data.reservas && data.reservas.length > 0) {
-                initPassengersFromReserva(data.reservas[0])
+                initPassengersFromReserva(data.reservas[0], data.user)
+            } else if (data.user) {
+                setPassengersList([
+                    {
+                        id: 1,
+                        fullName: data.user.name || '',
+                        passport: '',
+                        passportExpiry: '',
+                        age: '25',
+                        birthDate: '',
+                        nationality: 'Mexicana',
+                        phone: data.user.phone || '',
+                        dietary: '',
+                        type: 'Titular'
+                    }
+                ])
             }
 
             if (data.reservas && data.reservas.length > 0) {
@@ -92,7 +108,7 @@ export default function UserPortalPage() {
         }
     }
 
-    const initPassengersFromReserva = (reserva) => {
+    const initPassengersFromReserva = (reserva, userFallback) => {
         if (!reserva) return
         const text = reserva.desgloseCompleto || ''
 
@@ -102,7 +118,8 @@ export default function UserPortalPage() {
             const lines = travelersMatch[1].split('\n').filter(l => l.startsWith('Pasajero'))
             const parsed = lines.map((line, idx) => {
                 const nameMatch = line.match(/: (.*?) \| Pasaporte:/)
-                const passMatch = line.match(/Pasaporte: (.*?) \| Edad:/)
+                const passMatch = line.match(/Pasaporte: (.*?) \| Vigencia Pasaporte:/) || line.match(/Pasaporte: (.*?) \| Edad:/)
+                const expiryMatch = line.match(/Vigencia Pasaporte: (.*?) \| Edad:/)
                 const ageMatch = line.match(/Edad: (.*?) \| Nacimiento:/)
                 const birthMatch = line.match(/Nacimiento: (.*?) \| Nacionalidad:/)
                 const natMatch = line.match(/Nacionalidad: (.*?) \| Teléfono:/)
@@ -113,6 +130,7 @@ export default function UserPortalPage() {
                     id: idx + 1,
                     fullName: nameMatch ? nameMatch[1].trim() : '',
                     passport: passMatch ? passMatch[1].trim() : '',
+                    passportExpiry: expiryMatch ? expiryMatch[1].trim() : '',
                     age: ageMatch ? ageMatch[1].trim() : '',
                     birthDate: birthMatch ? birthMatch[1].trim() : '',
                     nationality: natMatch ? natMatch[1].trim() : 'Mexicana',
@@ -131,12 +149,13 @@ export default function UserPortalPage() {
         setPassengersList([
             {
                 id: 1,
-                fullName: reserva.nombreCompleto || '',
+                fullName: reserva.nombreCompleto || userFallback?.name || '',
                 passport: '',
+                passportExpiry: '',
                 age: '25',
                 birthDate: '',
                 nationality: 'Mexicana',
-                phone: reserva.telfono || '',
+                phone: reserva.telfono || userFallback?.phone || '',
                 dietary: '',
                 type: 'Titular'
             }
@@ -454,7 +473,7 @@ export default function UserPortalPage() {
                                 className={`portal-tab-btn${activeTab === 'pasajeros' ? ' portal-tab-btn--active' : ''}`}
                                 onClick={() => setActiveTab('pasajeros')}
                             >
-                                👥 Datos de Pasajeros & Pasaportes
+                                👥 Datos de Pasajeros ({passengersList.length > 0 ? passengersList.length : portalData.pasajeros.length})
                             </button>
                         </div>
 
@@ -683,6 +702,29 @@ export default function UserPortalPage() {
                                                     onChange={(e) => handlePassengerChange(idx, 'passport', e.target.value)}
                                                     placeholder="ej. G12345678"
                                                 />
+                                            </div>
+
+                                            <div className="portal-input-group">
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap' }}>
+                                                    <label style={{ margin: 0 }}>Vigencia de Pasaporte (Calendario)</label>
+                                                    {passenger.passportExpiry && (() => {
+                                                        const d = new Date(passenger.passportExpiry)
+                                                        const now = new Date()
+                                                        const diffMonths = (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth())
+                                                        if (d < now) return <span style={{ color: '#ef4444', fontSize: '0.75rem', fontWeight: 800 }}>❌ Vencido</span>
+                                                        if (diffMonths < 6) return <span style={{ color: '#f59e0b', fontSize: '0.75rem', fontWeight: 800 }}>⚠️ Menor a 6 meses</span>
+                                                        return <span style={{ color: '#10b981', fontSize: '0.75rem', fontWeight: 800 }}>✓ Válido (+6 meses)</span>
+                                                    })()}
+                                                </div>
+                                                <input
+                                                    type="date"
+                                                    className="portal-input"
+                                                    value={passenger.passportExpiry}
+                                                    onChange={(e) => handlePassengerChange(idx, 'passportExpiry', e.target.value)}
+                                                />
+                                                <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', display: 'block' }}>
+                                                    🛂 Mínimo 6 meses de vigencia requeridos posteriores a la fecha del viaje por autoridades migratorias.
+                                                </span>
                                             </div>
 
                                             <div className="portal-input-group">

@@ -137,22 +137,43 @@ export default async function handler(req, res) {
             }
         })
 
-        // If user searched with queryReserva and had payments but no direct reserva, synthesize 1 trip card
-        if (reservas.length === 0 && pagosProgramados.length > 0 && queryReserva) {
-            const firstP = pagosProgramados[0]
-            const totalEstimated = pagosProgramados.reduce((sum, p) => sum + (Number(p.importeNmero) || 0), 5000)
-            reservas.push({
-                _id: firstP._id || 'reserva-synthetic',
-                nombreCompleto: firstP.cliente || memberProfile?.profile?.nickname || 'Viajero',
-                correoElectrnico: firstP.emailCliente || effectiveEmail,
-                telfono: memberProfile?.profile?.phones?.[0] || '',
-                temporada: firstP.concepto?.split('—')?.[1]?.trim() || 'Japón Sakura 2027',
-                modalidad: 'Plan en Cuotas Mensuales',
-                totalEstimado: totalEstimated,
-                montoAnticipo: 5000,
-                desgloseCompleto: `[Código de Reserva: ${queryReserva || firstP.reserva?.split('-').slice(0, 2).join('-')}]\n${firstP.concepto}`,
-                estadoReserva: 'No pagado',
-                fechaRegistro: firstP._createdDate || new Date().toISOString()
+        // Consolidate & Synthesize trip cards from Pagosprogramados if not present in ReservasdeViaje
+        if (pagosProgramados.length > 0) {
+            const pagosByCode = {}
+            pagosProgramados.forEach(p => {
+                const pRes = (p.reserva || '').trim().toUpperCase()
+                const baseCode = pRes.split('-').slice(0, 2).join('-') || 'RUTA-1001'
+                if (!pagosByCode[baseCode]) pagosByCode[baseCode] = []
+                pagosByCode[baseCode].push(p)
+                userReservaCodes.add(baseCode)
+            })
+
+            Object.entries(pagosByCode).forEach(([code, codePagos]) => {
+                const alreadyExists = reservas.some(r => {
+                    const rText = (r.desgloseCompleto || '') + ' ' + (r._id || '')
+                    return rText.toUpperCase().includes(code)
+                })
+
+                if (!alreadyExists) {
+                    const firstP = codePagos[0]
+                    const totalEstimated = codePagos.reduce((sum, p) => sum + (Number(p.importeNmero) || 0), 0)
+                    const hasPaid = codePagos.some(p => (p.estatus || p.estado || '').toUpperCase().includes('PAGAD') || p.fechaDePago || p.fechaPago)
+
+                    reservas.push({
+                        _id: firstP._id || `reserva-${code}`,
+                        reservaCode: code,
+                        nombreCompleto: firstP.cliente || memberProfile?.profile?.nickname || 'Viajero RutaXAsia',
+                        correoElectrnico: firstP.emailCliente || effectiveEmail,
+                        telfono: memberProfile?.profile?.phones?.[0] || '',
+                        temporada: firstP.concepto?.split('—')?.[1]?.trim() || firstP.concepto || 'Japón Sakura 2027',
+                        modalidad: `Plan en Cuotas Mensuales (${codePagos.length} cuotas programadas)`,
+                        totalEstimado: totalEstimated || 5000,
+                        montoAnticipo: codePagos[0]?.importeNmero || 5000,
+                        desgloseCompleto: `[Código de Reserva: ${code}]\n${firstP.concepto || 'Plan de pagos programados'}\nTotal de cuotas: ${codePagos.length}`,
+                        estadoReserva: hasPaid ? 'Activo' : 'Pendiente',
+                        fechaRegistro: firstP._createdDate || new Date().toISOString()
+                    })
+                }
             })
         }
 
@@ -186,11 +207,10 @@ export default async function handler(req, res) {
             const allPas = allPasRes.items || []
 
             pasajeros = allPas.filter(pas => {
-                if (!pas.title) return false
-                const pasRes = pas.title.toUpperCase()
-                if (queryReserva) {
-                    return pasRes === queryReserva || pasRes.startsWith(queryReserva)
-                }
+                const pasRes = (pas.title || '').trim().toUpperCase()
+                const pasEmail = (pas.correo || pas.email || '').toLowerCase().trim()
+                if (effectiveEmail && pasEmail === effectiveEmail) return true
+                if (queryReserva && (pasRes === queryReserva || pasRes.startsWith(queryReserva))) return true
                 for (const code of userReservaCodes) {
                     if (pasRes === code || pasRes.startsWith(code)) return true
                 }

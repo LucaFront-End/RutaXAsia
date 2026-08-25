@@ -33,34 +33,50 @@ export default async function handler(req, res) {
             auth: ApiKeyStrategy({ siteId, apiKey }),
         })
 
-        // 1. Fetch current reservation record
-        const currentItem = await wixClient.items.get('ReservasdeViaje', reservaId)
+        // 1. Fetch or resolve reservation record
+        let currentItem = null
+        try {
+            currentItem = await wixClient.items.get('ReservasdeViaje', reservaId).catch(() => null)
+        } catch (e) {
+            // ignore get error
+        }
+
         if (!currentItem) {
-            return res.status(404).json({ error: 'Reserva no encontrada en Wix CMS.' })
+            try {
+                const searchRes = await wixClient.items.query('ReservasdeViaje').descending('_createdDate').limit(50).find()
+                currentItem = searchRes.items?.find(r => 
+                    r._id === reservaId || 
+                    (r.desgloseCompleto || '').includes(reservaId) ||
+                    (reservaId.startsWith('RUTA-') && (r.desgloseCompleto || '').includes(reservaId))
+                )
+            } catch (sErr) {
+                // ignore
+            }
         }
 
         // 2. Format detailed text for passengers
         const formattedViajerosText = viajeros.map((v, i) => {
-            return `Pasajero ${i + 1} (${v.type || 'Adulto'}): ${v.fullName || 'Sin nombre'} | Pasaporte: ${v.passport || 'Pendiente'} | Edad: ${v.age || 'N/A'} | Nacimiento: ${v.birthDate || 'N/A'} | Nacionalidad: ${v.nationality || 'Mexicana'} | Teléfono: ${v.phone || 'N/A'}${v.dietary ? ` | Preferencias/Dieta: ${v.dietary}` : ''}`
+            return `Pasajero ${i + 1} (${v.type || 'Adulto'}): ${v.fullName || 'Sin nombre'} | Pasaporte: ${v.passport || 'Pendiente'} | Vigencia Pasaporte: ${v.passportExpiry || 'Pendiente (Mínimo 6 meses)'} | Edad: ${v.age || 'N/A'} | Nacimiento: ${v.birthDate || 'N/A'} | Nacionalidad: ${v.nationality || 'Mexicana'} | Teléfono: ${v.phone || 'N/A'}${v.dietary ? ` | Preferencias/Dieta: ${v.dietary}` : ''}`
         }).join('\n')
 
-        // 3. Update record in Wix CMS
-        const updatedDesglose = (currentItem.desgloseCompleto || '')
-            .replace(/\n\n--- DATOS DE PASAJEROS ACTUALIZADOS ---[\s\S]*/, '') +
-            `\n\n--- DATOS DE PASAJEROS ACTUALIZADOS ---\n${formattedViajerosText}${notasAdicionales ? `\nNotas de Viaje: ${notasAdicionales}` : ''}`
+        // 3. Update or Insert record in ReservasdeViaje Wix CMS if applicable
+        if (currentItem) {
+            const updatedDesglose = (currentItem.desgloseCompleto || '')
+                .replace(/\n\n--- DATOS DE PASAJEROS ACTUALIZADOS ---[\s\S]*/, '') +
+                `\n\n--- DATOS DE PASAJEROS ACTUALIZADOS ---\n${formattedViajerosText}${notasAdicionales ? `\nNotas de Viaje: ${notasAdicionales}` : ''}`
 
-        const updatedItem = {
-            ...currentItem,
-            desgloseCompleto: updatedDesglose,
-            nombreCompleto: viajeros[0]?.fullName || currentItem.nombreCompleto,
-            telfono: viajeros[0]?.phone || currentItem.telfono,
+            const updatedItem = {
+                ...currentItem,
+                desgloseCompleto: updatedDesglose,
+                nombreCompleto: viajeros[0]?.fullName || currentItem.nombreCompleto,
+                telfono: viajeros[0]?.phone || currentItem.telfono,
+            }
+            await wixClient.items.update('ReservasdeViaje', updatedItem).catch(err => console.error('Error updating ReservasdeViaje:', err.message))
         }
 
-        const savedResult = await wixClient.items.update('ReservasdeViaje', updatedItem)
-
-        // 4. Extract booking code (e.g. RUTA-1043)
-        const codeMatch = (currentItem.desgloseCompleto || '').match(/RUTA-\w+/i)
-        const reservaCode = codeMatch ? codeMatch[0].toUpperCase() : (currentItem._id ? `RUTA-${currentItem._id.slice(0, 6).toUpperCase()}` : 'RUTA-1001')
+        // 4. Extract booking code (e.g. RUTA-1001)
+        const codeMatch = ((currentItem?.desgloseCompleto || '') + ' ' + reservaId).match(/RUTA-\w+/i)
+        const reservaCode = codeMatch ? codeMatch[0].toUpperCase() : (reservaId.startsWith('RUTA-') ? reservaId : `RUTA-${(currentItem?._id || reservaId).slice(0, 6).toUpperCase()}`)
 
         // 5. Update/Insert in 'PASAJEROS' CMS
         try {
@@ -81,9 +97,14 @@ export default async function handler(req, res) {
                     title: reservaCode,
                     nombreCompleto: v.fullName || 'Viajero',
                     edad: String(v.age || (v.type ? `${v.type} (${v.age || ''})` : 'Adulto')).trim(),
+                    numeroPasaporte: v.passport || '',
+                    fechaVigenciaPasaporte: v.passportExpiry || '',
+                    nacionalidad: v.nationality || 'Mexicana',
+                    telefono: v.phone || '',
+                    correo: v.email || '',
                 })
             }
-            console.log(`[UserUpdateViajeros] ✅ Synced ${viajeros.length} rows in PASAJEROS CMS (${reservaCode})`)
+            console.log(`[UserUpdateViajeros] ✅ Synced ${viajeros.length} rows in PASAJEROS CMS (${reservaCode}) with passport and 6-month validity info`)
         } catch (cmsPasErr) {
             console.error('[UserUpdateViajeros] Error updating PASAJEROS collection:', cmsPasErr.message)
         }
