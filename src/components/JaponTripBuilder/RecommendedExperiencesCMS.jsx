@@ -130,6 +130,17 @@ export default function RecommendedExperiencesCMS({
 
     const isLimitReached = tourLimit !== null && addedExperiences.length >= tourLimit
 
+    const checkIsTourAdded = (tour) => {
+        if (!tour || !Array.isArray(addedExperiences)) return false
+        return addedExperiences.some(item => {
+            if (!item) return false
+            if (typeof item === 'object') {
+                return item.id === tour.id || item.name === tour.title || item.title === tour.title
+            }
+            return item === tour.id || item === tour.title
+        })
+    }
+
     return (
         <div className="rec-cms-wrapper">
             <div className="rec-cms-header">
@@ -204,7 +215,7 @@ export default function RecommendedExperiencesCMS({
                                         ) : (
                                             <div className="rec-cms-cards-grid">
                                                 {catTours.map((tour) => {
-                                                    const isAdded = addedExperiences.includes(tour.id) || addedExperiences.includes(tour.title)
+                                                    const isAdded = checkIsTourAdded(tour)
                                                     const isDisabled = isLimitReached && !isAdded
                                                     const isFreeForPlan = checkIsFreeForThisPlan(tour)
 
@@ -406,14 +417,14 @@ export default function RecommendedExperiencesCMS({
                             {onToggleExperience && (
                                 <button
                                     type="button"
-                                    className={`rec-drawer-add-btn${(addedExperiences.includes(detailDrawerTour.id) || addedExperiences.includes(detailDrawerTour.title)) ? ' rec-drawer-add-btn--added' : ''}`}
+                                    className={`rec-drawer-add-btn${checkIsTourAdded(detailDrawerTour) ? ' rec-drawer-add-btn--added' : ''}`}
                                     onClick={() => {
                                         const isFree = checkIsFreeForThisPlan(detailDrawerTour)
                                         onToggleExperience(detailDrawerTour.id, detailDrawerTour.title, isFree ? 0 : detailDrawerTour.priceNum)
                                     }}
-                                    style={checkIsFreeForThisPlan(detailDrawerTour) && (addedExperiences.includes(detailDrawerTour.id) || addedExperiences.includes(detailDrawerTour.title)) ? { background: '#059669', borderColor: '#059669' } : undefined}
+                                    style={checkIsFreeForThisPlan(detailDrawerTour) && checkIsTourAdded(detailDrawerTour) ? { background: '#059669', borderColor: '#059669' } : undefined}
                                 >
-                                    {(addedExperiences.includes(detailDrawerTour.id) || addedExperiences.includes(detailDrawerTour.title))
+                                    {checkIsTourAdded(detailDrawerTour)
                                         ? (checkIsFreeForThisPlan(detailDrawerTour) ? '✓ Incluido en el Plan' : '✓ Agregado al Itinerario')
                                         : (checkIsFreeForThisPlan(detailDrawerTour) ? '✨ Incluir Gratis' : '+ Agregar Extra')}
                                 </button>
