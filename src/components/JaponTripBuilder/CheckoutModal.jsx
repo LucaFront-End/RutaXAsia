@@ -37,8 +37,8 @@ export default function CheckoutModal({
     // Step state: 1, 2, 3, 4
     const [step, setStep] = useState(1)
 
-    // Assistance Type for Tours Sueltos: 'locataria' | 'anfitrion'
-    const [assistanceType, setAssistanceType] = useState('locataria')
+    // Assistance Type for Tours Sueltos: 'anfitrion' (default cheaper) | 'locataria'
+    const [assistanceType, setAssistanceType] = useState('anfitrion')
 
     // Payment Mode for Packages: 'anticipo' ($5,000 + monthly invoices) | 'completo' (100% total)
     const [packagePaymentMode, setPackagePaymentMode] = useState('anticipo')
@@ -67,6 +67,7 @@ export default function CheckoutModal({
             setStatus('checkout')
             setErrors({})
             setApiError('')
+            setAssistanceType('anfitrion')
             if (pendingTour?.quantity) {
                 setAdultsCount(pendingTour.quantity)
             } else if (selectedTours.length > 0 && selectedTours[0]?.quantity) {

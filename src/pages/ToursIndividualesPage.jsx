@@ -106,7 +106,7 @@ export default function ToursIndividualesPage() {
 
     // Open checkout modal staging this tour (does NOT commit to selectedTours until confirmed)
     const handleAddAndOpenCheckout = (tour) => {
-        const chosenModality = tourModalities[tour.id] || 'locatario'
+        const chosenModality = tourModalities[tour.id] || 'anfitrion'
         const chosenDate = tourDates[tour.id] || tomorrowStr
         const chosenQty = tourQuantities[tour.id] || 1
         const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
@@ -358,7 +358,7 @@ export default function ToursIndividualesPage() {
                             <div className="tours-indiv-cards-grid">
                                 {filteredTours.map((tour) => {
                                     const isAdded = selectedTours.some(item => item.id === tour.id)
-                                    const currentModality = tourModalities[tour.id] || 'locatario'
+                                    const currentModality = tourModalities[tour.id] || 'anfitrion'
                                     const currentDate = tourDates[tour.id] || tomorrowStr
                                     const currentQty = tourQuantities[tour.id] || 1
 
@@ -639,9 +639,9 @@ export default function ToursIndividualesPage() {
                         {/* Drawer Sticky Footer */}
                         <div className="tours-drawer-footer">
                             <div>
-                                <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Precio base por persona:</span>
+                                <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Precio base por persona (Anfitrión):</span>
                                 <strong style={{ fontSize: '1.25rem', color: 'var(--color-primary, #e11d48)' }}>
-                                    {formatPrice(drawerPriceLocatario)}
+                                    {formatPrice(drawerPriceAnfitrion)}
                                 </strong>
                             </div>
 
