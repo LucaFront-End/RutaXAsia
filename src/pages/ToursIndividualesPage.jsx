@@ -25,6 +25,8 @@ export default function ToursIndividualesPage() {
     // Chosen quantity for each tour card: { [tourId]: 1 }
     const [tourQuantities, setTourQuantities] = useState({})
 
+    // Side Drawer Details state (holds tour object or null)
+    const [detailDrawerTour, setDetailDrawerTour] = useState(null)
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
     // Tomorrow date as default minimum date
@@ -32,6 +34,15 @@ export default function ToursIndividualesPage() {
         const d = new Date()
         d.setDate(d.getDate() + 1)
         return d.toISOString().split('T')[0]
+    }, [])
+
+    // Close drawer on ESC key
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') setDetailDrawerTour(null)
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
     }, [])
 
     useEffect(() => {
@@ -49,7 +60,7 @@ export default function ToursIndividualesPage() {
         return () => { isMounted = false }
     }, [])
 
-    // Handle modality change for a tour card
+    // Handle modality change for a tour
     const handleModalityChange = (tour, newModality) => {
         setTourModalities(prev => ({ ...prev, [tour.id]: newModality }))
 
@@ -70,7 +81,7 @@ export default function ToursIndividualesPage() {
         ))
     }
 
-    // Handle date change for a tour card
+    // Handle date change for a tour
     const handleDateChange = (tourId, dateStr) => {
         setTourDates(prev => ({ ...prev, [tourId]: dateStr }))
         // If already added, update date in selectedTours
@@ -91,7 +102,7 @@ export default function ToursIndividualesPage() {
         ))
     }
 
-    // Toggle tour freely directly from card
+    // Toggle tour freely directly from card or drawer
     const toggleTour = (tour) => {
         const existing = selectedTours.find(t => t.id === tour.id)
         if (existing) {
@@ -128,7 +139,8 @@ export default function ToursIndividualesPage() {
             result = result.filter(t =>
                 t.title.toLowerCase().includes(term) ||
                 t.excerpt.toLowerCase().includes(term) ||
-                t.category.toLowerCase().includes(term)
+                t.category.toLowerCase().includes(term) ||
+                (t.city && t.city.toLowerCase().includes(term))
             )
         }
 
@@ -149,41 +161,54 @@ export default function ToursIndividualesPage() {
         return result
     }, [tours, searchTerm, selectedCategory, sortBy])
 
-    const extraTotal = selectedTours.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
-    const totalPrice = extraTotal
+    // Total price of selected individual tours
+    const totalPrice = useMemo(() => {
+        return selectedTours.reduce((sum, t) => sum + (t.price * (t.quantity || 1)), 0)
+    }, [selectedTours])
 
-    const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')}`
+    const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')} MXN`
 
-    // Format date string to friendly readable format (e.g. 18 Oct 2026)
     const formatDateLabel = (dateStr) => {
-        if (!dateStr) return 'Elegir fecha'
-        const parts = dateStr.split('-')
-        if (parts.length === 3) {
-            const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]))
-            return dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+        if (!dateStr) return 'Seleccionar'
+        try {
+            const d = new Date(dateStr + 'T00:00:00')
+            return d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+        } catch (e) {
+            return dateStr
         }
-        return dateStr
     }
+
+    // Active drawer tour calculations
+    const drawerTourModality = detailDrawerTour ? (tourModalities[detailDrawerTour.id] || 'locatario') : 'locatario'
+    const drawerTourDate = detailDrawerTour ? (tourDates[detailDrawerTour.id] || tomorrowStr) : tomorrowStr
+    const drawerTourQty = detailDrawerTour ? (tourQuantities[detailDrawerTour.id] || 1) : 1
+    const drawerPriceAnfitrion = detailDrawerTour ? (detailDrawerTour.priceAnfitrionNum || detailDrawerTour.priceNum || 800) : 800
+    const drawerPriceLocatario = detailDrawerTour ? (detailDrawerTour.priceLocatarioNum || Math.round(drawerPriceAnfitrion * 1.5)) : 1200
+    const drawerUnitPrice = drawerTourModality === 'anfitrion' ? drawerPriceAnfitrion : drawerPriceLocatario
+    const drawerTotalPrice = drawerUnitPrice * drawerTourQty
+    const isDrawerTourAdded = detailDrawerTour ? selectedTours.some(item => item.id === detailDrawerTour.id) : false
 
     return (
         <div className="tours-indiv-page">
             <Helmet>
                 <title>Tours Individuales en Japón | RutaXAsia</title>
-                <meta name="description" content="Reserva tours individuales y excursiones de un día en Japón sin paquete de vuelo ni hotel. Personaliza tu viaje día a día." />
+                <meta
+                    name="description"
+                    content="Explora y agrega tours individuales a tu medida en Tokio, Kioto, Osaka y más. Arma tu propio pase de abordar personalizado."
+                />
             </Helmet>
 
-            {/* Banner Header */}
+            {/* Hero Section */}
             <div className="tours-indiv-hero">
                 <div className="container">
-                    <span className="tours-indiv-tag">⛩️ Viajeros Independientes</span>
-                    <h1 className="tours-indiv-title">Tours en Japón</h1>
+                    <span className="tours-indiv-tag">⛩️ Catálogo Oficial de Experiencias</span>
+                    <h1 className="tours-indiv-title">Tours Individuales en Japón</h1>
                     <p className="tours-indiv-excerpt">
-                        Excursiones de 1 día y actividades sueltas. Elige tu modalidad de acompañamiento (<strong>Asistencia Locataria</strong> o <strong>Anfitrión de Viaje</strong>), selecciona la fecha y agrégalos a tu boleto de reserva.
+                        Selecciona fecha y personas directamente en cada tour para armar tu pase de abordar. Haz clic en el <strong>+</strong> para conocer todos los detalles sin salir de la página.
                     </p>
                 </div>
             </div>
 
-            {/* Main Content Layout (Ticket Left, Grid Right) */}
             <div className="container tours-indiv-container">
                 {/* Search & Filter Bar */}
                 <div className="tours-indiv-filters-bar">
@@ -196,44 +221,57 @@ export default function ToursIndividualesPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         {searchTerm && (
-                            <button className="tours-indiv-clear-btn" onClick={() => setSearchTerm('')}>✕</button>
+                            <button
+                                type="button"
+                                className="tours-indiv-clear-btn"
+                                onClick={() => setSearchTerm('')}
+                            >
+                                ✕
+                            </button>
                         )}
                     </div>
 
                     <div className="tours-indiv-selects-group">
                         <select
+                            className="tours-indiv-select"
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="tours-indiv-select"
                         >
                             <option value="Todas">Todas las categorías</option>
                             <option value="Rutas por Japón">Rutas por Japón</option>
                             <option value="Parques temáticos">Parques temáticos</option>
-                            <option value="Experiencias Vip">Experiencias Vip</option>
+                            <option value="Experiencias Vip">Experiencias VIP</option>
                         </select>
 
                         <select
+                            className="tours-indiv-select"
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="tours-indiv-select"
                         >
                             <option value="price-asc">Precio: Menor a Mayor</option>
                             <option value="price-desc">Precio: Mayor a Menor</option>
-                            <option value="alpha-asc">Alfabético: A → Z</option>
-                            <option value="alpha-desc">Alfabético: Z → A</option>
+                            <option value="alpha-asc">Nombre: A - Z</option>
+                            <option value="alpha-desc">Nombre: Z - A</option>
                         </select>
                     </div>
                 </div>
 
-                {/* 2-Column Split Layout */}
+                {/* 2-Column Layout: Left Sidebar Sticky Ticket | Right Grid of CMS Cards */}
                 <div className="tours-indiv-layout">
-                    {/* Left Column: Floating Ticket Sidebar */}
+                    {/* Left Column: Floating Ticket */}
                     <div className="tours-indiv-sidebar">
                         <FloatingTicket
-                            season={{ name: 'Tours Individuales', colors: { primary: '#e91e63' } }}
-                            temporadaKey="libre"
+                            season={{ name: 'Tours Sueltos', colors: { primary: '#e91e63' } }}
+                            temporadaKey="sakura"
                             estilo="Tours Sueltos"
-                            selectorData={selectorData}
+                            selectorData={{
+                                adults: selectedTours.reduce((max, t) => Math.max(max, t.quantity || 1), 1),
+                                children: 0,
+                                dateMode: 'specific',
+                                selectedMonth: null,
+                                startDate: selectedTours[0]?.date || tomorrowStr,
+                                endDate: selectedTours[selectedTours.length - 1]?.date || tomorrowStr,
+                            }}
                             selectedPkg={null}
                             includedExps={[]}
                             addedItems={selectedTours.map(t => ({
@@ -243,7 +281,7 @@ export default function ToursIndividualesPage() {
                             }))}
                             selectedComps={[]}
                             basePrice={0}
-                            extraTotal={extraTotal}
+                            extraTotal={totalPrice}
                             customReserveBtnText="💳 Pagar Tours en Línea"
                             customWhatsAppBtnText="💬 Cotizar por WhatsApp"
                             onOpenCheckout={() => {
@@ -293,7 +331,12 @@ export default function ToursIndividualesPage() {
                                             key={tour.id}
                                             className={`tours-indiv-card${isAdded ? ' tours-indiv-card--added' : ''}`}
                                         >
-                                            <div className="tours-indiv-card-img-wrap">
+                                            {/* Card Image Header with Duration and Info '+' Button */}
+                                            <div 
+                                                className="tours-indiv-card-img-wrap" 
+                                                onClick={() => setDetailDrawerTour(tour)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
                                                 <img
                                                     src={tour.image}
                                                     alt={tour.title}
@@ -305,51 +348,52 @@ export default function ToursIndividualesPage() {
                                                 <span className="tours-indiv-badge">
                                                     ⏱️ {tour.days ? tour.days : '1 día'} {tour.hours ? `(${tour.hours})` : ''}
                                                 </span>
+                                                
+                                                {/* Top Right '+' Quick Info Button */}
+                                                <button
+                                                    type="button"
+                                                    className="tours-card-plus-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setDetailDrawerTour(tour)
+                                                    }}
+                                                    title="Haz clic para ver más información sin salir de la página"
+                                                    aria-label="Más información"
+                                                >
+                                                    +
+                                                </button>
                                             </div>
 
                                             <div className="tours-indiv-card-body">
-                                                <h3 className="tours-indiv-card-title">{tour.title}</h3>
+                                                <h3 
+                                                    className="tours-indiv-card-title" 
+                                                    onClick={() => setDetailDrawerTour(tour)}
+                                                    title="Haz clic para ver más información"
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {tour.title}
+                                                </h3>
+
                                                 {tour.excerpt && (
-                                                    <p className="tours-indiv-card-excerpt">{tour.excerpt}</p>
+                                                    <p 
+                                                        className="tours-indiv-card-excerpt"
+                                                        onClick={() => setDetailDrawerTour(tour)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        {tour.excerpt}
+                                                    </p>
                                                 )}
 
-                                                {/* Modality Selector Bar (Locataria vs Anfitrión) */}
-                                                <div className="tours-indiv-modality-selector">
-                                                    <button
-                                                        type="button"
-                                                        className={`tours-modality-pill${currentModality === 'locatario' ? ' tours-modality-pill--active' : ''}`}
-                                                        onClick={() => handleModalityChange(tour, 'locatario')}
-                                                    >
-                                                        <span className="modality-pill-icon">🏮</span>
-                                                        <div className="modality-pill-text">
-                                                            <span className="modality-pill-title">Locataria</span>
-                                                            <span className="modality-pill-price">{formatPrice(priceLocatario)}</span>
-                                                        </div>
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        className={`tours-modality-pill${currentModality === 'anfitrion' ? ' tours-modality-pill--active' : ''}`}
-                                                        onClick={() => handleModalityChange(tour, 'anfitrion')}
-                                                    >
-                                                        <span className="modality-pill-icon">👑</span>
-                                                        <div className="modality-pill-text">
-                                                            <span className="modality-pill-title">Anfitrión</span>
-                                                            <span className="modality-pill-price">{formatPrice(priceAnfitrion)}</span>
-                                                        </div>
-                                                    </button>
-                                                </div>
-
-                                                {/* Date and Quantity Controls Bar */}
-                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '12px' }}>
-                                                    {/* Custom Interactive Date Selector Pill */}
+                                                {/* Compact Date and Quantity Controls Bar */}
+                                                <div className="tours-indiv-compact-controls">
+                                                    {/* Date Selector Chip */}
                                                     <label
                                                         className={`tours-indiv-date-chip${isAdded ? ' tours-indiv-date-chip--added' : ''}`}
                                                         style={{ flex: 1, margin: 0, cursor: 'pointer' }}
                                                     >
                                                         <span className="tours-indiv-date-chip-icon">📅</span>
                                                         <div className="tours-indiv-date-chip-info">
-                                                            <span className="tours-indiv-date-chip-label">Fecha del Tour</span>
+                                                            <span className="tours-indiv-date-chip-label">Fecha</span>
                                                             <span className="tours-indiv-date-chip-value">
                                                                 {formatDateLabel(currentDate)}
                                                             </span>
@@ -363,48 +407,53 @@ export default function ToursIndividualesPage() {
                                                         />
                                                     </label>
 
-                                                    {/* Quantity / Person Selector Pill */}
-                                                    <div style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        background: isAdded ? 'rgba(233, 30, 122, 0.08)' : '#fff',
-                                                        border: isAdded ? '1px solid var(--color-primary, #e11d48)' : '1px solid #e0e0e0',
-                                                        borderRadius: '12px',
-                                                        padding: '4px 6px',
-                                                        gap: '4px',
-                                                        height: '46px',
-                                                    }}>
+                                                    {/* Quantity / Person Selector Chip */}
+                                                    <div className={`tours-indiv-qty-chip${isAdded ? ' tours-indiv-qty-chip--added' : ''}`}>
                                                         <button
                                                             type="button"
                                                             onClick={(e) => { e.stopPropagation(); handleQuantityChange(tour.id, -1) }}
-                                                            style={{ border: 'none', background: '#f1f5f9', borderRadius: '6px', width: '22px', height: '26px', cursor: 'pointer', fontWeight: 900, color: '#333' }}
+                                                            className="tours-qty-btn"
+                                                            aria-label="Restar persona"
                                                         >-</button>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '32px' }}>
-                                                            <span style={{ fontSize: '0.62rem', color: '#888', fontWeight: 800, textTransform: 'uppercase', lineHeight: 1 }}>Pers.</span>
-                                                            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-dark)', lineHeight: 1.2 }}>{currentQty}</span>
+                                                        <div className="tours-qty-text">
+                                                            <span className="tours-qty-label">Pers.</span>
+                                                            <span className="tours-qty-val">{currentQty}</span>
                                                         </div>
                                                         <button
                                                             type="button"
                                                             onClick={(e) => { e.stopPropagation(); handleQuantityChange(tour.id, 1) }}
-                                                            style={{ border: 'none', background: '#f1f5f9', borderRadius: '6px', width: '22px', height: '26px', cursor: 'pointer', fontWeight: 900, color: '#333' }}
+                                                            className="tours-qty-btn"
+                                                            aria-label="Sumar persona"
                                                         >+</button>
                                                     </div>
                                                 </div>
 
+                                                {/* Card Footer: Price & Action Buttons */}
                                                 <div className="tours-indiv-card-footer">
                                                     <div className="tours-indiv-card-price">
                                                         {formatPrice(tourTotalForQty)}
-                                                        <span style={{ fontSize: '0.72rem', color: '#888', fontWeight: 600, display: 'block' }}>
+                                                        <span className="tours-indiv-card-unit-price">
                                                             {formatPrice(unitPrice)} × {currentQty} pers.
                                                         </span>
                                                     </div>
-                                                    <button
-                                                        type="button"
-                                                        className={`tours-indiv-btn${isAdded ? ' tours-indiv-btn--added' : ''}`}
-                                                        onClick={() => toggleTour(tour)}
-                                                    >
-                                                        {isAdded ? '✓ Agregado' : '+ Agregar'}
-                                                    </button>
+
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <button
+                                                            type="button"
+                                                            className="tours-indiv-info-pill-btn"
+                                                            onClick={() => setDetailDrawerTour(tour)}
+                                                            title="Ver información completa del tour"
+                                                        >
+                                                            + Info
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className={`tours-indiv-btn${isAdded ? ' tours-indiv-btn--added' : ''}`}
+                                                            onClick={() => toggleTour(tour)}
+                                                        >
+                                                            {isAdded ? '✓ Agregado' : '+ Agregar'}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -414,6 +463,199 @@ export default function ToursIndividualesPage() {
                         )}
                     </div>
                 </div>
+            </div>
+
+            {/* SIDE DRAWER (DESPLEGABLE LATERAL DEL LADO DERECHO - SIN NAVEGAR A OTRA PÁGINA) */}
+            <div 
+                className={`tours-drawer-overlay${detailDrawerTour ? ' tours-drawer-overlay--open' : ''}`}
+                onClick={() => setDetailDrawerTour(null)}
+            />
+
+            <div className={`tours-drawer-panel${detailDrawerTour ? ' tours-drawer-panel--open' : ''}`}>
+                {detailDrawerTour && (
+                    <>
+                        {/* Drawer Header */}
+                        <div className="tours-drawer-header">
+                            <div>
+                                <span className="tours-drawer-badge">
+                                    📍 {detailDrawerTour.city || 'Japón'} • {detailDrawerTour.category || 'Rutas por Japón'}
+                                </span>
+                                <h2 className="tours-drawer-title">{detailDrawerTour.title}</h2>
+                            </div>
+                            <button
+                                type="button"
+                                className="tours-drawer-close"
+                                onClick={() => setDetailDrawerTour(null)}
+                                aria-label="Cerrar detalles"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Drawer Scrollable Body */}
+                        <div className="tours-drawer-body">
+                            {/* Hero Image */}
+                            <div className="tours-drawer-img-wrap">
+                                <img
+                                    src={detailDrawerTour.image}
+                                    alt={detailDrawerTour.title}
+                                    onError={(e) => {
+                                        e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
+                                    }}
+                                />
+                                <div className="tours-drawer-img-overlay">
+                                    <span>⏱️ Duración: <strong>{detailDrawerTour.days || '1 día'} {detailDrawerTour.hours ? `(${detailDrawerTour.hours})` : ''}</strong></span>
+                                </div>
+                            </div>
+
+                            {/* Key Highlights Grid */}
+                            <div className="tours-drawer-highlights">
+                                <div className="drawer-highlight-card">
+                                    <span className="drawer-hl-icon">📍</span>
+                                    <div>
+                                        <span className="drawer-hl-label">Destino</span>
+                                        <strong className="drawer-hl-val">{detailDrawerTour.city || 'Japón'}</strong>
+                                    </div>
+                                </div>
+                                <div className="drawer-highlight-card">
+                                    <span className="drawer-hl-icon">⏱️</span>
+                                    <div>
+                                        <span className="drawer-hl-label">Duración</span>
+                                        <strong className="drawer-hl-val">{detailDrawerTour.days || '1 día'}</strong>
+                                    </div>
+                                </div>
+                                <div className="drawer-highlight-card">
+                                    <span className="drawer-hl-icon">🏷️</span>
+                                    <div>
+                                        <span className="drawer-hl-label">Categoría</span>
+                                        <strong className="drawer-hl-val">{detailDrawerTour.category || 'Tour'}</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Full Description / Itinerary */}
+                            <div className="tours-drawer-section">
+                                <h3>⛩️ Descripción y Experiencia</h3>
+                                {detailDrawerTour.description ? (
+                                    <div className="tours-drawer-desc-content">
+                                        {detailDrawerTour.description.split('\n').filter(p => p.trim()).map((para, pIdx) => (
+                                            <p key={pIdx}>{para}</p>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p style={{ color: '#666', lineHeight: 1.6 }}>
+                                        {detailDrawerTour.excerpt || 'Disfruta de esta experiencia única por los rincones más emblemáticos de Japón con el acompañamiento de nuestro equipo.'}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Modality Options Breakdown */}
+                            <div className="tours-drawer-section">
+                                <h3>🎎 Modalidad de Acompañamiento</h3>
+                                <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 12px 0' }}>
+                                    Selecciona el tipo de guía que mejor se adapte a tu viaje:
+                                </p>
+                                <div className="tours-drawer-modalities">
+                                    <div 
+                                        className={`drawer-modality-card${drawerTourModality === 'locatario' ? ' drawer-modality-card--active' : ''}`}
+                                        onClick={() => handleModalityChange(detailDrawerTour, 'locatario')}
+                                    >
+                                        <div className="drawer-mod-header">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <span style={{ fontSize: '1.3rem' }}>🏮</span>
+                                                <div>
+                                                    <strong style={{ display: 'block', fontSize: '0.95rem' }}>Asistencia Locataria</strong>
+                                                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Guía local experto de la zona</span>
+                                                </div>
+                                            </div>
+                                            <span className="drawer-mod-price">{formatPrice(drawerPriceLocatario)}</span>
+                                        </div>
+                                        <p style={{ fontSize: '0.8rem', color: '#475569', margin: '8px 0 0', lineHeight: 1.4 }}>
+                                            Te acompañamos con un locatario especializado que conoce los mejores secretos, transportes y gastronomía del lugar.
+                                        </p>
+                                    </div>
+
+                                    <div 
+                                        className={`drawer-modality-card${drawerTourModality === 'anfitrion' ? ' drawer-modality-card--active' : ''}`}
+                                        onClick={() => handleModalityChange(detailDrawerTour, 'anfitrion')}
+                                    >
+                                        <div className="drawer-mod-header">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <span style={{ fontSize: '1.3rem' }}>👑</span>
+                                                <div>
+                                                    <strong style={{ display: 'block', fontSize: '0.95rem' }}>Anfitrión RutaXAsia</strong>
+                                                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Coordinador exclusivo de nuestro equipo</span>
+                                                </div>
+                                            </div>
+                                            <span className="drawer-mod-price">{formatPrice(drawerPriceAnfitrion)}</span>
+                                        </div>
+                                        <p style={{ fontSize: '0.8rem', color: '#475569', margin: '8px 0 0', lineHeight: 1.4 }}>
+                                            Un anfitrión de RutaXAsia te acompañará durante todo el recorrido brindando asistencia VIP personalizada.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Booking Controls inside Drawer */}
+                            <div className="tours-drawer-section">
+                                <h3>📅 Configura tu Tour</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                    <div>
+                                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '6px' }}>
+                                            Fecha del Tour:
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="tours-drawer-input"
+                                            value={drawerTourDate}
+                                            min={tomorrowStr}
+                                            onChange={(e) => handleDateChange(detailDrawerTour.id, e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '6px' }}>
+                                            Número de Personas:
+                                        </label>
+                                        <div className="tours-drawer-qty-box">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleQuantityChange(detailDrawerTour.id, -1)}
+                                                className="tours-qty-btn"
+                                            >-</button>
+                                            <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1e293b' }}>
+                                                {drawerTourQty} persona{drawerTourQty > 1 ? 's' : ''}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleQuantityChange(detailDrawerTour.id, 1)}
+                                                className="tours-qty-btn"
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Drawer Sticky Footer */}
+                        <div className="tours-drawer-footer">
+                            <div>
+                                <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Total por este tour:</span>
+                                <strong style={{ fontSize: '1.25rem', color: 'var(--color-primary, #e11d48)' }}>
+                                    {formatPrice(drawerTotalPrice)}
+                                </strong>
+                            </div>
+
+                            <button
+                                type="button"
+                                className={`tours-drawer-add-btn${isDrawerTourAdded ? ' tours-drawer-add-btn--added' : ''}`}
+                                onClick={() => toggleTour(detailDrawerTour)}
+                            >
+                                {isDrawerTourAdded ? '✓ Agregado (Quitar)' : '+ Agregar a mi Pase'}
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
 
             <CheckoutModal
