@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { fetchTourIndividuales } from '../lib/wixClient'
+import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
 import './TourIndividualDetail.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
@@ -11,17 +12,20 @@ const FALLBACK_SHOWCASE_TOUR = {
     id: 'showcase-harry-potter',
     slug: 'the-wizarding-world-of-harry-potter-tokyo',
     title: 'The Wizarding World of Harry Potter (Tokyo)',
+    tituloDePgina: 'The Wizarding World of Harry Potter (Tokyo)',
     category: 'Parques temáticos',
     city: 'Tokio',
     days: '1 día',
     hours: '8 horas',
+    durationLabel: '1 día (8 horas)',
     priceAnfitrion: '$800 MXN',
     priceAnfitrionNum: 800,
     priceLocatario: '$1,200 MXN',
     priceLocatarioNum: 1200,
     image: 'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1200&fit=crop&q=85',
     excerpt: 'Pase normal de acceso al parque temático y recorrido interactivo por los sets de filmación originales.',
-    description: `Sumérgete en el universo mágico de Warner Bros Studio Tour Tokyo - The Making of Harry Potter. 
+    shortDescription: 'Pase normal de acceso al parque temático y recorrido interactivo por los sets de filmación originales.',
+    fullDescription: `Sumérgete en el universo mágico de Warner Bros Studio Tour Tokyo - The Making of Harry Potter. 
 
 Este increíble recorrido te permitirá caminar por el Gran Comedor de Hogwarts, abordar el Expreso de Hogwarts en el Andén 9 ¾, recorrer el Callejón Diagon y descubrir los secretos mejor guardados de los efectos especiales y vestuario de la saga.
 
@@ -45,6 +49,7 @@ export default function TourIndividualDetail() {
     const [tours, setTours] = useState([])
     const [loading, setLoading] = useState(true)
     const [currentTour, setCurrentTour] = useState(null)
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
     // Interactive booking state
     const [modality, setModality] = useState('anfitrion') // 'anfitrion' | 'locatario'
@@ -101,6 +106,11 @@ export default function TourIndividualDetail() {
     }, [slug])
 
     const tour = currentTour || FALLBACK_SHOWCASE_TOUR
+    const displayTitle = tour.tituloDePgina || tour.title || 'Tour Individual'
+    const displaySubtitle = tour.shortDescription || tour.descripcinAmplia || tour.excerpt || 'Pase y experiencia oficial en Japón con la coordinación de RutaXAsia.'
+    const displayDuration = tour.durationLabel || ((tour.days && tour.hours) ? `${tour.days} (${tour.hours})` : (tour.days || tour.hours || '1 día'))
+    const displayCity = tour.city || 'Japón'
+
     const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
     const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
     const unitPrice = modality === 'anfitrion' ? priceAnfitrion : priceLocatario
@@ -123,19 +133,26 @@ export default function TourIndividualDetail() {
         ? '👑 Anfitrión de Viaje (Coordinador RutaXAsia)' 
         : '🏮 Asistencia Locataria (Guía local experto)'
 
-    // Construct WhatsApp reservation URL
+    // Construct WhatsApp reservation URL (using CMS whatsapp column if provided)
     const waMessage = `SW-Hola RutaXAsia! Quiero reservar la siguiente experiencia individual en Japón:
 
-🎟️ TOUR: ${tour.title}
-📍 Destino: ${tour.city || 'Japón'}
+🎟️ TOUR: ${displayTitle}
+📍 Destino: ${displayCity}
 🎎 Modalidad: ${modalityLabel}
 📅 Fecha deseada: ${formatDateLabel(selectedDate)}
+⏱️ Duración: ${displayDuration}
 👥 Pasajeros: ${travelers} persona${travelers > 1 ? 's' : ''}
 💰 Total Estimado: ${formatPrice(totalPrice)} MXN (${formatPrice(unitPrice)} MXN c/u)
 
 ¿Me podrían confirmar disponibilidad y los pasos para asegurar los lugares?`
 
-    const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waMessage)}`
+    const baseWa = tour.whatsappUrl 
+        ? (tour.whatsappUrl.startsWith('http') ? tour.whatsappUrl : `https://wa.me/${String(tour.whatsappUrl).replace(/\D/g, '')}`) 
+        : WHATSAPP_BASE
+
+    const waLink = baseWa.includes('text=') 
+        ? baseWa 
+        : (baseWa.includes('?') ? `${baseWa}&text=${encodeURIComponent(waMessage)}` : `${baseWa}?text=${encodeURIComponent(waMessage)}`)
 
     // Related tours (same category or random other tours)
     const relatedTours = useMemo(() => {
@@ -177,7 +194,7 @@ export default function TourIndividualDetail() {
                     <span className="tour-bc-sep">›</span>
                     <Link to="/tours-individuales" className="tour-bc-link">Tours Individuales</Link>
                     <span className="tour-bc-sep">›</span>
-                    <span className="tour-bc-current">{tour.title}</span>
+                    <span className="tour-bc-current">{displayTitle}</span>
                 </div>
             </div>
 
@@ -189,9 +206,9 @@ export default function TourIndividualDetail() {
                         {/* Title and Badges Section */}
                         <div className="tour-detail-header-block">
                             <div className="tour-detail-tags-row">
-                                {tour.city && (
+                                {displayCity && (
                                     <span className="tour-tag-pill tour-tag-city">
-                                        📍 {tour.city}
+                                        📍 {displayCity}
                                     </span>
                                 )}
                                 {tour.category && (
@@ -199,16 +216,16 @@ export default function TourIndividualDetail() {
                                         ⛩️ {tour.category}
                                     </span>
                                 )}
-                                {(tour.days || tour.hours) && (
+                                {displayDuration && (
                                     <span className="tour-tag-pill tour-tag-dur">
-                                        ⏱️ {tour.days || '1 día'} {tour.hours ? `(${tour.hours})` : ''}
+                                        ⏱️ {displayDuration}
                                     </span>
                                 )}
                             </div>
 
-                            <h1 className="tour-detail-h1">{tour.title}</h1>
-                            {tour.excerpt && (
-                                <p className="tour-detail-excerpt">{tour.excerpt}</p>
+                            <h1 className="tour-detail-h1">{displayTitle}</h1>
+                            {displaySubtitle && (
+                                <p className="tour-detail-excerpt">{displaySubtitle}</p>
                             )}
                         </div>
 
@@ -216,7 +233,7 @@ export default function TourIndividualDetail() {
                         <div className="tour-detail-hero-banner">
                             <img
                                 src={tour.image}
-                                alt={tour.title}
+                                alt={displayTitle}
                                 className="tour-detail-hero-img"
                                 onError={(e) => {
                                     e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&fit=crop'
@@ -233,14 +250,14 @@ export default function TourIndividualDetail() {
                                 <span className="tour-hl-icon">📍</span>
                                 <div>
                                     <span className="tour-hl-label">Destino</span>
-                                    <strong className="tour-hl-val">{tour.city || 'Japón'}</strong>
+                                    <strong className="tour-hl-val">{displayCity}</strong>
                                 </div>
                             </div>
                             <div className="tour-hl-card">
                                 <span className="tour-hl-icon">⏱️</span>
                                 <div>
                                     <span className="tour-hl-label">Duración</span>
-                                    <strong className="tour-hl-val">{tour.days || '1 día'} {tour.hours ? `(${tour.hours})` : ''}</strong>
+                                    <strong className="tour-hl-val">{displayDuration}</strong>
                                 </div>
                             </div>
                             <div className="tour-hl-card">
@@ -317,10 +334,10 @@ export default function TourIndividualDetail() {
                         </div>
 
                         {/* Section: Observations from CMS */}
-                        {tour.observaciones && (
+                        {(tour.observaciones || tour.observations) && (
                             <div className="tour-detail-card-section tour-sec-obs-card">
                                 <h3 className="tour-obs-title">📝 Observaciones y Recomendaciones</h3>
-                                <p className="tour-obs-text">{tour.observaciones}</p>
+                                <p className="tour-obs-text">{tour.observaciones || tour.observations}</p>
                             </div>
                         )}
 
@@ -440,18 +457,27 @@ export default function TourIndividualDetail() {
                                     </div>
                                 </div>
 
-                                {/* Primary WhatsApp Action Button */}
+                                {/* Main Online Buy / Checkout Action Button */}
+                                <button
+                                    type="button"
+                                    className="tour-booking-buy-btn"
+                                    onClick={() => setIsCheckoutOpen(true)}
+                                >
+                                    💳 Comprar / Reservar en Línea
+                                </button>
+
+                                {/* Secondary WhatsApp Action Button */}
                                 <a
                                     href={waLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="tour-booking-wa-btn"
                                 >
-                                    💬 Reservar y Coordinar por WhatsApp
+                                    💬 Cotizar / Coordinar por WhatsApp
                                 </a>
 
                                 <div className="tour-booking-guarantee-strip">
-                                    <span>🔒 Atención directa y confirmación en tiempo real</span>
+                                    <span>🔒 Pago 100% seguro y confirmación inmediata</span>
                                 </div>
 
                                 {/* Back Link */}
@@ -500,6 +526,23 @@ export default function TourIndividualDetail() {
                     </div>
                 )}
             </div>
+
+            {/* Wix Online Checkout & Pasarela Modal */}
+            <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                season={{ name: displayTitle, colors: { primary: '#e11d48', bg: '#fff' } }}
+                estilo="Tour Individual"
+                totalPrice={totalPrice}
+                desglose={
+                    `Tour: ${displayTitle} (${displayCity}). ` +
+                    `Modalidad: ${modalityLabel}. ` +
+                    `Fecha de tour: ${formatDateLabel(selectedDate)}. ` +
+                    `Duración: ${displayDuration}. ` +
+                    `Viajeros: ${travelers} persona${travelers > 1 ? 's' : ''} (${formatPrice(unitPrice)} MXN c/u). ` +
+                    `Total: ${formatPrice(totalPrice)} MXN.`
+                }
+            />
         </div>
     )
 }

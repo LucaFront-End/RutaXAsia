@@ -602,28 +602,60 @@
     color: var(--color-primary, #e11d48);
 }
 
-/* Action Button */
+/* Online Checkout Button */
+.tour-booking-buy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+    color: #ffffff;
+    border: none;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 15px 24px;
+    border-radius: 100px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(225, 29, 72, 0.35);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: -0.01em;
+}
+
+.tour-booking-buy-btn:hover {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(225, 29, 72, 0.45);
+}
+
+.tour-booking-buy-btn:active {
+    transform: translateY(0);
+}
+
+/* Secondary WhatsApp Button */
 .tour-booking-wa-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: #25D366;
-    color: #ffffff;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1.5px solid #bbf7d0;
     text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 800;
-    padding: 14px 20px;
+    font-size: 0.92rem;
+    font-weight: 750;
+    padding: 12px 20px;
     border-radius: 100px;
     text-align: center;
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tour-booking-wa-btn:hover {
-    background: #1eb954;
+    background: #25D366;
+    color: #ffffff;
+    border-color: #25D366;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
 }
 
 .tour-booking-guarantee-strip {

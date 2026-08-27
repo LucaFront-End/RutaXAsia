@@ -103,14 +103,22 @@ export default async function handler(req, res) {
                 rawCategorias.includes('signature') || rawCategorias.includes('vip') || rawTipo.includes('signature') || rawTipo.includes('vip')
             )
 
-            const slug = generateSlug(it.title, it._id)
+            const pageTitle = it.tituloDePgina || it.title || 'Tour Individual'
+            const slug = generateSlug(it.title || pageTitle, it._id)
             const shortDesc = it.descripcinAmplia || it.descripcionCorta || it.excerptDeTour || it.excerpt || ''
             const fullDesc = it.descripcinAmplia1 || it.descripcionAmplia || it.descripcinAmplia || it.excerptDeTour || it.excerpt || ''
+            const daysVal = it.dasDeViaje || it.diasDeViaje || ''
+            const hoursVal = it.horasDeViaje || ''
+            const durationLabel = (daysVal && hoursVal) ? `${daysVal} (${hoursVal})` : (daysVal || hoursVal || '1 día')
+            const cityVal = it.ciudad || it.city || it.ciudades || it.location || 'Japón'
+            const whatsappCustomUrl = it.whatsapp || it.urlWhatsapp || it.linkWhatsapp || it.enlaceWhatsapp || it.whatsappUrl || ''
 
             return {
                 id: it._id,
                 slug: slug,
-                title: it.title || 'Tour Individual',
+                title: pageTitle,
+                rawTitle: it.title || '',
+                tituloDePgina: pageTitle,
                 excerpt: it.excerptDeTour || it.excerpt || '',
                 shortDescription: shortDesc,
                 fullDescription: fullDesc,
@@ -124,15 +132,17 @@ export default async function handler(req, res) {
                 priceAnfitrionNum: priceAnfitrionNum,
                 priceLocatario: it.tipoDeAnfitrin || `$${priceLocatarioNum.toLocaleString('es-MX')} MXN`,
                 priceLocatarioNum: priceLocatarioNum,
-                days: it.dasDeViaje || it.diasDeViaje || '',
-                hours: it.horasDeViaje || '',
-                city: it.ciudad || it.city || it.ciudades || it.location || 'Japón',
+                days: daysVal,
+                hours: hoursVal,
+                durationLabel: durationLabel,
+                city: cityVal,
                 observations: it.observaciones || it.notas || '',
                 observaciones: it.observaciones || it.notas || '',
                 category: category,
                 rawCategory: rawCat,
                 categorias: it.categoras || '',
                 cmsLink: it['link-tour-individuales-title'] || '',
+                whatsappUrl: whatsappCustomUrl,
                 esencial: isEsencial,
                 completo: isCompleto,
                 libre: isLibre,
