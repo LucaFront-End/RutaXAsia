@@ -197,7 +197,21 @@ function mapCmsTour(it) {
     const daysVal = it.dasDeViaje || it.diasDeViaje || ''
     const hoursVal = it.horasDeViaje || ''
     const durationLabel = (daysVal && hoursVal) ? `${daysVal} (${hoursVal})` : (daysVal || hoursVal || '1 día')
-    const cityVal = it.ciudad || it.city || it.ciudades || it.location || 'Japón'
+    let cityVal = it.ciudad || it.city || it.ciudades || it.location || ''
+    if (!cityVal) {
+        const rawCityLookup = `${it.title || ''} ${pageTitle}`.toLowerCase()
+        if (rawCityLookup.includes('tokyo') || rawCityLookup.includes('tokio')) cityVal = 'Tokio'
+        else if (rawCityLookup.includes('osaka')) cityVal = 'Osaka'
+        else if (rawCityLookup.includes('kyoto') || rawCityLookup.includes('kioto')) cityVal = 'Kioto'
+        else if (rawCityLookup.includes('hiroshima')) cityVal = 'Hiroshima'
+        else if (rawCityLookup.includes('takayama')) cityVal = 'Takayama'
+        else if (rawCityLookup.includes('kanazawa')) cityVal = 'Kanazawa'
+        else if (rawCityLookup.includes('fuji') || rawCityLookup.includes('hakone')) cityVal = 'Monte Fuji'
+        else if (rawCityLookup.includes('kamakura')) cityVal = 'Kamakura'
+        else if (rawCityLookup.includes('nikko')) cityVal = 'Nikko'
+        else if (rawCityLookup.includes('nara')) cityVal = 'Nara'
+        else cityVal = 'Japón'
+    }
     const whatsappCustomUrl = it.whatsapp || it.urlWhatsapp || it.linkWhatsapp || it.enlaceWhatsapp || it.whatsappUrl || ''
 
     const rawAparece = String(it.apareceEnLista || '').trim().toLowerCase()
