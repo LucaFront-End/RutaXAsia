@@ -422,8 +422,8 @@ export default function StepAcompanado({ season, temporadaKey }) {
 
             {/* Modal: Elegir Experiencias para Día Libre en Tokio */}
             {isTokyoModalOpen && (
-                <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 999999 }} onClick={() => setIsTokyoModalOpen(false)}>
-                    <div className="jtb-modal-card" style={{ maxWidth: '800px', maxHeight: '88vh', overflowY: 'auto', padding: '32px 28px' }} onClick={e => e.stopPropagation()}>
+                <div className="jtb-modal-overlay" style={{ zIndex: 9999999 }} onClick={() => setIsTokyoModalOpen(false)}>
+                    <div className="jtb-modal-card" style={{ maxWidth: '820px', maxHeight: 'min(86vh, calc(100vh - 120px))', overflowY: 'auto', padding: '32px 28px', margin: 'auto' }} onClick={e => e.stopPropagation()}>
                         <button className="jtb-modal-close" onClick={() => setIsTokyoModalOpen(false)}>&times;</button>
                         
                         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -469,15 +469,16 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                                 </p>
                                             )}
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #f3f4f6' }}>
-                                            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-dark)' }}>
-                                                {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString('es-MX')} MXN` : 'Incluido')}
+
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #f3f4f6' }}>
+                                            <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--color-primary, #e11d48)' }}>
+                                                {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString()} MXN` : 'Incluido')}
                                             </span>
                                             <span style={{
-                                                fontSize: '0.75rem',
-                                                fontWeight: 800,
-                                                padding: '3px 8px',
-                                                borderRadius: '6px',
+                                                fontSize: '0.76rem',
+                                                fontWeight: 700,
+                                                padding: '4px 10px',
+                                                borderRadius: '20px',
                                                 background: isSelected ? 'var(--color-primary, #e11d48)' : '#f3f4f6',
                                                 color: isSelected ? '#fff' : '#4b5563'
                                             }}>
@@ -492,11 +493,11 @@ export default function StepAcompanado({ season, temporadaKey }) {
                         <div style={{ textAlign: 'center' }}>
                             <button
                                 type="button"
-                                className="btn btn-primary"
-                                style={{ padding: '10px 32px', borderRadius: '100px', fontWeight: 750, fontSize: '0.9rem' }}
+                                className="jtb-ticket-cta"
                                 onClick={() => setIsTokyoModalOpen(false)}
+                                style={{ padding: '12px 32px', fontSize: '0.95rem' }}
                             >
-                                Listo, ver mi Pase de Abordar
+                                Listo, Continuar con mi Itinerario
                             </button>
                         </div>
                     </div>
@@ -505,8 +506,8 @@ export default function StepAcompanado({ season, temporadaKey }) {
 
             {/* Upgrade Pass Modal when Tour Limit is Reached */}
             {showUpgradeModal && (
-                <div className="jtb-modal-overlay animate-slide-in" style={{ zIndex: 999999 }}>
-                    <div className="jtb-modal-card" style={{ maxWidth: '620px', textAlign: 'center', padding: '36px 28px' }}>
+                <div className="jtb-modal-overlay" style={{ zIndex: 9999999 }} onClick={() => setShowUpgradeModal(false)}>
+                    <div className="jtb-modal-card" style={{ maxWidth: '620px', textAlign: 'center', padding: '36px 28px', margin: 'auto' }} onClick={e => e.stopPropagation()}>
                         <button className="jtb-modal-close" onClick={() => setShowUpgradeModal(false)}>&times;</button>
                         
                         <div style={{ fontSize: '3rem', marginBottom: '8px' }}>🌸</div>
