@@ -715,27 +715,50 @@ export default function ToursIndividualesPage() {
                                 </div>
                             </div>
 
-                            {/* Full Description / Itinerary */}
+                            {/* Short Description (Descripción Corta del CMS) */}
                             <div className="tours-drawer-section">
                                 <h3>⛩️ Acerca de este Tour</h3>
-                                {detailDrawerTour.description ? (
+                                {(detailDrawerTour.shortDescription || detailDrawerTour.descripcinAmplia || detailDrawerTour.excerpt) ? (
                                     <div className="tours-drawer-desc-content">
-                                        {detailDrawerTour.description.split('\n').filter(p => p.trim()).map((para, pIdx) => (
-                                            <p key={pIdx} style={{ marginBottom: '10px', lineHeight: 1.6, color: '#334155' }}>{para}</p>
-                                        ))}
+                                        {(detailDrawerTour.shortDescription || detailDrawerTour.descripcinAmplia || detailDrawerTour.excerpt)
+                                            .split('\n')
+                                            .filter(p => p.trim())
+                                            .map((para, pIdx) => (
+                                                <p key={pIdx} style={{ marginBottom: '10px', lineHeight: 1.6, color: '#334155' }}>{para}</p>
+                                            ))}
                                     </div>
                                 ) : (
                                     <p style={{ color: '#64748b', lineHeight: 1.6 }}>
-                                        {detailDrawerTour.excerpt || 'Disfruta de esta experiencia única por los rincones más emblemáticos de Japón con el acompañamiento de nuestro equipo.'}
+                                        Disfruta de esta experiencia única por los rincones más emblemáticos de Japón con el acompañamiento de nuestro equipo.
                                     </p>
                                 )}
+                                <div style={{ marginTop: '10px' }}>
+                                    <a
+                                        href={`/tours-individuales/${detailDrawerTour.slug || detailDrawerTour.id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '0.84rem',
+                                            fontWeight: 700,
+                                            color: '#e11d48',
+                                            textDecoration: 'none',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}
+                                    >
+                                        🌐 Ver página completa del tour →
+                                    </a>
+                                </div>
                             </div>
 
                             {/* Observaciones / Notas si existen */}
-                            {detailDrawerTour.observations && (
+                            {(detailDrawerTour.observations || detailDrawerTour.observaciones) && (
                                 <div className="tours-drawer-section" style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '14px 16px', marginTop: '10px' }}>
                                     <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#92400e', margin: '0 0 6px' }}>📝 Observaciones y Recomendaciones</h4>
-                                    <p style={{ fontSize: '0.82rem', color: '#78350f', margin: 0, lineHeight: 1.5 }}>{detailDrawerTour.observations}</p>
+                                    <p style={{ fontSize: '0.82rem', color: '#78350f', margin: 0, lineHeight: 1.5 }}>
+                                        {detailDrawerTour.observations || detailDrawerTour.observaciones}
+                                    </p>
                                 </div>
                             )}
 

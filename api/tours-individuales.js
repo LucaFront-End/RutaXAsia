@@ -104,13 +104,19 @@ export default async function handler(req, res) {
             )
 
             const slug = generateSlug(it.title, it._id)
+            const shortDesc = it.descripcinAmplia || it.descripcionCorta || it.excerptDeTour || it.excerpt || ''
+            const fullDesc = it.descripcinAmplia1 || it.descripcionAmplia || it.descripcinAmplia || it.excerptDeTour || it.excerpt || ''
 
             return {
                 id: it._id,
                 slug: slug,
                 title: it.title || 'Tour Individual',
                 excerpt: it.excerptDeTour || it.excerpt || '',
-                description: it.descripcinAmplia || it.descripcionAmplia || it.descripcion_amplia || it.descripcion || it.itinerario || it.description || it.observaciones || '',
+                shortDescription: shortDesc,
+                fullDescription: fullDesc,
+                descripcinAmplia: it.descripcinAmplia || '',
+                descripcinAmplia1: it.descripcinAmplia1 || '',
+                description: fullDesc || shortDesc || '',
                 image: formatWixImageUrl(it.image),
                 priceText: it.precioEnTexto || (priceNum > 0 ? `$${priceNum.toLocaleString('es-MX')} MXN` : ''),
                 priceNum: priceNum || priceAnfitrionNum,
@@ -122,9 +128,11 @@ export default async function handler(req, res) {
                 hours: it.horasDeViaje || '',
                 city: it.ciudad || it.city || it.ciudades || it.location || 'Japón',
                 observations: it.observaciones || it.notas || '',
+                observaciones: it.observaciones || it.notas || '',
                 category: category,
                 rawCategory: rawCat,
                 categorias: it.categoras || '',
+                cmsLink: it['link-tour-individuales-title'] || '',
                 esencial: isEsencial,
                 completo: isCompleto,
                 libre: isLibre,

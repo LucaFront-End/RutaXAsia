@@ -71,15 +71,24 @@ export default function TourIndividualDetail() {
             if (isMounted) {
                 setTours(data || [])
                 
-                // Find tour by slug or ID
+                // Find tour by slug, ID, CMS link or title
                 let match = null
                 if (data && data.length > 0) {
-                    match = data.find(t => 
-                        t.slug === slug || 
-                        t.id === slug || 
-                        generateSlug(t.title) === slug || 
-                        (t.title && t.title.toLowerCase().includes((slug || '').toLowerCase()))
-                    )
+                    const cleanSlug = (slug || '').toLowerCase().trim()
+                    match = data.find(t => {
+                        const tSlug = (t.slug || '').toLowerCase()
+                        const tId = (t.id || '').toLowerCase()
+                        const genSlug = generateSlug(t.title).toLowerCase()
+                        const cmsLink = (t.cmsLink || '').toLowerCase()
+
+                        return tSlug === cleanSlug ||
+                               tId === cleanSlug ||
+                               genSlug === cleanSlug ||
+                               cmsLink.includes(cleanSlug) ||
+                               (cleanSlug && cmsLink.endsWith(cleanSlug)) ||
+                               (t.title && t.title.toLowerCase() === cleanSlug.replace(/-/g, ' ')) ||
+                               (t.title && t.title.toLowerCase().includes(cleanSlug.replace(/-/g, ' ')))
+                    })
                 }
 
                 // If not found in CMS, use the showcase tour so the page ALWAYS displays cleanly
@@ -139,42 +148,36 @@ export default function TourIndividualDetail() {
     const faqs = [
         {
             q: '¿Cómo funciona la reserva por WhatsApp?',
-            a: 'Al hacer clic en el botón de reserva, se enviarán todos los datos de tu tour (fecha, personas y modalidad elegida) directamente a nuestro equipo por WhatsApp. Te confirmaremos disponibilidad inmediata y te guiaremos en todo el proceso.'
+            a: 'Al hacer clic en "Reservar y Coordinar por WhatsApp", te comunicarás directamente con un asesor de RutaXAsia con todos los detalles de tu tour ya completados. Coordinaremos fechas exactas, disponibilidad y te brindaremos asistencia personalizada.'
         },
         {
             q: '¿Cuál es la diferencia entre Anfitrión y Asistencia Locataria?',
-            a: 'El Anfitrión de Viaje es un coordinador oficial de RutaXAsia que te acompaña y orienta en todo el recorrido. La Asistencia Locataria es un guía local nativo o experto en la zona específica que brinda una inmersión cultural profunda.'
+            a: 'El Anfitrión de Viaje es un coordinador del equipo oficial de RutaXAsia que te acompaña y orienta en traslados. La Asistencia Locataria es un guía local experto de la zona en Japón para explicaciones históricas y culturales más profundas.'
         },
         {
             q: '¿Puedo cambiar la fecha de mi tour después de reservar?',
-            a: 'Sí, sujeto a disponibilidad del parque o experiencia. Siempre recomendamos coordinar con nuestro equipo de atención con al menos 72 horas de anticipación.'
-        },
-        {
-            q: '¿Las entradas a las atracciones ya están garantizadas?',
-            a: 'Sí, todas las experiencias y accesos a parques temáticos gestionados por RutaXAsia son emitidos oficialmente con fecha y horario garantizados.'
+            a: 'Sí, sujeto a disponibilidad y con previo aviso coordinado directamente a través de nuestro canal de WhatsApp.'
         }
     ]
 
+    const fullDescriptionText = tour.fullDescription || tour.descripcinAmplia1 || tour.shortDescription || tour.descripcinAmplia || tour.description || tour.excerpt || 'Disfruta de una experiencia única e inmersiva en Japón con la coordinación experta de RutaXAsia.'
+
     return (
-        <div className="tour-detail-page-wrap">
+        <div className="tour-detail-page">
             <Helmet>
-                <title>{tour.title} | Tours Individuales en Japón — RutaXAsia</title>
-                <meta name="description" content={tour.excerpt || `Conoce los detalles, precios y reserva para ${tour.title} en ${tour.city || 'Japón'}.`} />
-                {/* NO INDEX TAG AS REQUESTED */}
+                <title>{`${tour.title} — Tour Individual en Japón | RutaXAsia`}</title>
+                <meta name="description" content={`${tour.excerpt || tour.title}. Reserva tu tour individual en Japón con RutaXAsia por WhatsApp.`} />
                 <meta name="robots" content="noindex, nofollow" />
-                <meta name="googlebot" content="noindex, nofollow" />
             </Helmet>
 
-            {/* Breadcrumb Header Strip */}
+            {/* Sticky Breadcrumb Bar */}
             <div className="tour-detail-breadcrumb-bar">
-                <div className="container">
-                    <nav className="tour-detail-breadcrumb">
-                        <Link to="/">Inicio</Link>
-                        <span>›</span>
-                        <Link to="/tours-individuales">Tours Individuales</Link>
-                        <span>›</span>
-                        <span className="tour-detail-breadcrumb-active">{tour.title}</span>
-                    </nav>
+                <div className="container tour-detail-bc-container">
+                    <Link to="/" className="tour-bc-link">Inicio</Link>
+                    <span className="tour-bc-sep">›</span>
+                    <Link to="/tours-individuales" className="tour-bc-link">Tours Individuales</Link>
+                    <span className="tour-bc-sep">›</span>
+                    <span className="tour-bc-current">{tour.title}</span>
                 </div>
             </div>
 
@@ -256,11 +259,11 @@ export default function TourIndividualDetail() {
                             </div>
                         </div>
 
-                        {/* Section: Description */}
+                        {/* Section: Full Description (Descripción Amplia del CMS) */}
                         <div className="tour-detail-card-section">
                             <h2 className="tour-sec-title">⛩️ Acerca de esta Experiencia</h2>
                             <div className="tour-sec-desc">
-                                {(tour.description || tour.excerpt || 'Disfruta de una experiencia única e inmersiva en Japón con la coordinación experta de RutaXAsia.')
+                                {fullDescriptionText
                                     .split('\n')
                                     .filter(p => p.trim())
                                     .map((paragraph, idx) => (

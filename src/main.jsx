@@ -37,7 +37,10 @@ createRoot(document.getElementById('root')).render(
                         <Route index element={<Home />} />
                         <Route path="tours/:slug" element={<TourDetail />} />
                         <Route path="tours-individuales" element={<ToursIndividualesPage />} />
+                        <Route path="tour-individuales" element={<ToursIndividualesPage />} />
                         <Route path="tours-individuales/:slug" element={<TourIndividualDetail />} />
+                        <Route path="tour-individuales/:slug" element={<TourIndividualDetail />} />
+                        <Route path="tours-individual/:slug" element={<TourIndividualDetail />} />
                         <Route path="tour-individual/:slug" element={<TourIndividualDetail />} />
                         <Route path="tour-individual" element={<TourIndividualDetail />} />
                         <Route path="portal-viajero" element={<UserPortalPage />} />

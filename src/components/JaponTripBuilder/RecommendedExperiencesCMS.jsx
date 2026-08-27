@@ -383,8 +383,8 @@ export default function RecommendedExperiencesCMS({
                             <div className="rec-drawer-section">
                                 <h3>⛩️ Acerca de este Tour</h3>
                                 <div className="rec-drawer-desc-content">
-                                    {(detailDrawerTour.descripcinAmplia || detailDrawerTour.descripcionAmplia || detailDrawerTour.itinerario || detailDrawerTour.excerpt) ? (
-                                        (detailDrawerTour.descripcinAmplia || detailDrawerTour.descripcionAmplia || detailDrawerTour.itinerario || detailDrawerTour.excerpt)
+                                    {(detailDrawerTour.shortDescription || detailDrawerTour.descripcinAmplia || detailDrawerTour.excerpt) ? (
+                                        (detailDrawerTour.shortDescription || detailDrawerTour.descripcinAmplia || detailDrawerTour.excerpt)
                                             .split('\n')
                                             .filter(p => p.trim())
                                             .map((paragraph, idx) => (
@@ -394,12 +394,30 @@ export default function RecommendedExperiencesCMS({
                                         <p>Recorrido guiado de alta calidad con coordinadores y anfitriones de viaje en Japón.</p>
                                     )}
                                 </div>
+                                <div style={{ marginTop: '10px' }}>
+                                    <a
+                                        href={`/tours-individuales/${detailDrawerTour.slug || detailDrawerTour.id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '0.82rem',
+                                            fontWeight: 700,
+                                            color: 'var(--color-primary, #d6336c)',
+                                            textDecoration: 'none',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}
+                                    >
+                                        🌐 Ver página completa del tour →
+                                    </a>
+                                </div>
                             </div>
 
-                            {detailDrawerTour.observaciones && (
+                            {(detailDrawerTour.observations || detailDrawerTour.observaciones) && (
                                 <div className="rec-drawer-section rec-drawer-obs-box">
                                     <h4>📝 Observaciones y Recomendaciones</h4>
-                                    <p>{detailDrawerTour.observaciones}</p>
+                                    <p>{detailDrawerTour.observations || detailDrawerTour.observaciones}</p>
                                 </div>
                             )}
                         </div>
