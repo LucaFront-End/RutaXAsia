@@ -72,15 +72,10 @@ function CustomDropdown({ value, onChange, options, ariaLabel }) {
     )
 }
 
-export default function ToursIndividualesPage({ whatsappOnly = false }) {
+export default function ToursIndividualesPage({ whatsappOnly = true }) {
     const location = useLocation()
-    const isWhatsAppMode = Boolean(
-        whatsappOnly ||
-        location.search.includes('whatsapp') ||
-        location.search.includes('mode=wa') ||
-        location.pathname.includes('whatsapp') ||
-        location.pathname.includes('-wa')
-    )
+    const isCheckoutExplicit = location.search.includes('mode=checkout') || location.search.includes('checkout=1')
+    const isWhatsAppMode = isCheckoutExplicit ? false : (whatsappOnly !== false)
 
     const { tripSearch: selectorData } = useTripSearch()
     const [tours, setTours] = useState([])
