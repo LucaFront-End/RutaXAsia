@@ -696,6 +696,40 @@
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
 }
 
+/* Card Actions Group for WhatsApp Mode */
+.tours-indiv-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.tours-indiv-wa-card-btn {
+    background: #25d366;
+    color: #ffffff !important;
+    border: none;
+    border-radius: 100px;
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(37, 211, 102, 0.2);
+}
+
+.tours-indiv-wa-card-btn:hover {
+    background: #1eb954;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    color: #ffffff !important;
+}
+
 /* ========================================================
    SIDE DRAWER (DESPLEGABLE LATERAL DERECHO)
    ======================================================== */

@@ -22,6 +22,7 @@ import ViajesCorea from './pages/ViajesCorea'
 import ViajesChina from './pages/ViajesChina'
 import Zonas from './pages/Zonas'
 import ToursIndividualesPage from './pages/ToursIndividualesPage'
+import ToursIndividualesWhatsAppPage from './pages/ToursIndividualesWhatsAppPage'
 import TourIndividualDetail from './pages/TourIndividualDetail'
 import UserPortalPage from './pages/UserPortalPage'
 
@@ -38,6 +39,10 @@ createRoot(document.getElementById('root')).render(
                         <Route path="tours/:slug" element={<TourDetail />} />
                         <Route path="tours-individuales" element={<ToursIndividualesPage />} />
                         <Route path="tour-individuales" element={<ToursIndividualesPage />} />
+                        <Route path="tours-individuales-whatsapp" element={<ToursIndividualesWhatsAppPage />} />
+                        <Route path="tours-individuales-wa" element={<ToursIndividualesWhatsAppPage />} />
+                        <Route path="tours-whatsapp" element={<ToursIndividualesWhatsAppPage />} />
+                        <Route path="tours-wa" element={<ToursIndividualesWhatsAppPage />} />
                         <Route path="tours-individuales/:slug" element={<TourIndividualDetail />} />
                         <Route path="tour-individuales/:slug" element={<TourIndividualDetail />} />
                         <Route path="tours-individual/:slug" element={<TourIndividualDetail />} />

@@ -1,10 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { fetchTourIndividuales } from '../lib/wixClient'
 import { useTripSearch } from '../context/TripContext'
 import FloatingTicket from '../components/JaponTripBuilder/FloatingTicket'
 import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
 import './ToursIndividualesPage.css'
+
+const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 /**
  * Custom modern Dropdown selector for filters
@@ -69,7 +72,16 @@ function CustomDropdown({ value, onChange, options, ariaLabel }) {
     )
 }
 
-export default function ToursIndividualesPage() {
+export default function ToursIndividualesPage({ whatsappOnly = false }) {
+    const location = useLocation()
+    const isWhatsAppMode = Boolean(
+        whatsappOnly ||
+        location.search.includes('whatsapp') ||
+        location.search.includes('mode=wa') ||
+        location.pathname.includes('whatsapp') ||
+        location.pathname.includes('-wa')
+    )
+
     const { tripSearch: selectorData } = useTripSearch()
     const [tours, setTours] = useState([])
     const [loading, setLoading] = useState(true)
@@ -271,13 +283,67 @@ export default function ToursIndividualesPage() {
         })
     }
 
-    // Toggle tour freely directly from ticket or card
-    const toggleTour = (tour) => {
+    // Helper: Build WhatsApp URL for single tour or custom booking
+    const getTourWhatsAppUrl = (tour, qty = 1, modality = 'anfitrion', date = '') => {
+        if (!tour) return WHATSAPP_BASE
+        if (tour.whatsappUrl && !qty && !date) return tour.whatsappUrl
+        const modalityLabel = modality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria'
+        const unitPrice = modality === 'anfitrion'
+            ? (tour.priceAnfitrionNum || tour.priceNum || 800)
+            : (tour.priceLocatarioNum || Math.round((tour.priceAnfitrionNum || 800) * 1.5))
+        const total = unitPrice * qty
+        const msg = `Hola RutaXAsia ⛩️, me interesa cotizar/reservar el tour individual:
+📌 *${tour.title}*
+📍 Ciudad: ${tour.city || 'Japón'}
+⏱️ Duración: ${tour.durationLabel || '1 día'}
+🎋 Modalidad: ${modalityLabel}
+📅 Fecha deseada: ${formatDateLabel(date) || 'Por definir'}
+👥 Pasajeros: ${qty} persona${qty > 1 ? 's' : ''}
+💰 Cotización estimada: $${total.toLocaleString('es-MX')} MXN
+
+¿Tienen disponibilidad y más información?`
+        return `${WHATSAPP_BASE}${encodeURIComponent(msg)}`
+    }
+
+    // Direct toggle for WhatsApp mode (bypasses checkout popup)
+    const toggleTourDirect = (tour) => {
+        if (!tour) return
         const existing = selectedTours.find(t => t.id === tour.id)
         if (existing) {
             setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
         } else {
-            handleAddAndOpenCheckout(tour)
+            const chosenModality = tourModalities[tour.id] || 'anfitrion'
+            const chosenDate = tourDates[tour.id] || tomorrowStr
+            const chosenQty = tourQuantities[tour.id] || 1
+            const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
+            const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
+            const unitPrice = chosenModality === 'anfitrion' ? priceAnfitrion : priceLocatario
+
+            setSelectedTours(prev => [...prev, {
+                id: tour.id,
+                name: tour.title,
+                modality: chosenModality,
+                modalityLabel: chosenModality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+                price: unitPrice,
+                priceAnfitrionNum: priceAnfitrion,
+                priceLocatarioNum: priceLocatario,
+                date: chosenDate,
+                quantity: chosenQty,
+            }])
+        }
+    }
+
+    // Toggle tour freely directly from ticket or card
+    const toggleTour = (tour) => {
+        if (isWhatsAppMode) {
+            toggleTourDirect(tour)
+        } else {
+            const existing = selectedTours.find(t => t.id === tour.id)
+            if (existing) {
+                setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
+            } else {
+                handleAddAndOpenCheckout(tour)
+            }
         }
     }
 
@@ -354,20 +420,24 @@ export default function ToursIndividualesPage() {
     return (
         <div className="tours-indiv-page">
             <Helmet>
-                <title>Tours Individuales en Japón | RutaXAsia</title>
+                <title>{isWhatsAppMode ? 'Tours Individuales en Japón (Atención WhatsApp) | RutaXAsia' : 'Tours Individuales en Japón | RutaXAsia'}</title>
                 <meta
                     name="description"
-                    content="Explora y agrega tours individuales a tu medida en Tokio, Kioto, Osaka y más. Arma tu propio pase de abordar personalizado."
+                    content="Explora y agrega tours individuales a tu medida en Tokio, Kioto, Osaka y más. Arma tu propio pase de abordar personalizado con atención vía WhatsApp."
                 />
             </Helmet>
 
             {/* Hero Section */}
             <div className="tours-indiv-hero">
                 <div className="container">
-                    <span className="tours-indiv-tag">⛩️ Catálogo Oficial de Experiencias</span>
+                    <span className="tours-indiv-tag">
+                        {isWhatsAppMode ? '💬 ATENCIÓN DIRECTA POR WHATSAPP' : '⛩️ Catálogo Oficial de Experiencias'}
+                    </span>
                     <h1 className="tours-indiv-title">Tours Individuales en Japón</h1>
                     <p className="tours-indiv-excerpt">
-                        Selecciona fecha y personas directamente en cada tour para armar tu pase de abordar. Haz clic en el <strong>+</strong> para conocer todos los detalles sin salir de la página.
+                        {isWhatsAppMode
+                            ? 'Selecciona tus tours favoritos, fecha y pasajeros para armar tu cotización completa o contactar directamente a nuestros anfitriones por WhatsApp.'
+                            : 'Selecciona fecha y personas directamente en cada tour para armar tu pase de abordar. Haz clic en el + para conocer todos los detalles sin salir de la página.'}
                     </p>
                 </div>
             </div>
@@ -447,9 +517,9 @@ export default function ToursIndividualesPage() {
                             selectedComps={[]}
                             basePrice={0}
                             extraTotal={totalPrice}
-                            customReserveBtnText="💬 Reservar Tours por WhatsApp"
-                            customWhatsAppBtnText="💬 Cotizar por WhatsApp"
-                            onOpenCheckout={() => {
+                            customReserveBtnText={isWhatsAppMode ? undefined : "💳 Reservar Tours en Línea"}
+                            customWhatsAppBtnText="💬 Cotizar / Reservar por WhatsApp"
+                            onOpenCheckout={isWhatsAppMode ? undefined : () => {
                                 if (selectedTours.length === 0) {
                                     alert('Por favor selecciona al menos un tour antes de proceder.')
                                     return
@@ -618,7 +688,7 @@ export default function ToursIndividualesPage() {
                                                     </div>
                                                 </div>
 
-                                                {/* Card Footer: Price & Add Button */}
+                                                {/* Card Footer: Price & Add / WhatsApp Button */}
                                                 <div className="tours-indiv-card-footer">
                                                     <div className="tours-indiv-price-col">
                                                         <span className="tours-indiv-price-label">
@@ -629,13 +699,26 @@ export default function ToursIndividualesPage() {
                                                         </strong>
                                                     </div>
 
-                                                    <button
-                                                        type="button"
-                                                        className={`tours-indiv-add-btn${isAdded ? ' tours-indiv-add-btn--added' : ''}`}
-                                                        onClick={() => toggleTour(tour)}
-                                                    >
-                                                        {isAdded ? '✓ Agregado' : '+ Agregar'}
-                                                    </button>
+                                                    <div className="tours-indiv-card-actions">
+                                                        <button
+                                                            type="button"
+                                                            className={`tours-indiv-add-btn${isAdded ? ' tours-indiv-add-btn--added' : ''}`}
+                                                            onClick={() => toggleTour(tour)}
+                                                        >
+                                                            {isAdded ? '✓ Agregado' : '+ Agregar'}
+                                                        </button>
+                                                        {isWhatsAppMode && (
+                                                            <a
+                                                                href={getTourWhatsAppUrl(tour, currentQty, currentModality, currentDate)}
+                                                                className="tours-indiv-wa-card-btn"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                title="Cotizar directamente por WhatsApp"
+                                                            >
+                                                                💬 WhatsApp
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -793,13 +876,39 @@ export default function ToursIndividualesPage() {
                                 </strong>
                             </div>
 
-                            <button
-                                type="button"
-                                className="tours-drawer-add-btn"
-                                onClick={() => handleAddAndOpenCheckout(detailDrawerTour)}
-                            >
-                                🚀 Configurar y Agregar Tour
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                {isWhatsAppMode ? (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className={`tours-indiv-add-btn${isDrawerTourAdded ? ' tours-indiv-add-btn--added' : ''}`}
+                                            onClick={() => {
+                                                toggleTourDirect(detailDrawerTour)
+                                                setDetailDrawerTour(null)
+                                            }}
+                                        >
+                                            {isDrawerTourAdded ? '✓ Agregado al Pase' : '+ Agregar al Pase'}
+                                        </button>
+                                        <a
+                                            href={getTourWhatsAppUrl(detailDrawerTour, drawerTourQty, drawerTourModality, drawerTourDate)}
+                                            className="tours-indiv-wa-card-btn"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ padding: '10px 18px', fontSize: '0.88rem' }}
+                                        >
+                                            💬 Cotizar por WhatsApp
+                                        </a>
+                                    </>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="tours-drawer-add-btn"
+                                        onClick={() => handleAddAndOpenCheckout(detailDrawerTour)}
+                                    >
+                                        🚀 Configurar y Agregar Tour
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </>
                 )}
