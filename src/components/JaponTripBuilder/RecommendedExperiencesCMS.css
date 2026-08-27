@@ -594,3 +594,66 @@
         max-width: 100%;
     }
 }
+
+/* ===== CITY SUB-GROUPS INSIDE ACCORDION ===== */
+.rec-cms-city-groups-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 14px;
+}
+
+.rec-cms-city-group-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #fdfcfb;
+    border: 1px solid rgba(12, 14, 22, 0.06);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.rec-cms-city-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid rgba(12, 14, 22, 0.06);
+}
+
+.rec-cms-city-group-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rec-cms-city-group-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.rec-cms-city-group-title {
+    font-family: var(--font-heading, inherit);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-dark, #0c0e16);
+    margin: 0 0 2px 0;
+}
+
+.rec-cms-city-group-tag {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.rec-cms-city-group-badge {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: var(--color-primary, #e11d48);
+    background: rgba(225, 29, 72, 0.08);
+    padding: 4px 12px;
+    border-radius: 100px;
+    white-space: nowrap;
+}
+

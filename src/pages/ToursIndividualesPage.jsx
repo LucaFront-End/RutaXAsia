@@ -497,10 +497,9 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                             }))}
                             selectedComps={[]}
                             basePrice={0}
-                            extraTotal={totalPrice}
-                            customReserveBtnText={isWhatsAppMode ? undefined : "💳 Reservar Tours en Línea"}
-                            customWhatsAppBtnText="💬 Cotizar / Reservar por WhatsApp"
-                            onOpenCheckout={isWhatsAppMode ? undefined : () => {
+                            customReserveBtnText="💳 Reservar Tours"
+                            customWhatsAppBtnText="💬 Cotizar por WhatsApp"
+                            onOpenCheckout={() => {
                                 if (selectedTours.length === 0) {
                                     alert('Por favor selecciona al menos un tour antes de proceder.')
                                     return

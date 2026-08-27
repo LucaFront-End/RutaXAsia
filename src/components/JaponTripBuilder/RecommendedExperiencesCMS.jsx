@@ -46,6 +46,54 @@ const CITY_ORDER_PRIORITY = {
     'himeji': 13,
 }
 
+// Grouping of cities for "Rutas por Japón"
+const CITY_GROUPS = [
+    {
+        key: 'tokio',
+        name: 'Rutas en Tokio y Alrededores',
+        icon: '🗼',
+        tag: 'Monte Fuji · Hakone · Nikko · Kamakura · Gotemba · Tokio',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('tokio') || raw.includes('tokyo') || raw.includes('fuji') || 
+                   raw.includes('hakone') || raw.includes('nikko') || raw.includes('kamakura') || 
+                   raw.includes('gotemba') || raw.includes('akihabara') || raw.includes('asakusa')
+        }
+    },
+    {
+        key: 'kansai',
+        name: 'Rutas en Kioto, Osaka y Región de Kansai',
+        icon: '🏯',
+        tag: 'Kioto · Castillo de Osaka · Dotonbori · Nara · Uji · Himeji · Kobe · Naoshima',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('osaka') || raw.includes('kyoto') || raw.includes('kioto') || 
+                   raw.includes('nara') || raw.includes('uji') || raw.includes('himeji') || 
+                   raw.includes('kobe') || raw.includes('naoshima')
+        }
+    },
+    {
+        key: 'hiroshima',
+        name: 'Rutas en Hiroshima, Miyajima y Fukuoka',
+        icon: '⛩️',
+        tag: 'Hiroshima Histórico · Isla Sagrada de Miyajima · Fukuoka',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('hiroshima') || raw.includes('miyajima') || raw.includes('fukuoka')
+        }
+    },
+    {
+        key: 'alpes',
+        name: 'Rutas en Takayama, Kanazawa y Shirakawago (Alpes Japoneses)',
+        icon: '🏔️',
+        tag: 'Takayama Tradicional · Aldea Patrimonio de Shirakawago · Jardines de Kanazawa',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('takayama') || raw.includes('kanazawa') || raw.includes('shirakawago') || raw.includes('shirakawa')
+        }
+    },
+]
+
 function getCityPriority(tour) {
     const raw = `${tour.city || ''} ${tour.title || ''}`.toLowerCase()
     for (const [key, prio] of Object.entries(CITY_ORDER_PRIORITY)) {
@@ -118,12 +166,6 @@ export default function RecommendedExperiencesCMS({
 
         if (headerEl && isOpening) {
             setTimeout(() => {
-                const rect = headerEl.getBoundingClientRect()
-                const navbarHeight = 110
-                if (rect.top < navbarHeight || rect.top > window.innerHeight - 100) {
-                    const y = rect.top + window.scrollY - navbarHeight - 20
-                    window.scrollTo({ top: y, behavior: 'smooth' })
-                }
             }, 80)
         }
     }
@@ -213,98 +255,37 @@ export default function RecommendedExperiencesCMS({
                                         <p className="rec-cms-cat-desc">{catConfig.desc}</p>
                                         {catTours.length === 0 ? (
                                             <p className="rec-cms-empty">No hay tours en esta categoría actualmente.</p>
-                                        ) : (
-                                            <div className="rec-cms-cards-grid">
-                                                {catTours.map((tour) => {
-                                                    const isAdded = checkIsTourAdded(tour)
-                                                    const isDisabled = isLimitReached && !isAdded
-                                                    const isFreeForPlan = checkIsFreeForThisPlan(tour)
+                                        ) : catConfig.key === 'rutas' ? (
+                                            <div className="rec-cms-city-groups-list">
+                                                {CITY_GROUPS.map((cityGrp) => {
+                                                    const grpTours = catTours.filter(cityGrp.matchFn)
+                                                    if (grpTours.length === 0) return null
 
                                                     return (
-                                                        <div
-                                                            key={tour.id}
-                                                            className={`rec-cms-card${isAdded ? ' rec-cms-card--added' : ''}`}
-                                                            style={{
-                                                                border: isFreeForPlan ? '2px solid #10b981' : undefined
-                                                            }}
-                                                        >
-                                                            <div 
-                                                                className="rec-cms-card-img-box"
-                                                                onClick={() => setDetailDrawerTour(tour)}
-                                                                style={{ cursor: 'pointer' }}
-                                                            >
-                                                                <img
-                                                                    src={tour.image}
-                                                                    alt={tour.title}
-                                                                    loading="lazy"
-                                                                    onError={(e) => {
-                                                                        e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
-                                                                    }}
-                                                                />
-                                                                {isFreeForPlan ? (
-                                                                    <span className="rec-cms-free-badge">
-                                                                        ✨ Incluido Gratis
-                                                                    </span>
-                                                                ) : tour.city ? (
-                                                                    <span className="rec-cms-city-badge">
-                                                                        📍 {tour.city}
-                                                                    </span>
-                                                                ) : null}
-
-                                                                {(tour.days || tour.hours) && (
-                                                                    <span className="rec-cms-duration-badge">
-                                                                        ⏱️ {tour.days ? `${tour.days}` : ''} {tour.hours ? `(${tour.hours})` : ''}
-                                                                    </span>
-                                                                )}
-
-                                                                {/* Top Right '+' Quick Info Button */}
-                                                                <button
-                                                                    type="button"
-                                                                    className="rec-cms-plus-btn"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation()
-                                                                        setDetailDrawerTour(tour)
-                                                                    }}
-                                                                    title="Ver información completa del tour"
-                                                                    aria-label="Más información"
-                                                                >
-                                                                    +
-                                                                </button>
-                                                            </div>
-                                                            <div className="rec-cms-card-body">
-                                                                <h5 
-                                                                    className="rec-cms-card-title"
-                                                                    onClick={() => setDetailDrawerTour(tour)}
-                                                                    style={{ cursor: 'pointer' }}
-                                                                >
-                                                                    {tour.title}
-                                                                </h5>
-                                                                {tour.excerpt && (
-                                                                    <p className="rec-cms-card-excerpt">{tour.excerpt}</p>
-                                                                )}
-                                                                <div className="rec-cms-card-footer">
-                                                                    <div className="rec-cms-card-price">
-                                                                        {isFreeForPlan ? (
-                                                                            <span style={{ color: '#059669', fontWeight: 800 }}>$0 MXN (Gratis)</span>
-                                                                        ) : (
-                                                                            <span>+{tour.priceText || (tour.priceNum ? `$${tour.priceNum.toLocaleString('es-MX')} MXN` : 'Consultar')}</span>
-                                                                        )}
+                                                        <div key={cityGrp.key} className="rec-cms-city-group-block">
+                                                            <div className="rec-cms-city-group-header">
+                                                                <div className="rec-cms-city-group-title-wrap">
+                                                                    <span className="rec-cms-city-group-icon">{cityGrp.icon}</span>
+                                                                    <div>
+                                                                        <h5 className="rec-cms-city-group-title">{cityGrp.name}</h5>
+                                                                        <span className="rec-cms-city-group-tag">{cityGrp.tag}</span>
                                                                     </div>
-                                                                    {onToggleExperience && (
-                                                                        <button
-                                                                            type="button"
-                                                                            className={`rec-cms-add-btn${isAdded ? ' rec-cms-add-btn--added' : isDisabled ? ' rec-cms-add-btn--disabled' : ''}`}
-                                                                            onClick={() => onToggleExperience(tour.id, tour.title, isFreeForPlan ? 0 : tour.priceNum)}
-                                                                            style={isFreeForPlan && isAdded ? { background: '#059669', borderColor: '#059669' } : undefined}
-                                                                        >
-                                                                            {isAdded ? (isFreeForPlan ? '✓ Incluido' : '✓ Agregado') : isDisabled ? 'Límite alcanzado' : (isFreeForPlan ? '+ Incluir Gratis' : '+ Agregar Extra')}
-                                                                        </button>
-                                                                    )}
                                                                 </div>
+                                                                <span className="rec-cms-city-group-badge">
+                                                                    {grpTours.length} tour{grpTours.length !== 1 ? 's' : ''} disponibles
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="rec-cms-cards-grid">
+                                                                {grpTours.map((tour) => renderTourCard(tour))}
                                                             </div>
                                                         </div>
                                                     )
                                                 })}
+                                            </div>
+                                        ) : (
+                                            <div className="rec-cms-cards-grid">
+                                                {catTours.map((tour) => renderTourCard(tour))}
                                             </div>
                                         )}
                                     </div>
