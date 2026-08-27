@@ -182,8 +182,8 @@ export default function TourIndividualDetail() {
     return (
         <div className="tour-detail-page">
             <Helmet>
-                <title>{`${tour.title} — Tour Individual en Japón | RutaXAsia`}</title>
-                <meta name="description" content={`${tour.excerpt || tour.title}. Reserva tu tour individual en Japón con RutaXAsia por WhatsApp.`} />
+                <title>{`${displayTitle} — Tour Individual en Japón | RutaXAsia`}</title>
+                <meta name="description" content={`${displaySubtitle || displayTitle}. Reserva tu tour individual en Japón con RutaXAsia.`} />
                 <meta name="robots" content="noindex, nofollow" />
             </Helmet>
 
