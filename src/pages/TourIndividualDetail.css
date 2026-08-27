@@ -2,9 +2,10 @@
    TOUR INDIVIDUAL DETAIL SHOWCASE PAGE
    ======================================================== */
 
-.tour-detail-page-wrap {
+.tour-detail-page {
     background: #fdfbfb;
     min-height: 100vh;
+    padding-top: 85px; /* Clear the fixed navbar completely */
     padding-bottom: 80px;
 }
 
@@ -13,36 +14,48 @@
     background: #ffffff;
     border-bottom: 1px solid #eef2f6;
     padding: 14px 0;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
-.tour-detail-breadcrumb {
+.tour-detail-bc-container {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.84rem;
+    gap: 10px;
+    font-size: 0.85rem;
     color: #64748b;
     flex-wrap: wrap;
 }
 
-.tour-detail-breadcrumb a {
+.tour-bc-link {
     color: #64748b;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.15s ease;
 }
 
-.tour-detail-breadcrumb a:hover {
+.tour-bc-link:hover {
     color: var(--color-primary, #e11d48);
 }
 
-.tour-detail-breadcrumb-active {
+.tour-bc-sep {
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    user-select: none;
+}
+
+.tour-bc-current {
     color: #0f172a;
     font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 500px;
 }
 
 /* Main Container & Layout */
 .tour-detail-container {
-    margin-top: 36px;
+    margin-top: 0;
 }
 
 .tour-detail-layout {

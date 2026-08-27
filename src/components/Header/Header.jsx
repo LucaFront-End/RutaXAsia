@@ -48,8 +48,15 @@ function Header() {
         window.scrollTo({ top: 0, behavior: 'instant' })
     }
 
+    const isSolidNav = scrolled || 
+        location.pathname.includes('/tour-individual') || 
+        location.pathname.includes('/tours-individual') || 
+        location.pathname.startsWith('/portal-viajero') || 
+        location.pathname.startsWith('/aviso-privacidad') || 
+        location.pathname.startsWith('/terminos-condiciones')
+
     return (
-        <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--open' : ''}${hidden ? ' navbar--hidden' : ''}`}>
+        <nav className={`navbar${isSolidNav ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--open' : ''}${hidden ? ' navbar--hidden' : ''}`}>
             <div className="navbar-container">
                 <Link to="/" className="navbar-brand" onClick={closeMenu}>
                     <img src="/logo.png" alt="RutaXAsia" className="navbar-logo" />
