@@ -113,6 +113,10 @@ export default async function handler(req, res) {
             const cityVal = it.ciudad || it.city || it.ciudades || it.location || 'Japón'
             const whatsappCustomUrl = it.whatsapp || it.urlWhatsapp || it.linkWhatsapp || it.enlaceWhatsapp || it.whatsappUrl || ''
 
+            const rawAparece = String(it.apareceEnLista || '').trim().toLowerCase()
+            const isHiddenFromList = rawAparece === 'no' || rawAparece === 'false' || it.apareceEnLista === false
+            const apareceEnLista = !isHiddenFromList
+
             return {
                 id: it._id,
                 slug: slug,
@@ -143,6 +147,8 @@ export default async function handler(req, res) {
                 categorias: it.categoras || '',
                 cmsLink: it['link-tour-individuales-title'] || '',
                 whatsappUrl: whatsappCustomUrl,
+                apareceEnLista: apareceEnLista,
+                rawApareceEnLista: it.apareceEnLista || '',
                 esencial: isEsencial,
                 completo: isCompleto,
                 libre: isLibre,

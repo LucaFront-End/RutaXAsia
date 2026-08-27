@@ -124,10 +124,10 @@ export default function ToursIndividualesPage() {
         return () => { isMounted = false }
     }, [])
 
-    // Extract dynamic unique cities from CMS data
+    // Extract dynamic unique cities from CMS data (only for tours appearing in list)
     const availableCities = useMemo(() => {
         const citySet = new Set()
-        tours.forEach(t => {
+        tours.filter(t => t.apareceEnLista !== false).forEach(t => {
             if (t.city) {
                 const parts = t.city.split(/,| y |\//).map(c => c.trim()).filter(Boolean)
                 parts.forEach(p => {
@@ -281,9 +281,9 @@ export default function ToursIndividualesPage() {
         }
     }
 
-    // Filter & Sort logic
+    // Filter & Sort logic (only tours marked as apareceEnLista)
     const filteredTours = useMemo(() => {
-        let result = [...tours]
+        let result = tours.filter(t => t.apareceEnLista !== false)
 
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase()
