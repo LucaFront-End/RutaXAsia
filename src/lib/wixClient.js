@@ -201,8 +201,14 @@ function mapCmsTour(it) {
     const whatsappCustomUrl = it.whatsapp || it.urlWhatsapp || it.linkWhatsapp || it.enlaceWhatsapp || it.whatsappUrl || ''
 
     const rawAparece = String(it.apareceEnLista || '').trim().toLowerCase()
-    const isHiddenFromList = rawAparece === 'no' || rawAparece === 'false' || it.apareceEnLista === false
-    const apareceEnLista = !isHiddenFromList
+    const apareceEnLista = Boolean(
+        rawAparece === 'sí' ||
+        rawAparece === 'si' ||
+        rawAparece === 'true' ||
+        rawAparece === 'yes' ||
+        rawAparece === '1' ||
+        it.apareceEnLista === true
+    )
 
     return {
         id: it._id,

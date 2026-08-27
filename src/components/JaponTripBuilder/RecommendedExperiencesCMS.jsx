@@ -167,7 +167,7 @@ export default function RecommendedExperiencesCMS({
                     {CATEGORIES_CONFIG.map((catConfig) => {
                         // Filter and sort tours logically by City order (only tours appearing in list)
                         const catTours = (tours || [])
-                            .filter(t => t.apareceEnLista !== false)
+                            .filter(t => Boolean(t.apareceEnLista))
                             .filter(catConfig.matchFn)
                             .sort((a, b) => {
                                 const prioA = getCityPriority(a)
