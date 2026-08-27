@@ -300,8 +300,8 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
         return `${WHATSAPP_BASE}${encodeURIComponent(msg)}`
     }
 
-    // Direct toggle for WhatsApp mode (bypasses checkout popup)
-    const toggleTourDirect = (tour) => {
+    // Toggle tour freely directly into the Floating Ticket / Cart (NEVER open popup on add!)
+    const toggleTour = (tour) => {
         if (!tour) return
         const existing = selectedTours.find(t => t.id === tour.id)
         if (existing) {
@@ -325,20 +325,6 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                 date: chosenDate,
                 quantity: chosenQty,
             }])
-        }
-    }
-
-    // Toggle tour freely directly from ticket or card
-    const toggleTour = (tour) => {
-        if (isWhatsAppMode) {
-            toggleTourDirect(tour)
-        } else {
-            const existing = selectedTours.find(t => t.id === tour.id)
-            if (existing) {
-                setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
-            } else {
-                handleAddAndOpenCheckout(tour)
-            }
         }
     }
 
@@ -872,36 +858,26 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                             </div>
 
                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                {isWhatsAppMode ? (
-                                    <>
-                                        <button
-                                            type="button"
-                                            className={`tours-indiv-add-btn${isDrawerTourAdded ? ' tours-indiv-add-btn--added' : ''}`}
-                                            onClick={() => {
-                                                toggleTourDirect(detailDrawerTour)
-                                                setDetailDrawerTour(null)
-                                            }}
-                                        >
-                                            {isDrawerTourAdded ? '✓ Agregado al Pase' : '+ Agregar al Pase'}
-                                        </button>
-                                        <a
-                                            href={getTourWhatsAppUrl(detailDrawerTour, drawerTourQty, drawerTourModality, drawerTourDate)}
-                                            className="tours-indiv-wa-card-btn"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ padding: '10px 18px', fontSize: '0.88rem' }}
-                                        >
-                                            💬 Cotizar por WhatsApp
-                                        </a>
-                                    </>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        className="tours-drawer-add-btn"
-                                        onClick={() => handleAddAndOpenCheckout(detailDrawerTour)}
+                                <button
+                                    type="button"
+                                    className={`tours-indiv-add-btn${isDrawerTourAdded ? ' tours-indiv-add-btn--added' : ''}`}
+                                    onClick={() => {
+                                        toggleTour(detailDrawerTour)
+                                        setDetailDrawerTour(null)
+                                    }}
+                                >
+                                    {isDrawerTourAdded ? '✓ Quitar del Pase' : '+ Agregar al Pase'}
+                                </button>
+                                {isWhatsAppMode && (
+                                    <a
+                                        href={getTourWhatsAppUrl(detailDrawerTour, drawerTourQty, drawerTourModality, drawerTourDate)}
+                                        className="tours-indiv-wa-card-btn"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{ padding: '10px 18px', fontSize: '0.88rem' }}
                                     >
-                                        🚀 Configurar y Agregar Tour
-                                    </button>
+                                        💬 Cotizar por WhatsApp
+                                    </a>
                                 )}
                             </div>
                         </div>
