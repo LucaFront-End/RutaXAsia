@@ -183,6 +183,97 @@ export default function RecommendedExperiencesCMS({
         })
     }
 
+    const renderTourCard = (tour) => {
+        const isAdded = checkIsTourAdded(tour)
+        const isDisabled = isLimitReached && !isAdded
+        const isFreeForPlan = checkIsFreeForThisPlan(tour)
+
+        return (
+            <div
+                key={tour.id}
+                className={`rec-cms-card${isAdded ? ' rec-cms-card--added' : ''}`}
+                style={{
+                    border: isFreeForPlan ? '2px solid #10b981' : undefined
+                }}
+            >
+                <div 
+                    className="rec-cms-card-img-box"
+                    onClick={() => setDetailDrawerTour(tour)}
+                    style={{ cursor: 'pointer' }}
+                >
+                    <img
+                        src={tour.image}
+                        alt={tour.title}
+                        loading="lazy"
+                        onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
+                        }}
+                    />
+                    {isFreeForPlan ? (
+                        <span className="rec-cms-free-badge">
+                            ✨ Incluido Gratis
+                        </span>
+                    ) : tour.city ? (
+                        <span className="rec-cms-city-badge">
+                            📍 {tour.city}
+                        </span>
+                    ) : null}
+
+                    {(tour.days || tour.hours) && (
+                        <span className="rec-cms-duration-badge">
+                            ⏱️ {tour.days ? `${tour.days}` : ''} {tour.hours ? `(${tour.hours})` : ''}
+                        </span>
+                    )}
+
+                    {/* Top Right '+' Quick Info Button */}
+                    <button
+                        type="button"
+                        className="rec-cms-plus-btn"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setDetailDrawerTour(tour)
+                        }}
+                        title="Ver información completa del tour"
+                        aria-label="Más información"
+                    >
+                        +
+                    </button>
+                </div>
+                <div className="rec-cms-card-body">
+                    <h5 
+                        className="rec-cms-card-title"
+                        onClick={() => setDetailDrawerTour(tour)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        {tour.title}
+                    </h5>
+                    {tour.excerpt && (
+                        <p className="rec-cms-card-excerpt">{tour.excerpt}</p>
+                    )}
+                    <div className="rec-cms-card-footer">
+                        <div className="rec-cms-card-price">
+                            {isFreeForPlan ? (
+                                <span style={{ color: '#059669', fontWeight: 800 }}>$0 MXN (Gratis)</span>
+                            ) : (
+                                <span>+{tour.priceText || (tour.priceNum ? `$${tour.priceNum.toLocaleString('es-MX')} MXN` : 'Consultar')}</span>
+                            )}
+                        </div>
+                        {onToggleExperience && (
+                            <button
+                                type="button"
+                                className={`rec-cms-add-btn${isAdded ? ' rec-cms-add-btn--added' : isDisabled ? ' rec-cms-add-btn--disabled' : ''}`}
+                                onClick={() => onToggleExperience(tour.id, tour.title, isFreeForPlan ? 0 : tour.priceNum)}
+                                style={isFreeForPlan && isAdded ? { background: '#059669', borderColor: '#059669' } : undefined}
+                            >
+                                {isAdded ? (isFreeForPlan ? '✓ Incluido' : '✓ Agregado') : isDisabled ? 'Límite alcanzado' : (isFreeForPlan ? '+ Incluir Gratis' : '+ Agregar Extra')}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="rec-cms-wrapper">
             <div className="rec-cms-header">
