@@ -10,24 +10,26 @@ const wixClient = createClient({
 })
 
 /**
- * Submit a form entry to Wix CMS collection "cmsformulario" (Contact page)
+ * Submit a form entry to Wix CMS collection "Popup" via backend endpoint (Contact page)
  */
 export async function submitFormToCMS(data) {
     try {
-        const result = await wixClient.items.insert('cmsformulario', {
-            nombre: data.nombre,
-            telefono: data.telefono,
-            email: data.email,
-            estado: data.estado,
-            viaje: data.viaje,
-            mensaje: data.mensaje,
-            origen: data.origen,
-            fuente: 'SW - Contacto',
-            fecha: new Date().toISOString(),
+        const response = await fetch('/api/popup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: data.nombre,
+                telefono: data.telefono,
+                correo: data.email || data.correo,
+                estado: data.estado || '',
+                viaje: data.viaje || data.viajeDeInteres || '',
+                mensaje: data.mensaje || (data.origen ? `Origen: ${data.origen}` : ''),
+            }),
         })
-        return { success: true, id: result?._id }
+        const result = await response.json()
+        return result
     } catch (error) {
-        console.error('Error submitting to Wix CMS:', error)
+        console.error('Error submitting to Wix CMS via /api/popup:', error)
         return { success: false, error: error.message }
     }
 }

@@ -4,9 +4,8 @@
 
 /* ---- Progress Stepper (Dark bar extending navbar) ---- */
 .jtb-stepper {
-    position: sticky;
-    top: 0;
-    z-index: 990;
+    position: relative;
+    z-index: 10;
     padding: 0;
     display: flex;
     justify-content: center;

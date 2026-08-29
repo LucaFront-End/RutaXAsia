@@ -39,6 +39,65 @@ const PROCESS = [
     { step: '05', title: '¡A volar!', desc: 'Nos encontramos en el aeropuerto y desde ahí nos encargamos de todo.', icon: <LuPlaneTakeoff size={22} /> },
 ]
 
+const TIMELINE_EVENTS = [
+    {
+        year: '2009',
+        title: 'Mi primer viaje a Japón',
+        desc: 'Juan viaja a Japón como becario y obtiene su primera certificación como facilitador. Un sueño de niño cumplido que dejó la espina de querer más.',
+        image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&h=400&fit=crop&q=80',
+        side: 'left',
+    },
+    {
+        year: '2011',
+        title: 'Segunda certificación en Japón',
+        desc: 'Con más preparación y estudio, Juan vuelve a Japón y lo disfruta al máximo. En esta visita supo que Japón se quedaba en él y él en Japón.',
+        image: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600&h=400&fit=crop&q=80',
+        side: 'right',
+    },
+    {
+        year: '2011-18',
+        title: 'Años de experiencia profesional',
+        desc: 'Viajes frecuentes como consultor, ponente y coordinador de logística. Experiencia en manejo de grupos, movilización y cultura japonesa más allá de las grandes ciudades.',
+        image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&h=400&fit=crop&q=80',
+        side: 'left',
+    },
+    {
+        year: '2018',
+        title: 'Nace Juan Santiago Mx Viajes',
+        desc: 'El primer tour turístico con clientes: la ya clásica edición Otoño en Japón en noviembre. Nace formalmente Juan Santiago Mx Viajes.',
+        image: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=600&h=400&fit=crop&q=80',
+        side: 'right',
+    },
+    {
+        year: '2019',
+        title: '6 viajes grupales',
+        desc: '3 grupos en Sakura, 2 en verano y 2 en otoño. De las primeras agencias en México con tours semi-personalizados y acompañamiento desde CDMX durante todo el viaje.',
+        image: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&h=400&fit=crop&q=80',
+        side: 'left',
+    },
+    {
+        year: '2020-22',
+        title: 'El año de la reinvención',
+        desc: 'La pandemia cerró fronteras pero abrió oportunidades: reestructuración de rutas, nuevos convenios con hoteles y operadores locales, y creación de contenido educativo sobre Asia.',
+        image: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=600&h=400&fit=crop&q=80',
+        side: 'right',
+    },
+    {
+        year: '2023',
+        title: 'El gran regreso',
+        desc: 'Reapertura de Japón al turismo internacional. Récord de salidas: 8 grupos en el año, 100% de satisfacción y la consolidación de la comunidad de viajeros RutaXAsia.',
+        image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop&q=80',
+        side: 'left',
+    },
+    {
+        year: '2024',
+        title: 'Expansión a Corea del Sur',
+        desc: 'Lanzamiento oficial de los tours combinados Japón + Corea y Corea del Sur exclusivo. Nuevas rutas temáticas, grupos sold out en semanas y más de 500 viajeros felices.',
+        image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=600&h=400&fit=crop&q=80',
+        side: 'right',
+    },
+]
+
 const TRUST = [
     'Agencia registrada ante la Secretaría de Turismo de México',
     'Seguro de responsabilidad civil para todos los viajeros',
@@ -99,9 +158,28 @@ function useRevealOnScroll() {
 
 export default function AboutUs() {
     const [activeValue, setActiveValue] = useState(0)
+    const timelineRef = useRef(null)
+    const timelineLineRef = useRef(null)
 
     useEffect(() => { window.scrollTo(0, 0) }, [])
     useRevealOnScroll()
+
+    // Timeline scroll-fill animation
+    useEffect(() => {
+        const handleTimelineScroll = () => {
+            if (!timelineRef.current || !timelineLineRef.current) return
+            const section = timelineRef.current
+            const rect = section.getBoundingClientRect()
+            const sectionTop = rect.top + window.scrollY
+            const sectionH = section.offsetHeight
+            const scrollPos = window.scrollY + window.innerHeight * 0.5
+            const progress = Math.max(0, Math.min(1, (scrollPos - sectionTop) / sectionH))
+            timelineLineRef.current.style.height = `${progress * 100}%`
+        }
+        window.addEventListener('scroll', handleTimelineScroll, { passive: true })
+        handleTimelineScroll()
+        return () => window.removeEventListener('scroll', handleTimelineScroll)
+    }, [])
 
     return (
         <>
@@ -187,6 +265,49 @@ export default function AboutUs() {
                             <div key={i} className={`au-gallery-item reveal-scale ${img.span ? `au-gallery-item--${img.span}` : ''}`} style={{"--delay":`${i * 0.08}s`}}>
                                 <img src={img.src} alt={img.caption} />
                                 <div className="au-gallery-caption">{img.caption}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ===== OUR JOURNEY TIMELINE (Moved from Home) ===== */}
+            <section className="timeline-section" id="nuestra-historia" ref={timelineRef} style={{ backgroundColor: '#f5f0e8', padding: '5rem 0' }}>
+                <div className="container">
+                    <div className="section-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                        <span className="section-tag">Nuestra Historia</span>
+                        <h2 className="section-title">El viaje que nos trajo <span className="text-accent" style={{ color: 'var(--color-primary, #e91e7a)' }}>hasta aquí</span></h2>
+                        <p className="section-subtitle" style={{ color: '#666', maxWidth: '600px', margin: '0 auto' }}>Cada año sumó una nueva razón para compartir Asia con el mundo.</p>
+                    </div>
+
+                    <div className="tl-track">
+                        {/* Center spine */}
+                        <div className="tl-spine">
+                            <div className="tl-spine-fill" ref={timelineLineRef} />
+                        </div>
+
+                        {/* Timeline nodes */}
+                        {TIMELINE_EVENTS.map((evt, i) => (
+                            <div
+                                key={i}
+                                className={`tl-node tl-node--${evt.side}`}
+                                style={{ margin: '2rem 0' }}
+                            >
+                                {/* Year badge on the spine */}
+                                <div className="tl-year-badge">
+                                    <span>{evt.year}</span>
+                                </div>
+
+                                {/* Content card */}
+                                <div className="tl-card">
+                                    <div className="tl-card-img-wrap">
+                                        <img src={evt.image} alt={evt.title} className="tl-card-img" loading="lazy" />
+                                    </div>
+                                    <div className="tl-card-body">
+                                        <h3 className="tl-card-title">{evt.title}</h3>
+                                        <p className="tl-card-desc">{evt.desc}</p>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>

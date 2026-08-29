@@ -198,45 +198,36 @@ export default function FloatingTicket({
                             const itemPrice = item.price || 0
                             const itemTotalPrice = itemPrice * itemQty
                             return (
-                                <div className="libre-calc-item-row" key={idx} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '3px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                        <span className="libre-calc-item-title">➕ {item.name}</span>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <span className="libre-calc-item-price">{formatPrice(itemTotalPrice)} MXN</span>
-                                            {onRemoveTour && (
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => { e.stopPropagation(); onRemoveTour(item.id || item.name) }}
-                                                    style={{
-                                                        background: 'transparent',
-                                                        border: 'none',
-                                                        color: '#9ca3af',
-                                                        cursor: 'pointer',
-                                                        padding: '2px 5px',
-                                                        fontSize: '0.85rem',
-                                                        fontWeight: 'bold',
-                                                        lineHeight: 1,
-                                                        borderRadius: '4px',
-                                                        transition: 'all 0.2s',
-                                                    }}
-                                                    onMouseEnter={(e) => e.target.style.color = '#ef4444'}
-                                                    onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
-                                                    title="Eliminar tour"
-                                                >
-                                                    ✕
-                                                </button>
-                                            )}
-                                        </div>
+                                <div className="libre-calc-item-row" key={idx} style={{ alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
+                                    <span className="libre-calc-item-title" style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--color-dark, #1e293b)' }}>
+                                        {item.name}
+                                    </span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                                        <span className="libre-calc-item-price" style={{ fontSize: '0.88rem', fontWeight: 800 }}>{formatPrice(itemTotalPrice)} MXN</span>
+                                        {onRemoveTour && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); onRemoveTour(item.id || item.name) }}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    color: '#9ca3af',
+                                                    cursor: 'pointer',
+                                                    padding: '2px 5px',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 'bold',
+                                                    lineHeight: 1,
+                                                    borderRadius: '4px',
+                                                    transition: 'all 0.2s',
+                                                }}
+                                                onMouseEnter={(e) => e.target.style.color = '#ef4444'}
+                                                onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+                                                title="Eliminar tour"
+                                            >
+                                                ✕
+                                            </button>
+                                        )}
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#666' }}>
-                                        <span>📅 {item.date || 'Fecha por confirmar'}</span>
-                                        <span>👥 {itemQty} persona{itemQty > 1 ? 's' : ''}</span>
-                                    </div>
-                                    {item.attendees && item.attendees.length > 0 && (
-                                        <div style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic', paddingLeft: '4px' }}>
-                                            Pasajeros: {item.attendees.filter(Boolean).join(', ')}
-                                        </div>
-                                    )}
                                 </div>
                             )
                         })}

@@ -143,30 +143,50 @@ export default function TourDetail() {
             </section>
 
             {/* ===== 2. BENTO GALLERY ===== */}
-            <section className="td-gallery container">
-                <div className="td-bento">
-                    {tour.gallery.map((g, i) => (
-                        <div key={i} className={`td-bento-cell ${i === 0 ? 'td-bento-big' : ''}`} onClick={() => setLightbox(i)}>
-                            <img src={g.img} alt={g.caption} />
-                            <span className="td-bento-cap">{g.caption}</span>
-                        </div>
-                    ))}
-                </div>
-            </section>
+            {(() => {
+                const galleryItems = Array.isArray(tour.gallery) && tour.gallery.length > 0
+                    ? [...tour.gallery]
+                    : [{ img: tour.heroImage, caption: tour.title }]
+                const defaultFallbacks = [
+                    { img: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=900&h=600&fit=crop', caption: 'Japón & Asia' },
+                    { img: '/images/tours/kinkakuji.jpg', caption: 'Kyoto' },
+                    { img: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=900&h=600&fit=crop', caption: 'Monte Fuji' },
+                    { img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=900&h=600&fit=crop', caption: 'Tokyo' },
+                    { img: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=900&h=600&fit=crop', caption: 'Seúl' },
+                ]
+                while (galleryItems.length < 5) {
+                    galleryItems.push(defaultFallbacks[galleryItems.length % defaultFallbacks.length])
+                }
 
-            {/* ===== LIGHTBOX ===== */}
-            {lightbox !== null && (
-                <div className="td-lb" onClick={() => setLightbox(null)}>
-                    <button className="td-lb-close" onClick={() => setLightbox(null)}>✕</button>
-                    <button className="td-lb-nav td-lb-prev" onClick={e => { e.stopPropagation(); setLightbox((lightbox - 1 + tour.gallery.length) % tour.gallery.length) }}>‹</button>
-                    <div className="td-lb-wrap" onClick={e => e.stopPropagation()}>
-                        <img src={tour.gallery[lightbox].img} alt="" />
-                        <p className="td-lb-cap">{tour.gallery[lightbox].caption}</p>
-                    </div>
-                    <button className="td-lb-nav td-lb-next" onClick={e => { e.stopPropagation(); setLightbox((lightbox + 1) % tour.gallery.length) }}>›</button>
-                    <span className="td-lb-count">{lightbox + 1} / {tour.gallery.length}</span>
-                </div>
-            )}
+                return (
+                    <>
+                        <section className="td-gallery container">
+                            <div className="td-bento">
+                                {galleryItems.slice(0, 5).map((g, i) => (
+                                    <div key={i} className={`td-bento-cell ${i === 0 ? 'td-bento-big' : ''}`} onClick={() => setLightbox(i)}>
+                                        <img src={g.img} alt={g.caption} />
+                                        <span className="td-bento-cap">{g.caption}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* ===== LIGHTBOX ===== */}
+                        {lightbox !== null && (
+                            <div className="td-lb" onClick={() => setLightbox(null)}>
+                                <button className="td-lb-close" onClick={() => setLightbox(null)}>✕</button>
+                                <button className="td-lb-nav td-lb-prev" onClick={e => { e.stopPropagation(); setLightbox((lightbox - 1 + galleryItems.length) % galleryItems.length) }}>‹</button>
+                                <div className="td-lb-wrap" onClick={e => e.stopPropagation()}>
+                                    <img src={galleryItems[lightbox]?.img || tour.heroImage} alt="" />
+                                    <p className="td-lb-cap">{galleryItems[lightbox]?.caption}</p>
+                                </div>
+                                <button className="td-lb-nav td-lb-next" onClick={e => { e.stopPropagation(); setLightbox((lightbox + 1) % galleryItems.length) }}>›</button>
+                                <span className="td-lb-count">{lightbox + 1} / {galleryItems.length}</span>
+                            </div>
+                        )}
+                    </>
+                )
+            })()}
 
             {/* ===== 3. MAIN CONTENT WITH FLOATING TICKET SIDEBAR ===== */}
             <div className="container libre-layout" style={{ marginTop: '50px', marginBottom: '60px' }}>

@@ -103,80 +103,6 @@ const STARS = Array.from({ length: 65 }, (_, i) => {
     }
 })
 
-/* ===== TIMELINE DATA ===== */
-const TIMELINE_EVENTS = [
-    {
-        year: '2009',
-        title: 'Mi primer viaje a Japón',
-        desc: 'Juan viaja a Japón como becario y obtiene su primera certificación como facilitador. Un sueño de niño cumplido que dejó la espina de querer más.',
-        image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&h=400&fit=crop&q=80',
-        side: 'left',
-    },
-    {
-        year: '2011',
-        title: 'Segunda certificación en Japón',
-        desc: 'Con más preparación y estudio, Juan vuelve a Japón y lo disfruta al máximo. En esta visita supo que Japón se quedaba en él y él en Japón.',
-        image: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600&h=400&fit=crop&q=80',
-        side: 'right',
-    },
-    {
-        year: '2011-18',
-        title: 'Años de experiencia profesional',
-        desc: 'Viajes frecuentes como consultor, ponente y coordinador de logística. Experiencia en manejo de grupos, movilización y cultura japonesa más allá de las grandes ciudades.',
-        image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&h=400&fit=crop&q=80',
-        side: 'left',
-    },
-    {
-        year: '2018',
-        title: 'Nace Juan Santiago Mx Viajes',
-        desc: 'El primer tour turístico con clientes: la ya clásica edición Otoño en Japón en noviembre. Nace formalmente Juan Santiago Mx Viajes.',
-        image: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=600&h=400&fit=crop&q=80',
-        side: 'right',
-    },
-    {
-        year: '2019',
-        title: '6 viajes grupales',
-        desc: '3 grupos en Sakura, 2 en verano y 2 en otoño. De las primeras agencias en México con tours semi-personalizados y acompañamiento desde CDMX durante todo el viaje.',
-        image: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&h=400&fit=crop&q=80',
-        side: 'left',
-    },
-    {
-        year: '2020',
-        title: 'Pausa y reinvención',
-        desc: 'La pandemia nos obligó a pausar, pero nos sirvió para replantearnos. Alejandra se integra como guía y anfitriona — pieza fundamental de cada viaje.',
-        image: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=600&h=400&fit=crop&q=80',
-        side: 'right',
-    },
-    {
-        year: '2023',
-        title: 'Volvimos con todo 🚀',
-        desc: 'De las primeras agencias en regresar a Japón post-pandemia. 7 fechas, grupos llenos, y la confirmación de que la comunidad seguía más fuerte que nunca.',
-        image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop&q=80',
-        side: 'left',
-    },
-    {
-        year: '2024',
-        title: 'Corea entra en la ruta',
-        desc: 'Se aumentaron frecuencias y fuimos de las primeras agencias en ingresar a Corea del Sur con servicios semi-personalizados en nuestro formato único.',
-        image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=600&h=400&fit=crop&q=80',
-        side: 'right',
-    },
-    {
-        year: '2025',
-        title: '9 ediciones — nuestro récord',
-        desc: 'Entre Japón y Corea, 9 ediciones de viajes. Servicios perfeccionados, rutas ampliadas, itinerarios diversificados. El tope de fechas posibles.',
-        image: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=600&h=400&fit=crop&q=80',
-        side: 'left',
-    },
-    {
-        year: '2026',
-        title: 'Nace Ruta x Asia ✨',
-        desc: 'Año de transformación. Mantenemos frecuencias a Japón, sumamos una experiencia exclusiva a Corea del Sur con itinerario digno de un K-drama, y nace oficialmente Ruta x Asia.',
-        image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&h=400&fit=crop&q=80',
-        side: 'right',
-    },
-]
-
 /* ===== DAY JOURNEY DATA (Insider-Madeira style) ===== */
 const JOURNEY_TITLE_IMG = 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&h=1600&fit=crop&q=80'
 
@@ -376,24 +302,6 @@ function Home({ cityOverride } = {}) {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-
-    // Timeline scroll-fill animation
-    useEffect(() => {
-        const handleTimelineScroll = () => {
-            if (!timelineRef.current || !timelineLineRef.current) return
-            const section = timelineRef.current
-            const rect = section.getBoundingClientRect()
-            const sectionTop = rect.top + window.scrollY
-            const sectionH = section.offsetHeight
-            const scrollPos = window.scrollY + window.innerHeight * 0.5
-            const progress = Math.max(0, Math.min(1, (scrollPos - sectionTop) / sectionH))
-            timelineLineRef.current.style.height = `${progress * 100}%`
-        }
-        window.addEventListener('scroll', handleTimelineScroll, { passive: true })
-        handleTimelineScroll()
-        return () => window.removeEventListener('scroll', handleTimelineScroll)
-    }, [])
-
     const currentTrip = TRIPS[activeSlide]
 
     return (
@@ -528,7 +436,7 @@ function Home({ cityOverride } = {}) {
                 </div>
             </section>
 
-            {/* ===== JAPÓN A LA CARTA SHOWCASE SECTION ===== */}
+            {/* ===== 1. JAPÓN A LA CARTA SHOWCASE SECTION ===== */}
             <section className="home-modality-showcase">
                 <div className="container">
                     <div className="hm-grid">
@@ -604,7 +512,77 @@ function Home({ cityOverride } = {}) {
                 </div>
             </section>
 
-            {/* ===== HORIZONTAL DAY JOURNEY (Insider-Madeira style) ===== */}
+            {/* ===== 2. SEASONS EXPLORER (¿Cuándo Viajar?) ===== */}
+            <section className="seasons-section" id="blog" style={{ backgroundColor: '#f5f0e8' }}>
+                <div className="container">
+                    <div className="section-header" data-animate="fade-up">
+                        <span className="section-tag">¿Cuándo Viajar?</span>
+                        <h2 className="section-title">Cada estación tiene su <span className="text-accent">magia</span></h2>
+                        <p className="section-subtitle">{window.innerWidth <= 768 ? 'Tocá una estación para descubrir lo que te espera.' : 'Pasá el cursor sobre una estación para descubrir lo que te espera.'}</p>
+                    </div>
+                    <div className="seasons-panels" data-animate="fade-up">
+                        {[
+                            {
+                                season: 'Primavera',
+                                emoji: '🌸',
+                                months: '16 Mar — 15 Abr',
+                                temp: '10°C — 20°C',
+                                photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop',
+                                color: '#f8b4c8',
+                                highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'],
+                            },
+                            {
+                                season: 'Verano',
+                                emoji: '☀️',
+                                months: '16 Abr — 31 Ago',
+                                temp: '25°C — 35°C',
+                                photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop',
+                                color: '#f5a623',
+                                highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'],
+                            },
+                            {
+                                season: 'Otoño',
+                                emoji: '🍂',
+                                months: '1 Sep — 15 Mar',
+                                temp: '10°C — 20°C',
+                                photo: '/otono-japan.jpg',
+                                color: '#d4602a',
+                                highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'],
+                            },
+                            {
+                                season: 'Invierno',
+                                emoji: '❄️',
+                                months: 'Diciembre — Febrero',
+                                temp: '-2°C — 10°C',
+                                photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop',
+                                color: '#7bb8d9',
+                                highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'],
+                            },
+                        ].map((s, i) => (
+                            <div className="season-panel" key={i} style={{ '--accent': s.color }}>
+                                <img src={s.photo} alt={s.season} className="season-photo" loading="lazy" />
+                                <div className="season-overlay" />
+                                <div className="season-label">
+                                    <span className="season-emoji">{s.emoji}</span>
+                                    <h3 className="season-name">{s.season}</h3>
+                                    <span className="season-months">{s.months}</span>
+                                </div>
+                                <div className="season-details">
+                                    <span className="season-temp">{s.temp}</span>
+                                    <ul className="season-highlights">
+                                        {s.highlights.map((h, j) => <li key={j}>{h}</li>)}
+                                    </ul>
+                                    <a href={`${whatsappBase}SW-Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
+                                        Ver salidas →
+                                    </a>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ===== 3. HORIZONTAL DAY JOURNEY (Un día con RutaXAsia) ===== */}
             <section className="hscroll-wrapper" ref={hScrollRef}>
                 <div className="hscroll-sticky">
                     <div className="hscroll-track" ref={hTrackRef}>
@@ -773,51 +751,7 @@ function Home({ cityOverride } = {}) {
                 </div>
             </section>
 
-            {/* ===== OUR JOURNEY TIMELINE ===== */}
-            <section className="timeline-section" id="nuestra-historia" ref={timelineRef} style={{ backgroundColor: '#f5f0e8' }}>
-                <div className="container">
-                    <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag">Nuestra Historia</span>
-                        <h2 className="section-title">El viaje que nos trajo <span className="text-accent">hasta aquí</span></h2>
-                        <p className="section-subtitle">Cada año sumó una nueva razón para compartir Asia con el mundo.</p>
-                    </div>
-
-                    <div className="tl-track">
-                        {/* Center spine */}
-                        <div className="tl-spine">
-                            <div className="tl-spine-fill" ref={timelineLineRef} />
-                        </div>
-
-                        {/* Timeline nodes */}
-                        {TIMELINE_EVENTS.map((evt, i) => (
-                            <div
-                                key={i}
-                                className={`tl-node tl-node--${evt.side}`}
-                                data-animate="fade-up"
-                                data-delay={String(i * 80)}
-                            >
-                                {/* Year badge on the spine */}
-                                <div className="tl-year-badge">
-                                    <span>{evt.year}</span>
-                                </div>
-
-                                {/* Content card */}
-                                <div className="tl-card">
-                                    <div className="tl-card-img-wrap">
-                                        <img src={evt.image} alt={evt.title} className="tl-card-img" loading="lazy" />
-                                    </div>
-                                    <div className="tl-card-body">
-                                        <h3 className="tl-card-title">{evt.title}</h3>
-                                        <p className="tl-card-desc">{evt.desc}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== PRÓXIMAS SALIDAS (Boarding Pass Cards) ===== */}
+            {/* ===== 4. PRÓXIMAS SALIDAS (Boarding Pass Cards) ===== */}
             <section className="departures-section" id="proximos-viajes">
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
@@ -881,7 +815,7 @@ function Home({ cityOverride } = {}) {
                 </div>
             </section>
 
-            {/* ===== WHY US (Swiss Grid) ===== */}
+            {/* ===== 5. WHY US (Swiss Grid) ===== */}
             <section className="why-us" id="nosotros">
                 <div className="container">
                     <div className="wu-layout">
@@ -928,7 +862,7 @@ function Home({ cityOverride } = {}) {
                 </div>
             </section>
 
-            {/* ===== TESTIMONIALS (Polaroid Gallery) ===== */}
+            {/* ===== 6. TESTIMONIALS (Comunidad Viajera) ===== */}
             <section className="polaroid-section" id="comunidad" style={{ backgroundColor: '#0c0e16' }}>
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
@@ -965,77 +899,7 @@ function Home({ cityOverride } = {}) {
                 </div>
             </section>
 
-            {/* ===== SEASONS EXPLORER ===== */}
-            <section className="seasons-section" id="blog" style={{ backgroundColor: '#f5f0e8' }}>
-                <div className="container">
-                    <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag">¿Cuándo Viajar?</span>
-                        <h2 className="section-title">Cada estación tiene su <span className="text-accent">magia</span></h2>
-                        <p className="section-subtitle">{window.innerWidth <= 768 ? 'Tocá una estación para descubrir lo que te espera.' : 'Pasá el cursor sobre una estación para descubrir lo que te espera.'}</p>
-                    </div>
-                    <div className="seasons-panels" data-animate="fade-up">
-                        {[
-                            {
-                                season: 'Primavera',
-                                emoji: '🌸',
-                                months: 'Marzo — Mayo',
-                                temp: '10°C — 20°C',
-                                photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop',
-                                color: '#f8b4c8',
-                                highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'],
-                            },
-                            {
-                                season: 'Verano',
-                                emoji: '☀️',
-                                months: 'Junio — Agosto',
-                                temp: '25°C — 35°C',
-                                photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop',
-                                color: '#f5a623',
-                                highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'],
-                            },
-                            {
-                                season: 'Otoño',
-                                emoji: '🍂',
-                                months: 'Sept — Noviembre',
-                                temp: '10°C — 20°C',
-                                photo: '/otono-japan.jpg',
-                                color: '#d4602a',
-                                highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'],
-                            },
-                            {
-                                season: 'Invierno',
-                                emoji: '❄️',
-                                months: 'Diciembre — Febrero',
-                                temp: '-2°C — 10°C',
-                                photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop',
-                                color: '#7bb8d9',
-                                highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'],
-                            },
-                        ].map((s, i) => (
-                            <div className="season-panel" key={i} style={{ '--accent': s.color }}>
-                                <img src={s.photo} alt={s.season} className="season-photo" loading="lazy" />
-                                <div className="season-overlay" />
-                                <div className="season-label">
-                                    <span className="season-emoji">{s.emoji}</span>
-                                    <h3 className="season-name">{s.season}</h3>
-                                    <span className="season-months">{s.months}</span>
-                                </div>
-                                <div className="season-details">
-                                    <span className="season-temp">{s.temp}</span>
-                                    <ul className="season-highlights">
-                                        {s.highlights.map((h, j) => <li key={j}>{h}</li>)}
-                                    </ul>
-                                    <a href={`${whatsappBase}SW-Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">
-                                        Ver salidas →
-                                    </a>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== CTA FINAL (Boarding Pass) ===== */}
+            {/* ===== 7. CTA FINAL (Último Paso) ===== */}
             <section className="cta-bp-section" style={{ backgroundColor: '#0c0e16' }}>
                 <div className="container">
                     {/* Strong headline */}

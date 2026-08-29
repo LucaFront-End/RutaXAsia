@@ -86,16 +86,25 @@
 .navbar-menu {
   list-style: none;
   display: flex;
+  align-items: center;
   gap: 2rem;
   margin: 0;
   padding: 0;
 }
 
+.navbar-menu > li {
+  display: inline-flex;
+  align-items: center;
+}
+
 .navbar-menu a {
+  display: inline-flex;
+  align-items: center;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
+  line-height: 1.2;
   letter-spacing: 0.5px;
   transition: color 0.3s;
   position: relative;
@@ -128,10 +137,12 @@
 /* Dropdown */
 .nav-dropdown {
   position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
 .nav-dropdown-trigger {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   background: none;
@@ -141,6 +152,7 @@
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 500;
+  line-height: 1.2;
   letter-spacing: 0.5px;
   padding: 0;
   transition: color 0.3s;

@@ -219,6 +219,7 @@ const TOURS = {
             { img: '/images/tours/bukchon-seoul.jpg', caption: 'Bukchon Hanok Village' },
             { img: 'https://images.unsplash.com/photo-1689832832238-7d04910c63d9?w=900&h=600&fit=crop', caption: 'Korean BBQ' },
             { img: 'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=900&h=600&fit=crop', caption: 'Costa de Jeju' },
+            { img: 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?w=900&h=600&fit=crop', caption: 'Hongdae & K-Culture' },
         ],
         chapters: [
             {
@@ -291,6 +292,7 @@ const TOURS = {
             { img: 'https://images.unsplash.com/photo-1704003671790-ab28034a1b24?w=900&h=600&fit=crop', caption: 'Castillo de Osaka' },
             { img: '/images/tours/nara-ciervos.jpg', caption: 'Ciervos de Nara' },
             { img: '/images/tours/usj.jpg', caption: 'Universal Studios Japan' },
+            { img: '/images/tours/kinkakuji.jpg', caption: 'Kinkaku-ji, Kyoto' },
         ],
         chapters: [
             {
@@ -373,6 +375,7 @@ const TOURS = {
             { img: '/images/tours/bukchon-seoul.jpg', caption: 'Bukchon Hanok Village' },
             { img: 'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=900&h=600&fit=crop', caption: 'Isla de Jeju' },
             { img: 'https://images.unsplash.com/photo-1689832832238-7d04910c63d9?w=900&h=600&fit=crop', caption: 'Gastronomía coreana' },
+            { img: 'https://images.unsplash.com/photo-1638964663550-e2123ac8900b?w=900&h=600&fit=crop', caption: 'Gyeongbokgung, Seúl' },
         ],
         chapters: [
             {
@@ -446,6 +449,7 @@ const TOURS = {
             { img: 'https://images.unsplash.com/photo-1570459027562-4a916cc6113f?w=900&h=600&fit=crop', caption: 'Ciervos de Nara' },
             { img: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=900&h=600&fit=crop', caption: 'Monte Fuji' },
             { img: 'https://images.unsplash.com/photo-1535189043414-47a3c49a0bed?w=900&h=600&fit=crop', caption: 'Castillo de Osaka' },
+            { img: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=900&h=600&fit=crop', caption: 'Fushimi Inari, Kyoto' },
         ],
         chapters: [
             {
@@ -522,6 +526,7 @@ const TOURS = {
             { img: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=900&h=600&fit=crop', caption: 'Seúl de noche' },
             { img: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=900&h=600&fit=crop', caption: 'Tokyo de noche' },
             { img: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=900&h=600&fit=crop', caption: 'Monte Fuji' },
+            { img: 'https://images.unsplash.com/photo-1535189043414-47a3c49a0bed?w=900&h=600&fit=crop', caption: 'Castillo de Osaka' },
         ],
         chapters: [
             {
@@ -600,6 +605,7 @@ const TOURS = {
             { img: '/images/tours/otono-japon.jpg', caption: 'Momiji otoño' },
             { img: '/images/tours/kinkakuji.jpg', caption: 'Kinkaku-ji' },
             { img: '/images/tours/nara-ciervos.jpg', caption: 'Ciervos de Nara' },
+            { img: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=900&h=600&fit=crop', caption: 'Monte Fuji y Hakone' },
         ],
         chapters: [
             {
