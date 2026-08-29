@@ -431,18 +431,22 @@ app.all('/api/user-update-viajeros', async (req, res) => {
     }
 });
 
-// ---- Register New Traveler in Wix Members Route ----
-app.all('/api/user-register', async (req, res) => {
+// ---- Dynamic fallback for all /api/:route endpoints (tours-individuales, precios-categorias-dias, itinerarios-completos, etc.) ----
+app.all('/api/:route', async (req, res) => {
+    const route = req.params.route;
     try {
-        const handler = (await import('./api/user-register.js')).default;
-        return handler(req, res);
+        const mod = await import(`./api/${route}.js`);
+        if (mod && mod.default) {
+            return mod.default(req, res);
+        }
+        return res.status(404).json({ error: `Handler not found for /api/${route}` });
     } catch (err) {
-        console.error('[API] /api/user-register error:', err);
+        console.error(`[API] /api/${route} error:`, err);
         return res.status(500).json({ success: false, error: err.message });
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`[API] Blog API dev server running on http://localhost:${PORT}`);
+    console.log(`[API] API dev server running on http://localhost:${PORT}`);
     console.log(`[API] Site ID: ${process.env.VITE_WIX_SITE_ID?.substring(0, 8)}...`);
 });

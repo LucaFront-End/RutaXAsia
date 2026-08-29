@@ -77,6 +77,9 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
     const isCheckoutExplicit = location.search.includes('mode=checkout') || location.search.includes('checkout=1')
     const isWhatsAppMode = isCheckoutExplicit ? false : (whatsappOnly !== false)
 
+    const formatPrice = (num) => `$${Math.round(num || 0).toLocaleString('es-MX')} MXN`
+    const formatPriceNumOnly = (num) => `$${Math.round(num || 0).toLocaleString('es-MX')}`
+
     const { tripSearch: selectorData } = useTripSearch()
     const [tours, setTours] = useState([])
     const [loading, setLoading] = useState(true)
@@ -300,32 +303,46 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
         return `${WHATSAPP_BASE}${encodeURIComponent(msg)}`
     }
 
-    // Toggle tour freely directly into the Floating Ticket / Cart (NEVER open popup on add!)
+    // State for quick Modality selection popup modal upon clicking "+ Agregar"
+    const [modalityModalTour, setModalityModalTour] = useState(null)
+    const [chosenModalityOption, setChosenModalityOption] = useState('anfitrion')
+
+    // Toggle tour: If already added, removes it. If not added, opens quick modality choice modal!
     const toggleTour = (tour) => {
         if (!tour) return
         const existing = selectedTours.find(t => t.id === tour.id)
         if (existing) {
             setSelectedTours(prev => prev.filter(t => t.id !== tour.id))
         } else {
-            const chosenModality = tourModalities[tour.id] || 'anfitrion'
-            const chosenDate = tourDates[tour.id] || tomorrowStr
-            const chosenQty = tourQuantities[tour.id] || 1
-            const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
-            const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
-            const unitPrice = chosenModality === 'anfitrion' ? priceAnfitrion : priceLocatario
+            setChosenModalityOption(tourModalities[tour.id] || 'anfitrion')
+            setModalityModalTour(tour)
+        }
+    }
 
-            setSelectedTours(prev => [...prev, {
+    const confirmAddTourWithModality = (tour, modality) => {
+        if (!tour) return
+        const chosenDate = tourDates[tour.id] || tomorrowStr
+        const chosenQty = tourQuantities[tour.id] || 1
+        const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
+        const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
+        const unitPrice = modality === 'anfitrion' ? priceAnfitrion : priceLocatario
+
+        setTourModalities(prev => ({ ...prev, [tour.id]: modality }))
+
+        setSelectedTours(prev => {
+            const filtered = prev.filter(t => t.id !== tour.id)
+            return [...filtered, {
                 id: tour.id,
                 name: tour.title,
-                modality: chosenModality,
-                modalityLabel: chosenModality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+                modality: modality,
+                modalityLabel: modality === 'anfitrion' ? '👑 Anfitrión RutaXAsia' : '🏮 Asistencia Locataria',
                 price: unitPrice,
                 priceAnfitrionNum: priceAnfitrion,
                 priceLocatarioNum: priceLocatario,
                 date: chosenDate,
                 quantity: chosenQty,
-            }])
-        }
+            }]
+        })
     }
 
     // Filter & Sort logic (only tours strictly marked as apareceEnLista === true)
@@ -375,8 +392,6 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
     const totalPrice = useMemo(() => {
         return selectedTours.reduce((sum, t) => sum + (t.price * (t.quantity || 1)), 0)
     }, [selectedTours])
-
-    const formatPrice = (n) => `$${(n || 0).toLocaleString('es-MX')} MXN`
 
     const formatDateLabel = (dateStr) => {
         if (!dateStr) return 'Seleccionar'
@@ -668,37 +683,27 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                                                     </div>
                                                 </div>
 
-                                                {/* Card Footer: Price & Add / WhatsApp Button */}
+                                                {/* Card Footer: Price (1 single row) & Add Button */}
                                                 <div className="tours-indiv-card-footer">
                                                     <div className="tours-indiv-price-col">
                                                         <span className="tours-indiv-price-label">
-                                                            {currentQty > 1 ? `${formatPrice(unitPrice)} × ${currentQty}` : 'Desde'}
+                                                            {currentQty > 1 ? `${formatPriceNumOnly(unitPrice)} × ${currentQty}` : 'DESDE'}
                                                         </span>
-                                                        <strong className="tours-indiv-price-val">
-                                                            {formatPrice(tourTotalForQty)}
-                                                        </strong>
+                                                        <div className="tours-indiv-price-val-wrap">
+                                                            <strong className="tours-indiv-price-val">
+                                                                {formatPriceNumOnly(tourTotalForQty)}
+                                                            </strong>
+                                                            <span className="tours-indiv-price-currency">MXN</span>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="tours-indiv-card-actions">
-                                                        <button
-                                                            type="button"
-                                                            className={`tours-indiv-add-btn${isAdded ? ' tours-indiv-add-btn--added' : ''}`}
-                                                            onClick={() => toggleTour(tour)}
-                                                        >
-                                                            {isAdded ? '✓ Agregado' : '+ Agregar'}
-                                                        </button>
-                                                        {isWhatsAppMode && (
-                                                            <a
-                                                                href={getTourWhatsAppUrl(tour, currentQty, currentModality, currentDate)}
-                                                                className="tours-indiv-wa-card-btn"
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                title="Cotizar directamente por WhatsApp"
-                                                            >
-                                                                💬 WhatsApp
-                                                            </a>
-                                                        )}
-                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className={`tours-indiv-add-btn${isAdded ? ' tours-indiv-add-btn--added' : ''}`}
+                                                        onClick={() => toggleTour(tour)}
+                                                    >
+                                                        {isAdded ? '✓ Agregado' : '+ Agregar'}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -778,23 +783,21 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                                 </div>
                             </div>
 
-                            {/* Short Description (Descripción Corta del CMS) */}
+                            {/* Detailed Description */}
                             <div className="tours-drawer-section">
-                                <h3>⛩️ Acerca de este Tour</h3>
-                                {(detailDrawerTour.shortDescription || detailDrawerTour.descripcinAmplia || detailDrawerTour.excerpt) ? (
-                                    <div className="tours-drawer-desc-content">
-                                        {(detailDrawerTour.shortDescription || detailDrawerTour.descripcinAmplia || detailDrawerTour.excerpt)
+                                <h3>⛩️ Descripción del Tour</h3>
+                                <div className="tours-drawer-desc-content">
+                                    {(detailDrawerTour.descripcinAmplia || detailDrawerTour.shortDescription || detailDrawerTour.excerpt) ? (
+                                        (detailDrawerTour.descripcinAmplia || detailDrawerTour.shortDescription || detailDrawerTour.excerpt)
                                             .split('\n')
                                             .filter(p => p.trim())
-                                            .map((para, pIdx) => (
-                                                <p key={pIdx} style={{ marginBottom: '10px', lineHeight: 1.6, color: '#334155' }}>{para}</p>
-                                            ))}
-                                    </div>
-                                ) : (
-                                    <p style={{ color: '#64748b', lineHeight: 1.6 }}>
-                                        Disfruta de esta experiencia única por los rincones más emblemáticos de Japón con el acompañamiento de nuestro equipo.
-                                    </p>
-                                )}
+                                            .map((paragraph, idx) => (
+                                                <p key={idx}>{paragraph}</p>
+                                            ))
+                                    ) : (
+                                        <p>Tour de alta calidad organizado por el equipo oficial de RutaXAsia en Japón.</p>
+                                    )}
+                                </div>
                                 <div style={{ marginTop: '10px' }}>
                                     <a
                                         href={`/tours-individuales/${detailDrawerTour.slug || detailDrawerTour.id}`}
@@ -851,38 +854,133 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                         <div className="tours-drawer-footer">
                             <div>
                                 <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Precio base por persona (Anfitrión):</span>
-                                <strong style={{ fontSize: '1.25rem', color: 'var(--color-primary, #e11d48)' }}>
-                                    {formatPrice(drawerPriceAnfitrion)}
-                                </strong>
+                                <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px' }}>
+                                    <strong style={{ fontSize: '1.25rem', color: 'var(--color-primary, #e11d48)', fontWeight: 900 }}>
+                                        {formatPriceNumOnly(drawerPriceAnfitrion)}
+                                    </strong>
+                                    <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>MXN</span>
+                                </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                <button
-                                    type="button"
-                                    className={`tours-indiv-add-btn${isDrawerTourAdded ? ' tours-indiv-add-btn--added' : ''}`}
-                                    onClick={() => {
-                                        toggleTour(detailDrawerTour)
-                                        setDetailDrawerTour(null)
-                                    }}
-                                >
-                                    {isDrawerTourAdded ? '✓ Quitar del Pase' : '+ Agregar al Pase'}
-                                </button>
-                                {isWhatsAppMode && (
-                                    <a
-                                        href={getTourWhatsAppUrl(detailDrawerTour, drawerTourQty, drawerTourModality, drawerTourDate)}
-                                        className="tours-indiv-wa-card-btn"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{ padding: '10px 18px', fontSize: '0.88rem' }}
-                                    >
-                                        💬 Cotizar por WhatsApp
-                                    </a>
-                                )}
-                            </div>
+                            <button
+                                type="button"
+                                className={`tours-indiv-add-btn${isDrawerTourAdded ? ' tours-indiv-add-btn--added' : ''}`}
+                                onClick={() => {
+                                    toggleTour(detailDrawerTour)
+                                    setDetailDrawerTour(null)
+                                }}
+                            >
+                                {isDrawerTourAdded ? '✓ Quitar del Pase' : '+ Agregar al Pase'}
+                            </button>
                         </div>
                     </>
                 )}
             </div>
+
+            {/* Modal: Elige la Modalidad de Acompañamiento para este Tour específico al hacer clic en "+ Agregar" */}
+            {modalityModalTour && (
+                <div className="jtb-modal-overlay" style={{ zIndex: 9999999 }} onClick={() => setModalityModalTour(null)}>
+                    <div className="jtb-modal-card" style={{ maxWidth: '540px', padding: '28px 24px', margin: 'auto' }} onClick={e => e.stopPropagation()}>
+                        <button className="jtb-modal-close" onClick={() => setModalityModalTour(null)}>&times;</button>
+                        
+                        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                            <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '6px' }}>🎟️</span>
+                            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-heading)', margin: '0 0 6px', color: 'var(--color-dark)' }}>
+                                Elige la Modalidad de Asistencia
+                            </h3>
+                            <p style={{ fontSize: '0.88rem', color: '#64748b', margin: 0 }}>
+                                Para <strong>{modalityModalTour.title}</strong> (📍 {modalityModalTour.city || 'Japón'}):
+                            </p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '22px' }}>
+                            {/* Option 1: Asistencia Locataria */}
+                            <div
+                                onClick={() => setChosenModalityOption('locataria')}
+                                style={{
+                                    border: chosenModalityOption === 'locataria' ? '2px solid var(--color-primary, #e11d48)' : '1.5px solid #e2e8f0',
+                                    background: chosenModalityOption === 'locataria' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                    borderRadius: '14px',
+                                    padding: '14px 16px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    justifyContent: 'space-between',
+                                    gap: '12px',
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: chosenModalityOption === 'locataria' ? '0 4px 12px rgba(225, 29, 72, 0.1)' : 'none'
+                                }}
+                            >
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>🏮</span>
+                                    <div>
+                                        <strong style={{ fontSize: '0.94rem', color: '#1e293b', display: 'block', marginBottom: '3px' }}>
+                                            Asistencia Locataria
+                                        </strong>
+                                        <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
+                                            Guía local experto de la zona. Te acompañamos con un locatario bilingüe especializado que conoce las mejores rutas, transportes y gastronomía del lugar.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                    <span style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--color-primary, #e11d48)', display: 'block' }}>
+                                        {formatPrice(modalityModalTour.priceLocatarioNum || Math.round((modalityModalTour.priceAnfitrionNum || modalityModalTour.priceNum || 800) * 1.5))}
+                                    </span>
+                                    <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 600 }}>/ pers</span>
+                                </div>
+                            </div>
+
+                            {/* Option 2: Anfitrión RutaXAsia */}
+                            <div
+                                onClick={() => setChosenModalityOption('anfitrion')}
+                                style={{
+                                    border: chosenModalityOption === 'anfitrion' ? '2px solid var(--color-primary, #e11d48)' : '1.5px solid #e2e8f0',
+                                    background: chosenModalityOption === 'anfitrion' ? 'rgba(225, 29, 72, 0.04)' : '#fff',
+                                    borderRadius: '14px',
+                                    padding: '14px 16px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    justifyContent: 'space-between',
+                                    gap: '12px',
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: chosenModalityOption === 'anfitrion' ? '0 4px 12px rgba(225, 29, 72, 0.1)' : 'none'
+                                }}
+                            >
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>👑</span>
+                                    <div>
+                                        <strong style={{ fontSize: '0.94rem', color: '#1e293b', display: 'block', marginBottom: '3px' }}>
+                                            Anfitrión RutaXAsia
+                                        </strong>
+                                        <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
+                                            Coordinador exclusivo de nuestro equipo. Un anfitrión de nuestro equipo te acompañará durante todo el recorrido brindando asistencia VIP personalizada.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                    <span style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--color-primary, #e11d48)', display: 'block' }}>
+                                        {formatPrice(modalityModalTour.priceAnfitrionNum || modalityModalTour.priceNum || 800)}
+                                    </span>
+                                    <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 600 }}>/ pers</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="jtb-ticket-cta"
+                            onClick={() => {
+                                confirmAddTourWithModality(modalityModalTour, chosenModalityOption)
+                                setModalityModalTour(null)
+                            }}
+                            style={{ width: '100%', padding: '13px', fontSize: '0.98rem', borderRadius: '12px' }}
+                        >
+                            ➕ Agregar Tour al Pase de Abordar
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <CheckoutModal
                 isOpen={isCheckoutOpen}

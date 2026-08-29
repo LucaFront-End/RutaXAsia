@@ -217,29 +217,24 @@ export default function StepAcompanado({ season, temporadaKey }) {
     const pricePerPerson = basePrice + extraTotal
     const totalPrice = pricePerPerson * passengersCount
 
-    // Filter Tokyo-only experiences for the Free Day in Tokyo Modal
+    // Filter Tokyo-only experiences for the Free Day in Tokyo Modal (strictly Tokyo, no Osaka/Universal Studios/Kyoto)
     const tokyoTours = useMemo(() => {
         return allTours.filter(t => {
-            const title = (t.title || '').toLowerCase()
-            const cat = (t.category || '').toLowerCase()
-            return (
-                title.includes('tokyo') ||
-                title.includes('tokio') ||
-                title.includes('disney') ||
-                title.includes('harry potter') ||
-                title.includes('fuji') ||
-                title.includes('nikko') ||
-                title.includes('kamakura') ||
-                title.includes('akihabara') ||
-                title.includes('kimono') ||
-                title.includes('samurai') ||
-                title.includes('yakatabune') ||
-                title.includes('sanrio') ||
-                title.includes('sensoji') ||
-                title.includes('sky tree') ||
-                cat.includes('parques') ||
-                cat.includes('vip')
-            )
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            // Exclude anything from other cities
+            if (raw.includes('osaka') || raw.includes('universal studios') || raw.includes('usj') ||
+                raw.includes('kyoto') || raw.includes('kioto') || raw.includes('hiroshima') ||
+                raw.includes('takayama') || raw.includes('kanazawa') || raw.includes('nara') ||
+                raw.includes('fukuoka') || raw.includes('shirakawa') || raw.includes('kobe') ||
+                raw.includes('himeji') || raw.includes('naoshima') || raw.includes('uji')) {
+                return false
+            }
+            // Must be Tokyo experiences
+            return raw.includes('tokio') || raw.includes('tokyo') || raw.includes('disney') ||
+                   raw.includes('harry potter') || raw.includes('sanrio') || raw.includes('fuji') ||
+                   raw.includes('nikko') || raw.includes('kamakura') || raw.includes('akihabara') ||
+                   raw.includes('asakusa') || raw.includes('sky tree') || raw.includes('yakatabune') ||
+                   raw.includes('samurai') || raw.includes('kimono') || raw.includes('té') || raw.includes('te')
         })
     }, [allTours])
 
@@ -442,48 +437,39 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                 return (
                                     <div
                                         key={t.id}
+                                        className={`jtb-tokyo-card${isSelected ? ' jtb-tokyo-card--selected' : ''}`}
                                         onClick={() => toggleExperience({ id: t.id, name: t.title, price: t.priceNum || 0 })}
-                                        style={{
-                                            border: isSelected ? '2px solid var(--color-primary, #e11d48)' : '1px solid #e5e7eb',
-                                            background: isSelected ? 'rgba(225, 29, 72, 0.04)' : '#fff',
-                                            borderRadius: '14px',
-                                            padding: '12px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'space-between',
-                                            transition: 'all 0.2s',
-                                            position: 'relative'
-                                        }}
                                     >
                                         <div>
-                                            <div style={{ height: '110px', borderRadius: '10px', overflow: 'hidden', marginBottom: '10px', background: '#f3f4f6' }}>
-                                                <img src={t.image} alt={t.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <div className="jtb-tokyo-card-img-wrap">
+                                                <img src={t.image} alt={t.title} loading="lazy" />
+                                                <span className="jtb-tokyo-card-city">📍 Tokio</span>
                                             </div>
-                                            <h5 style={{ margin: '0 0 6px', fontSize: '0.92rem', fontWeight: 800, color: 'var(--color-dark)', lineHeight: 1.25 }}>
-                                                {t.title}
-                                            </h5>
-                                            {t.excerpt && (
-                                                <p style={{ margin: '0 0 8px', fontSize: '0.78rem', color: '#666', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                                    {t.excerpt}
-                                                </p>
-                                            )}
+                                            <div className="jtb-tokyo-card-content">
+                                                <h5 className="jtb-tokyo-card-title">
+                                                    {t.title}
+                                                </h5>
+                                                {t.excerpt && (
+                                                    <p className="jtb-tokyo-card-desc">
+                                                        {t.excerpt}
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
 
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #f3f4f6' }}>
-                                            <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--color-primary, #e11d48)' }}>
-                                                {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString()} MXN` : 'Incluido')}
-                                            </span>
-                                            <span style={{
-                                                fontSize: '0.76rem',
-                                                fontWeight: 700,
-                                                padding: '4px 10px',
-                                                borderRadius: '20px',
-                                                background: isSelected ? 'var(--color-primary, #e11d48)' : '#f3f4f6',
-                                                color: isSelected ? '#fff' : '#4b5563'
-                                            }}>
+                                        <div className="jtb-tokyo-card-footer">
+                                            <div className="jtb-tokyo-card-price-wrap">
+                                                <span className="jtb-tokyo-card-price">
+                                                    {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString('es-MX')}` : 'Incluido')}
+                                                </span>
+                                                {t.priceNum ? <span className="jtb-tokyo-card-currency">MXN</span> : null}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className={`jtb-tokyo-add-btn${isSelected ? ' jtb-tokyo-add-btn--selected' : ''}`}
+                                            >
                                                 {isSelected ? '✓ Agregado' : '+ Agregar'}
-                                            </span>
+                                            </button>
                                         </div>
                                     </div>
                                 )

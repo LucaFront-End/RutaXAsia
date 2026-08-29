@@ -46,50 +46,167 @@ const CITY_ORDER_PRIORITY = {
     'himeji': 13,
 }
 
-// Grouping of cities for "Rutas por Japón"
+// Grouping of individual cities (1 franja por ciudad) for "Rutas por Japón"
 const CITY_GROUPS = [
     {
         key: 'tokio',
-        name: 'Rutas en Tokio y Alrededores',
+        name: 'Tokio',
         icon: '🗼',
-        tag: 'Monte Fuji · Hakone · Nikko · Kamakura · Gotemba · Tokio',
+        tag: 'Barrios icónicos · Asakusa · Akihabara · Sky Tree',
         matchFn: (t) => {
             const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('tokio') || raw.includes('tokyo') || raw.includes('fuji') || 
-                   raw.includes('hakone') || raw.includes('nikko') || raw.includes('kamakura') || 
-                   raw.includes('gotemba') || raw.includes('akihabara') || raw.includes('asakusa')
+            return (raw.includes('tokio') || raw.includes('tokyo') || raw.includes('asakusa') || raw.includes('akihabara') || raw.includes('barrios')) &&
+                   !raw.includes('nikko') && !raw.includes('fuji') && !raw.includes('hakone') && !raw.includes('kamakura') && !raw.includes('gotemba')
         }
     },
     {
-        key: 'kansai',
-        name: 'Rutas en Kioto, Osaka y Región de Kansai',
-        icon: '🏯',
-        tag: 'Kioto · Castillo de Osaka · Dotonbori · Nara · Uji · Himeji · Kobe · Naoshima',
+        key: 'fuji-hakone',
+        name: 'Monte Fuji y Hakone',
+        icon: '🗻',
+        tag: 'Vistas panorámicas del Monte Fuji · Lago Ashi · Gotemba',
         matchFn: (t) => {
             const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('osaka') || raw.includes('kyoto') || raw.includes('kioto') || 
-                   raw.includes('nara') || raw.includes('uji') || raw.includes('himeji') || 
-                   raw.includes('kobe') || raw.includes('naoshima')
+            return raw.includes('fuji') || raw.includes('hakone') || raw.includes('gotemba')
+        }
+    },
+    {
+        key: 'nikko',
+        name: 'Nikko',
+        icon: '⛩️',
+        tag: 'Santuarios Patrimonio de la Humanidad y naturaleza',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('nikko')
+        }
+    },
+    {
+        key: 'kamakura',
+        name: 'Kamakura',
+        icon: '🌊',
+        tag: 'Gran Buda de Kamakura · Templos y costa',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('kamakura')
+        }
+    },
+    {
+        key: 'osaka',
+        name: 'Osaka',
+        icon: '🏯',
+        tag: 'Castillo de Osaka · Dotonbori · Gastronomía callejera',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return (raw.includes('osaka') || raw.includes('dotonbori')) && !raw.includes('himeji') && !raw.includes('naoshima')
+        }
+    },
+    {
+        key: 'kioto',
+        name: 'Kioto',
+        icon: '⛩️',
+        tag: 'Templos milenarios · Gion · Pabellón Dorado y Arashiyama',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return (raw.includes('kyoto') || raw.includes('kioto')) && !raw.includes('osaka') && !raw.includes('nara') && !raw.includes('uji')
+        }
+    },
+    {
+        key: 'nara',
+        name: 'Nara',
+        icon: '🦌',
+        tag: 'Parque de los Ciervos Sagrados y Templo Todaiji',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('nara')
+        }
+    },
+    {
+        key: 'uji',
+        name: 'Uji',
+        icon: '🍵',
+        tag: 'Cuna del Té Matcha y Santuarios tradicionales',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('uji') && !raw.includes('nara')
+        }
+    },
+    {
+        key: 'himeji-kobe',
+        name: 'Himeji y Kobe',
+        icon: '🏰',
+        tag: 'Castillo de la Garza Blanca y Bahía de Kobe',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('himeji') || raw.includes('kobe')
+        }
+    },
+    {
+        key: 'naoshima',
+        name: 'Isla de Naoshima',
+        icon: '🎨',
+        tag: 'Isla del Arte Moderno y esculturas icónicas',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('naoshima')
         }
     },
     {
         key: 'hiroshima',
-        name: 'Rutas en Hiroshima, Miyajima y Fukuoka',
-        icon: '⛩️',
-        tag: 'Hiroshima Histórico · Isla Sagrada de Miyajima · Fukuoka',
+        name: 'Hiroshima',
+        icon: '🕊️',
+        tag: 'Parque Memorial de la Paz y Castillo de Hiroshima',
         matchFn: (t) => {
             const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('hiroshima') || raw.includes('miyajima') || raw.includes('fukuoka')
+            return raw.includes('hiroshima') && !raw.includes('miyajima')
         }
     },
     {
-        key: 'alpes',
-        name: 'Rutas en Takayama, Kanazawa y Shirakawago (Alpes Japoneses)',
-        icon: '🏔️',
-        tag: 'Takayama Tradicional · Aldea Patrimonio de Shirakawago · Jardines de Kanazawa',
+        key: 'miyajima',
+        name: 'Isla de Miyajima',
+        icon: '⛩️',
+        tag: 'Torii Flotante del Santuario Itsukushima',
         matchFn: (t) => {
             const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('takayama') || raw.includes('kanazawa') || raw.includes('shirakawago') || raw.includes('shirakawa')
+            return raw.includes('miyajima')
+        }
+    },
+    {
+        key: 'fukuoka',
+        name: 'Fukuoka',
+        icon: '🍜',
+        tag: 'Capital de Kyushu · Puestos Yatai y ramen Hakata',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('fukuoka')
+        }
+    },
+    {
+        key: 'takayama',
+        name: 'Takayama',
+        icon: '🏮',
+        tag: 'Casco antiguo Sanmachi Suji y sake tradicional',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return (raw.includes('takayama') || (t.city && t.city.toLowerCase().includes('takayama'))) && !raw.includes('shirakawa') && !raw.includes('kanazawa')
+        }
+    },
+    {
+        key: 'shirakawago',
+        name: 'Shirakawago',
+        icon: '🏔️',
+        tag: 'Aldea histórica con casas tradicionales Gassho-zukuri',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return raw.includes('shirakawago') || raw.includes('shirakawa')
+        }
+    },
+    {
+        key: 'kanazawa',
+        name: 'Kanazawa',
+        icon: '🏯',
+        tag: 'Jardín Kenrokuen y barrio de Geishas Higashi Chaya',
+        matchFn: (t) => {
+            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
+            return (raw.includes('kanazawa') || (t.city && t.city.toLowerCase().includes('kanazawa'))) && !raw.includes('shirakawa') && !raw.includes('takayama')
         }
     },
 ]

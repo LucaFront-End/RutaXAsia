@@ -60,10 +60,15 @@ export default function CheckoutModal({
     // Travelers Information list
     const [travelers, setTravelers] = useState([])
 
-    // Reset to Step 1 and clear status every time the modal is opened
+    // Reset and determine initial step every time the modal is opened
     useEffect(() => {
         if (isOpen) {
-            setStep(1)
+            // If opening from Tours Individuales with already chosen tours (each having their own modality), start at Step 2 (Buyer details)
+            if (isToursSueltos && selectedTours.length > 0 && !pendingTour) {
+                setStep(2)
+            } else {
+                setStep(1)
+            }
             setStatus('checkout')
             setErrors({})
             setApiError('')
@@ -74,7 +79,7 @@ export default function CheckoutModal({
                 setAdultsCount(selectedTours[0].quantity)
             }
         }
-    }, [isOpen, pendingTour])
+    }, [isOpen, pendingTour, isToursSueltos, selectedTours.length])
 
     // Synchronize travelers array when totalTravelers changes
     useEffect(() => {
@@ -171,14 +176,15 @@ export default function CheckoutModal({
         }
     }, [maxInstallments])
 
-    // Recalculate dynamic total based on chosen assistanceType for Tours Sueltos
+    // Recalculate dynamic total based on each tour's individual modality or assistanceType for Tours Sueltos
     const effectiveTotalPrice = useMemo(() => {
         if (!isToursSueltos) return totalPrice || 0
         if (activeToursList && activeToursList.length > 0) {
             return activeToursList.reduce((sum, t) => {
+                const tourMod = t.modality || assistanceType || 'anfitrion'
                 const priceAnfitrion = t.priceAnfitrionNum || (t.modality === 'anfitrion' ? t.price : (t.priceNum || 800))
                 const priceLocatario = t.priceLocatarioNum || (t.modality === 'locatario' ? t.price : Math.round(priceAnfitrion * 1.5))
-                const unit = assistanceType === 'anfitrion' ? priceAnfitrion : priceLocatario
+                const unit = tourMod === 'anfitrion' ? priceAnfitrion : priceLocatario
                 return sum + (unit * (t.quantity || 1))
             }, 0)
         }
@@ -710,9 +716,15 @@ export default function CheckoutModal({
                                             type="button"
                                             className="btn btn-outline"
                                             style={{ padding: '12px 16px', borderRadius: '100px', fontSize: '0.85rem', color: '#64748b', borderColor: '#cbd5e1' }}
-                                            onClick={handlePrevStep}
+                                            onClick={() => {
+                                                if (isToursSueltos && !pendingTour) {
+                                                    onClose()
+                                                } else {
+                                                    handlePrevStep()
+                                                }
+                                            }}
                                         >
-                                            ← Modalidad
+                                            {isToursSueltos && !pendingTour ? '← Volver al Catálogo' : '← Modalidad'}
                                         </button>
                                     )}
                                     <button

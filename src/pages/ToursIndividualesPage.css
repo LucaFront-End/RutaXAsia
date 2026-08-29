@@ -644,13 +644,29 @@
     line-height: 1;
 }
 
+.tours-indiv-price-val-wrap {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+    margin-top: 3px;
+    white-space: nowrap;
+}
+
 .tours-indiv-price-val,
 .tours-indiv-card-price {
-    font-size: 1.12rem;
+    font-size: 1.15rem;
     font-weight: 900;
     color: var(--color-primary, #e11d48);
-    margin-top: 3px;
     line-height: 1;
+    letter-spacing: -0.01em;
+}
+
+.tours-indiv-price-currency {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 /* Primary Add / Toggle Button */
