@@ -476,14 +476,13 @@ export default function StepAcompanado({ season, temporadaKey }) {
                             })}
                         </div>
 
-                        <div style={{ textAlign: 'center' }}>
+                        <div style={{ textAlign: 'center', marginTop: '20px' }}>
                             <button
                                 type="button"
                                 className="jtb-ticket-cta"
                                 onClick={() => setIsTokyoModalOpen(false)}
-                                style={{ padding: '12px 32px', fontSize: '0.95rem' }}
                             >
-                                Listo, Continuar con mi Itinerario
+                                <span>✓ Listo, Continuar con mi Itinerario →</span>
                             </button>
                         </div>
                     </div>

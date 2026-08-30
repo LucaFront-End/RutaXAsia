@@ -4297,7 +4297,8 @@ a {
 }
 
 .td-ticket-modal-body .jtb-ticket-card,
-.td-ticket-modal-body .libre-calculator {
+.td-ticket-modal-body .libre-calculator,
+.td-ticket-modal-body .libre-calc-ticket-body {
     box-shadow: none !important;
     border: none !important;
     background: transparent !important;
@@ -4306,7 +4307,8 @@ a {
     width: 100% !important;
     max-height: none !important;
     overflow: visible !important;
-    padding: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .td-ticket-modal-body .jtb-mobile-floating-bar {
@@ -4341,6 +4343,37 @@ a {
     background: #d1fae5;
     color: #047857;
     transform: translateY(-2px);
+}
+
+/* ===== JTB TICKET CTA (BEAUTIFUL MODAL CONTINUATION BUTTON) ===== */
+.jtb-ticket-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: linear-gradient(135deg, var(--color-primary, #e11d48) 0%, #be123c 100%);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 100px;
+    padding: 13px 36px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(225, 29, 72, 0.35);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: 0.02em;
+    font-family: inherit;
+    text-decoration: none;
+}
+
+.jtb-ticket-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(225, 29, 72, 0.45);
+    filter: brightness(1.06);
+}
+
+.jtb-ticket-cta:active {
+    transform: translateY(0);
 }
 
 @keyframes fadeInModal {

@@ -468,10 +468,10 @@ function LandingHome({ landingData }) {
                     </div>
                     <div className="seasons-panels" data-animate="fade-up">
                         {[
-                            { season: 'Primavera', emoji: '🌸', months: 'Marzo — Mayo', temp: '10°C — 20°C', photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop', color: '#f8b4c8', highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'] },
-                            { season: 'Verano', emoji: '☀️', months: 'Junio — Agosto', temp: '25°C — 35°C', photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop', color: '#f5a623', highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'] },
-                            { season: 'Otoño', emoji: '🍂', months: 'Sept — Noviembre', temp: '10°C — 20°C', photo: '/otono-japan.jpg', color: '#d4602a', highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'] },
-                            { season: 'Invierno', emoji: '❄️', months: 'Diciembre — Febrero', temp: '-2°C — 10°C', photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop', color: '#7bb8d9', highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'] },
+                            { season: 'Primavera', emoji: '🌸', months: 'Marzo — Mayo', temp: '10°C — 20°C', photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop', color: '#f8b4c8', link: '/viajes/japon/sakura', highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'] },
+                            { season: 'Verano', emoji: '☀️', months: 'Junio — Agosto', temp: '25°C — 35°C', photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop', color: '#f5a623', link: '/viajes/japon/akari', highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'] },
+                            { season: 'Otoño', emoji: '🍂', months: 'Sept — Noviembre', temp: '10°C — 20°C', photo: '/otono-japan.jpg', color: '#d4602a', link: '/viajes/japon/kamakura', highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'] },
+                            { season: 'Invierno', emoji: '❄️', months: 'Diciembre — Febrero', temp: '-2°C — 10°C', photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop', color: '#7bb8d9', link: '/viajes/japon', highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'] },
                         ].map((s, i) => (
                             <div className="season-panel" key={i} style={{ '--accent': s.color }}>
                                 <img src={s.photo} alt={s.season} className="season-photo" loading="lazy" />
@@ -484,7 +484,7 @@ function LandingHome({ landingData }) {
                                 <div className="season-details">
                                     <span className="season-temp">{s.temp}</span>
                                     <ul className="season-highlights">{s.highlights.map((h, j) => <li key={j}>{h}</li>)}</ul>
-                                    <a href={`${whatsappUrl}SW-Hola%20quiero%20info%20sobre%20viajes%20en%20${s.season}`} className="season-cta" target="_blank" rel="noopener noreferrer">Ver salidas →</a>
+                                    <Link to={s.link} className="season-cta">Ver viajes →</Link>
                                 </div>
                             </div>
                         ))}

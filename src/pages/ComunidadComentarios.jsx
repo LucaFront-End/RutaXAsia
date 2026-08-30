@@ -179,6 +179,7 @@ export default function ComunidadComentarios() {
     const [likedIds, setLikedIds] = useState([])
     const [formError, setFormError] = useState(null)
     const [justPublishedToast, setJustPublishedToast] = useState(false)
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
     // Form state
     const [formData, setFormData] = useState({

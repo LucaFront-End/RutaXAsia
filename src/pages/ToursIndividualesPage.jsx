@@ -729,159 +729,224 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
             />
 
             <div className={`tours-drawer-panel${detailDrawerTour ? ' tours-drawer-panel--open' : ''}`}>
-                {detailDrawerTour && (
-                    <>
-                        {/* Drawer Header */}
-                        <div className="tours-drawer-header">
-                            <div>
-                                <span className="tours-drawer-badge">
-                                    {detailDrawerTour.category || 'Tour'} • 📍 {detailDrawerTour.city || 'Japón'}
-                                </span>
-                                <h2 className="tours-drawer-title">{detailDrawerTour.title}</h2>
-                            </div>
-                            <button
-                                type="button"
-                                className="tours-drawer-close"
-                                onClick={() => setDetailDrawerTour(null)}
-                                aria-label="Cerrar detalles"
-                            >
-                                ✕
-                            </button>
-                        </div>
+                {detailDrawerTour && (() => {
+                    const isDrawerTourAdded = selectedTours.some(t => t.id === detailDrawerTour.id)
+                    const currentDrawerModality = tourModalities[detailDrawerTour.id] || 'anfitrion'
+                    const currentDrawerDate = tourDates[detailDrawerTour.id] || tomorrowStr
+                    const currentDrawerQty = tourQuantities[detailDrawerTour.id] || 1
 
-                        {/* Drawer Scrollable Body */}
-                        <div className="tours-drawer-body">
-                            {/* Hero Image */}
-                            <div className="tours-drawer-img-wrap">
-                                <img
-                                    src={detailDrawerTour.image}
-                                    alt={detailDrawerTour.title}
-                                    onError={(e) => {
-                                        e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
-                                    }}
-                                />
-                                <div className="tours-drawer-img-overlay">
-                                    <span>⏱️ Duración: <strong>{detailDrawerTour.days || '1 día'} {detailDrawerTour.hours ? `(${detailDrawerTour.hours})` : ''}</strong></span>
+                    const drawerPriceAnfitrion = detailDrawerTour.priceAnfitrionNum || detailDrawerTour.priceNum || 800
+                    const drawerPriceLocatario = detailDrawerTour.priceLocatarioNum || Math.round(drawerPriceAnfitrion * 1.5)
+                    const drawerActivePrice = currentDrawerModality === 'anfitrion' ? drawerPriceAnfitrion : drawerPriceLocatario
+                    const drawerTotalPrice = drawerActivePrice * currentDrawerQty
+
+                    return (
+                        <>
+                            {/* Drawer Header */}
+                            <div className="tours-drawer-header">
+                                <div>
+                                    <span className="tours-drawer-badge">
+                                        {detailDrawerTour.category || 'Tour'} • 📍 {detailDrawerTour.city || 'Japón'}
+                                    </span>
+                                    <h2 className="tours-drawer-title">{detailDrawerTour.title}</h2>
                                 </div>
+                                <button
+                                    type="button"
+                                    className="tours-drawer-close"
+                                    onClick={() => setDetailDrawerTour(null)}
+                                    aria-label="Cerrar detalles"
+                                >
+                                    ✕
+                                </button>
                             </div>
 
-                            {/* Key Highlights Grid */}
-                            <div className="tours-drawer-highlights">
-                                <div className="drawer-highlight-card">
-                                    <span className="drawer-hl-icon">📍</span>
-                                    <div>
-                                        <span className="drawer-hl-label">Destino</span>
-                                        <strong className="drawer-hl-val">{detailDrawerTour.city || 'Japón'}</strong>
-                                    </div>
-                                </div>
-                                <div className="drawer-highlight-card">
-                                    <span className="drawer-hl-icon">⏱️</span>
-                                    <div>
-                                        <span className="drawer-hl-label">Duración</span>
-                                        <strong className="drawer-hl-val">{detailDrawerTour.days || '1 día'}</strong>
-                                    </div>
-                                </div>
-                                <div className="drawer-highlight-card">
-                                    <span className="drawer-hl-icon">🏷️</span>
-                                    <div>
-                                        <span className="drawer-hl-label">Categoría</span>
-                                        <strong className="drawer-hl-val">{detailDrawerTour.category || 'Tour'}</strong>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Detailed Description */}
-                            <div className="tours-drawer-section">
-                                <h3>⛩️ Descripción del Tour</h3>
-                                <div className="tours-drawer-desc-content">
-                                    {(detailDrawerTour.descripcinAmplia || detailDrawerTour.shortDescription || detailDrawerTour.excerpt) ? (
-                                        (detailDrawerTour.descripcinAmplia || detailDrawerTour.shortDescription || detailDrawerTour.excerpt)
-                                            .split('\n')
-                                            .filter(p => p.trim())
-                                            .map((paragraph, idx) => (
-                                                <p key={idx}>{paragraph}</p>
-                                            ))
-                                    ) : (
-                                        <p>Tour de alta calidad organizado por el equipo oficial de RutaXAsia en Japón.</p>
-                                    )}
-                                </div>
-                                <div style={{ marginTop: '10px' }}>
-                                    <a
-                                        href={`/tours-individuales/${detailDrawerTour.slug || detailDrawerTour.id}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            fontSize: '0.84rem',
-                                            fontWeight: 700,
-                                            color: '#e11d48',
-                                            textDecoration: 'none',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '4px'
+                            {/* Drawer Scrollable Body */}
+                            <div className="tours-drawer-body">
+                                {/* Hero Image */}
+                                <div className="tours-drawer-img-wrap">
+                                    <img
+                                        src={detailDrawerTour.image}
+                                        alt={detailDrawerTour.title}
+                                        onError={(e) => {
+                                            e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
                                         }}
-                                    >
-                                        🌐 Ver página completa del tour →
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* Observaciones / Notas si existen */}
-                            {(detailDrawerTour.observations || detailDrawerTour.observaciones) && (
-                                <div className="tours-drawer-section" style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '14px 16px', marginTop: '10px' }}>
-                                    <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#92400e', margin: '0 0 6px' }}>📝 Observaciones y Recomendaciones</h4>
-                                    <p style={{ fontSize: '0.82rem', color: '#78350f', margin: 0, lineHeight: 1.5 }}>
-                                        {detailDrawerTour.observations || detailDrawerTour.observaciones}
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Quick Price Reference */}
-                            <div className="tours-drawer-section" style={{ marginTop: '14px' }}>
-                                <h3>🏮 Modalidades Disponibles en la Reserva</h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
-                                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', display: 'block' }}>👑 Anfitrión de Viaje</span>
-                                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Coordinador RutaXAsia</span>
-                                        <strong style={{ fontSize: '0.95rem', color: 'var(--color-primary, #e11d48)', display: 'block', marginTop: '4px' }}>
-                                            {formatPrice(drawerPriceAnfitrion)}
-                                        </strong>
-                                    </div>
-                                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
-                                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', display: 'block' }}>🏮 Asistencia Locataria</span>
-                                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Guía local de la zona</span>
-                                        <strong style={{ fontSize: '0.95rem', color: 'var(--color-primary, #e11d48)', display: 'block', marginTop: '4px' }}>
-                                            {formatPrice(drawerPriceLocatario)}
-                                        </strong>
+                                    />
+                                    <div className="tours-drawer-img-overlay">
+                                        <span>⏱️ Duración: <strong>{detailDrawerTour.days || '1 día'} {detailDrawerTour.hours ? `(${detailDrawerTour.hours})` : ''}</strong></span>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Drawer Sticky Footer */}
-                        <div className="tours-drawer-footer">
-                            <div>
-                                <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Precio base por persona (Anfitrión):</span>
-                                <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px' }}>
-                                    <strong style={{ fontSize: '1.25rem', color: 'var(--color-primary, #e11d48)', fontWeight: 900 }}>
-                                        {formatPriceNumOnly(drawerPriceAnfitrion)}
-                                    </strong>
-                                    <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>MXN</span>
+                                {/* Key Highlights Grid */}
+                                <div className="tours-drawer-highlights">
+                                    <div className="drawer-highlight-card">
+                                        <span className="drawer-hl-icon">📍</span>
+                                        <div>
+                                            <span className="drawer-hl-label">Destino</span>
+                                            <strong className="drawer-hl-val">{detailDrawerTour.city || 'Japón'}</strong>
+                                        </div>
+                                    </div>
+                                    <div className="drawer-highlight-card">
+                                        <span className="drawer-hl-icon">⏱️</span>
+                                        <div>
+                                            <span className="drawer-hl-label">Duración</span>
+                                            <strong className="drawer-hl-val">{detailDrawerTour.days || '1 día'}</strong>
+                                        </div>
+                                    </div>
+                                    <div className="drawer-highlight-card">
+                                        <span className="drawer-hl-icon">🏷️</span>
+                                        <div>
+                                            <span className="drawer-hl-label">Categoría</span>
+                                            <strong className="drawer-hl-val">{detailDrawerTour.category || 'Tour'}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Detailed Description */}
+                                <div className="tours-drawer-section">
+                                    <h3>⛩️ Descripción del Tour</h3>
+                                    <div className="tours-drawer-desc-content">
+                                        {(detailDrawerTour.descripcinAmplia || detailDrawerTour.shortDescription || detailDrawerTour.excerpt) ? (
+                                            (detailDrawerTour.descripcinAmplia || detailDrawerTour.shortDescription || detailDrawerTour.excerpt)
+                                                .split('\n')
+                                                .filter(p => p.trim())
+                                                .map((paragraph, idx) => (
+                                                    <p key={idx}>{paragraph}</p>
+                                                ))
+                                        ) : (
+                                            <p>Tour de alta calidad organizado por el equipo oficial de RutaXAsia en Japón.</p>
+                                        )}
+                                    </div>
+                                    <div style={{ marginTop: '10px' }}>
+                                        <a
+                                            href={`/tours-individuales/${detailDrawerTour.slug || detailDrawerTour.id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                fontSize: '0.84rem',
+                                                fontWeight: 700,
+                                                color: '#e11d48',
+                                                textDecoration: 'none',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '4px'
+                                            }}
+                                        >
+                                            🌐 Ver página completa del tour →
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {/* Observaciones / Notas si existen */}
+                                {(detailDrawerTour.observations || detailDrawerTour.observaciones) && (
+                                    <div className="tours-drawer-section" style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '14px 16px' }}>
+                                        <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#92400e', margin: '0 0 6px' }}>📝 Observaciones y Recomendaciones</h4>
+                                        <p style={{ fontSize: '0.82rem', color: '#78350f', margin: 0, lineHeight: 1.5 }}>
+                                            {detailDrawerTour.observations || detailDrawerTour.observaciones}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Interactive Modality Selector */}
+                                <div className="tours-drawer-section">
+                                    <h3>🏮 Modalidad de Asistencia</h3>
+                                    <div className="tours-drawer-modalities-grid">
+                                        {/* 1. Anfitrión */}
+                                        <div
+                                            className={`tours-drawer-mod-card ${currentDrawerModality === 'anfitrion' ? 'tours-drawer-mod-card--active' : ''}`}
+                                            onClick={() => handleModalityChange(detailDrawerTour.id, 'anfitrion')}
+                                        >
+                                            <div className="tours-drawer-mod-head">
+                                                <span className="tours-drawer-mod-icon">👑</span>
+                                                <div>
+                                                    <strong>Anfitrión de Viaje</strong>
+                                                    <span>Coordinador RutaXAsia</span>
+                                                </div>
+                                            </div>
+                                            <div className="tours-drawer-mod-price">
+                                                <strong>{formatPrice(drawerPriceAnfitrion)}</strong>
+                                                <span className="tours-drawer-mod-badge">{currentDrawerModality === 'anfitrion' ? '✓ Elegido' : 'Elegir'}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* 2. Locataria */}
+                                        <div
+                                            className={`tours-drawer-mod-card ${currentDrawerModality === 'locataria' ? 'tours-drawer-mod-card--active' : ''}`}
+                                            onClick={() => handleModalityChange(detailDrawerTour.id, 'locataria')}
+                                        >
+                                            <div className="tours-drawer-mod-head">
+                                                <span className="tours-drawer-mod-icon">🏮</span>
+                                                <div>
+                                                    <strong>Asistencia Locataria</strong>
+                                                    <span>Guía local de la zona</span>
+                                                </div>
+                                            </div>
+                                            <div className="tours-drawer-mod-price">
+                                                <strong>{formatPrice(drawerPriceLocatario)}</strong>
+                                                <span className="tours-drawer-mod-badge">{currentDrawerModality === 'locataria' ? '✓ Elegido' : 'Elegir'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Date and Quantity Config */}
+                                <div className="tours-drawer-section">
+                                    <div className="tours-drawer-config-row">
+                                        <div className="tours-drawer-config-col">
+                                            <label>📅 Fecha del Tour</label>
+                                            <input
+                                                type="date"
+                                                className="tours-drawer-date-input"
+                                                value={currentDrawerDate}
+                                                min={tomorrowStr}
+                                                onChange={(e) => handleDateChange(detailDrawerTour.id, e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="tours-drawer-config-col">
+                                            <label>👥 Personas</label>
+                                            <div className="tours-drawer-qty-wrap">
+                                                <button
+                                                    type="button"
+                                                    className="tours-indiv-qty-btn"
+                                                    onClick={() => handleQuantityChange(detailDrawerTour.id, -1)}
+                                                    disabled={currentDrawerQty <= 1}
+                                                >-</button>
+                                                <span className="tours-drawer-qty-val">{currentDrawerQty} {currentDrawerQty === 1 ? 'persona' : 'personas'}</span>
+                                                <button
+                                                    type="button"
+                                                    className="tours-indiv-qty-btn"
+                                                    onClick={() => handleQuantityChange(detailDrawerTour.id, 1)}
+                                                >+</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <button
-                                type="button"
-                                className={`tours-indiv-add-btn${isDrawerTourAdded ? ' tours-indiv-add-btn--added' : ''}`}
-                                onClick={() => {
-                                    toggleTour(detailDrawerTour)
-                                    setDetailDrawerTour(null)
-                                }}
-                            >
-                                {isDrawerTourAdded ? '✓ Quitar del Pase' : '+ Agregar al Pase'}
-                            </button>
-                        </div>
-                    </>
-                )}
+                            {/* Drawer Sticky Footer */}
+                            <div className="tours-drawer-footer">
+                                <div className="tours-drawer-footer-price">
+                                    <span className="tours-drawer-footer-label">
+                                        {currentDrawerModality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria'} ({currentDrawerQty} {currentDrawerQty === 1 ? 'pers' : 'pers'}):
+                                    </span>
+                                    <div className="tours-drawer-footer-val">
+                                        <strong>{formatPriceNumOnly(drawerTotalPrice)}</strong>
+                                        <span>MXN</span>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className={`tours-drawer-add-btn${isDrawerTourAdded ? ' tours-drawer-add-btn--added' : ''}`}
+                                    onClick={() => {
+                                        toggleTour(detailDrawerTour)
+                                    }}
+                                >
+                                    {isDrawerTourAdded ? '✓ Quitar del Pase' : '+ Agregar al Pase'}
+                                </button>
+                            </div>
+                        </>
+                    )
+                })()}
             </div>
 
             {/* Modal: Elige la Modalidad de Acompañamiento para este Tour específico al hacer clic en "+ Agregar" */}
