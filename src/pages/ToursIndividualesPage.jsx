@@ -179,17 +179,22 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
         { value: 'alpha-desc', label: 'Nombre: Z - A', icon: '🔡' },
     ], [])
 
-    // Handle modality change for a tour
-    const handleModalityChange = (tour, newModality) => {
-        setTourModalities(prev => ({ ...prev, [tour.id]: newModality }))
+    // Handle modality change for a tour (supports tour object or id string)
+    const handleModalityChange = (tourOrId, newModality) => {
+        const tourObj = (typeof tourOrId === 'object' && tourOrId !== null)
+            ? tourOrId
+            : (tours.find(t => t.id === tourOrId) || detailDrawerTour || { id: tourOrId })
+        const tourId = tourObj.id || tourOrId
+
+        setTourModalities(prev => ({ ...prev, [tourId]: newModality }))
 
         const unitPrice = newModality === 'anfitrion'
-            ? (tour.priceAnfitrionNum || tour.priceNum || 800)
-            : (tour.priceLocatarioNum || Math.round((tour.priceAnfitrionNum || tour.priceNum || 800) * 1.5))
+            ? (tourObj.priceAnfitrionNum || tourObj.priceNum || 800)
+            : (tourObj.priceLocatarioNum || Math.round((tourObj.priceAnfitrionNum || tourObj.priceNum || 800) * 1.5))
 
         // If already added in ticket, update modality and price in selectedTours
         setSelectedTours(prev => prev.map(item =>
-            item.id === tour.id
+            item.id === tourId
                 ? {
                     ...item,
                     modality: newModality,
@@ -801,8 +806,83 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                                     </div>
                                 </div>
 
+                                {/* Interactive Modality Selector (Prominent at top) */}
+                                <div className="tours-drawer-section" style={{ marginTop: '16px' }}>
+                                    <h3>🏮 Elige tu Modalidad de Asistencia</h3>
+                                    <div className="tours-drawer-modalities-grid">
+                                        {/* 1. Anfitrión */}
+                                        <div
+                                            className={`tours-drawer-mod-card ${currentDrawerModality === 'anfitrion' ? 'tours-drawer-mod-card--active' : ''}`}
+                                            onClick={() => handleModalityChange(detailDrawerTour, 'anfitrion')}
+                                        >
+                                            <div className="tours-drawer-mod-head">
+                                                <span className="tours-drawer-mod-icon">👑</span>
+                                                <div>
+                                                    <strong>Anfitrión de Viaje</strong>
+                                                    <span>Coordinador RutaXAsia</span>
+                                                </div>
+                                            </div>
+                                            <div className="tours-drawer-mod-price">
+                                                <strong>{formatPrice(drawerPriceAnfitrion)}</strong>
+                                                <span className="tours-drawer-mod-badge">{currentDrawerModality === 'anfitrion' ? '✓ Elegido' : 'Elegir'}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* 2. Locataria */}
+                                        <div
+                                            className={`tours-drawer-mod-card ${currentDrawerModality === 'locataria' ? 'tours-drawer-mod-card--active' : ''}`}
+                                            onClick={() => handleModalityChange(detailDrawerTour, 'locataria')}
+                                        >
+                                            <div className="tours-drawer-mod-head">
+                                                <span className="tours-drawer-mod-icon">🏮</span>
+                                                <div>
+                                                    <strong>Asistencia Locataria</strong>
+                                                    <span>Guía local de la zona</span>
+                                                </div>
+                                            </div>
+                                            <div className="tours-drawer-mod-price">
+                                                <strong>{formatPrice(drawerPriceLocatario)}</strong>
+                                                <span className="tours-drawer-mod-badge">{currentDrawerModality === 'locataria' ? '✓ Elegido' : 'Elegir'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Date and Quantity Config (Prominent at top) */}
+                                <div className="tours-drawer-section" style={{ marginTop: '14px' }}>
+                                    <div className="tours-drawer-config-row">
+                                        <div className="tours-drawer-config-col">
+                                            <label>📅 Fecha deseada</label>
+                                            <input
+                                                type="date"
+                                                className="tours-drawer-date-input"
+                                                value={currentDrawerDate}
+                                                min={tomorrowStr}
+                                                onChange={(e) => handleDateChange(detailDrawerTour.id, e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="tours-drawer-config-col">
+                                            <label>👥 Pasajeros</label>
+                                            <div className="tours-drawer-qty-wrap">
+                                                <button
+                                                    type="button"
+                                                    className="tours-indiv-qty-btn"
+                                                    onClick={() => handleQuantityChange(detailDrawerTour.id, -1)}
+                                                    disabled={currentDrawerQty <= 1}
+                                                >-</button>
+                                                <span className="tours-drawer-qty-val">{currentDrawerQty} {currentDrawerQty === 1 ? 'persona' : 'personas'}</span>
+                                                <button
+                                                    type="button"
+                                                    className="tours-indiv-qty-btn"
+                                                    onClick={() => handleQuantityChange(detailDrawerTour.id, 1)}
+                                                >+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Detailed Description */}
-                                <div className="tours-drawer-section">
+                                <div className="tours-drawer-section" style={{ marginTop: '18px' }}>
                                     <h3>⛩️ Descripción del Tour</h3>
                                     <div className="tours-drawer-desc-content">
                                         {(detailDrawerTour.descripcinAmplia || detailDrawerTour.shortDescription || detailDrawerTour.excerpt) ? (
@@ -838,95 +918,20 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
 
                                 {/* Observaciones / Notas si existen */}
                                 {(detailDrawerTour.observations || detailDrawerTour.observaciones) && (
-                                    <div className="tours-drawer-section" style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '14px 16px' }}>
+                                    <div className="tours-drawer-section" style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '14px 16px', marginTop: '14px' }}>
                                         <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#92400e', margin: '0 0 6px' }}>📝 Observaciones y Recomendaciones</h4>
                                         <p style={{ fontSize: '0.82rem', color: '#78350f', margin: 0, lineHeight: 1.5 }}>
                                             {detailDrawerTour.observations || detailDrawerTour.observaciones}
                                         </p>
                                     </div>
                                 )}
-
-                                {/* Interactive Modality Selector */}
-                                <div className="tours-drawer-section">
-                                    <h3>🏮 Modalidad de Asistencia</h3>
-                                    <div className="tours-drawer-modalities-grid">
-                                        {/* 1. Anfitrión */}
-                                        <div
-                                            className={`tours-drawer-mod-card ${currentDrawerModality === 'anfitrion' ? 'tours-drawer-mod-card--active' : ''}`}
-                                            onClick={() => handleModalityChange(detailDrawerTour.id, 'anfitrion')}
-                                        >
-                                            <div className="tours-drawer-mod-head">
-                                                <span className="tours-drawer-mod-icon">👑</span>
-                                                <div>
-                                                    <strong>Anfitrión de Viaje</strong>
-                                                    <span>Coordinador RutaXAsia</span>
-                                                </div>
-                                            </div>
-                                            <div className="tours-drawer-mod-price">
-                                                <strong>{formatPrice(drawerPriceAnfitrion)}</strong>
-                                                <span className="tours-drawer-mod-badge">{currentDrawerModality === 'anfitrion' ? '✓ Elegido' : 'Elegir'}</span>
-                                            </div>
-                                        </div>
-
-                                        {/* 2. Locataria */}
-                                        <div
-                                            className={`tours-drawer-mod-card ${currentDrawerModality === 'locataria' ? 'tours-drawer-mod-card--active' : ''}`}
-                                            onClick={() => handleModalityChange(detailDrawerTour.id, 'locataria')}
-                                        >
-                                            <div className="tours-drawer-mod-head">
-                                                <span className="tours-drawer-mod-icon">🏮</span>
-                                                <div>
-                                                    <strong>Asistencia Locataria</strong>
-                                                    <span>Guía local de la zona</span>
-                                                </div>
-                                            </div>
-                                            <div className="tours-drawer-mod-price">
-                                                <strong>{formatPrice(drawerPriceLocatario)}</strong>
-                                                <span className="tours-drawer-mod-badge">{currentDrawerModality === 'locataria' ? '✓ Elegido' : 'Elegir'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Date and Quantity Config */}
-                                <div className="tours-drawer-section">
-                                    <div className="tours-drawer-config-row">
-                                        <div className="tours-drawer-config-col">
-                                            <label>📅 Fecha del Tour</label>
-                                            <input
-                                                type="date"
-                                                className="tours-drawer-date-input"
-                                                value={currentDrawerDate}
-                                                min={tomorrowStr}
-                                                onChange={(e) => handleDateChange(detailDrawerTour.id, e.target.value)}
-                                            />
-                                        </div>
-                                        <div className="tours-drawer-config-col">
-                                            <label>👥 Personas</label>
-                                            <div className="tours-drawer-qty-wrap">
-                                                <button
-                                                    type="button"
-                                                    className="tours-indiv-qty-btn"
-                                                    onClick={() => handleQuantityChange(detailDrawerTour.id, -1)}
-                                                    disabled={currentDrawerQty <= 1}
-                                                >-</button>
-                                                <span className="tours-drawer-qty-val">{currentDrawerQty} {currentDrawerQty === 1 ? 'persona' : 'personas'}</span>
-                                                <button
-                                                    type="button"
-                                                    className="tours-indiv-qty-btn"
-                                                    onClick={() => handleQuantityChange(detailDrawerTour.id, 1)}
-                                                >+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             {/* Drawer Sticky Footer */}
                             <div className="tours-drawer-footer">
                                 <div className="tours-drawer-footer-price">
                                     <span className="tours-drawer-footer-label">
-                                        {currentDrawerModality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria'} ({currentDrawerQty} {currentDrawerQty === 1 ? 'pers' : 'pers'}):
+                                        Total ({currentDrawerModality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria'} × {currentDrawerQty}):
                                     </span>
                                     <div className="tours-drawer-footer-val">
                                         <strong>{formatPriceNumOnly(drawerTotalPrice)}</strong>
@@ -938,7 +943,25 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                                     type="button"
                                     className={`tours-drawer-add-btn${isDrawerTourAdded ? ' tours-drawer-add-btn--added' : ''}`}
                                     onClick={() => {
-                                        toggleTour(detailDrawerTour)
+                                        if (isDrawerTourAdded) {
+                                            setSelectedTours(prev => prev.filter(t => t.id !== detailDrawerTour.id))
+                                        } else {
+                                            const unitPrice = currentDrawerModality === 'anfitrion' ? drawerPriceAnfitrion : drawerPriceLocatario
+                                            setSelectedTours(prev => [
+                                                ...prev,
+                                                {
+                                                    id: detailDrawerTour.id,
+                                                    name: detailDrawerTour.title,
+                                                    modality: currentDrawerModality,
+                                                    modalityLabel: currentDrawerModality === 'anfitrion' ? '👑 Anfitrión de Viaje' : '🏮 Asistencia Locataria',
+                                                    price: unitPrice,
+                                                    priceAnfitrionNum: drawerPriceAnfitrion,
+                                                    priceLocatarioNum: drawerPriceLocatario,
+                                                    date: currentDrawerDate,
+                                                    quantity: currentDrawerQty,
+                                                }
+                                            ])
+                                        }
                                     }}
                                 >
                                     {isDrawerTourAdded ? '✓ Quitar del Pase' : '+ Agregar al Pase'}
