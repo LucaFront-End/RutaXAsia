@@ -104,26 +104,12 @@
     50% { opacity: 1; }
 }
 
-/* ===== JUAN & ALE FOUNDER SPOTLIGHT ===== */
+/* ===== JUAN & ALE FOUNDER SPOTLIGHT (LIGHT THEME) ===== */
 .au-founders-spotlight {
-    background: radial-gradient(circle at 50% 0%, #1c1524 0%, #0c0e16 100%);
-    padding: 7rem 0 5rem;
+    background: #faf9f6;
+    padding: 6.5rem 0 5.5rem;
     position: relative;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    overflow: hidden;
-}
-
-.au-founders-spotlight::before {
-    content: '';
-    position: absolute;
-    top: -150px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 350px;
-    background: radial-gradient(circle, rgba(233, 30, 99, 0.18) 0%, transparent 70%);
-    filter: blur(60px);
-    pointer-events: none;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .au-founders-header {
@@ -134,12 +120,12 @@
 
 .au-founders-tag {
     display: inline-block;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.18em;
-    color: #ff6097;
-    background: rgba(233, 30, 99, 0.12);
-    border: 1px solid rgba(233, 30, 99, 0.3);
+    color: var(--color-primary, #dc2626);
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
     padding: 0.4rem 1.2rem;
     border-radius: 100px;
     margin-bottom: 1.2rem;
@@ -149,20 +135,20 @@
     font-family: 'Playfair Display', serif;
     font-size: clamp(2rem, 4vw, 3.2rem);
     font-weight: 700;
-    color: #fff;
+    color: #111827;
     line-height: 1.2;
     margin-bottom: 1rem;
 }
 
 .au-founders-glow {
-    background: linear-gradient(135deg, #ff6097 0%, #f5a623 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--color-primary, #dc2626);
+    background: none;
+    -webkit-text-fill-color: initial;
 }
 
 .au-founders-sub {
     font-size: 1.05rem;
-    color: rgba(255, 255, 255, 0.65);
+    color: #4b5563;
     line-height: 1.7;
 }
 
@@ -174,22 +160,20 @@
 }
 
 .au-founder-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 28px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
 .au-founder-card:hover {
     transform: translateY(-8px);
-    border-color: rgba(233, 30, 99, 0.4);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(233, 30, 99, 0.15);
+    border-color: var(--color-primary, #dc2626);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1);
 }
 
 .au-founder-photo-wrap {
@@ -213,16 +197,16 @@
 .au-founder-photo-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(12, 14, 22, 0.95) 0%, rgba(12, 14, 22, 0.2) 60%, transparent 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 60%, transparent 100%);
 }
 
 .au-founder-flag {
     position: absolute;
     top: 1.2rem;
     left: 1.2rem;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 0.35rem 0.8rem;
     border-radius: 100px;
     font-size: 0.8rem;
@@ -234,7 +218,7 @@
     position: absolute;
     bottom: 1.2rem;
     left: 1.5rem;
-    background: var(--color-primary, #e91e63);
+    background: var(--color-primary, #dc2626);
     color: #fff;
     font-size: 0.75rem;
     font-weight: 800;
@@ -242,11 +226,11 @@
     text-transform: uppercase;
     padding: 0.4rem 1rem;
     border-radius: 100px;
-    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
 }
 
 .au-founder-info {
-    padding: 2rem 2.2rem 2.5rem;
+    padding: 2.2rem 2.2rem 2.5rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -257,7 +241,7 @@
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--color-primary, #e91e63);
+    color: var(--color-primary, #dc2626);
     margin-bottom: 0.4rem;
 }
 
@@ -265,7 +249,7 @@
     font-family: 'Playfair Display', serif;
     font-size: 1.9rem;
     font-weight: 700;
-    color: #fff;
+    color: #111827;
     margin-bottom: 1rem;
 }
 
@@ -277,28 +261,31 @@
 }
 
 .au-founder-pills span {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.85);
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.3rem 0.75rem;
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 0.35rem 0.8rem;
     border-radius: 8px;
 }
 
 .au-founder-desc {
     font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: #4b5563;
     line-height: 1.7;
     margin-bottom: 1.5rem;
     flex: 1;
 }
 
 .au-founder-quote-box {
-    background: rgba(255, 255, 255, 0.03);
-    border-left: 3px solid var(--color-primary, #e91e63);
+    background: #f9fafb;
+    border-left: 3px solid var(--color-primary, #dc2626);
     padding: 1rem 1.2rem;
     border-radius: 0 12px 12px 0;
+    border-top: 1px solid #f3f4f6;
+    border-right: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f3f4f6;
     position: relative;
 }
 
@@ -307,15 +294,15 @@
     top: -6px;
     left: 8px;
     font-size: 2rem;
-    color: var(--color-primary, #e91e63);
+    color: var(--color-primary, #dc2626);
     opacity: 0.3;
     font-family: serif;
 }
 
 .au-founder-quote-box em {
     display: block;
-    font-size: 0.88rem;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+    color: #1f2937;
     font-style: italic;
     line-height: 1.5;
     padding-left: 0.5rem;
@@ -330,13 +317,14 @@
 }
 
 .au-pillar-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 18px;
-    padding: 1.5rem;
+    padding: 1.6rem;
     display: flex;
     gap: 1.2rem;
     align-items: flex-start;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
 .au-pillar-icon {
@@ -347,15 +335,15 @@
 }
 
 .au-pillar-item h4 {
-    font-size: 1rem;
+    font-size: 1.02rem;
     font-weight: 700;
-    color: #fff;
+    color: #111827;
     margin-bottom: 0.35rem;
 }
 
 .au-pillar-item p {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.88rem;
+    color: #6b7280;
     line-height: 1.5;
     margin: 0;
 }
@@ -371,7 +359,7 @@
     font-size: 1rem;
     padding: 1rem 2.2rem;
     border-radius: 100px;
-    box-shadow: 0 10px 30px rgba(233, 30, 99, 0.35);
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
 }
 
 @media (max-width: 900px) {

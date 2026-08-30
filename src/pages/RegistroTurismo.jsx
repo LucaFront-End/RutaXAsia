@@ -71,8 +71,8 @@ export default function RegistroTurismo() {
             <section className="container rnt-section">
                 <div className="section-header" style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                     <span className="section-tag">Transparencia Total</span>
-                    <h2 className="section-title">¿Por qué viajar con una <span className="text-accent" style={{ color: 'var(--color-primary, #e91e63)' }}>agencia formal</span>?</h2>
-                    <p className="section-subtitle" style={{ maxWidth: '650px', margin: '0 auto', color: 'rgba(255,255,255,0.7)' }}>
+                    <h2 className="section-title">¿Por qué viajar con una <span className="text-accent">agencia formal</span>?</h2>
+                    <p className="section-subtitle" style={{ maxWidth: '650px', margin: '0 auto' }}>
                         En un viaje al otro lado del mundo, la informalidad puede salir muy cara. En RutaXAsia operamos con estricto apego a las leyes mexicanas e internacionales.
                     </p>
                 </div>
@@ -209,7 +209,7 @@ export default function RegistroTurismo() {
             <section className="container rnt-faq-section">
                 <div className="section-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
                     <span className="section-tag">Preguntas de Confianza</span>
-                    <h2 className="section-title">Dudas frecuentes sobre <span style={{ color: 'var(--color-primary, #e91e63)' }}>legalidad y pagos</span></h2>
+                    <h2 className="section-title">Dudas frecuentes sobre <span className="text-accent">legalidad y pagos</span></h2>
                 </div>
 
                 <div className="rnt-faq-grid">

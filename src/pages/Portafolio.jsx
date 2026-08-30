@@ -277,10 +277,10 @@ export default function Portafolio() {
             {/* ===== EDITIONS RECAP BAR ===== */}
             <section className="port-editions-section">
                 <div className="container">
-                    <div className="section-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                    <div className="section-header" style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                         <span className="section-tag">Nuestras Rutas</span>
-                        <h2 className="section-title" style={{ color: '#fff' }}>¿Cuál es tu <span style={{ color: 'var(--color-primary, #e91e63)' }}>temporada soñada</span>?</h2>
-                        <p className="section-subtitle" style={{ color: 'rgba(255,255,255,0.6)' }}>Descubre las ediciones anuales y aparta tu lugar con anticipación.</p>
+                        <h2 className="section-title">¿Cuál es tu <span className="text-accent">temporada soñada</span>?</h2>
+                        <p className="section-subtitle">Descubre las ediciones anuales y aparta tu lugar con anticipación.</p>
                     </div>
 
                     <div className="port-editions-grid">

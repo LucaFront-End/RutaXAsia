@@ -1,10 +1,10 @@
 /* ===================================================
-   COMUNIDAD COMENTARIOS & RESEÑAS PAGE
+   COMUNIDAD COMENTARIOS & RESEÑAS PAGE (LIGHT THEME)
    =================================================== */
 
 .comunidad-page {
-    background: #0a0c10;
-    color: #fff;
+    background: #faf9f6;
+    color: var(--color-dark, #111827);
     min-height: 100vh;
     padding-bottom: 6rem;
 }
@@ -14,7 +14,8 @@
     position: relative;
     padding: 8.5rem 0 5rem;
     overflow: hidden;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: #0d0f14;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .com-hero-bg img {
@@ -24,14 +25,13 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.28;
-    filter: blur(2px);
+    opacity: 0.35;
 }
 
 .com-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 12, 16, 0.7) 0%, rgba(10, 12, 16, 0.95) 100%);
+    background: linear-gradient(180deg, rgba(13, 15, 20, 0.65) 0%, rgba(13, 15, 20, 0.92) 100%);
 }
 
 .com-hero-content {
@@ -46,9 +46,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(233, 30, 99, 0.15);
-    border: 1px solid rgba(233, 30, 99, 0.35);
-    color: #ff6097;
+    background: rgba(220, 38, 38, 0.15);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #ff6b6b;
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.15em;
@@ -67,14 +67,14 @@
 }
 
 .com-glow-text {
-    background: linear-gradient(135deg, #ff6097 0%, #f5a623 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #f5a623 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .com-hero-sub {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.8);
     line-height: 1.7;
     margin-bottom: 2.5rem;
 }
@@ -85,15 +85,15 @@
     justify-content: center;
     align-items: center;
     gap: 3rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
     padding: 1.5rem 2.5rem;
     border-radius: 20px;
     max-width: 780px;
     margin: 0 auto;
     flex-wrap: wrap;
+    color: #111827;
 }
 
 .com-rating-score {
@@ -105,7 +105,7 @@
 .com-score-num {
     font-size: 2.5rem;
     font-weight: 900;
-    color: #ffb703;
+    color: #d97706;
     line-height: 1;
 }
 
@@ -115,34 +115,36 @@
 }
 
 .com-star-filled {
-    color: #ffb703;
-    fill: #ffb703;
+    color: #f59e0b;
+    fill: #f59e0b;
 }
 
 .com-score-label {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+    font-weight: 600;
 }
 
 .com-rating-stat {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid #e5e7eb;
     padding-left: 2rem;
 }
 
 .com-rating-stat strong {
     font-size: 1.3rem;
     font-weight: 800;
-    color: #fff;
+    color: #111827;
 }
 
 .com-rating-stat span {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: #6b7280;
+    font-weight: 500;
 }
 
 /* ===== MAIN 2-COL LAYOUT ===== */
@@ -164,8 +166,9 @@
 
 .com-feed-header h2 {
     font-size: 1.8rem;
-    font-weight: 700;
-    color: #fff;
+    font-weight: 800;
+    color: #111827;
+    font-family: var(--font-heading, 'Outfit', sans-serif);
 }
 
 .com-filters {
@@ -175,50 +178,51 @@
 }
 
 .com-filter-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
-    padding: 0.5rem 1.1rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+    padding: 0.55rem 1.2rem;
     border-radius: 100px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
 .com-filter-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: #f3f4f6;
+    color: #111827;
+    border-color: #d1d5db;
 }
 
 .com-filter-btn.active {
-    background: var(--color-primary, #e91e63);
-    border-color: var(--color-primary, #e91e63);
+    background: var(--color-primary, #dc2626);
+    border-color: var(--color-primary, #dc2626);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.35);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
 }
 
 /* Reviews Feed */
 .com-reviews-grid {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.8rem;
 }
 
 .com-review-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 24px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 2.2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .com-review-card:hover {
-    border-color: rgba(255, 255, 255, 0.18);
-    transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    border-color: #d1d5db;
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
 }
 
 .com-card-top {
@@ -229,11 +233,11 @@
 }
 
 .com-user-avatar {
-    width: 52px;
-    height: 52px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--color-primary, #e91e63);
+    border: 2px solid var(--color-primary, #dc2626);
 }
 
 .com-user-meta {
@@ -250,7 +254,7 @@
 .com-user-name-row h4 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #fff;
+    color: #111827;
     margin: 0;
 }
 
@@ -260,8 +264,9 @@
     gap: 0.25rem;
     font-size: 0.72rem;
     font-weight: 700;
-    color: #06d6a0;
-    background: rgba(6, 214, 160, 0.12);
+    color: #059669;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
     padding: 2px 8px;
     border-radius: 100px;
 }
@@ -270,8 +275,8 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    color: #6b7280;
 }
 
 .com-user-sub span {
@@ -287,28 +292,29 @@
 
 .com-trip-tag {
     display: inline-block;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-size: 0.8rem;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    font-size: 0.82rem;
     font-weight: 600;
-    padding: 0.35rem 0.9rem;
+    padding: 0.4rem 0.9rem;
     border-radius: 8px;
     margin-bottom: 1.2rem;
 }
 
 .com-comment-text {
-    font-size: 1rem;
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.02rem;
+    line-height: 1.75;
+    color: #374151;
     margin-bottom: 1.5rem;
 }
 
 .com-card-photo {
     border-radius: 16px;
     overflow: hidden;
-    max-height: 320px;
+    max-height: 340px;
     margin-bottom: 1.5rem;
+    border: 1px solid #e5e7eb;
 }
 
 .com-card-photo img {
@@ -321,7 +327,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid #f3f4f6;
     padding-top: 1rem;
 }
 
@@ -331,8 +337,8 @@
     gap: 0.4rem;
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.82rem;
+    color: #6b7280;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: color 0.2s;
@@ -340,18 +346,18 @@
 
 .com-like-btn:hover,
 .com-like-btn.liked {
-    color: #ff3b75;
+    color: #e11d48;
 }
 
 /* ===== RIGHT: SUBMISSION FORM ===== */
 .com-form-card {
-    background: #0f111a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 24px;
     padding: 2.2rem;
     position: sticky;
     top: 100px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
 }
 
 .com-form-header {
@@ -363,20 +369,20 @@
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.12em;
-    color: var(--color-primary, #e91e63);
+    color: var(--color-primary, #dc2626);
     margin-bottom: 0.4rem;
 }
 
 .com-form-header h3 {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #fff;
+    color: #111827;
     margin-bottom: 0.4rem;
 }
 
 .com-form-header p {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.88rem;
+    color: #6b7280;
     line-height: 1.5;
 }
 
@@ -386,9 +392,9 @@
 
 .com-form label {
     display: block;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
+    color: #374151;
     margin-bottom: 0.4rem;
 }
 
@@ -396,27 +402,28 @@
 .com-form select,
 .com-form textarea {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
     border-radius: 12px;
     padding: 0.75rem 1rem;
-    color: #fff;
+    color: #111827;
     font-family: inherit;
-    font-size: 0.9rem;
-    transition: all 0.3s;
+    font-size: 0.92rem;
+    transition: all 0.25s;
 }
 
 .com-form input:focus,
 .com-form select:focus,
 .com-form textarea:focus {
     outline: none;
-    border-color: var(--color-primary, #e91e63);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-primary, #dc2626);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .com-form select option {
-    background: #0f111a;
-    color: #fff;
+    background: #ffffff;
+    color: #111827;
 }
 
 .com-star-picker {
@@ -429,7 +436,7 @@
     background: none;
     border: none;
     font-size: 1.6rem;
-    color: rgba(255, 255, 255, 0.2);
+    color: #d1d5db;
     cursor: pointer;
     transition: transform 0.2s, color 0.2s;
     padding: 0;
@@ -437,14 +444,15 @@
 
 .com-picker-star.active,
 .com-picker-star:hover {
-    color: #ffb703;
+    color: #f59e0b;
     transform: scale(1.15);
 }
 
 .com-picker-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.82rem;
+    color: #6b7280;
     margin-left: 0.5rem;
+    font-weight: 600;
 }
 
 .com-submit-btn {
@@ -453,6 +461,7 @@
     font-weight: 700;
     border-radius: 12px;
     margin-top: 0.5rem;
+    cursor: pointer;
 }
 
 .com-success-box {
@@ -467,26 +476,26 @@
 
 .com-success-box h4 {
     font-size: 1.2rem;
-    color: #fff;
+    color: #111827;
     margin-bottom: 0.5rem;
 }
 
 .com-success-box p {
-    font-size: 0.88rem;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.9rem;
+    color: #6b7280;
     margin-bottom: 1.5rem;
 }
 
 .com-form-wa-card {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid #f3f4f6;
     text-align: center;
 }
 
 .com-form-wa-card p {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.82rem;
+    color: #6b7280;
     margin-bottom: 0.8rem;
 }
 
@@ -494,15 +503,15 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    color: #25d366;
+    color: #059669;
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .com-wa-direct-btn:hover {
-    color: #49e585;
+    color: #047857;
 }
 
 /* Responsive */

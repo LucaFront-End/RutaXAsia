@@ -1,19 +1,20 @@
 /* ===================================================
-   PORTAFOLIO DE VIAJES & FOTOS REALES
+   PORTAFOLIO DE VIAJES & FOTOS REALES (LIGHT THEME)
    =================================================== */
 
 .portafolio-page {
-    background: #080a0f;
-    color: #fff;
+    background: #ffffff;
+    color: var(--color-dark, #111827);
     min-height: 100vh;
 }
 
 /* ===== HERO ===== */
 .port-hero {
     position: relative;
-    padding: 8.5rem 0 4rem;
+    padding: 8.5rem 0 4.5rem;
     overflow: hidden;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: #0d0f14;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .port-hero-bg img {
@@ -23,14 +24,13 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.25;
-    filter: blur(2px);
+    opacity: 0.35;
 }
 
 .port-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(8, 10, 15, 0.7) 0%, rgba(8, 10, 15, 0.96) 100%);
+    background: linear-gradient(180deg, rgba(13, 15, 20, 0.65) 0%, rgba(13, 15, 20, 0.94) 100%);
 }
 
 .port-hero-content {
@@ -45,9 +45,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(233, 30, 99, 0.15);
-    border: 1px solid rgba(233, 30, 99, 0.35);
-    color: #ff6097;
+    background: rgba(220, 38, 38, 0.15);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #ff6b6b;
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.15em;
@@ -66,14 +66,14 @@
 }
 
 .port-glow-text {
-    background: linear-gradient(135deg, #ff6097 0%, #f5a623 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #f5a623 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .port-hero-sub {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.8);
     line-height: 1.7;
     margin-bottom: 2.5rem;
 }
@@ -87,49 +87,51 @@
 }
 
 .port-filter-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
-    padding: 0.55rem 1.2rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 0.55rem 1.3rem;
     border-radius: 100px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+    transition: all 0.25s ease;
 }
 
 .port-filter-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.25);
     color: #fff;
 }
 
 .port-filter-btn.active {
-    background: var(--color-primary, #e91e63);
-    border-color: var(--color-primary, #e91e63);
+    background: var(--color-primary, #dc2626);
+    border-color: var(--color-primary, #dc2626);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.35);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35);
 }
 
 /* ===== BENTO GALLERY SECTION ===== */
 .port-gallery-section {
-    padding: 4.5rem 0 6rem;
+    padding: 5rem 0 6rem;
+    background: #ffffff;
 }
 
 .port-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 280px;
-    gap: 1.5rem;
+    grid-auto-rows: 290px;
+    gap: 1.8rem;
 }
 
 .port-card {
     position: relative;
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: #11141c;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #f3f4f6;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -149,9 +151,9 @@
 }
 
 .port-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(233, 30, 99, 0.4);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(233, 30, 99, 0.15);
+    transform: translateY(-8px);
+    border-color: rgba(220, 38, 38, 0.3);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.16);
 }
 
 .port-card:hover img {
@@ -161,12 +163,12 @@
 .port-card-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 40%, rgba(8,10,15,0.92) 100%);
-    padding: 1.5rem;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 40%, rgba(10,12,18,0.92) 100%);
+    padding: 1.6rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    opacity: 0.9;
+    opacity: 0.92;
     transition: opacity 0.3s;
 }
 
@@ -183,37 +185,38 @@
 .port-tag {
     background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    padding: 0.3rem 0.75rem;
+    padding: 0.35rem 0.85rem;
     border-radius: 100px;
 }
 
 .port-year {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 800;
-    color: rgba(255, 255, 255, 0.7);
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.25rem 0.6rem;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.65rem;
     border-radius: 6px;
+    backdrop-filter: blur(4px);
 }
 
 .port-location {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    font-size: 0.78rem;
-    color: var(--color-primary, #e91e63);
+    font-size: 0.8rem;
+    color: #ff6b6b;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
 }
 
 .port-title {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #fff;
     margin-bottom: 0.4rem;
@@ -221,9 +224,9 @@
 }
 
 .port-caption {
-    font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.4;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.45;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -232,61 +235,64 @@
 
 /* ===== EDITIONS SECTION ===== */
 .port-editions-section {
-    background: #0d1017;
-    padding: 6rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: #faf9f6;
+    padding: 6.5rem 0;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .port-editions-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 1.8rem;
 }
 
 .port-edition-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    padding: 2.2rem;
     display: flex;
     flex-direction: column;
-    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .port-edition-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(233, 30, 99, 0.3);
-    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-6px);
+    border-color: var(--color-primary, #dc2626);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
 }
 
 .port-ed-badge {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 800;
-    color: #ff6097;
+    color: var(--color-primary, #dc2626);
     margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .port-edition-card h3 {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    color: #fff;
-    margin-bottom: 0.3rem;
+    color: #111827;
+    margin-bottom: 0.35rem;
 }
 
 .port-ed-dates {
-    font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 600;
+    font-size: 0.85rem;
+    color: #d97706;
+    font-weight: 700;
     margin-bottom: 1rem;
     display: block;
 }
 
 .port-edition-card p {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.88rem;
+    color: #4b5563;
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.8rem;
     flex: 1;
 }
 
@@ -295,54 +301,70 @@
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    font-size: 0.85rem;
-    padding: 0.65rem 1rem;
-    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.75rem 1.2rem;
+    border-radius: 12px;
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
+    color: #111827;
+    text-decoration: none;
+    transition: all 0.25s;
+}
+
+.port-edition-card:hover .port-ed-btn {
+    background: var(--color-primary, #dc2626);
+    border-color: var(--color-primary, #dc2626);
+    color: #ffffff;
 }
 
 /* ===== CTA BOTTOM ===== */
 .port-cta-section {
-    padding: 5rem 0 6rem;
+    padding: 6rem 0;
+    background: #ffffff;
 }
 
 .port-cta-box {
-    background: linear-gradient(135deg, rgba(233, 30, 99, 0.15) 0%, rgba(245, 166, 35, 0.1) 100%);
-    border: 1px solid rgba(233, 30, 99, 0.3);
-    border-radius: 24px;
-    padding: 3.5rem;
+    background: linear-gradient(135deg, #fff5f5 0%, #fffbeb 100%);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    border-radius: 28px;
+    padding: 3.5rem 4rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
     flex-wrap: wrap;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
 .port-cta-text h2 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #fff;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #111827;
     margin-bottom: 0.5rem;
+    font-family: var(--font-heading, 'Outfit', sans-serif);
 }
 
 .port-cta-text p {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.05rem;
+    color: #4b5563;
 }
 
 .port-cta-btn {
-    padding: 1rem 2rem;
-    font-size: 0.95rem;
+    padding: 1rem 2.2rem;
+    font-size: 1rem;
     font-weight: 700;
     border-radius: 100px;
+    text-decoration: none;
 }
 
 /* ===== LIGHTBOX ===== */
 .port-lightbox {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     z-index: 2000;
     display: flex;
     align-items: center;
@@ -354,22 +376,23 @@
     position: relative;
     max-width: 900px;
     width: 100%;
-    background: #11141c;
-    border-radius: 20px;
+    background: #ffffff;
+    border-radius: 24px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    color: #111827;
 }
 
 .port-lightbox-close {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -380,7 +403,7 @@
 }
 
 .port-lightbox-close:hover {
-    background: var(--color-primary, #e91e63);
+    background: var(--color-primary, #dc2626);
 }
 
 .port-lightbox-content img {
@@ -391,13 +414,13 @@
 }
 
 .port-lightbox-info {
-    padding: 1.8rem 2rem;
+    padding: 2rem 2.2rem;
 }
 
 .port-lightbox-tag {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    color: var(--color-primary, #e91e63);
+    color: var(--color-primary, #dc2626);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     display: block;
@@ -405,15 +428,15 @@
 }
 
 .port-lightbox-info h3 {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
     font-weight: 700;
-    color: #fff;
+    color: #111827;
     margin-bottom: 0.6rem;
 }
 
 .port-lightbox-info p {
     font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.75);
+    color: #4b5563;
     line-height: 1.6;
 }
 
@@ -442,7 +465,7 @@
         grid-template-columns: 1fr;
     }
     .port-cta-box {
-        padding: 2rem;
+        padding: 2.2rem;
         text-align: center;
         justify-content: center;
     }
