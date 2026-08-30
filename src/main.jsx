@@ -25,6 +25,9 @@ import ToursIndividualesPage from './pages/ToursIndividualesPage'
 import ToursIndividualesWhatsAppPage from './pages/ToursIndividualesWhatsAppPage'
 import TourIndividualDetail from './pages/TourIndividualDetail'
 import UserPortalPage from './pages/UserPortalPage'
+import ComunidadComentarios from './pages/ComunidadComentarios'
+import Portafolio from './pages/Portafolio'
+import RegistroTurismo from './pages/RegistroTurismo'
 
 import { TripProvider } from './context/TripContext'
 
@@ -51,6 +54,14 @@ createRoot(document.getElementById('root')).render(
                         <Route path="portal-viajero" element={<UserPortalPage />} />
                         <Route path="mi-cuenta" element={<UserPortalPage />} />
                         <Route path="nosotros" element={<AboutUs />} />
+                        <Route path="nosotros/portafolio" element={<Portafolio />} />
+                        <Route path="portafolio" element={<Portafolio />} />
+                        <Route path="nosotros/registro-nacional-turismo" element={<RegistroTurismo />} />
+                        <Route path="registro-nacional-turismo" element={<RegistroTurismo />} />
+                        <Route path="legalidad" element={<RegistroTurismo />} />
+                        <Route path="comunidad/comentarios" element={<ComunidadComentarios />} />
+                        <Route path="testimonios" element={<ComunidadComentarios />} />
+                        <Route path="reseñas" element={<ComunidadComentarios />} />
                         <Route path="faq" element={<FAQ />} />
                         <Route path="contacto" element={<Contact />} />
                         <Route path="blog" element={<Blog />} />

@@ -17,6 +17,7 @@ function Header() {
     const [menuOpen, setMenuOpen] = useState(false)
     const [toursOpen, setToursOpen] = useState(false)
     const [japonOpen, setJaponOpen] = useState(false)
+    const [nosotrosOpen, setNosotrosOpen] = useState(false)
     const [comunidadOpen, setComunidadOpen] = useState(false)
 
     const location = useLocation()
@@ -44,6 +45,7 @@ function Header() {
         setMenuOpen(false)
         setToursOpen(false)
         setJaponOpen(false)
+        setNosotrosOpen(false)
         setComunidadOpen(false)
         window.scrollTo({ top: 0, behavior: 'instant' })
     }
@@ -174,9 +176,46 @@ function Header() {
                     {/* Tours Individuales link */}
                     <li><Link to="/tours-individuales" onClick={closeMenu}>Tours individuales</Link></li>
 
-                    <li><Link to="/nosotros" onClick={closeMenu}>Nosotros</Link></li>
+                    {/* Nosotros dropdown (Sobre Nosotros + Portafolio + Registro Nacional de Turismo) */}
+                    <li className={`nav-dropdown${nosotrosOpen ? ' nav-dropdown--open' : ''}`}
+                        onMouseEnter={() => setNosotrosOpen(true)}
+                        onMouseLeave={() => setNosotrosOpen(false)}
+                    >
+                        <button
+                            className="nav-dropdown-trigger"
+                            onClick={() => setNosotrosOpen(!nosotrosOpen)}
+                        >
+                            Nosotros
+                            <svg className="nav-dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                        <div className="nav-dropdown-panel nav-nosotros-panel">
+                            <Link to="/nosotros" className="nav-dropdown-item" onClick={closeMenu}>
+                                <span className="nav-dropdown-item-icon">👥</span>
+                                <div>
+                                    <span className="nav-dropdown-title">Sobre Nosotros</span>
+                                    <span className="nav-dropdown-sub">Conoce a Juan y Ale y nuestra historia</span>
+                                </div>
+                            </Link>
+                            <Link to="/portafolio" className="nav-dropdown-item" onClick={closeMenu}>
+                                <span className="nav-dropdown-item-icon">📸</span>
+                                <div>
+                                    <span className="nav-dropdown-title">Portafolio & Galería</span>
+                                    <span className="nav-dropdown-sub">Fotos reales y tours realizados</span>
+                                </div>
+                            </Link>
+                            <Link to="/registro-nacional-turismo" className="nav-dropdown-item" onClick={closeMenu}>
+                                <span className="nav-dropdown-item-icon">🏛️</span>
+                                <div>
+                                    <span className="nav-dropdown-title">Registro Nacional de Turismo</span>
+                                    <span className="nav-dropdown-sub">SECTUR, legalidad y garantías</span>
+                                </div>
+                            </Link>
+                        </div>
+                    </li>
 
-                    {/* Comunidad dropdown (Blog + Preguntas Frecuentes) */}
+                    {/* Comunidad dropdown (Reseñas + Blog + FAQ) */}
                     <li className={`nav-dropdown${comunidadOpen ? ' nav-dropdown--open' : ''}`}
                         onMouseEnter={() => setComunidadOpen(true)}
                         onMouseLeave={() => setComunidadOpen(false)}
@@ -191,6 +230,13 @@ function Header() {
                             </svg>
                         </button>
                         <div className="nav-dropdown-panel nav-comunidad-panel">
+                            <Link to="/comunidad/comentarios" className="nav-dropdown-item" onClick={closeMenu}>
+                                <span className="nav-dropdown-item-icon">💬</span>
+                                <div>
+                                    <span className="nav-dropdown-title">Opiniones y Reseñas</span>
+                                    <span className="nav-dropdown-sub">Lee comentarios y comparte tu experiencia</span>
+                                </div>
+                            </Link>
                             <Link to="/blog" className="nav-dropdown-item" onClick={closeMenu}>
                                 <span className="nav-dropdown-item-icon">📝</span>
                                 <div>

@@ -104,8 +104,284 @@
     50% { opacity: 1; }
 }
 
+/* ===== JUAN & ALE FOUNDER SPOTLIGHT ===== */
+.au-founders-spotlight {
+    background: radial-gradient(circle at 50% 0%, #1c1524 0%, #0c0e16 100%);
+    padding: 7rem 0 5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
 
-/* ===== STATS BAR ===== */
+.au-founders-spotlight::before {
+    content: '';
+    position: absolute;
+    top: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(233, 30, 99, 0.18) 0%, transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+}
+
+.au-founders-header {
+    text-align: center;
+    max-width: 780px;
+    margin: 0 auto 4rem;
+}
+
+.au-founders-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #ff6097;
+    background: rgba(233, 30, 99, 0.12);
+    border: 1px solid rgba(233, 30, 99, 0.3);
+    padding: 0.4rem 1.2rem;
+    border-radius: 100px;
+    margin-bottom: 1.2rem;
+}
+
+.au-founders-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.au-founders-glow {
+    background: linear-gradient(135deg, #ff6097 0%, #f5a623 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.au-founders-sub {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.7;
+}
+
+.au-founders-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+}
+
+.au-founder-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.au-founder-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(233, 30, 99, 0.4);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(233, 30, 99, 0.15);
+}
+
+.au-founder-photo-wrap {
+    position: relative;
+    height: 380px;
+    overflow: hidden;
+}
+
+.au-founder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.au-founder-card:hover .au-founder-img {
+    transform: scale(1.04);
+}
+
+.au-founder-photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(12, 14, 22, 0.95) 0%, rgba(12, 14, 22, 0.2) 60%, transparent 100%);
+}
+
+.au-founder-flag {
+    position: absolute;
+    top: 1.2rem;
+    left: 1.2rem;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.35rem 0.8rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.au-founder-badge-pill {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 1.5rem;
+    background: var(--color-primary, #e91e63);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+}
+
+.au-founder-info {
+    padding: 2rem 2.2rem 2.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.au-founder-pretitle {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-primary, #e91e63);
+    margin-bottom: 0.4rem;
+}
+
+.au-founder-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.au-founder-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.3rem;
+}
+
+.au-founder-pills span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
+}
+
+.au-founder-desc {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    flex: 1;
+}
+
+.au-founder-quote-box {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--color-primary, #e91e63);
+    padding: 1rem 1.2rem;
+    border-radius: 0 12px 12px 0;
+    position: relative;
+}
+
+.au-quote-symbol {
+    position: absolute;
+    top: -6px;
+    left: 8px;
+    font-size: 2rem;
+    color: var(--color-primary, #e91e63);
+    opacity: 0.3;
+    font-family: serif;
+}
+
+.au-founder-quote-box em {
+    display: block;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-style: italic;
+    line-height: 1.5;
+    padding-left: 0.5rem;
+}
+
+/* 3 Pillars */
+.au-founders-pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+}
+
+.au-pillar-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.2rem;
+    align-items: flex-start;
+}
+
+.au-pillar-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.au-pillar-item h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.35rem;
+}
+
+.au-pillar-item p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.au-founders-cta {
+    text-align: center;
+}
+
+.au-founders-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1rem;
+    padding: 1rem 2.2rem;
+    border-radius: 100px;
+    box-shadow: 0 10px 30px rgba(233, 30, 99, 0.35);
+}
+
+@media (max-width: 900px) {
+    .au-founders-grid {
+        grid-template-columns: 1fr;
+    }
+    .au-founders-pillars {
+        grid-template-columns: 1fr;
+    }
+}
 .au-stats {
     background: var(--color-dark);
     border-bottom: 1px solid rgba(255,255,255,0.06);

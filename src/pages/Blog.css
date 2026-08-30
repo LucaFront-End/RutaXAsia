@@ -373,6 +373,8 @@
 .blogpost-hero-content {
     position: relative; z-index: 2;
     padding-bottom: 3rem;
+    text-align: left;
+    width: 100%;
 }
 
 .blogpost-back {
@@ -404,12 +406,13 @@
 
 .blogpost-h1 {
     font-family: var(--font-heading, 'Outfit', sans-serif);
-    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
     font-weight: 700;
     color: #fff;
-    line-height: 1.15;
+    line-height: 1.2;
     margin-bottom: 1rem;
-    max-width: 700px;
+    max-width: 850px;
+    text-align: left;
 }
 
 .blogpost-meta {
@@ -425,11 +428,159 @@
     color: rgba(255,255,255,0.65);
 }
 
-/* ---- Article body (CMS Rich Text) ---- */
+/* ---- Article body & 2-column wrapper ---- */
+.blogpost-body-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 3.5rem;
+    padding-top: 3.5rem;
+    padding-bottom: 4rem;
+    align-items: flex-start;
+}
+
 .blogpost-article {
-    padding: 3.5rem 0 4rem;
-    max-width: 780px;
-    margin: 0 auto;
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+}
+
+.blogpost-sidebar {
+    position: sticky;
+    top: 100px;
+}
+
+.bp-jac-widget {
+    background: #0f111a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 1.8rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    color: #fff;
+}
+
+.bp-jac-badge {
+    display: inline-block;
+    background: rgba(233, 30, 99, 0.15);
+    border: 1px solid rgba(233, 30, 99, 0.35);
+    color: #ff6097;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+}
+
+.bp-jac-title {
+    font-family: var(--font-heading, 'Outfit', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.bp-jac-desc {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.5;
+    margin-bottom: 1.2rem;
+}
+
+.bp-jac-seasons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+}
+
+.bp-jac-season-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bp-jac-season-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateX(4px);
+}
+
+.bp-jac-season-emoji {
+    font-size: 1.4rem;
+}
+
+.bp-jac-season-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bp-jac-season-info strong {
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.bp-jac-season-info small {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.bp-jac-arrow {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.4);
+    transition: transform 0.2s;
+}
+
+.bp-jac-season-item:hover .bp-jac-arrow {
+    transform: translateX(3px);
+    color: #fff;
+}
+
+.bp-jac-cta-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.bp-jac-wa {
+    text-align: center;
+}
+
+.bp-jac-wa-link {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.bp-jac-wa-link:hover {
+    color: #25d366;
+}
+
+@media (max-width: 992px) {
+    .blogpost-body-wrap {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+    .blogpost-sidebar {
+        position: static;
+        max-width: 500px;
+        margin: 0 auto;
+        width: 100%;
+    }
 }
 
 .blogpost-content {

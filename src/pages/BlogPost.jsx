@@ -87,13 +87,72 @@ export default function BlogPost() {
                 </div>
             </section>
 
-            {/* Content — HTML pre-rendered on server from Wix richContent */}
-            <article className="blogpost-article container">
-                <div
-                    className="blogpost-content"
-                    dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
-                />
-            </article>
+            {/* Content & Sticky Sidebar */}
+            <div className="blogpost-body-wrap container">
+                <article className="blogpost-article">
+                    <div
+                        className="blogpost-content"
+                        dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
+                    />
+                </article>
+
+                {/* Right Sticky Sidebar CTA — Japón a la Carta */}
+                <aside className="blogpost-sidebar">
+                    <div className="bp-jac-widget">
+                        <div className="bp-jac-badge">
+                            <span>🇯🇵 JAPÓN A LA CARTA</span>
+                        </div>
+                        <h3 className="bp-jac-title">Diseña tu Aventura a Japón</h3>
+                        <p className="bp-jac-desc">
+                            Elige tu temporada favorita, el nivel de acompañamiento que prefieras y cotiza tu viaje en minutos.
+                        </p>
+
+                        <div className="bp-jac-seasons">
+                            <Link to="/viajes/japon/sakura" className="bp-jac-season-item bp-jac-season--sakura">
+                                <span className="bp-jac-season-emoji">🌸</span>
+                                <div className="bp-jac-season-info">
+                                    <strong>Sakura</strong>
+                                    <small>16 Mar — 15 Abr</small>
+                                </div>
+                                <span className="bp-jac-arrow">→</span>
+                            </Link>
+
+                            <Link to="/viajes/japon/akari" className="bp-jac-season-item bp-jac-season--akari">
+                                <span className="bp-jac-season-emoji">☀️</span>
+                                <div className="bp-jac-season-info">
+                                    <strong>Akari</strong>
+                                    <small>16 Abr — 31 Ago</small>
+                                </div>
+                                <span className="bp-jac-arrow">→</span>
+                            </Link>
+
+                            <Link to="/viajes/japon/kamakura" className="bp-jac-season-item bp-jac-season--kamakura">
+                                <span className="bp-jac-season-emoji">🍁</span>
+                                <div className="bp-jac-season-info">
+                                    <strong>Kamakura</strong>
+                                    <small>1 Sep — 15 Mar</small>
+                                </div>
+                                <span className="bp-jac-arrow">→</span>
+                            </Link>
+                        </div>
+
+                        <Link to="/viajes/japon" className="btn btn-primary bp-jac-cta-btn">
+                            ¡Crear Japón a la Carta! <span>→</span>
+                        </Link>
+
+                        <div className="bp-jac-wa">
+                            <a
+                                href={`${WHATSAPP_BASE}SW-Hola%20leí%20el%20artículo%20${encodeURIComponent(post.title)}%20y%20quiero%20información%20sobre%20Japón%20a%20la%20Carta`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bp-jac-wa-link"
+                            >
+                                💬 Asesoría gratuita por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
 
             {/* Bottom CTA */}
             <section className="blogpost-cta">

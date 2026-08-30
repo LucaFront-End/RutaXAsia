@@ -209,6 +209,120 @@ export default function AboutUs() {
                 </div>
             </section>
 
+            {/* ===== JUAN & ALE FOUNDER SPOTLIGHT (Showstopping Feature Strip) ===== */}
+            <section className="au-founders-spotlight">
+                <div className="container">
+                    <div className="au-founders-header reveal">
+                        <span className="au-founders-tag">✨ ACOMPAÑAMIENTO REAL Y HUMANO</span>
+                        <h2 className="au-founders-title">
+                            No somos una agencia impersonal.<br />
+                            <span className="au-founders-glow">Viajamos contigo desde el primer día.</span>
+                        </h2>
+                        <p className="au-founders-sub">
+                            Nosotros diseñamos las rutas, coordinamos la logística y te guiamos en persona por los rincones más fascinantes de Asia.
+                        </p>
+                    </div>
+
+                    <div className="au-founders-grid">
+                        {/* Juan Card */}
+                        <div className="au-founder-card au-founder-card--juan reveal-left">
+                            <div className="au-founder-photo-wrap">
+                                <img
+                                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=700&h=850&fit=crop&q=80"
+                                    alt="Juan Santiago - Fundador"
+                                    className="au-founder-img"
+                                />
+                                <div className="au-founder-photo-overlay" />
+                                <div className="au-founder-flag">🇲🇽 ➔ 🇯🇵</div>
+                                <div className="au-founder-badge-pill">Fundador & Coordinador</div>
+                            </div>
+                            <div className="au-founder-info">
+                                <span className="au-founder-pretitle">Logística, Cultura & Rutas</span>
+                                <h3 className="au-founder-name">Juan Santiago</h3>
+                                <div className="au-founder-pills">
+                                    <span>🏛️ +15 Años en Japón</span>
+                                    <span>🚅 Experto en Transporte & JR</span>
+                                    <span>📍 Becario & Facilitador</span>
+                                </div>
+                                <p className="au-founder-desc">
+                                    «Mi pasión es que conozcas el Japón auténtico: el callejón de ramen que solo los locales conocen, la sincronía perfecta de los trenes y la mística de los santuarios al amanecer.»
+                                </p>
+                                <div className="au-founder-quote-box">
+                                    <span className="au-quote-symbol">“</span>
+                                    <em>Japón no se visita como turista, se vive y se siente en cada detalle.</em>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Ale Card */}
+                        <div className="au-founder-card au-founder-card--ale reveal-right">
+                            <div className="au-founder-photo-wrap">
+                                <img
+                                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=700&h=850&fit=crop&q=80"
+                                    alt="Alejandra - Co-fundadora & Anfitriona"
+                                    className="au-founder-img"
+                                />
+                                <div className="au-founder-photo-overlay" />
+                                <div className="au-founder-flag">🇲🇽 ➔ 🇰🇷 🇯🇵</div>
+                                <div className="au-founder-badge-pill">Co-Fundadora & Anfitriona</div>
+                            </div>
+                            <div className="au-founder-info">
+                                <span className="au-founder-pretitle">Experiencias, Fotografía & Cuidado</span>
+                                <h3 className="au-founder-name">Alejandra</h3>
+                                <div className="au-founder-pills">
+                                    <span>🌸 Anfitriona de Grupo</span>
+                                    <span>👘 Ceremonias & Kimonos</span>
+                                    <span>📸 Fotografía de Viaje</span>
+                                </div>
+                                <p className="au-founder-desc">
+                                    «Viajar con nosotros es sentirte en familia desde el aeropuerto de CDMX. Estoy contigo para resolver cada duda, capturar tus mejores recuerdos y cuidar cada momento.»
+                                </p>
+                                <div className="au-founder-quote-box">
+                                    <span className="au-quote-symbol">“</span>
+                                    <em>Tu tranquilidad, tu seguridad y tu sonrisa son nuestra mayor satisfacción.</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 3 Pillars strip */}
+                    <div className="au-founders-pillars reveal">
+                        <div className="au-pillar-item">
+                            <div className="au-pillar-icon">🤝</div>
+                            <div>
+                                <h4>Trato 100% Personalizado</h4>
+                                <p>Sin intermediarios ni call centers. Hablas y viajas directamente con los dueños.</p>
+                            </div>
+                        </div>
+                        <div className="au-pillar-item">
+                            <div className="au-pillar-icon">🗣️</div>
+                            <div>
+                                <h4>Acompañamiento en Español</h4>
+                                <p>Guía hispanohablante presente durante todo el viaje. Cero barreras de idioma.</p>
+                            </div>
+                        </div>
+                        <div className="au-pillar-item">
+                            <div className="au-pillar-icon">👥</div>
+                            <div>
+                                <h4>Grupos Reducidos (Máx. 20)</h4>
+                                <p>Experiencia ágil, humana y flexible para movernos con facilidad por cada ciudad.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="au-founders-cta reveal">
+                        <a
+                            href={`${WHATSAPP_BASE}SW-Hola%20Juan%20y%20Ale%20quiero%20conocer%20mas%20sobre%20sus%20viajes`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-primary au-founders-btn"
+                        >
+                            <span>💬 Habla directamente con Juan y Ale por WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
             {/* ===== STATS BAR ===== */}
             <section className="au-stats">
                 <div className="container">

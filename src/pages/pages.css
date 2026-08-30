@@ -1185,15 +1185,31 @@
     gap: 2rem;
 }
 
+@media (max-width: 1200px) {
+    .jac-exp-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .jac-exp-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
 .jac-exp-card {
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.08);
     border-radius: 28px;
     padding: 3rem 2rem 2rem;
     display: flex;
     flex-direction: column;
+    text-decoration: none;
+    color: inherit;
     transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.03);
 }
 
 .jac-exp-card:hover {
@@ -1495,7 +1511,8 @@
     background: rgba(12, 14, 22, 0.96);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 1rem 0;
+    padding: 0.9rem 0;
+    margin-top: 80px;
     position: relative;
     z-index: 10;
 }
@@ -2304,10 +2321,11 @@
         align-items: center;
     }
     .jac-selection-path {
-        position: static !important;
+        position: relative !important;
         top: auto !important;
-        padding-top: 75px !important;
-        padding-bottom: 12px !important;
+        margin-top: 60px !important;
+        padding-top: 14px !important;
+        padding-bottom: 14px !important;
         background: #0a0c10 !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }

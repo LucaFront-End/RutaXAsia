@@ -44,6 +44,9 @@ function Footer() {
                         <h4>Compañía</h4>
                         <ul>
                             <li><Link to="/nosotros">Acerca de Nosotros</Link></li>
+                            <li><Link to="/portafolio">Portafolio & Galería</Link></li>
+                            <li><Link to="/registro-nacional-turismo">Registro Nacional de Turismo</Link></li>
+                            <li><Link to="/comunidad/comentarios">Comunidad & Reseñas</Link></li>
                             <li><Link to="/blog">Blog</Link></li>
                             <li><Link to="/faq">Preguntas Frecuentes</Link></li>
                             <li><Link to="/contacto">Contacto</Link></li>
@@ -61,11 +64,11 @@ function Footer() {
                             <li><a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
                             <li>Río Lerma 232 P23 A<br />Cuauhtémoc, CDMX, CP 6500</li>
                         </ul>
-                        <div className="footer-legal-badge">
-                            <span className="footer-rnt-title">Registro Nacional de Turismo</span>
-                            <span className="footer-rnt-num">No. 0409015ae266f</span>
+                        <Link to="/registro-nacional-turismo" className="footer-legal-badge" style={{textDecoration: 'none'}}>
+                            <span className="footer-rnt-title">Registro Nacional de Turismo (SECTUR)</span>
+                            <span className="footer-rnt-num">No. 0409015ae266f · Ver Certificado →</span>
                             <span className="footer-rnt-rfc">RFC: SARJ740301GS3</span>
-                        </div>
+                        </Link>
                     </div>
                 </div>
 

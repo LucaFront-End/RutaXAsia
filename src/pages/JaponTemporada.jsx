@@ -102,7 +102,7 @@ export default function JaponTemporada() {
             </section>
 
             {/* ===== 4 ESTILOS DE VIAJE ===== */}
-            <section className="jac-estilos" id="estilos">
+            <section className="jac-experiences" id="estilos">
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
                         <span className="section-tag" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>
@@ -116,7 +116,7 @@ export default function JaponTemporada() {
                         </p>
                     </div>
 
-                    <div className="jac-estilos-grid">
+                    <div className="jac-exp-grid">
                         {EXPERIENCIA_ORDER.map((key, i) => {
                             const exp = EXPERIENCIAS[key]
                             return (
@@ -130,27 +130,29 @@ export default function JaponTemporada() {
                                     <div className="jac-exp-card-glow" />
                                     <div className="jac-exp-card-header">
                                         <span className="jac-exp-card-icon">{exp.icon}</span>
-                                        <span className="jac-exp-card-season">{season.name}</span>
+                                        <span className="jac-exp-card-season-name" style={{ color: exp.isSignature ? '#d4af37' : season.colors.primary }}>
+                                            {season.name}
+                                        </span>
                                         <h3 className="jac-exp-card-name">{exp.name}</h3>
                                         <p className="jac-exp-card-tagline">{exp.tagline}</p>
                                     </div>
                                     <ul className="jac-exp-card-features">
                                         {exp.includes.slice(0, 5).map((item, j) => (
                                             <li key={j}>
-                                                <span className="jac-check" style={{ color: exp.isSignature ? '#d4af37' : season.colors.primary }}>✓</span>
+                                                <span className="jac-exp-check" style={{ color: exp.isSignature ? '#d4af37' : season.colors.primary }}>✓</span>
                                                 {item}
                                             </li>
                                         ))}
                                     </ul>
-                                    <div className="jac-exp-card-footer">
+                                    <div className="jac-exp-card-cta-wrap">
                                         <span
                                             className="jac-exp-card-cta"
                                             style={{
-                                                background: exp.isSignature ? '#1a1a1a' : season.colors.primary,
-                                                color: '#fff',
+                                                background: exp.isSignature ? 'linear-gradient(135deg, #d4af37, #f5d97e)' : season.colors.primary,
+                                                color: exp.isSignature ? '#000' : '#fff',
                                             }}
                                         >
-                                            {exp.ctaText}
+                                            {exp.ctaText} →
                                         </span>
                                     </div>
                                 </Link>
