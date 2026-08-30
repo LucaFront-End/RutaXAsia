@@ -521,29 +521,9 @@
   }
 
   .navbar-account-btn {
-    display: none !important;
-  }
-
-  .navbar-mobile-account {
-    display: block !important;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .navbar-mobile-account-link {
-    display: flex !important;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: rgba(233, 30, 99, 0.12);
-    border: 1px solid rgba(233, 30, 99, 0.3);
-    border-radius: 12px;
-    text-decoration: none;
-  }
-
-  .navbar-mobile-account-link::after {
-    display: none !important;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.78rem;
+    gap: 5px;
   }
 }
 
@@ -586,8 +566,4 @@
 
 .navbar-account-btn:hover .navbar-account-icon {
   transform: scale(1.15);
-}
-
-.navbar-mobile-account {
-  display: none;
 }
