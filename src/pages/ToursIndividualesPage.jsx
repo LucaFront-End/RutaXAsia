@@ -491,38 +491,45 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                 <div className="tours-indiv-layout">
                     {/* Left Column: Floating Ticket */}
                     <div className="tours-indiv-sidebar">
-                        <FloatingTicket
-                            season={{ name: 'Tours Sueltos', colors: { primary: '#e91e63' } }}
-                            temporadaKey="sakura"
-                            estilo="Tours Sueltos"
-                            selectorData={{
-                                adults: selectedTours.reduce((max, t) => Math.max(max, t.quantity || 1), 1),
-                                children: 0,
-                                dateMode: 'specific',
-                                selectedMonth: null,
-                                startDate: selectedTours[0]?.date || tomorrowStr,
-                                endDate: selectedTours[selectedTours.length - 1]?.date || tomorrowStr,
-                            }}
-                            selectedPkg={null}
-                            includedExps={[]}
-                            addedItems={selectedTours.map(t => ({
-                                id: t.id,
-                                name: `${t.name} [${t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria'}] (📅 ${formatDateLabel(t.date)}${(t.quantity || 1) > 1 ? ` × ${t.quantity} pers.` : ''})`,
-                                price: t.price * (t.quantity || 1)
-                            }))}
-                            selectedComps={[]}
-                            basePrice={0}
-                            customReserveBtnText="💳 Reservar Tours"
-                            customWhatsAppBtnText="💬 Cotizar por WhatsApp"
-                            onOpenCheckout={() => {
-                                if (selectedTours.length === 0) {
-                                    alert('Por favor selecciona al menos un tour antes de proceder.')
-                                    return
-                                }
-                                setIsCheckoutOpen(true)
-                            }}
-                            onRemoveTour={(tourIdOrName) => setSelectedTours(prev => prev.filter(t => t.id !== tourIdOrName && t.name !== tourIdOrName && !t.name.includes(tourIdOrName)))}
-                        />
+                        {(() => {
+                            const totalToursPrice = selectedTours.reduce((sum, t) => sum + ((Number(t.price) || 0) * (Number(t.quantity) || 1)), 0)
+                            return (
+                                <FloatingTicket
+                                    season={{ name: 'Tours Sueltos', colors: { primary: '#e91e63' } }}
+                                    temporadaKey="sakura"
+                                    estilo="Tours Sueltos"
+                                    selectorData={{
+                                        adults: selectedTours.reduce((max, t) => Math.max(max, t.quantity || 1), 1),
+                                        children: 0,
+                                        dateMode: 'specific',
+                                        selectedMonth: null,
+                                        startDate: selectedTours[0]?.date || tomorrowStr,
+                                        endDate: selectedTours[selectedTours.length - 1]?.date || tomorrowStr,
+                                    }}
+                                    selectedPkg={null}
+                                    includedExps={[]}
+                                    addedItems={selectedTours.map(t => ({
+                                        id: t.id,
+                                        name: `${t.name} [${t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria'}] (📅 ${formatDateLabel(t.date)}${(t.quantity || 1) > 1 ? ` × ${t.quantity} pers.` : ''})`,
+                                        price: (Number(t.price) || 0) * (Number(t.quantity) || 1)
+                                    }))}
+                                    selectedComps={[]}
+                                    basePrice={0}
+                                    extraTotal={totalToursPrice}
+                                    hideQuantity={true}
+                                    customReserveBtnText={totalToursPrice > 0 ? `💳 Reservar ($${totalToursPrice.toLocaleString('es-MX')} MXN)` : '💳 Reservar Tours'}
+                                    customWhatsAppBtnText="💬 Consultar por WhatsApp"
+                                    onOpenCheckout={() => {
+                                        if (selectedTours.length === 0) {
+                                            alert('Por favor selecciona al menos un tour antes de proceder.')
+                                            return
+                                        }
+                                        setIsCheckoutOpen(true)
+                                    }}
+                                    onRemoveTour={(tourIdOrName) => setSelectedTours(prev => prev.filter(t => t.id !== tourIdOrName && t.name !== tourIdOrName && !t.name.includes(tourIdOrName)))}
+                                />
+                            )
+                        })()}
                     </div>
 
                     {/* Right Column: Grid of CMS Tour Cards */}

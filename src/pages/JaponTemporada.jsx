@@ -198,43 +198,68 @@ export default function JaponTemporada() {
             <section className="jac-flex-ext">
                 <div className="container">
                     <div className="jac-flex-ext-grid" data-animate="fade-up">
+                        {/* 1. Flexibilidad */}
                         <div className="jac-flex-box">
-                            <h3 className="jac-flex-box-title" style={{ color: season.colors.primary }}>
-                                🗺️ Flexibilidad
-                            </h3>
-                            {FLEXIBILIDAD.map((item, i) => (
-                                <div className="jac-flex-item" key={i}>
-                                    <h4>{item.title}</h4>
-                                    <p>{item.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Extensiones */}
-                        <div className="jac-flex-box">
-                            <h3 className="jac-flex-box-title" style={{ color: season.colors.primary }}>
-                                🌏 Extensiones
-                            </h3>
-                            {EXTENSIONES.map((item, i) => (
-                                <div className="jac-flex-item" key={i}>
-                                    <span className="jac-ext-icon">{item.icon}</span>
-                                    <div>
-                                        <h4>{item.name}</h4>
-                                        {item.duration && <p>{item.duration}</p>}
+                            <div className="jac-flex-box-header">
+                                <span className="jac-flex-box-icon" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>🗺️</span>
+                                <h3 className="jac-flex-box-title" style={{ color: season.colors.primary }}>
+                                    Flexibilidad Total
+                                </h3>
+                            </div>
+                            <div className="jac-flex-items-list">
+                                {FLEXIBILIDAD.map((item, i) => (
+                                    <div className="jac-flex-item" key={i}>
+                                        <span className="jac-flex-item-bullet" style={{ color: season.colors.primary }}>{item.icon || '✓'}</span>
+                                        <div className="jac-flex-item-text">
+                                            <h4>{item.title}</h4>
+                                            <p>{item.desc}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
 
-                        {/* Plan de Pago */}
+                        {/* 2. Extensiones */}
+                        <div className="jac-flex-box">
+                            <div className="jac-flex-box-header">
+                                <span className="jac-flex-box-icon" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>🌏</span>
+                                <h3 className="jac-flex-box-title" style={{ color: season.colors.primary }}>
+                                    Extensiones de Viaje
+                                </h3>
+                            </div>
+                            <div className="jac-flex-items-list">
+                                {EXTENSIONES.map((item, i) => (
+                                    <div className="jac-flex-item" key={i}>
+                                        <span className="jac-flex-item-bullet" style={{ color: season.colors.primary }}>✦</span>
+                                        <div className="jac-flex-item-text">
+                                            <h4>
+                                                {item.name}
+                                                {item.days && <span className="jac-flex-badge">{item.days}</span>}
+                                            </h4>
+                                            <p>{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 3. Plan de Pago */}
                         <div className="jac-flex-box jac-flex-box--pago">
-                            <h3 className="jac-flex-box-title" style={{ color: season.colors.primary }}>
-                                💳 Planes de Pago
-                            </h3>
-                            <p className="jac-pago-text">Anticipo + cómodas mensualidades</p>
+                            <div className="jac-flex-box-header">
+                                <span className="jac-flex-box-icon" style={{ background: '#ecfdf5', color: '#059669' }}>💳</span>
+                                <h3 className="jac-flex-box-title" style={{ color: '#059669' }}>
+                                    Planes de Pago
+                                </h3>
+                            </div>
+                            <div className="jac-pago-highlight">
+                                <strong>Anticipo + cómodas mensualidades</strong>
+                                <span>Paga a tu ritmo sin complicaciones</span>
+                            </div>
                             <ul className="jac-pago-list">
                                 <li>Aparta tu lugar con un anticipo accesible.</li>
-                                <li>Paga en mensualidades cómodas y sin complicaciones.</li>
+                                <li>Paga en mensualidades cómodas sin intereses.</li>
+                                <li>Liquida antes de la fecha de inicio del viaje.</li>
+                                <li>Asistencia y confirmación inmediata en cada pago.</li>
                             </ul>
                         </div>
                     </div>

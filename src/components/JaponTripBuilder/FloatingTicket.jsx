@@ -30,10 +30,24 @@ export default function FloatingTicket({
     const children = selectorData?.children || 0
     const passengersCount = hideQuantity ? 1 : (adults + children)
 
-    const pricePerPerson = basePrice + extraTotal
-    const totalPrice = pricePerPerson * passengersCount
+    const computedAddedItemsTotal = useMemo(() => {
+        if (!Array.isArray(addedItems) || addedItems.length === 0) return 0
+        return addedItems.reduce((acc, it) => {
+            const itemPrice = Number(it?.price) || Number(it?.priceNum) || 0
+            const qty = Number(it?.quantity) || 1
+            return acc + (itemPrice * qty)
+        }, 0)
+    }, [addedItems])
 
-    const formatPrice = (n) => `$${n.toLocaleString('es-MX')}`
+    const isToursSueltos = estilo === 'Tours Sueltos' || estilo?.toLowerCase()?.includes('sueltos') || estilo?.toLowerCase()?.includes('individuales')
+    const effectiveExtraTotal = extraTotal > 0 ? extraTotal : computedAddedItemsTotal
+
+    const pricePerPerson = basePrice + (isToursSueltos ? 0 : effectiveExtraTotal)
+    const totalPrice = isToursSueltos
+        ? ((basePrice * passengersCount) + effectiveExtraTotal)
+        : (pricePerPerson * passengersCount)
+
+    const formatPrice = (n) => `$${Number(n || 0).toLocaleString('es-MX')}`
 
     const datesText = useMemo(() => {
         if (tourDate) return tourDate

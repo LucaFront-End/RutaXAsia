@@ -192,11 +192,26 @@ export default function ComunidadComentarios() {
     })
     const [submitting, setSubmitting] = useState(false)
 
+    // Load persisted reviews
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY)
+            if (saved) {
+                const parsed = JSON.parse(saved)
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setReviews(parsed)
+                }
+            }
+        } catch (err) {
+            console.warn('LocalStorage load error:', err)
+        }
+    }, [])
+
     useEffect(() => { window.scrollTo(0, 0) }, [])
 
     const handleLike = (id) => {
         if (likedIds.includes(id)) {
-            setLikedIds(likedIds.filter(i => i !== id))
+            setLikedIds(likedIds.filter(item => item !== id))
             setReviews(reviews.map(r => r.id === id ? { ...r, likes: r.likes - 1 } : r))
         } else {
             setLikedIds([...likedIds, id])
@@ -208,7 +223,7 @@ export default function ComunidadComentarios() {
         e.preventDefault()
         setFormError(null)
 
-        // Validate content with anti-gibberish and anti-offensive filters
+        // Run smart content validation
         const validation = validateReviewContent(formData.name, formData.comment)
         if (!validation.isValid) {
             setFormError(validation.error)
@@ -216,6 +231,7 @@ export default function ComunidadComentarios() {
         }
 
         setSubmitting(true)
+
         try {
             // Determine season tag
             let sTag = 'all'
@@ -260,7 +276,7 @@ export default function ComunidadComentarios() {
                 console.warn('LocalStorage save error:', err)
             }
 
-            // Reset form and show success toast
+            // Reset form, close modal and show success toast
             setFormData({
                 name: '',
                 city: '',
@@ -270,6 +286,7 @@ export default function ComunidadComentarios() {
                 comment: '',
                 instagram: '',
             })
+            setIsReviewModalOpen(false)
             setJustPublishedToast(true)
             setTimeout(() => setJustPublishedToast(false), 6000)
         } catch (error) {
@@ -335,227 +352,252 @@ export default function ComunidadComentarios() {
                 </div>
             </section>
 
-            {/* ===== MAIN CONTENT GRID ===== */}
-            <div className="container com-main-layout">
-                {/* Left: Reviews Feed & Filters */}
-                <div className="com-feed-col">
-                    <div className="com-feed-header">
-                        <h2>Experiencias de Viajeros</h2>
-                        
-                        {/* Filter Tabs */}
-                        <div className="com-filters">
-                            <button
-                                className={`com-filter-btn ${filter === 'all' ? 'active' : ''}`}
-                                onClick={() => setFilter('all')}
-                            >
-                                Todas ({reviews.length})
-                            </button>
-                            <button
-                                className={`com-filter-btn ${filter === 'sakura' ? 'active' : ''}`}
-                                onClick={() => setFilter('sakura')}
-                            >
-                                🌸 Sakura
-                            </button>
-                            <button
-                                className={`com-filter-btn ${filter === 'verano' ? 'active' : ''}`}
-                                onClick={() => setFilter('verano')}
-                            >
-                                ☀️ Verano
-                            </button>
-                            <button
-                                className={`com-filter-btn ${filter === 'otono' ? 'active' : ''}`}
-                                onClick={() => setFilter('otono')}
-                            >
-                                🍁 Otoño
-                            </button>
-                            <button
-                                className={`com-filter-btn ${filter === 'corea' ? 'active' : ''}`}
-                                onClick={() => setFilter('corea')}
-                            >
-                                🇰🇷 Corea
-                            </button>
-                        </div>
+            {/* ===== MAIN CONTENT ===== */}
+            <div className="container com-main-container">
+                {/* Top Action Banner to Open Review Modal */}
+                <div className="com-cta-banner" data-animate="fade-up">
+                    <div className="com-cta-banner-text">
+                        <h3>¿Viajaste con nosotros? Comparte tu experiencia</h3>
+                        <p>Tu reseña ayuda a futuros viajeros a dar el paso de descubrir Japón y Asia con total confianza.</p>
                     </div>
+                    <button
+                        type="button"
+                        className="btn btn-primary com-open-modal-btn"
+                        onClick={() => setIsReviewModalOpen(true)}
+                    >
+                        <LuSend size={16} /> Escribir mi Reseña
+                    </button>
+                </div>
 
-                    {/* Review Cards Grid */}
-                    <div className="com-reviews-grid">
-                        {filteredReviews.map(r => (
-                            <div className="com-review-card" key={r.id}>
-                                <div className="com-card-top">
-                                    <img src={r.photo} alt={r.name} className="com-user-avatar" />
-                                    <div className="com-user-meta">
-                                        <div className="com-user-name-row">
-                                            <h4>{r.name}</h4>
-                                            {r.verified && (
-                                                <span className="com-verified-badge" title="Viajero Verificado">
-                                                    <LuCircleCheck size={13} /> Verificado
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="com-user-sub">
-                                            <span><LuMapPin size={12} /> {r.city}</span>
-                                            <span>•</span>
-                                            <span><LuCalendar size={12} /> {r.date}</span>
-                                        </div>
-                                    </div>
-                                    <div className="com-stars">
-                                        {[...Array(r.rating)].map((_, i) => (
-                                            <LuStar key={i} size={14} className="com-star-filled" />
-                                        ))}
-                                    </div>
-                                </div>
+                {justPublishedToast && (
+                    <div className="com-toast-success" style={{ margin: '1.5rem 0' }}>
+                        <span>🎉 ¡Tu reseña fue publicada con éxito y ya aparece en el muro de la comunidad!</span>
+                    </div>
+                )}
 
-                                <div className="com-trip-tag">
-                                    ✈️ {r.trip}
-                                </div>
-
-                                <p className="com-comment-text">
-                                    "{r.comment}"
-                                </p>
-
-                                {r.tripPhoto && (
-                                    <div className="com-card-photo">
-                                        <img src={r.tripPhoto} alt={`Foto de viaje de ${r.name}`} loading="lazy" />
-                                    </div>
-                                )}
-
-                                <div className="com-card-actions">
-                                    <button
-                                        className={`com-like-btn ${likedIds.includes(r.id) ? 'liked' : ''}`}
-                                        onClick={() => handleLike(r.id)}
-                                    >
-                                        <LuHeart size={16} fill={likedIds.includes(r.id) ? '#ff3b75' : 'none'} />
-                                        <span>{r.likes} personas inspiradas</span>
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                {/* Filter Tabs & Header */}
+                <div className="com-feed-header">
+                    <h2>Experiencias de la Comunidad ({filteredReviews.length})</h2>
+                    
+                    <div className="com-filters">
+                        <button
+                            className={`com-filter-btn ${filter === 'all' ? 'active' : ''}`}
+                            onClick={() => setFilter('all')}
+                        >
+                            Todas ({reviews.length})
+                        </button>
+                        <button
+                            className={`com-filter-btn ${filter === 'sakura' ? 'active' : ''}`}
+                            onClick={() => setFilter('sakura')}
+                        >
+                            🌸 Sakura
+                        </button>
+                        <button
+                            className={`com-filter-btn ${filter === 'verano' ? 'active' : ''}`}
+                            onClick={() => setFilter('verano')}
+                        >
+                            ☀️ Verano
+                        </button>
+                        <button
+                            className={`com-filter-btn ${filter === 'otono' ? 'active' : ''}`}
+                            onClick={() => setFilter('otono')}
+                        >
+                            🍁 Otoño
+                        </button>
+                        <button
+                            className={`com-filter-btn ${filter === 'corea' ? 'active' : ''}`}
+                            onClick={() => setFilter('corea')}
+                        >
+                            🇰🇷 Corea
+                        </button>
                     </div>
                 </div>
 
-                {/* Right: Interactive Review Submission Form */}
-                <aside className="com-form-col">
-                    <div className="com-form-card">
-                        <div className="com-form-header">
-                            <span className="com-form-tag">✍️ COMPARTE TU EXPERIENCIA</span>
-                            <h3>¿Viajaste con nosotros?</h3>
-                            <p>Tu opinión ayuda a otros viajeros a dar el salto a conocer Asia.</p>
-                        </div>
-
-                        {justPublishedToast && (
-                            <div className="com-toast-success">
-                                <span>🎉 ¡Tu reseña fue publicada exitosamente en el muro!</span>
-                            </div>
-                        )}
-
-                        {formError && (
-                            <div className="com-form-error-box">
-                                ⚠️ {formError}
-                            </div>
-                        )}
-
-                        <form className="com-form" onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>Tu Nombre Completo *</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="Ej. Sofía Hernández"
-                                    value={formData.name}
-                                    onChange={(e) => {
-                                        setFormError(null)
-                                        setFormData({ ...formData, name: e.target.value })
-                                    }}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Ciudad / Estado (México) *</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="Ej. CDMX, Guadalajara, Monterrey..."
-                                    value={formData.city}
-                                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Viaje que realizaste *</label>
-                                <select
-                                    value={formData.trip}
-                                    onChange={(e) => setFormData({ ...formData, trip: e.target.value })}
-                                >
-                                    {TOURS_OPTIONS.map((opt, i) => (
-                                        <option key={i} value={opt}>{opt}</option>
+                {/* Review Cards Responsive Grid */}
+                <div className="com-reviews-grid">
+                    {filteredReviews.map(r => (
+                        <div className="com-review-card" key={r.id}>
+                            <div className="com-card-top">
+                                <img src={r.photo} alt={r.name} className="com-user-avatar" />
+                                <div className="com-user-meta">
+                                    <div className="com-user-name-row">
+                                        <h4>{r.name}</h4>
+                                        {r.verified && (
+                                            <span className="com-verified-badge" title="Viajero Verificado">
+                                                <LuCircleCheck size={13} /> Verificado
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="com-user-sub">
+                                        <span><LuMapPin size={12} /> {r.city}</span>
+                                        <span>•</span>
+                                        <span><LuCalendar size={12} /> {r.date}</span>
+                                    </div>
+                                </div>
+                                <div className="com-stars">
+                                    {[...Array(r.rating)].map((_, i) => (
+                                        <LuStar key={i} size={14} className="com-star-filled" />
                                     ))}
-                                </select>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Calificación *</label>
-                                <div className="com-star-picker">
-                                    {[1, 2, 3, 4, 5].map((num) => (
-                                        <button
-                                            type="button"
-                                            key={num}
-                                            className={`com-picker-star ${formData.rating >= num ? 'active' : ''}`}
-                                            onClick={() => setFormData({ ...formData, rating: num })}
-                                        >
-                                            ★
-                                        </button>
-                                    ))}
-                                    <span className="com-picker-label">{formData.rating} de 5 estrellas</span>
                                 </div>
                             </div>
 
-                            <div className="form-group">
-                                <label>Tu Comentario / Experiencia *</label>
-                                <textarea
-                                    rows={4}
-                                    required
-                                    placeholder="Cuéntanos qué fue lo que más disfrutaste, la atención de Juan y Ale, los templos, los trenes..."
-                                    value={formData.comment}
-                                    onChange={(e) => {
-                                        setFormError(null)
-                                        setFormData({ ...formData, comment: e.target.value })
-                                    }}
-                                />
+                            <div className="com-trip-tag">
+                                ✈️ {r.trip}
                             </div>
 
-                            <div className="form-group">
-                                <label>Instagram o Email (Opcional)</label>
-                                <input
-                                    type="text"
-                                    placeholder="@tuusuario o correo"
-                                    value={formData.instagram}
-                                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                                />
+                            <p className="com-comment-text">
+                                "{r.comment}"
+                            </p>
+
+                            {r.tripPhoto && (
+                                <div className="com-card-photo">
+                                    <img src={r.tripPhoto} alt={`Foto de viaje de ${r.name}`} loading="lazy" />
+                                </div>
+                            )}
+
+                            <div className="com-card-actions">
+                                <button
+                                    className={`com-like-btn ${likedIds.includes(r.id) ? 'liked' : ''}`}
+                                    onClick={() => handleLike(r.id)}
+                                >
+                                    <LuHeart size={16} fill={likedIds.includes(r.id) ? '#ff3b75' : 'none'} />
+                                    <span>{r.likes} personas inspiradas</span>
+                                </button>
                             </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
-                            <button
-                                type="submit"
-                                className="btn btn-primary com-submit-btn"
-                                disabled={submitting}
-                            >
-                                {submitting ? 'Publicando...' : 'Publicar mi Experiencia →'}
-                            </button>
-                        </form>
+            {/* ===== POPUP MODAL: SUBMISSION FORM ===== */}
+            {isReviewModalOpen && (
+                <div className="com-modal-backdrop" onClick={() => setIsReviewModalOpen(false)}>
+                    <div className="com-modal-dialog" onClick={e => e.stopPropagation()}>
+                        <button
+                            type="button"
+                            className="com-modal-close"
+                            onClick={() => setIsReviewModalOpen(false)}
+                            aria-label="Cerrar"
+                        >
+                            ✕
+                        </button>
 
-                        <div className="com-form-wa-card">
-                            <p>¿Prefieres enviarnos tus fotos o un video testimonio?</p>
-                            <a
-                                href={`${WHATSAPP_BASE}SW-Hola%20quiero%20compartir%20mis%20fotos%20y%20resena%20de%20mi%20viaje%20con%20RutaXAsia`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="com-wa-direct-btn"
-                            >
-                                💬 Enviar por WhatsApp
-                            </a>
+                        <div className="com-modal-header">
+                            <span className="com-form-tag">✍️ COMPARTE TU EXPERIENCIA</span>
+                            <h3>Publicar Reseña de Viaje</h3>
+                            <p>Cuéntanos qué fue lo que más disfrutaste de tu experiencia con nosotros.</p>
+                        </div>
+
+                        <div className="com-modal-body">
+                            {formError && (
+                                <div className="com-form-error-box">
+                                    ⚠️ {formError}
+                                </div>
+                            )}
+
+                            <form className="com-form" onSubmit={handleSubmit}>
+                                <div className="form-group">
+                                    <label>Tu Nombre Completo *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="Ej. Sofía Hernández"
+                                        value={formData.name}
+                                        onChange={(e) => {
+                                            setFormError(null)
+                                            setFormData({ ...formData, name: e.target.value })
+                                        }}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Ciudad / Estado (México) *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="Ej. CDMX, Guadalajara, Monterrey..."
+                                        value={formData.city}
+                                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Viaje que realizaste *</label>
+                                    <select
+                                        value={formData.trip}
+                                        onChange={(e) => setFormData({ ...formData, trip: e.target.value })}
+                                    >
+                                        {TOURS_OPTIONS.map((opt, i) => (
+                                            <option key={i} value={opt}>{opt}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Calificación *</label>
+                                    <div className="com-star-picker">
+                                        {[1, 2, 3, 4, 5].map((num) => (
+                                            <button
+                                                type="button"
+                                                key={num}
+                                                className={`com-picker-star ${formData.rating >= num ? 'active' : ''}`}
+                                                onClick={() => setFormData({ ...formData, rating: num })}
+                                            >
+                                                ★
+                                            </button>
+                                        ))}
+                                        <span className="com-picker-label">{formData.rating} de 5 estrellas</span>
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Tu Comentario / Experiencia *</label>
+                                    <textarea
+                                        rows={4}
+                                        required
+                                        placeholder="Cuéntanos qué fue lo que más disfrutaste, la atención de Juan y Ale, los templos, la comida, los trenes..."
+                                        value={formData.comment}
+                                        onChange={(e) => {
+                                            setFormError(null)
+                                            setFormData({ ...formData, comment: e.target.value })
+                                        }}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Instagram o Email (Opcional)</label>
+                                    <input
+                                        type="text"
+                                        placeholder="@tuusuario o correo"
+                                        value={formData.instagram}
+                                        onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary com-submit-btn"
+                                    disabled={submitting}
+                                >
+                                    {submitting ? 'Publicando...' : 'Publicar mi Experiencia →'}
+                                </button>
+                            </form>
+
+                            <div className="com-form-wa-card">
+                                <p>¿Prefieres enviarnos tus fotos o un video testimonio?</p>
+                                <a
+                                    href={`${WHATSAPP_BASE}SW-Hola%20quiero%20compartir%20mis%20fotos%20y%20resena%20de%20mi%20viaje%20con%20RutaXAsia`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="com-wa-direct-btn"
+                                >
+                                    💬 Enviar por WhatsApp
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </aside>
-            </div>
+                </div>
+            )}
         </div>
     )
 }
