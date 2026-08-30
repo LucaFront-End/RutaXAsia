@@ -192,8 +192,15 @@ function mapCmsTour(it) {
         rawCategorias.includes('signature') || rawCategorias.includes('vip') || rawTipo.includes('signature') || rawTipo.includes('vip')
     )
 
-    const pageTitle = it.tituloDePgina || it.title || 'Tour Individual'
-    const slug = generateSlug(it.title || pageTitle, it._id)
+    const pageTitle = it.tituloDePgina || it.tituloDePagina || it.pageTitle || it.titulo || it.title || 'Tour Individual'
+    const rawSlug = it.slug || it.urlSlug || it.pageSlug || it['link-tour-individuales-title'] || ''
+    const slug = rawSlug
+        ? (String(rawSlug).startsWith('/') ? String(rawSlug).replace(/^\/|\/$/g, '').split('/').pop() : generateSlug(rawSlug))
+        : generateSlug(it.title || pageTitle, it._id)
+
+    const seoTitle = it.tituloSeo || it.seoTitle || it.titleSeo || it.metaTitle || it.seo_title || it.tituloDePgina || it.title || pageTitle
+    const seoDescription = it.descripcionSeo || it.seoDescription || it.metaDescription || it.seoDesc || it.seo_description || it.descripcinAmplia || it.excerptDeTour || it.excerpt || ''
+
     const shortDesc = it.descripcinAmplia || it.descripcionCorta || it.excerptDeTour || it.excerpt || ''
     const fullDesc = it.descripcinAmplia1 || it.descripcionAmplia || it.descripcinAmplia || it.excerptDeTour || it.excerpt || ''
     const daysVal = it.dasDeViaje || it.diasDeViaje || ''
@@ -232,6 +239,8 @@ function mapCmsTour(it) {
         title: pageTitle,
         rawTitle: it.title || '',
         tituloDePgina: pageTitle,
+        seoTitle: seoTitle,
+        seoDescription: seoDescription,
         excerpt: it.excerptDeTour || it.excerpt || '',
         shortDescription: shortDesc,
         fullDescription: fullDesc,

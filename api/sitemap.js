@@ -6,18 +6,25 @@ const SITE_URL = 'https://rutaxasia.com';
 
 /* ── Static pages ──────────────────────────────────────────────── */
 const STATIC_PAGES = [
-    { loc: '/',                       priority: '1.0',  changefreq: 'weekly'  },
-    { loc: '/nosotros',               priority: '0.7',  changefreq: 'monthly' },
-    { loc: '/blog',                   priority: '0.8',  changefreq: 'daily'   },
-    { loc: '/faq',                    priority: '0.6',  changefreq: 'monthly' },
-    { loc: '/contacto',               priority: '0.7',  changefreq: 'monthly' },
-    { loc: '/viajes',                 priority: '0.9',  changefreq: 'weekly'  },
-    { loc: '/viajes/japon',           priority: '0.9',  changefreq: 'weekly'  },
-    { loc: '/viajes/corea',           priority: '0.9',  changefreq: 'weekly'  },
-    { loc: '/viajes/china',           priority: '0.5',  changefreq: 'monthly' },
-    { loc: '/zonas',                  priority: '0.8',  changefreq: 'weekly'  },
-    { loc: '/aviso-de-privacidad',    priority: '0.3',  changefreq: 'yearly'  },
-    { loc: '/terminos-y-condiciones', priority: '0.3',  changefreq: 'yearly'  },
+    { loc: '/',                            priority: '1.0',  changefreq: 'weekly'  },
+    { loc: '/nosotros',                    priority: '0.7',  changefreq: 'monthly' },
+    { loc: '/portafolio',                  priority: '0.8',  changefreq: 'weekly'  },
+    { loc: '/comunidad/comentarios',       priority: '0.8',  changefreq: 'daily'   },
+    { loc: '/registro-nacional-turismo',   priority: '0.7',  changefreq: 'monthly' },
+    { loc: '/blog',                        priority: '0.8',  changefreq: 'daily'   },
+    { loc: '/faq',                         priority: '0.6',  changefreq: 'monthly' },
+    { loc: '/contacto',                    priority: '0.7',  changefreq: 'monthly' },
+    { loc: '/viajes',                      priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/japon',                priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/japon/sakura',         priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/japon/akari',          priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/japon/kamakura',       priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/corea',                priority: '0.9',  changefreq: 'weekly'  },
+    { loc: '/viajes/china',                priority: '0.5',  changefreq: 'monthly' },
+    { loc: '/tours-individuales',          priority: '0.8',  changefreq: 'weekly'  },
+    { loc: '/zonas',                       priority: '0.8',  changefreq: 'weekly'  },
+    { loc: '/aviso-de-privacidad',         priority: '0.3',  changefreq: 'yearly'  },
+    { loc: '/terminos-y-condiciones',      priority: '0.3',  changefreq: 'yearly'  },
 ];
 
 /* ── Hardcoded tour slugs as fallback ───────── */
@@ -33,6 +40,24 @@ const STATIC_TOUR_SLUGS = [
     'corea-septiembre-2026',
     'otono-japon-2026',
 ];
+
+const STATIC_TOUR_INDIVIDUAL_SLUGS = [
+    'the-wizarding-world-of-harry-potter-tokyo',
+    'ceremonia-del-te-en-kioto',
+    'teamlab-planets-tokyo',
+    'experiencia-samurai-en-tokio',
+    'recorrido-gastronomico-en-osaka',
+];
+
+function generateSlug(title, id) {
+    if (!title) return id || 'tour';
+    return String(title)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+}
 
 /* ── Create Wix client ─────────── */
 function getWixClient() {
@@ -58,6 +83,39 @@ async function fetchTourSlugs(wixClient) {
     } catch (error) {
         console.error('[Sitemap] Error fetching tours:', error.message);
         return STATIC_TOUR_SLUGS;
+    }
+}
+
+/* ── Fetch tour individual slugs ──────────── */
+async function fetchTourIndividualSlugs(wixClient) {
+    try {
+        let allItems = [];
+        let result = await wixClient.items.query('TourIndividuales').limit(100).find();
+        allItems.push(...(result.items || []));
+
+        while (result.hasNext && result.hasNext()) {
+            result = await result.next();
+            allItems.push(...(result.items || []));
+        }
+
+        const cmsSlugs = allItems.map(item => {
+            const rawSlug = item.slug || item.urlSlug || item.pageSlug || item['link-tour-individuales-title'];
+            if (rawSlug) {
+                return String(rawSlug).startsWith('/') 
+                    ? String(rawSlug).replace(/^\/|\/$/g, '').split('/').pop() 
+                    : generateSlug(rawSlug);
+            }
+            return generateSlug(item.title || item.tituloDePgina || item.tituloDePagina, item._id);
+        }).filter(Boolean);
+
+        if (cmsSlugs.length > 0) {
+            const merged = new Set([...cmsSlugs, ...STATIC_TOUR_INDIVIDUAL_SLUGS]);
+            return [...merged];
+        }
+        return STATIC_TOUR_INDIVIDUAL_SLUGS;
+    } catch (error) {
+        console.error('[Sitemap] Error fetching tour individuales:', error.message);
+        return STATIC_TOUR_INDIVIDUAL_SLUGS;
     }
 }
 
@@ -112,8 +170,8 @@ function buildSitemapIndex() {
 </sitemapindex>`;
 }
 
-/* ── Build main sitemap (static + tours + blog) ──────────────────── */
-function buildMainSitemap(tourSlugs, blogEntries) {
+/* ── Build main sitemap (static + tours + tours individuales + blog) ──────────────────── */
+function buildMainSitemap(tourSlugs, tourIndivSlugs, blogEntries) {
     const today = new Date().toISOString().split('T')[0];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -131,13 +189,24 @@ function buildMainSitemap(tourSlugs, blogEntries) {
 `;
     }
 
-    // Tours
+    // Standard Tours
     for (const slug of tourSlugs) {
         xml += `  <url>
     <loc>${SITE_URL}/tours/${slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+`;
+    }
+
+    // Tours Individuales
+    for (const slug of tourIndivSlugs) {
+        xml += `  <url>
+    <loc>${SITE_URL}/tours-individuales/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 `;
     }
@@ -173,14 +242,15 @@ export default async function handler(req, res) {
             return res.status(200).send(xml);
         }
 
-        // ?type=main → return main sitemap (static + tours + blog)
+        // ?type=main → return main sitemap (static + tours + tour individuales + blog)
         const wixClient = getWixClient();
-        const [tourSlugs, blogEntries] = await Promise.all([
+        const [tourSlugs, tourIndivSlugs, blogEntries] = await Promise.all([
             fetchTourSlugs(wixClient),
+            fetchTourIndividualSlugs(wixClient),
             fetchBlogSlugs(wixClient),
         ]);
 
-        const xml = buildMainSitemap(tourSlugs, blogEntries);
+        const xml = buildMainSitemap(tourSlugs, tourIndivSlugs, blogEntries);
 
         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
         res.setHeader('Content-Type', 'application/xml; charset=utf-8');

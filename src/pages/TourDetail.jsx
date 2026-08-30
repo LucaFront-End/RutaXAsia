@@ -33,6 +33,8 @@ export default function TourDetail() {
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
 
+    const [isTicketModalOpen, setIsTicketModalOpen] = useState(false)
+
     useEffect(() => { window.scrollTo(0, 0) }, [slug])
 
     useEffect(() => {
@@ -111,9 +113,14 @@ export default function TourDetail() {
                     </div>
                     <div className="td-hero-cta-row" style={{ flexWrap: 'wrap', gap: '12px' }}>
                         {!isSoldOut ? (
-                            <a href={waLink} className="td-hero-btn" target="_blank" rel="noopener noreferrer">
-                                <WhatsAppIcon /> {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : `Reservar — ${tour.price}`}
-                            </a>
+                            <button
+                                type="button"
+                                className="td-hero-btn"
+                                onClick={() => setIsTicketModalOpen(true)}
+                                style={{ border: 'none', cursor: 'pointer' }}
+                            >
+                                Reservar
+                            </button>
                         ) : (
                             <span className="td-hero-btn td-hero-btn--sold">SOLD OUT</span>
                         )}
@@ -188,116 +195,76 @@ export default function TourDetail() {
                 )
             })()}
 
-            {/* ===== 3. MAIN CONTENT WITH FLOATING TICKET SIDEBAR ===== */}
-            <div className="container libre-layout" style={{ marginTop: '50px', marginBottom: '60px' }}>
-                {/* Left Column: All Tour Sections */}
-                <div>
-                    {/* Sobre este viaje */}
-                    <section className="td-editorial" style={{ paddingTop: 0, paddingBottom: '30px' }}>
-                        <h2 className="td-section-label">Sobre este viaje</h2>
-                        <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, traslados y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
-                        {tour.hospedaje && (
-                            <div className="td-hospedaje">
-                                <span className="td-hospedaje-icon">🏨</span>
-                                <span className="td-hospedaje-text"><strong>Hospedaje:</strong> {tour.hospedaje}</span>
-                            </div>
-                        )}
-                        <div style={{ marginTop: '18px' }}>
-                            <button
-                                type="button"
-                                className="btn btn-outline"
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', borderRadius: '100px', fontWeight: '750', fontSize: '0.88rem' }}
-                                onClick={() => setIsPdfModalOpen(true)}
-                            >
-                                📄 Descargar Itinerario en PDF (Gratis)
-                            </button>
+            {/* ===== 3. MAIN CONTENT (CENTERED — NO FLOATING TICKET IN FLOW) ===== */}
+            <div className="container td-centered-content" style={{ maxWidth: '920px', margin: '50px auto 60px' }}>
+                {/* Sobre este viaje */}
+                <section className="td-editorial" style={{ paddingTop: 0, paddingBottom: '30px' }}>
+                    <h2 className="td-section-label">Sobre este viaje</h2>
+                    <p className="td-editorial-text">{tour.overviewText || tour.tagline} Un viaje con guía hispanohablante, hospedaje, traslados y experiencias únicas incluidas. {tour.duration} que cambiarán tu perspectiva del mundo.</p>
+                    {tour.hospedaje && (
+                        <div className="td-hospedaje">
+                            <span className="td-hospedaje-icon">🏨</span>
+                            <span className="td-hospedaje-text"><strong>Hospedaje:</strong> {tour.hospedaje}</span>
                         </div>
-                    </section>
+                    )}
+                    <div style={{ marginTop: '18px' }}>
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', borderRadius: '100px', fontWeight: '750', fontSize: '0.88rem' }}
+                            onClick={() => setIsPdfModalOpen(true)}
+                        >
+                            📄 Descargar Itinerario en PDF (Gratis)
+                        </button>
+                    </div>
+                </section>
 
-                    {/* Itinerario día por día */}
-                    <section className="td-tabs-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
-                        <h2 className="td-section-label">Itinerario día por día</h2>
-                        <p className="td-tabs-subtitle">Seleccioná una ciudad en el mapa para ver el detalle</p>
-                        <ItineraryMap
-                            chapters={tour.chapters}
-                            activeCity={activeCity}
-                            onCityClick={setActiveCity}
-                        />
-                    </section>
-
-                    {/* ¿Qué incluye? */}
-                    <section className="td-split-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
-                        <h2 className="td-section-label">¿Qué incluye?</h2>
-                        <div className="td-split-card">
-                            <div className="td-split-yes">
-                                <h3 className="td-split-title">Incluye</h3>
-                                <ul className="td-split-list">
-                                    {tour.includes.map((item, i) => <li key={i}><span className="td-split-check">✓</span>{item}</li>)}
-                                </ul>
-                            </div>
-                            <div className="td-split-no">
-                                <h3 className="td-split-title">No incluye</h3>
-                                <ul className="td-split-list">
-                                    {tour.notIncludes.map((item, i) => <li key={i}><span className="td-split-x">✕</span>{item}</li>)}
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Preguntas frecuentes */}
-                    <section className="td-faq-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
-                        <h2 className="td-section-label">Preguntas frecuentes</h2>
-                        <div className="td-faqs">
-                            {tour.faqs.map((faq, i) => (
-                                <div key={i} className={`td-faq ${openFaq === i ? 'td-faq--open' : ''}`}>
-                                    <button className="td-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                                        <span>{faq.q}</span>
-                                        <span className="td-faq-icon">{openFaq === i ? '−' : '+'}</span>
-                                    </button>
-                                    {openFaq === i && <div className="td-faq-a"><p>{faq.a}</p></div>}
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                </div>
-
-                {/* Right Column: Floating Ticket Sidebar */}
-                <div>
-                    <FloatingTicket
-                        season={{ name: tour.title, colors: { primary: '#e91e63' } }}
-                        temporadaKey="sakura"
-                        estilo="Reserva"
-                        selectorData={selectorData}
-                        tourDate={tour.date}
-                        selectedPkg={{ days: tour.duration, priceNum: basePriceNum, name: tour.title }}
-                        includedExps={tour.includes || []}
-                        addedItems={[]}
-                        selectedComps={[]}
-                        basePrice={basePriceNum}
-                        extraTotal={0}
-                        anticipoText={tour.anticipoText}
-                        anticipoDisplay={tour.anticipoDisplay}
-                        hideQuantity={true}
-                        customReserveBtnText={tour.anticipoDisplay ? `Apartar con ${tour.anticipoDisplay}` : null}
-                        onOpenCheckout={() => setIsCheckoutOpen(true)}
-                        onOpenDownloadPdf={() => setIsPdfModalOpen(true)}
+                {/* Itinerario día por día */}
+                <section className="td-tabs-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                    <h2 className="td-section-label">Itinerario día por día</h2>
+                    <p className="td-tabs-subtitle">Seleccioná una ciudad en el mapa para ver el detalle</p>
+                    <ItineraryMap
+                        chapters={tour.chapters}
+                        activeCity={activeCity}
+                        onCityClick={setActiveCity}
                     />
-                </div>
-            </div>
+                </section>
 
-            <CheckoutModal
-                isOpen={isCheckoutOpen}
-                onClose={() => setIsCheckoutOpen(false)}
-                season={{ name: tour.title, colors: { primary: '#e91e63' } }}
-                estilo="Reserva"
-                totalPrice={totalPrice}
-                desglose={
-                    `Tour: ${tour.title}. ` +
-                    `Fecha: ${tour.date}. ` +
-                    `Duración: ${tour.duration}. ` +
-                    (tour.anticipoText ? `Plan: ${tour.anticipoText}. ` : '')
-                }
-            />
+                {/* ¿Qué incluye? */}
+                <section className="td-split-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                    <h2 className="td-section-label">¿Qué incluye?</h2>
+                    <div className="td-split-card">
+                        <div className="td-split-yes">
+                            <h3 className="td-split-title">Incluye</h3>
+                            <ul className="td-split-list">
+                                {tour.includes.map((item, i) => <li key={i}><span className="td-split-check">✓</span>{item}</li>)}
+                            </ul>
+                        </div>
+                        <div className="td-split-no">
+                            <h3 className="td-split-title">No incluye</h3>
+                            <ul className="td-split-list">
+                                {tour.notIncludes.map((item, i) => <li key={i}><span className="td-split-x">✕</span>{item}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Preguntas frecuentes */}
+                <section className="td-faq-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                    <h2 className="td-section-label">Preguntas frecuentes</h2>
+                    <div className="td-faqs">
+                        {tour.faqs.map((faq, i) => (
+                            <div key={i} className={`td-faq ${openFaq === i ? 'td-faq--open' : ''}`}>
+                                <button className="td-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                                    <span>{faq.q}</span>
+                                    <span className="td-faq-icon">{openFaq === i ? '−' : '+'}</span>
+                                </button>
+                                {openFaq === i && <div className="td-faq-a"><p>{faq.a}</p></div>}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
 
             {/* ===== 7. BOTTOM CTA ===== */}
             <section className="td-bottom-cta">
@@ -305,11 +272,16 @@ export default function TourDetail() {
                 <div className="td-bottom-overlay" />
                 <div className="td-bottom-inner container">
                     <h2 className="td-bottom-h2">¿Listo para vivir {tour.title}?</h2>
-                    <p className="td-bottom-p">Escríbenos y reserva tu lugar antes de que se agoten.</p>
+                    <p className="td-bottom-p">Reserva tu lugar antes de que se agoten los cupos disponibles.</p>
                     <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
-                        <a href={waLink} className="td-bottom-btn" target="_blank" rel="noopener noreferrer">
-                            <WhatsAppIcon /> {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : `Reservar — ${tour.price}`}
-                        </a>
+                        <button
+                            type="button"
+                            className="td-bottom-btn td-bottom-btn--reserve"
+                            style={{ border: 'none', cursor: 'pointer' }}
+                            onClick={() => setIsTicketModalOpen(true)}
+                        >
+                            Reservar
+                        </button>
                         <button
                             type="button"
                             className="td-bottom-btn"
@@ -340,18 +312,89 @@ export default function TourDetail() {
                             📄 Itinerario PDF
                         </button>
                         <span className="td-float-price">{tour.price}</span>
-                        <a href={waLink} className="td-float-btn" target="_blank" rel="noopener noreferrer">
-                            <WhatsAppIcon />
-                            <span className="td-float-btn-text-desktop">
-                                {tour.anticipoDisplay ? `Reservar — Anticipo ${tour.anticipoDisplay}` : (tour.price ? `Reservar — ${tour.price}` : 'Reservar')}
-                            </span>
-                            <span className="td-float-btn-text-mobile">
-                                {tour.anticipoDisplay ? `Apartar ${tour.anticipoDisplay}` : 'Reservar'}
-                            </span>
-                        </a>
+                        <button
+                            type="button"
+                            className="td-float-btn"
+                            style={{ border: 'none', cursor: 'pointer' }}
+                            onClick={() => setIsTicketModalOpen(true)}
+                        >
+                            Reservar
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* ===== TICKET POPUP MODAL (DESKTOP & MOBILE) ===== */}
+            {isTicketModalOpen && (
+                <div className="td-ticket-modal-backdrop" onClick={() => setIsTicketModalOpen(false)}>
+                    <div className="td-ticket-modal-dialog" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className="td-ticket-modal-close"
+                            onClick={() => setIsTicketModalOpen(false)}
+                            aria-label="Cerrar"
+                        >
+                            ✕
+                        </button>
+                        <div className="td-ticket-modal-header">
+                            <span className="td-ticket-modal-tag">🎟️ Desglose de Reserva</span>
+                            <h3 className="td-ticket-modal-title">{tour.title}</h3>
+                            <p className="td-ticket-modal-sub">{tour.date} · {tour.duration}</p>
+                        </div>
+                        <div className="td-ticket-modal-body">
+                            <FloatingTicket
+                                season={{ name: tour.title, colors: { primary: '#dc2626' } }}
+                                temporadaKey="sakura"
+                                estilo="Reserva"
+                                selectorData={selectorData}
+                                tourDate={tour.date}
+                                selectedPkg={{ days: tour.duration, priceNum: basePriceNum, name: tour.title }}
+                                includedExps={tour.includes || []}
+                                addedItems={[]}
+                                selectedComps={[]}
+                                basePrice={basePriceNum}
+                                extraTotal={0}
+                                anticipoText={tour.anticipoText}
+                                anticipoDisplay={tour.anticipoDisplay}
+                                hideQuantity={true}
+                                customReserveBtnText={tour.anticipoDisplay ? `Apartar Online (${tour.anticipoDisplay})` : 'Apartar con Pago Online'}
+                                onOpenCheckout={() => {
+                                    setIsTicketModalOpen(false)
+                                    setIsCheckoutOpen(true)
+                                }}
+                                onOpenDownloadPdf={() => {
+                                    setIsTicketModalOpen(false)
+                                    setIsPdfModalOpen(true)
+                                }}
+                            />
+                            <div className="td-ticket-modal-wa-wrap">
+                                <a
+                                    href={waLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="td-ticket-wa-cta"
+                                >
+                                    <WhatsAppIcon /> Reservar o Consultar por WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Checkout Online Modal */}
+            <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                season={{ name: tour.title, colors: { primary: '#dc2626' } }}
+                estilo="Reserva"
+                totalPrice={totalPrice}
+                desglose={
+                    `Tour: ${tour.title}. ` +
+                    `Fecha: ${tour.date}. ` +
+                    `Duración: ${tour.duration}. ` +
+                    (tour.anticipoText ? `Plan: ${tour.anticipoText}. ` : '')
+                }
+            />
 
             {/* Download Itinerary PDF Popup Modal */}
             <DownloadItineraryModal

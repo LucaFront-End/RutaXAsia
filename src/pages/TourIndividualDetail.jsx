@@ -177,14 +177,18 @@ export default function TourIndividualDetail() {
         }
     ]
 
-    const fullDescriptionText = tour.fullDescription || tour.descripcinAmplia1 || tour.shortDescription || tour.descripcinAmplia || tour.description || tour.excerpt || 'Disfruta de una experiencia única e inmersiva en Japón con la coordinación experta de RutaXAsia.'
+    const pageSeoTitle = tour.seoTitle
+        ? (tour.seoTitle.toLowerCase().includes('rutaxasia') ? tour.seoTitle : `${tour.seoTitle} | RutaXAsia`)
+        : `${displayTitle} — Tour Individual en Japón | RutaXAsia`
+
+    const pageSeoDescription = tour.seoDescription || displaySubtitle || (tour.excerpt ? `${tour.excerpt}` : `${displayTitle}. Reserva tu tour individual en Japón con RutaXAsia.`)
 
     return (
         <div className="tour-detail-page">
             <Helmet>
-                <title>{`${displayTitle} — Tour Individual en Japón | RutaXAsia`}</title>
-                <meta name="description" content={`${displaySubtitle || displayTitle}. Reserva tu tour individual en Japón con RutaXAsia.`} />
-                <meta name="robots" content="noindex, nofollow" />
+                <title>{pageSeoTitle}</title>
+                <meta name="description" content={pageSeoDescription} />
+                <meta name="robots" content="index, follow" />
             </Helmet>
 
             {/* Sticky Breadcrumb Bar */}

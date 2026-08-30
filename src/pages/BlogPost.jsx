@@ -75,10 +75,12 @@ export default function BlogPost() {
                 </div>
                 <div className="blogpost-hero-overlay" />
                 <div className="blogpost-hero-content container">
-                    <Link to="/blog" className="blogpost-back">
-                        <LuArrowLeft size={16} /> Blog
-                    </Link>
-                    <span className="blogpost-cat">{post.categoryLabel}</span>
+                    <div className="blogpost-hero-top-row">
+                        <Link to="/blog" className="blogpost-back">
+                            <LuArrowLeft size={16} /> Blog
+                        </Link>
+                        <span className="blogpost-cat">{post.categoryLabel}</span>
+                    </div>
                     <h1 className="blogpost-h1">{post.title}</h1>
                     <div className="blogpost-meta">
                         <span><LuCalendar size={14} /> {formatDate(post.date)}</span>

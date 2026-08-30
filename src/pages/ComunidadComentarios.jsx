@@ -104,10 +104,81 @@ const TOURS_OPTIONS = [
     'Tours Individuales / Día libre',
 ]
 
+const STORAGE_KEY = 'rutaxasia_comunidad_reviews'
+
+// Smart gibberish and profanity filter
+function validateReviewContent(name, comment) {
+    const cleanName = (name || '').trim()
+    const cleanComment = (comment || '').trim()
+
+    if (cleanName.length < 2) {
+        return { isValid: false, error: 'Por favor ingresa tu nombre completo o apodo.' }
+    }
+
+    if (cleanComment.length < 15) {
+        return { isValid: false, error: 'Tu comentario debe tener al menos 15 caracteres para contar tu experiencia.' }
+    }
+
+    const words = cleanComment.split(/\s+/).filter(Boolean)
+    if (words.length < 3) {
+        return { isValid: false, error: 'Por favor escribe al menos 3 o 4 palabras explicando tu vivencia de viaje.' }
+    }
+
+    // 1. Check for keyboard smash patterns & repetitive junk (e.g., asdasd, dwdada, qwerty, zzzzz)
+    const keyboardSmashRegex = /(asdf|asd|dwd|qwer|zxcv|hjkl|jkl|lkj|1234|aaaa|bbbb|cccc|dddd|eeee|ffff|gggg|hhhh|iiii|jjjj|kkkk|llll|mmmm|nnnn|oooo|pppp|qqqq|rrrr|ssss|tttt|uuuu|vvvv|wwww|xxxx|yyyy|zzzz)/i
+    if (keyboardSmashRegex.test(cleanComment.toLowerCase()) && cleanComment.length < 40) {
+        return { isValid: false, error: 'El comentario parece contener texto de prueba o caracteres repetidos. Por favor escribe una reseña real.' }
+    }
+
+    // 2. Check for extremely long single words (> 26 characters without space)
+    for (const word of words) {
+        if (word.length > 26) {
+            return { isValid: false, error: 'Detectamos palabras demasiado largas o sin sentido. Por favor escribe frases coherentes.' }
+        }
+        // Words with 5+ letters and no vowels
+        if (word.length >= 5 && !/[aeiouáéíóúü]/i.test(word) && !word.startsWith('@') && !word.startsWith('#')) {
+            return { isValid: false, error: 'Por favor escribe palabras comprensibles en español.' }
+        }
+    }
+
+    // 3. Profanity and offensive words filter
+    const bannedPatterns = [
+        /\b(puto|puta|mierda|verga|pendejo|pendeja|estupido|estupida|imbecil|chingar|chingada|culero|cabron|cabrona|malparido|gonorrea|coño|maricon|zorra|estafa|scam|viagra|casino|porn|xxx)\b/i,
+        /https?:\/\//i, // links
+    ]
+
+    for (const pattern of bannedPatterns) {
+        if (pattern.test(cleanComment) || pattern.test(cleanName)) {
+            return { isValid: false, error: 'El comentario contiene términos inapropiados, enlaces o lenguaje no permitido en la comunidad.' }
+        }
+    }
+
+    return { isValid: true, error: null }
+}
+
 export default function ComunidadComentarios() {
-    const [reviews, setReviews] = useState(INITIAL_REVIEWS)
+    const [reviews, setReviews] = useState(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY)
+            if (saved) {
+                const parsed = JSON.parse(saved)
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    // Merge local user-added reviews with INITIAL_REVIEWS if not present
+                    const initialIds = new Set(INITIAL_REVIEWS.map(r => r.id))
+                    const customUserReviews = parsed.filter(r => !initialIds.has(r.id))
+                    return [...customUserReviews, ...INITIAL_REVIEWS]
+                }
+            }
+        } catch (e) {
+            console.error('Error loading saved reviews:', e)
+        }
+        return INITIAL_REVIEWS
+    })
+
     const [filter, setFilter] = useState('all')
     const [likedIds, setLikedIds] = useState([])
+    const [formError, setFormError] = useState(null)
+    const [justPublishedToast, setJustPublishedToast] = useState(false)
 
     // Form state
     const [formData, setFormData] = useState({
@@ -120,7 +191,6 @@ export default function ComunidadComentarios() {
         instagram: '',
     })
     const [submitting, setSubmitting] = useState(false)
-    const [submitted, setSubmitted] = useState(false)
 
     useEffect(() => { window.scrollTo(0, 0) }, [])
 
@@ -136,37 +206,61 @@ export default function ComunidadComentarios() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (!formData.name.trim() || !formData.comment.trim()) return
+        setFormError(null)
+
+        // Validate content with anti-gibberish and anti-offensive filters
+        const validation = validateReviewContent(formData.name, formData.comment)
+        if (!validation.isValid) {
+            setFormError(validation.error)
+            return
+        }
 
         setSubmitting(true)
         try {
+            // Determine season tag
+            let sTag = 'all'
+            const tripLower = formData.trip.toLowerCase()
+            if (tripLower.includes('sakura') || tripLower.includes('primavera')) sTag = 'sakura'
+            else if (tripLower.includes('akari') || tripLower.includes('verano')) sTag = 'verano'
+            else if (tripLower.includes('kamakura') || tripLower.includes('otoño')) sTag = 'otono'
+            else if (tripLower.includes('corea')) sTag = 'corea'
+
             // Save to CMS / API
-            await submitFormToCMS({
+            submitFormToCMS({
                 nombre: formData.name,
                 telefono: formData.instagram || 'N/A',
                 correo: formData.email || 'comunidad@rutaxasia.com',
                 estado: formData.city || 'México',
                 viaje: formData.trip,
                 mensaje: `[RESEÑA ${formData.rating}★] ${formData.comment}`,
-            })
+            }).catch(err => console.warn('CMS submission warning:', err))
 
-            // Add review to local list
+            // Add review to local list instantly
             const newReview = {
                 id: Date.now(),
-                name: formData.name,
-                city: formData.city || 'México',
+                name: formData.name.trim(),
+                city: formData.city.trim() || 'México',
                 trip: formData.trip,
-                season: 'all',
+                season: sTag,
                 rating: formData.rating,
-                date: 'Reciente',
+                date: 'Recién publicado',
                 photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80',
                 tripPhoto: null,
-                comment: formData.comment,
+                comment: formData.comment.trim(),
                 likes: 1,
                 verified: true,
+                isNew: true,
             }
-            setReviews([newReview, ...reviews])
-            setSubmitted(true)
+
+            const updatedList = [newReview, ...reviews]
+            setReviews(updatedList)
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList))
+            } catch (err) {
+                console.warn('LocalStorage save error:', err)
+            }
+
+            // Reset form and show success toast
             setFormData({
                 name: '',
                 city: '',
@@ -176,8 +270,11 @@ export default function ComunidadComentarios() {
                 comment: '',
                 instagram: '',
             })
+            setJustPublishedToast(true)
+            setTimeout(() => setJustPublishedToast(false), 6000)
         } catch (error) {
             console.error('Error submitting review:', error)
+            setFormError('Hubo un inconveniente al publicar. Inténtalo nuevamente.')
         } finally {
             setSubmitting(false)
         }
@@ -345,98 +442,105 @@ export default function ComunidadComentarios() {
                             <p>Tu opinión ayuda a otros viajeros a dar el salto a conocer Asia.</p>
                         </div>
 
-                        {submitted ? (
-                            <div className="com-success-box">
-                                <div className="com-success-icon">🎉</div>
-                                <h4>¡Muchísimas gracias por tu reseña!</h4>
-                                <p>Tu testimonio ha sido publicado y guardado en nuestra comunidad.</p>
-                                <button className="btn btn-outline" onClick={() => setSubmitted(false)}>
-                                    Escribir otro comentario
-                                </button>
+                        {justPublishedToast && (
+                            <div className="com-toast-success">
+                                <span>🎉 ¡Tu reseña fue publicada exitosamente en el muro!</span>
                             </div>
-                        ) : (
-                            <form className="com-form" onSubmit={handleSubmit}>
-                                <div className="form-group">
-                                    <label>Tu Nombre Completo *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="Ej. Sofía Hernández"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Ciudad / Estado (México) *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="Ej. CDMX, Guadalajara, Monterrey..."
-                                        value={formData.city}
-                                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Viaje que realizaste *</label>
-                                    <select
-                                        value={formData.trip}
-                                        onChange={(e) => setFormData({ ...formData, trip: e.target.value })}
-                                    >
-                                        {TOURS_OPTIONS.map((opt, i) => (
-                                            <option key={i} value={opt}>{opt}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Calificación *</label>
-                                    <div className="com-star-picker">
-                                        {[1, 2, 3, 4, 5].map((num) => (
-                                            <button
-                                                type="button"
-                                                key={num}
-                                                className={`com-picker-star ${formData.rating >= num ? 'active' : ''}`}
-                                                onClick={() => setFormData({ ...formData, rating: num })}
-                                            >
-                                                ★
-                                            </button>
-                                        ))}
-                                        <span className="com-picker-label">{formData.rating} de 5 estrellas</span>
-                                    </div>
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Tu Comentario / Experiencia *</label>
-                                    <textarea
-                                        rows={4}
-                                        required
-                                        placeholder="Cuéntanos qué fue lo que más disfrutaste, los momentos favoritos, la atención de Juan y Ale..."
-                                        value={formData.comment}
-                                        onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Instagram o Email (Opcional)</label>
-                                    <input
-                                        type="text"
-                                        placeholder="@tuusuario o correo"
-                                        value={formData.instagram}
-                                        onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary com-submit-btn"
-                                    disabled={submitting}
-                                >
-                                    {submitting ? 'Publicando...' : 'Publicar mi Experiencia →'}
-                                </button>
-                            </form>
                         )}
+
+                        {formError && (
+                            <div className="com-form-error-box">
+                                ⚠️ {formError}
+                            </div>
+                        )}
+
+                        <form className="com-form" onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Tu Nombre Completo *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="Ej. Sofía Hernández"
+                                    value={formData.name}
+                                    onChange={(e) => {
+                                        setFormError(null)
+                                        setFormData({ ...formData, name: e.target.value })
+                                    }}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Ciudad / Estado (México) *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="Ej. CDMX, Guadalajara, Monterrey..."
+                                    value={formData.city}
+                                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Viaje que realizaste *</label>
+                                <select
+                                    value={formData.trip}
+                                    onChange={(e) => setFormData({ ...formData, trip: e.target.value })}
+                                >
+                                    {TOURS_OPTIONS.map((opt, i) => (
+                                        <option key={i} value={opt}>{opt}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Calificación *</label>
+                                <div className="com-star-picker">
+                                    {[1, 2, 3, 4, 5].map((num) => (
+                                        <button
+                                            type="button"
+                                            key={num}
+                                            className={`com-picker-star ${formData.rating >= num ? 'active' : ''}`}
+                                            onClick={() => setFormData({ ...formData, rating: num })}
+                                        >
+                                            ★
+                                        </button>
+                                    ))}
+                                    <span className="com-picker-label">{formData.rating} de 5 estrellas</span>
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Tu Comentario / Experiencia *</label>
+                                <textarea
+                                    rows={4}
+                                    required
+                                    placeholder="Cuéntanos qué fue lo que más disfrutaste, la atención de Juan y Ale, los templos, los trenes..."
+                                    value={formData.comment}
+                                    onChange={(e) => {
+                                        setFormError(null)
+                                        setFormData({ ...formData, comment: e.target.value })
+                                    }}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Instagram o Email (Opcional)</label>
+                                <input
+                                    type="text"
+                                    placeholder="@tuusuario o correo"
+                                    value={formData.instagram}
+                                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary com-submit-btn"
+                                disabled={submitting}
+                            >
+                                {submitting ? 'Publicando...' : 'Publicar mi Experiencia →'}
+                            </button>
+                        </form>
 
                         <div className="com-form-wa-card">
                             <p>¿Prefieres enviarnos tus fotos o un video testimonio?</p>

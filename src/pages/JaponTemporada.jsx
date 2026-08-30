@@ -163,7 +163,7 @@ export default function JaponTemporada() {
             </section>
 
             {/* ===== EXPERIENCIAS DISPONIBLES ===== */}
-            <section className="jac-destinos" style={{ backgroundColor: season.colors.bg }}>
+            <section className="jac-destinos">
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
                         <span className="section-tag" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>

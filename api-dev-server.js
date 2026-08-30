@@ -301,11 +301,20 @@ app.get('/api/sitemap.xml', async (req, res) => {
         return res.send(xml);
     }
 
-    // ?type=main → static + tours + blog (simplified for dev)
+    // ?type=main → static + tours + tour individuales + blog (for dev)
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${SITE_URL}/</loc><lastmod>${today}</lastmod><priority>1.0</priority></url>
   <url><loc>${SITE_URL}/viajes</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/viajes/japon</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/viajes/japon/sakura</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/viajes/japon/akari</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/viajes/japon/kamakura</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/viajes/corea</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/tours-individuales</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/comunidad/comentarios</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/portafolio</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/registro-nacional-turismo</loc><lastmod>${today}</lastmod><priority>0.7</priority></url>
   <url><loc>${SITE_URL}/zonas</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
   <url><loc>${SITE_URL}/blog</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
   <url><loc>${SITE_URL}/nosotros</loc><lastmod>${today}</lastmod><priority>0.7</priority></url>

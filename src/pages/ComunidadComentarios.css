@@ -386,6 +386,39 @@
     line-height: 1.5;
 }
 
+.com-toast-success {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: fadeInToast 0.3s ease-out;
+}
+
+.com-form-error-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    line-height: 1.45;
+    animation: fadeInToast 0.3s ease-out;
+}
+
+@keyframes fadeInToast {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .com-form .form-group {
     margin-bottom: 1.2rem;
 }
