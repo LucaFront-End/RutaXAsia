@@ -770,7 +770,7 @@ export default function CheckoutModal({
                                                     </span>
                                                 </div>
 
-                                                <div style={{ display: 'grid', gridTemplateColumns: traveler.type === 'Menor' ? '2fr 1fr' : '1fr', gap: '8px' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: '8px' }}>
                                                     <input
                                                         type="text"
                                                         className={`jtb-input${errors[`traveler_${idx}`] ? ' jtb-input--error' : ''}`}
@@ -783,21 +783,19 @@ export default function CheckoutModal({
                                                         }}
                                                         style={{ padding: '8px 12px', fontSize: '0.84rem' }}
                                                     />
-                                                    {traveler.type === 'Menor' && (
-                                                        <input
-                                                            type="number"
-                                                            className="jtb-input"
-                                                            placeholder="Edad"
-                                                            min={2}
-                                                            max={11}
-                                                            value={traveler.age}
-                                                            onChange={e => {
-                                                                const val = e.target.value
-                                                                setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, age: val } : t))
-                                                            }}
-                                                            style={{ padding: '8px 10px', fontSize: '0.84rem' }}
-                                                        />
-                                                    )}
+                                                    <input
+                                                        type="number"
+                                                        className="jtb-input"
+                                                        placeholder="Edad"
+                                                        min={1}
+                                                        max={120}
+                                                        value={traveler.age}
+                                                        onChange={e => {
+                                                            const val = e.target.value
+                                                            setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, age: val } : t))
+                                                        }}
+                                                        style={{ padding: '8px 10px', fontSize: '0.84rem' }}
+                                                    />
                                                 </div>
                                                 {errors[`traveler_${idx}`] && (
                                                     <span className="jtb-error-text" style={{ marginTop: '4px' }}>{errors[`traveler_${idx}`]}</span>

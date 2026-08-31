@@ -79,20 +79,23 @@ export default function TourIndividualDetail() {
                 // Find tour by slug, ID, CMS link or title
                 let match = null
                 if (data && data.length > 0) {
-                    const cleanSlug = (slug || '').toLowerCase().trim()
+                    const rawCleanSlug = (slug || '').toLowerCase().trim()
+                    const cleanSlug = decodeURIComponent(rawCleanSlug)
                     match = data.find(t => {
                         const tSlug = (t.slug || '').toLowerCase()
                         const tId = (t.id || '').toLowerCase()
-                        const genSlug = generateSlug(t.title).toLowerCase()
+                        const genSlug = generateSlug(t.title || t.tituloDePgina).toLowerCase()
                         const cmsLink = (t.cmsLink || '').toLowerCase()
 
                         return tSlug === cleanSlug ||
+                               tSlug === rawCleanSlug ||
                                tId === cleanSlug ||
                                genSlug === cleanSlug ||
                                cmsLink.includes(cleanSlug) ||
                                (cleanSlug && cmsLink.endsWith(cleanSlug)) ||
                                (t.title && t.title.toLowerCase() === cleanSlug.replace(/-/g, ' ')) ||
-                               (t.title && t.title.toLowerCase().includes(cleanSlug.replace(/-/g, ' ')))
+                               (t.title && t.title.toLowerCase().includes(cleanSlug.replace(/-/g, ' '))) ||
+                               (t.tituloDePgina && t.tituloDePgina.toLowerCase().includes(cleanSlug.replace(/-/g, ' ')))
                     })
                 }
 
@@ -108,6 +111,7 @@ export default function TourIndividualDetail() {
     const tour = currentTour || FALLBACK_SHOWCASE_TOUR
     const displayTitle = tour.tituloDePgina || tour.title || 'Tour Individual'
     const displaySubtitle = tour.shortDescription || tour.descripcinAmplia || tour.excerpt || 'Pase y experiencia oficial en Japón con la coordinación de RutaXAsia.'
+    const fullDescriptionText = tour.fullDescription || tour.descripcinAmplia1 || tour.descripcinAmplia || tour.description || tour.shortDescription || tour.excerpt || 'Disfruta de esta experiencia oficial en Japón con la coordinación y respaldo del equipo de RutaXAsia.'
     const displayDuration = tour.durationLabel || ((tour.days && tour.hours) ? `${tour.days} (${tour.hours})` : (tour.days || tour.hours || '1 día'))
     const displayCity = tour.city || 'Japón'
 
@@ -538,6 +542,7 @@ export default function TourIndividualDetail() {
                 season={{ name: displayTitle, colors: { primary: '#e11d48', bg: '#fff' } }}
                 estilo="Tour Individual"
                 totalPrice={totalPrice}
+                isWhatsAppMode={false}
                 desglose={
                     `Tour: ${displayTitle} (${displayCity}). ` +
                     `Modalidad: ${modalityLabel}. ` +
