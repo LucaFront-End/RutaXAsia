@@ -7,7 +7,12 @@ const CATEGORIES_CONFIG = [
         key: 'rutas',
         title: 'Rutas por Japón',
         icon: '⛩️',
-        matchFn: (t) => t.category === 'Rutas por Japón' || (t.rawCategory && t.rawCategory.toLowerCase().includes('ruta')),
+        matchFn: (t) => {
+            const rawCat = (t.category || t.rawCategory || '').toLowerCase()
+            const rawTitle = (t.title || '').toLowerCase()
+            const isCityTour = rawTitle.includes('barrio') || rawTitle.includes('asakusa') || rawTitle.includes('akihabara') || rawTitle.includes('city tour')
+            return rawCat === 'rutas por japón' || rawCat.includes('ruta') || isCityTour
+        },
         desc: 'Recorridos guiados y city tours por Tokio, Kioto, Osaka, Hiroshima, Nara y pueblos tradicionales.',
     },
     {
@@ -21,7 +26,11 @@ const CATEGORIES_CONFIG = [
         key: 'vip',
         title: 'Experiencias Vip',
         icon: '✨',
-        matchFn: (t) => t.category === 'Experiencias Vip' || (t.rawCategory && (t.rawCategory.toLowerCase().includes('vip') || t.rawCategory.toLowerCase().includes('experiencia'))),
+        matchFn: (t) => {
+            const rawTitle = (t.title || '').toLowerCase()
+            const isCityTour = rawTitle.includes('barrio') || rawTitle.includes('asakusa') || rawTitle.includes('akihabara')
+            return (t.category === 'Experiencias Vip' || (t.rawCategory && (t.rawCategory.toLowerCase().includes('vip') || t.rawCategory.toLowerCase().includes('experiencia')))) && !isCityTour
+        },
         desc: 'Ceremonias de té, experiencias Samurai, vestimenta de Kimono, banquetes reales en crucero Yakatabune y más.',
     },
 ]

@@ -153,9 +153,14 @@ function generateSlug(title, id) {
 
 function mapCmsTour(it) {
     const rawCat = (it.tipoDeViaje || '').trim()
+    const pageTitle = it.tituloDePgina || it.tituloDePagina || it.pageTitle || it.titulo || it.title || 'Tour Individual'
+    const rawTitleLower = pageTitle.toLowerCase()
+
     let category = 'Rutas por Japón'
-    if (rawCat === 'Parques temáticos') {
+    if (rawCat === 'Parques temáticos' || rawTitleLower.includes('disney') || rawTitleLower.includes('harry potter') || rawTitleLower.includes('universal') || rawTitleLower.includes('sanrio')) {
         category = 'Parques temáticos'
+    } else if (rawTitleLower.includes('barrio') || rawTitleLower.includes('asakusa') || rawTitleLower.includes('akihabara')) {
+        category = 'Rutas por Japón'
     } else if (rawCat === 'Expereicnias VIP' || rawCat === 'Experiencias' || rawCat === 'Experiencias Vip') {
         category = 'Experiencias Vip'
     } else if (rawCat === 'Rutas por Japón') {
@@ -192,7 +197,6 @@ function mapCmsTour(it) {
         rawCategorias.includes('signature') || rawCategorias.includes('vip') || rawTipo.includes('signature') || rawTipo.includes('vip')
     )
 
-    const pageTitle = it.tituloDePgina || it.tituloDePagina || it.pageTitle || it.titulo || it.title || 'Tour Individual'
     const rawSlug = it.slug || it.urlSlug || it.pageSlug || it['link-tour-individuales-title'] || ''
     const slug = rawSlug
         ? (String(rawSlug).startsWith('/') ? String(rawSlug).replace(/^\/|\/$/g, '').split('/').pop() : generateSlug(rawSlug))

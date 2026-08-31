@@ -72,10 +72,11 @@ function CustomDropdown({ value, onChange, options, ariaLabel }) {
     )
 }
 
-export default function ToursIndividualesPage({ whatsappOnly = true }) {
+export default function ToursIndividualesPage({ whatsappOnly = false }) {
     const location = useLocation()
+    const isWhatsAppUrl = location.pathname.includes('whatsapp') || location.pathname.includes('-wa') || location.search.includes('wa=1') || location.search.includes('whatsapp=1')
     const isCheckoutExplicit = location.search.includes('mode=checkout') || location.search.includes('checkout=1')
-    const isWhatsAppMode = isCheckoutExplicit ? false : (whatsappOnly !== false)
+    const isWhatsAppMode = isCheckoutExplicit ? false : (Boolean(whatsappOnly) || isWhatsAppUrl)
 
     const formatPrice = (num) => `$${Math.round(num || 0).toLocaleString('es-MX')} MXN`
     const formatPriceNumOnly = (num) => `$${Math.round(num || 0).toLocaleString('es-MX')}`
@@ -522,9 +523,9 @@ export default function ToursIndividualesPage({ whatsappOnly = true }) {
                                     basePrice={0}
                                     extraTotal={totalToursPrice}
                                     hideQuantity={true}
-                                    customReserveBtnText={totalToursPrice > 0 ? `💳 Reservar ($${totalToursPrice.toLocaleString('es-MX')} MXN)` : '💳 Reservar Tours'}
-                                    customWhatsAppBtnText="💬 Consultar por WhatsApp"
-                                    onOpenCheckout={() => {
+                                    customReserveBtnText={totalToursPrice > 0 ? `💳 Pagar / Reservar ($${totalToursPrice.toLocaleString('es-MX')} MXN)` : '💳 Pagar / Reservar en Línea'}
+                                    customWhatsAppBtnText={isWhatsAppMode ? '💬 Reservar por WhatsApp' : '💬 Consultar por WhatsApp'}
+                                    onOpenCheckout={isWhatsAppMode ? null : () => {
                                         if (selectedTours.length === 0) {
                                             alert('Por favor selecciona al menos un tour antes de proceder.')
                                             return
