@@ -91,6 +91,21 @@ export async function fetchAllLandings() {
 }
 
 /**
+ * Fetch dynamic gallery from Wix CMS "Galeriadenosotros"
+ */
+export async function fetchGaleriaNosotros(title = 'General') {
+    try {
+        const res = await fetch(`/api/galeria-nosotros?title=${encodeURIComponent(title)}`)
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const data = await res.json()
+        return data.images || []
+    } catch (error) {
+        console.error('[GaleriaNosotros] Error fetching gallery:', error.message)
+        return []
+    }
+}
+
+/**
  * Fetch all published blog posts via our server-side API (avoids CORS).
  */
 export async function fetchBlogPosts() {

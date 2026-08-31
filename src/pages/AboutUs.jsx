@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { LuFlag, LuUsers, LuLanguages, LuPlane, LuShieldCheck, LuCreditCard, LuSearch, LuMessageCircle, LuCircleCheck, LuPackage, LuPlaneTakeoff, LuCheck, LuArrowRight } from 'react-icons/lu'
@@ -161,8 +162,42 @@ export default function AboutUs() {
     const timelineRef = useRef(null)
     const timelineLineRef = useRef(null)
 
+    // Dynamic Gallery State (Wix CMS Galeriadenosotros)
+    const [galleryImages, setGalleryImages] = useState(GALLERY)
+    const [categories, setCategories] = useState([])
+    const [activeCategory, setActiveCategory] = useState('General')
+    const [showAllPhotos, setShowAllPhotos] = useState(false)
+    const [lightboxIndex, setLightboxIndex] = useState(null)
+
     useEffect(() => { window.scrollTo(0, 0) }, [])
     useRevealOnScroll()
+
+    // Fetch dynamic gallery from CMS
+    useEffect(() => {
+        fetch(`/api/galeria-nosotros?title=${encodeURIComponent(activeCategory)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.images && data.images.length > 0) {
+                    setGalleryImages(data.images)
+                }
+                if (data.categories && data.categories.length > 0) {
+                    setCategories(data.categories)
+                }
+            })
+            .catch(err => console.warn('Error fetching gallery:', err))
+    }, [activeCategory])
+
+    // Lightbox keyboard controls (Escape, ArrowLeft, ArrowRight)
+    useEffect(() => {
+        if (lightboxIndex === null) return
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') setLightboxIndex(null)
+            if (e.key === 'ArrowRight') setLightboxIndex(prev => (prev + 1) % galleryImages.length)
+            if (e.key === 'ArrowLeft') setLightboxIndex(prev => (prev - 1 + galleryImages.length) % galleryImages.length)
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [lightboxIndex, galleryImages.length])
 
     // Timeline scroll-fill animation
     useEffect(() => {
@@ -375,21 +410,109 @@ export default function AboutUs() {
                 </div>
             </section>
 
-            {/* ===== GALLERY MOSAIC ===== */}
-            <section className="au-gallery">
+            {/* ===== GALLERY MOSAIC (Wix CMS Galeriadenosotros) ===== */}
+            <section className="au-gallery" id="galeria">
                 <div className="container">
                     <span className="au-label reveal">Momentos reales</span>
                     <h2 className="au-section-h2 reveal" style={{"--delay":"0.05s"}}>Así se vive un viaje con RutaXAsia</h2>
+
+                    {categories.length > 1 && (
+                        <div className="au-gallery-tabs reveal">
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat}
+                                    type="button"
+                                    className={`au-gallery-tab-btn ${activeCategory === cat ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setActiveCategory(cat)
+                                        setShowAllPhotos(false)
+                                    }}
+                                >
+                                    {cat === 'General' ? '✨ General' : cat === 'Corea 2024' ? '🇰🇷 Corea 2024' : `🌸 ${cat}`}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="au-gallery-grid">
-                        {GALLERY.map((img, i) => (
-                            <div key={i} className={`au-gallery-item reveal-scale ${img.span ? `au-gallery-item--${img.span}` : ''}`} style={{"--delay":`${i * 0.08}s`}}>
-                                <img src={img.src} alt={img.caption} />
+                        {(showAllPhotos ? galleryImages : galleryImages.slice(0, 9)).map((img, i) => (
+                            <div
+                                key={img.id || i}
+                                className={`au-gallery-item reveal-scale ${img.span ? `au-gallery-item--${img.span}` : ''}`}
+                                style={{"--delay":`${(i % 9) * 0.06}s`}}
+                                onClick={() => setLightboxIndex(i)}
+                            >
+                                <img
+                                    src={img.src}
+                                    alt={img.caption || img.alt || 'Momento de viaje en Asia'}
+                                    loading="lazy"
+                                    onError={(e) => {
+                                        e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
+                                    }}
+                                />
                                 <div className="au-gallery-caption">{img.caption}</div>
                             </div>
                         ))}
                     </div>
+
+                    {galleryImages.length > 9 && (
+                        <div className="au-gallery-actions reveal">
+                            <button
+                                type="button"
+                                className="au-gallery-more-btn"
+                                onClick={() => setShowAllPhotos(!showAllPhotos)}
+                            >
+                                {showAllPhotos ? '▲ Ver menos fotos' : `📸 Ver todas las fotos (${galleryImages.length})`}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </section>
+
+            {/* Lightbox Modal via Portal */}
+            {lightboxIndex !== null && galleryImages[lightboxIndex] && createPortal(
+                <div className="au-lightbox-overlay" onClick={() => setLightboxIndex(null)}>
+                    <div className="au-lightbox-dialog" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            type="button"
+                            className="au-lightbox-close"
+                            onClick={() => setLightboxIndex(null)}
+                            aria-label="Cerrar foto"
+                        >
+                            ✕
+                        </button>
+                        {galleryImages.length > 1 && (
+                            <>
+                                <button
+                                    type="button"
+                                    className="au-lightbox-arrow au-lightbox-arrow--prev"
+                                    onClick={() => setLightboxIndex((lightboxIndex - 1 + galleryImages.length) % galleryImages.length)}
+                                    aria-label="Foto anterior"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    type="button"
+                                    className="au-lightbox-arrow au-lightbox-arrow--next"
+                                    onClick={() => setLightboxIndex((lightboxIndex + 1) % galleryImages.length)}
+                                    aria-label="Siguiente foto"
+                                >
+                                    ›
+                                </button>
+                            </>
+                        )}
+                        <img
+                            src={galleryImages[lightboxIndex].src}
+                            alt={galleryImages[lightboxIndex].caption || 'Foto en grande'}
+                            className="au-lightbox-img"
+                        />
+                        <div className="au-lightbox-caption">
+                            {galleryImages[lightboxIndex].caption} ({lightboxIndex + 1} de {galleryImages.length})
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
             {/* ===== OUR JOURNEY TIMELINE (Moved from Home) ===== */}
             <section className="timeline-section" id="nuestra-historia" ref={timelineRef} style={{ backgroundColor: '#f5f0e8', padding: '5rem 0' }}>
