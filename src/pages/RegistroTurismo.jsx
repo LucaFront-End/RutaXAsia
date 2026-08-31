@@ -1,14 +1,23 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
-import { LuShieldCheck, LuFileCheck, LuCircleCheck, LuBuilding2, LuCreditCard, LuHeartHandshake, LuExternalLink, LuLock, LuInfo } from 'react-icons/lu'
+import { Link, useSearchParams } from 'react-router-dom'
+import { LuShieldCheck, LuFileCheck, LuCircleCheck, LuBuilding2, LuCreditCard, LuHeartHandshake, LuExternalLink, LuLock, LuInfo, LuSearch } from 'react-icons/lu'
 import CmsGallery from '../components/CmsGallery/CmsGallery'
+import RntModal from '../components/RntModal/RntModal'
 import './RegistroTurismo.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 export default function RegistroTurismo() {
-    useEffect(() => { window.scrollTo(0, 0) }, [])
+    const [searchParams] = useSearchParams()
+    const [showRntModal, setShowRntModal] = useState(false)
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+        if (searchParams.get('verificar') === '1' || searchParams.get('consulta') === '1') {
+            setShowRntModal(true)
+        }
+    }, [searchParams])
 
     return (
         <div className="rnt-page">
@@ -36,11 +45,16 @@ export default function RegistroTurismo() {
                     </p>
 
                     <div className="rnt-hero-trust-bar">
-                        <div className="rnt-trust-item">
+                        <div
+                            className="rnt-trust-item"
+                            onClick={() => setShowRntModal(true)}
+                            style={{ cursor: 'pointer' }}
+                            title="Haz clic para verificar constancia en línea"
+                        >
                             <span className="rnt-trust-icon">🏛️</span>
                             <div>
                                 <strong>SECTUR México</strong>
-                                <small>Inscritos en el RNT</small>
+                                <small style={{ color: 'var(--color-primary, #e91e7a)', fontWeight: 700 }}>Verificar en Línea →</small>
                             </div>
                         </div>
                         <div className="rnt-trust-item">
@@ -94,6 +108,25 @@ export default function RegistroTurismo() {
                             <li><LuCircleCheck size={16} /> Supervisión y aval gubernamental</li>
                             <li><LuCircleCheck size={16} /> Respaldo ante cualquier contingencia</li>
                         </ul>
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setShowRntModal(true)}
+                            style={{
+                                marginTop: '1.2rem',
+                                width: '100%',
+                                borderRadius: '100px',
+                                fontSize: '0.86rem',
+                                padding: '10px 16px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '6px',
+                                fontWeight: 700
+                            }}
+                        >
+                            <LuSearch size={15} /> Consultar Certificado SECTUR en Línea →
+                        </button>
                     </div>
 
                     {/* Pillar 2 */}
@@ -165,7 +198,29 @@ export default function RegistroTurismo() {
                                     <span className="rnt-step-num">1</span>
                                     <div>
                                         <h4>Exige el número de RNT ante SECTUR</h4>
-                                        <p>Una agencia legal no tiene nada que ocultar y te compartirá su registro de inmediato.</p>
+                                        <p>
+                                            Una agencia legal no tiene nada que ocultar y te compartirá su registro de inmediato. Nuestro folio oficial es <strong>0409015ae266f</strong> (RFC: <strong>SARJ740301GS3</strong>).
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowRntModal(true)}
+                                            style={{
+                                                background: 'rgba(233, 30, 122, 0.08)',
+                                                border: '1px solid rgba(233, 30, 122, 0.3)',
+                                                color: 'var(--color-primary, #e91e7a)',
+                                                padding: '6px 14px',
+                                                borderRadius: '100px',
+                                                fontSize: '0.82rem',
+                                                fontWeight: 700,
+                                                cursor: 'pointer',
+                                                marginTop: '8px',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px'
+                                            }}
+                                        >
+                                            <LuSearch size={14} /> Abrir Consulta Oficial SECTUR en pantalla →
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="rnt-step-item">
@@ -243,6 +298,9 @@ export default function RegistroTurismo() {
                     </div>
                 </div>
             </section>
+
+            {/* In-App SECTUR Certificate Modal */}
+            <RntModal isOpen={showRntModal} onClose={() => setShowRntModal(false)} />
         </div>
     )
 }

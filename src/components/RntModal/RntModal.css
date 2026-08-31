@@ -1,0 +1,297 @@
+/* ============================================================
+   RNT MODAL / SECTUR VERIFICATION EMBEDDED VIEWER
+   ============================================================ */
+
+.rnt-modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999999 !important;
+    background: rgba(10, 12, 18, 0.75) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+    animation: rntModalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes rntModalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.rnt-modal-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 1060px;
+    height: 90vh;
+    max-height: 850px;
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.rnt-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.75rem;
+    background: #0f131a;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rnt-modal-header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rnt-modal-sectur-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rnt-modal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #10b981;
+    margin-bottom: 0.2rem;
+}
+
+.rnt-modal-header-title h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.rnt-modal-close {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rnt-modal-close:hover {
+    background: var(--color-primary, #e91e7a);
+    border-color: var(--color-primary, #e91e7a);
+}
+
+/* Top Data Strip with Copy Buttons */
+.rnt-modal-info-strip {
+    background: #f8fafc;
+    padding: 0.85rem 1.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.rnt-modal-data-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.rnt-modal-data-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.rnt-modal-data-val-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rnt-modal-code {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0f172a;
+    background: #ffffff;
+    padding: 0.25rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    letter-spacing: 0.04em;
+}
+
+.rnt-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rnt-copy-btn:hover {
+    background: var(--color-primary, #e91e7a);
+    border-color: var(--color-primary, #e91e7a);
+    color: #ffffff;
+}
+
+.rnt-modal-direct-btn-box {
+    margin-left: auto;
+}
+
+.rnt-external-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 100px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* Embedded Iframe */
+.rnt-iframe-wrapper {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    background: #f1f5f9;
+    overflow: hidden;
+}
+
+.rnt-iframe-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 2rem;
+    background: #f8fafc;
+    z-index: 2;
+}
+
+.rnt-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e2e8f0;
+    border-top-color: var(--color-primary, #e91e7a);
+    border-radius: 50%;
+    animation: rntSpin 0.8s linear infinite;
+}
+
+@keyframes rntSpin {
+    to { transform: rotate(360deg); }
+}
+
+.rnt-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.rnt-iframe--loaded {
+    opacity: 1;
+}
+
+/* Footer Notice */
+.rnt-modal-footer {
+    padding: 0.75rem 1.75rem;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+.rnt-modal-footer p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.rnt-modal-footer code {
+    background: #f1f5f9;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rnt-modal-dialog {
+        height: 94vh;
+        max-height: 94vh;
+    }
+    .rnt-modal-info-strip {
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+    }
+    .rnt-modal-direct-btn-box {
+        width: 100%;
+        margin-left: 0;
+    }
+    .rnt-external-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .rnt-modal-header {
+        padding: 1rem;
+    }
+    .rnt-modal-footer {
+        padding: 0.6rem 1rem;
+    }
+}

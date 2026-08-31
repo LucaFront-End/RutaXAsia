@@ -1,9 +1,13 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import RntModal from '../RntModal/RntModal'
 import './Footer.css'
 
 const WHATSAPP_URL = 'https://wa.me/525657929121?text=SW-Hola%20quiero%20info%20sobre%20viajes%20a%20Asia'
 
 function Footer() {
+    const [showRntModal, setShowRntModal] = useState(false)
+
     return (
         <footer className="footer" id="contacto">
             <div className="container">
@@ -25,7 +29,7 @@ function Footer() {
                             </a>
                         </div>
                     </div>
-
+ 
                     <div className="footer-links">
                         <h4>Viajes</h4>
                         <ul>
@@ -39,7 +43,7 @@ function Footer() {
                             <li><Link to="/tours/octubre-japon-2026">Japón Octubre</Link></li>
                         </ul>
                     </div>
-
+ 
                     <div className="footer-links">
                         <h4>Compañía</h4>
                         <ul>
@@ -55,7 +59,7 @@ function Footer() {
                             <li><Link to="/aviso-de-privacidad">Aviso de Privacidad</Link></li>
                         </ul>
                     </div>
-
+ 
                     <div className="footer-contact">
                         <h4>Contacto</h4>
                         <ul>
@@ -64,11 +68,19 @@ function Footer() {
                             <li><a href="mailto:reservas@rutaxasia.com.mx">reservas@rutaxasia.com.mx</a></li>
                             <li>Río Lerma 232 P23 A<br />Cuauhtémoc, CDMX, CP 6500</li>
                         </ul>
-                        <Link to="/registro-nacional-turismo" className="footer-legal-badge" style={{textDecoration: 'none'}}>
+                        <div
+                            className="footer-legal-badge"
+                            onClick={() => setShowRntModal(true)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => e.key === 'Enter' && setShowRntModal(true)}
+                            style={{ cursor: 'pointer' }}
+                            title="Haz clic para consultar la constancia oficial de SECTUR"
+                        >
                             <span className="footer-rnt-title">Registro Nacional de Turismo (SECTUR)</span>
                             <span className="footer-rnt-num">No. 0409015ae266f · Ver Certificado →</span>
                             <span className="footer-rnt-rfc">RFC: SARJ740301GS3</span>
-                        </Link>
+                        </div>
                     </div>
                 </div>
 
@@ -76,6 +88,9 @@ function Footer() {
                     <p>&copy; 2024 – 2026 RutaXAsia. Todos los derechos reservados.</p>
                 </div>
             </div>
+
+            {/* In-App SECTUR Certificate Modal */}
+            <RntModal isOpen={showRntModal} onClose={() => setShowRntModal(false)} />
         </footer>
     )
 }
