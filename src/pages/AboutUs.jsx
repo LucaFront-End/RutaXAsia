@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { LuFlag, LuUsers, LuLanguages, LuPlane, LuShieldCheck, LuCreditCard, LuSearch, LuMessageCircle, LuCircleCheck, LuPackage, LuPlaneTakeoff, LuCheck, LuArrowRight } from 'react-icons/lu'
+import CmsGallery from '../components/CmsGallery/CmsGallery'
 import './aboutus.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
@@ -21,15 +21,6 @@ const VALUES = [
     { icon: <LuPlane size={24} />, title: 'Todo incluido', desc: 'Vuelos, hospedaje, transporte, seguro y experiencias. Solo preocúpate por disfrutar.', accent: '#D97706' },
     { icon: <LuShieldCheck size={24} />, title: 'Seguridad total', desc: 'Seguro incluido, asistencia 24/7 y respaldo de una agencia formalmente establecida en México.', accent: '#7C3AED' },
     { icon: <LuCreditCard size={24} />, title: 'Pagos flexibles', desc: 'Aparta tu lugar con un anticipo y paga en cuotas sin intereses. Viaja sin estrés financiero.', accent: '#DB2777' },
-]
-
-const GALLERY = [
-    { src: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&h=750&fit=crop&q=80', caption: 'Templo Fushimi Inari, Kyoto', span: 'tall' },
-    { src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop&q=80', caption: 'Tokyo skyline', span: '' },
-    { src: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&h=400&fit=crop&q=80', caption: 'Monte Fuji', span: '' },
-    { src: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600&h=400&fit=crop&q=80', caption: 'Bambú, Arashiyama', span: '' },
-    { src: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=600&h=750&fit=crop&q=80', caption: 'Calles de Seúl', span: 'tall' },
-    { src: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=600&h=400&fit=crop&q=80', caption: 'Sakura season', span: '' },
 ]
 
 const PROCESS = [
@@ -162,42 +153,8 @@ export default function AboutUs() {
     const timelineRef = useRef(null)
     const timelineLineRef = useRef(null)
 
-    // Dynamic Gallery State (Wix CMS Galeriadenosotros)
-    const [galleryImages, setGalleryImages] = useState(GALLERY)
-    const [categories, setCategories] = useState([])
-    const [activeCategory, setActiveCategory] = useState('General')
-    const [showAllPhotos, setShowAllPhotos] = useState(false)
-    const [lightboxIndex, setLightboxIndex] = useState(null)
-
     useEffect(() => { window.scrollTo(0, 0) }, [])
     useRevealOnScroll()
-
-    // Fetch dynamic gallery from CMS
-    useEffect(() => {
-        fetch(`/api/galeria-nosotros?title=${encodeURIComponent(activeCategory)}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.images && data.images.length > 0) {
-                    setGalleryImages(data.images)
-                }
-                if (data.categories && data.categories.length > 0) {
-                    setCategories(data.categories)
-                }
-            })
-            .catch(err => console.warn('Error fetching gallery:', err))
-    }, [activeCategory])
-
-    // Lightbox keyboard controls (Escape, ArrowLeft, ArrowRight)
-    useEffect(() => {
-        if (lightboxIndex === null) return
-        const handleKeyDown = (e) => {
-            if (e.key === 'Escape') setLightboxIndex(null)
-            if (e.key === 'ArrowRight') setLightboxIndex(prev => (prev + 1) % galleryImages.length)
-            if (e.key === 'ArrowLeft') setLightboxIndex(prev => (prev - 1 + galleryImages.length) % galleryImages.length)
-        }
-        window.addEventListener('keydown', handleKeyDown)
-        return () => window.removeEventListener('keydown', handleKeyDown)
-    }, [lightboxIndex, galleryImages.length])
 
     // Timeline scroll-fill animation
     useEffect(() => {
@@ -411,108 +368,14 @@ export default function AboutUs() {
             </section>
 
             {/* ===== GALLERY MOSAIC (Wix CMS Galeriadenosotros) ===== */}
-            <section className="au-gallery" id="galeria">
-                <div className="container">
-                    <span className="au-label reveal">Momentos reales</span>
-                    <h2 className="au-section-h2 reveal" style={{"--delay":"0.05s"}}>Así se vive un viaje con RutaXAsia</h2>
-
-                    {categories.length > 1 && (
-                        <div className="au-gallery-tabs reveal">
-                            {categories.map((cat) => (
-                                <button
-                                    key={cat}
-                                    type="button"
-                                    className={`au-gallery-tab-btn ${activeCategory === cat ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setActiveCategory(cat)
-                                        setShowAllPhotos(false)
-                                    }}
-                                >
-                                    {cat === 'General' ? '✨ General' : cat === 'Corea 2024' ? '🇰🇷 Corea 2024' : `🌸 ${cat}`}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="au-gallery-grid">
-                        {(showAllPhotos ? galleryImages : galleryImages.slice(0, 9)).map((img, i) => (
-                            <div
-                                key={img.id || i}
-                                className={`au-gallery-item reveal-scale ${img.span ? `au-gallery-item--${img.span}` : ''}`}
-                                style={{"--delay":`${(i % 9) * 0.06}s`}}
-                                onClick={() => setLightboxIndex(i)}
-                            >
-                                <img
-                                    src={img.src}
-                                    alt={img.caption || img.alt || 'Momento de viaje en Asia'}
-                                    loading="lazy"
-                                    onError={(e) => {
-                                        e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
-                                    }}
-                                />
-                                <div className="au-gallery-caption">{img.caption}</div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {galleryImages.length > 9 && (
-                        <div className="au-gallery-actions reveal">
-                            <button
-                                type="button"
-                                className="au-gallery-more-btn"
-                                onClick={() => setShowAllPhotos(!showAllPhotos)}
-                            >
-                                {showAllPhotos ? '▲ Ver menos fotos' : `📸 Ver todas las fotos (${galleryImages.length})`}
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {/* Lightbox Modal via Portal */}
-            {lightboxIndex !== null && galleryImages[lightboxIndex] && createPortal(
-                <div className="au-lightbox-overlay" onClick={() => setLightboxIndex(null)}>
-                    <div className="au-lightbox-dialog" onClick={(e) => e.stopPropagation()}>
-                        <button
-                            type="button"
-                            className="au-lightbox-close"
-                            onClick={() => setLightboxIndex(null)}
-                            aria-label="Cerrar foto"
-                        >
-                            ✕
-                        </button>
-                        {galleryImages.length > 1 && (
-                            <>
-                                <button
-                                    type="button"
-                                    className="au-lightbox-arrow au-lightbox-arrow--prev"
-                                    onClick={() => setLightboxIndex((lightboxIndex - 1 + galleryImages.length) % galleryImages.length)}
-                                    aria-label="Foto anterior"
-                                >
-                                    ‹
-                                </button>
-                                <button
-                                    type="button"
-                                    className="au-lightbox-arrow au-lightbox-arrow--next"
-                                    onClick={() => setLightboxIndex((lightboxIndex + 1) % galleryImages.length)}
-                                    aria-label="Siguiente foto"
-                                >
-                                    ›
-                                </button>
-                            </>
-                        )}
-                        <img
-                            src={galleryImages[lightboxIndex].src}
-                            alt={galleryImages[lightboxIndex].caption || 'Foto en grande'}
-                            className="au-lightbox-img"
-                        />
-                        <div className="au-lightbox-caption">
-                            {galleryImages[lightboxIndex].caption} ({lightboxIndex + 1} de {galleryImages.length})
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+            <CmsGallery
+                tag="Momentos reales"
+                title="Así se vive un viaje con RutaXAsia"
+                subtitle=""
+                initialCategory="General"
+                maxInitial={9}
+                theme="light"
+            />
 
             {/* ===== OUR JOURNEY TIMELINE (Moved from Home) ===== */}
             <section className="timeline-section" id="nuestra-historia" ref={timelineRef} style={{ backgroundColor: '#f5f0e8', padding: '5rem 0' }}>

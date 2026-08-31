@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { LuShieldCheck, LuFileCheck, LuCircleCheck, LuBuilding2, LuCreditCard, LuHeartHandshake, LuExternalLink, LuLock, LuInfo } from 'react-icons/lu'
+import CmsGallery from '../components/CmsGallery/CmsGallery'
 import './RegistroTurismo.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
@@ -204,6 +205,16 @@ export default function RegistroTurismo() {
                     </div>
                 </div>
             </section>
+
+            {/* ===== EXPERIENCIAS REALES / FOTOS DE VIAJEROS (CMS Galeriadenosotros) ===== */}
+            <CmsGallery
+                tag="Evidencia y Transparencia"
+                title="Momentos reales con nuestros viajeros"
+                subtitle="Fotos tomadas durante nuestros tours en Japón y Corea. Cada experiencia respaldada por una agencia 100% legal y formal."
+                initialCategory="General"
+                maxInitial={6}
+                theme="light"
+            />
 
             {/* ===== DIRECT FAQ SECTION ===== */}
             <section className="container rnt-faq-section">
