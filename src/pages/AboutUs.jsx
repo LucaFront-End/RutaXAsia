@@ -367,12 +367,13 @@ export default function AboutUs() {
                 </div>
             </section>
 
-            {/* ===== GALLERY MOSAIC (Wix CMS Galeriadenosotros) ===== */}
+            {/* ===== GALLERY MOSAIC (Wix CMS Galeriadenosotros - General) ===== */}
             <CmsGallery
                 tag="Momentos reales"
                 title="Así se vive un viaje con RutaXAsia"
                 subtitle=""
-                initialCategory="General"
+                fixedCategory="General"
+                showTabs={false}
                 maxInitial={9}
                 theme="light"
             />

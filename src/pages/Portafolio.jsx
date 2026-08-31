@@ -1,144 +1,78 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import { LuCamera, LuMapPin, LuCalendar, LuSparkles, LuX, LuArrowRight, LuPlane } from 'react-icons/lu'
+import { LuCamera, LuMapPin, LuCalendar, LuSparkles, LuX, LuArrowRight, LuPlane, LuImage, LuChevronLeft, LuChevronRight, LuUsers, LuCompass } from 'react-icons/lu'
 import './Portafolio.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
-const PORTFOLIO_ITEMS = [
+// Curated Tour Metadata for CMS Albums
+const ALBUM_METADATA = {
+    'Corea 2024': {
+        emoji: '🇰🇷',
+        badge: 'Corea del Sur · Expedición 2024',
+        location: 'Seúl, Busan, Isla Jeju & Bukchon',
+        desc: 'Una travesía inolvidable por los palacios históricos en Hanbok, spots de K-Dramas, moda en Hongdae y gastronomía callejera en Myeongdong.',
+        tourLink: '/viajes/corea',
+        tourLabel: 'Ver Tour Corea',
+    },
+    'Japón Sakura 2025': {
+        emoji: '🌸',
+        badge: 'Japón Sakura · Primavera 2025',
+        location: 'Tokio, Kioto, Osaka, Nara & Monte Fuji',
+        desc: 'La temporada más codiciada del año: cerezos en flor en los templos milenarios de Kioto y vistas despejadas al Monte Fuji.',
+        tourLink: '/viajes/japon',
+        tourLabel: 'Ver Tour Sakura',
+    },
+    'Japón Sakura 2026': {
+        emoji: '🌸',
+        badge: 'Japón Sakura · Primavera 2026',
+        location: 'Tokio, Kioto, Osaka & Kawaguchiko',
+        desc: 'Próxima expedición en floración de cerezos. Experiencias seleccionadas, trenes bala Shinkansen y acompañamiento en español.',
+        tourLink: '/viajes/japon',
+        tourLabel: 'Apartar Sakura 2026',
+    },
+    'Japón Otoño': {
+        emoji: '🍁',
+        badge: 'Japón Momiji · Otoño Rojo',
+        location: 'Tokio, Kioto, Kamakura & Nikko',
+        desc: 'Los colores rojizos y dorados del Momiji en su máximo esplendor, clima templado y baños termales tradicionales Onsen.',
+        tourLink: '/tours/octubre-japon-2026',
+        tourLabel: 'Ver Tour Otoño',
+    },
+    'General': {
+        emoji: '⛩️',
+        badge: 'Japón & Asia · Experiencias Generales',
+        location: 'Tokio, Kioto, Osaka, Miyajima & Nara',
+        desc: 'Colección diversa de momentos capturados en múltiples expediciones: gastronomía callejera, templos ancestrales y vivencias de nuestros grupos.',
+        tourLink: '/viajes/japon',
+        tourLabel: 'Diseñar Viaje Libre',
+    },
+}
+
+// Fallback items if API is temporarily loading
+const FALLBACK_ALBUMS = [
     {
-        id: 1,
-        title: 'Cerezos en Flor en Templo Kiyomizu-dera',
-        location: 'Kioto, Japón',
-        season: 'sakura',
-        year: '2025',
-        image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1000&h=800&fit=crop&q=80',
-        caption: 'Grupo Sakura 2025 admirando el atardecer entre los cerezos en flor en Kioto.',
-        tag: '🌸 Sakura',
-        span: 'wide',
+        id: 'fallback-corea',
+        title: 'Corea 2024',
+        total: 6,
+        images: [
+            { id: 'f-c-1', src: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=1000&fit=crop&q=80', title: 'Palacio en Hanbok', caption: 'Tradición y color en Seúl', album: 'Corea 2024', span: 'tall' },
+            { id: 'f-c-2', src: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?w=800&h=600&fit=crop&q=80', title: 'Bukchon Hanok', caption: 'Calles tradicionales de Seúl', album: 'Corea 2024', span: '' },
+            { id: 'f-c-3', src: 'https://images.unsplash.com/photo-1546874177-9e664107314e?w=800&h=600&fit=crop&q=80', title: 'Noche en Myeongdong', caption: 'Street food y compras', album: 'Corea 2024', span: '' },
+        ]
     },
     {
-        id: 2,
-        title: 'Cruce de Shibuya Nocturno',
-        location: 'Tokio, Japón',
-        season: 'general',
-        year: '2024',
-        image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800&h=1000&fit=crop&q=80',
-        caption: 'Explorando las luces de neón y la energía inagotable de Shibuya con nuestro grupo.',
-        tag: '🗼 Tokio',
-        span: 'tall',
-    },
-    {
-        id: 3,
-        title: 'Monte Fuji desde el Lago Kawaguchiko',
-        location: 'Fuji Five Lakes, Japón',
-        season: 'sakura',
-        year: '2025',
-        image: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=600&fit=crop&q=80',
-        caption: 'Uno de los días más mágicos de la expedición: vista despejada del Monte Fuji.',
-        tag: '🗻 Monte Fuji',
-        span: '',
-    },
-    {
-        id: 4,
-        title: 'Palacio Gyeongbokgung en Hanbok',
-        location: 'Seúl, Corea del Sur',
-        season: 'corea',
-        year: '2025',
-        image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=1000&fit=crop&q=80',
-        caption: 'Nuestros viajeros vestidos con trajes tradicionales Hanbok en Seúl.',
-        tag: '🇰🇷 Corea del Sur',
-        span: 'tall',
-    },
-    {
-        id: 5,
-        title: 'Torii Flotante del Santuario Itsukushima',
-        location: 'Miyajima, Hiroshima',
-        season: 'general',
-        year: '2024',
-        image: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1000&h=700&fit=crop&q=80',
-        caption: 'Paseo en ferry hacia la isla sagrada de Miyajima y convivencia con los ciervos libres.',
-        tag: '⛩️ Miyajima',
-        span: 'wide',
-    },
-    {
-        id: 6,
-        title: 'Bosque de Bambú de Arashiyama',
-        location: 'Kioto, Japón',
-        season: 'verano',
-        year: '2024',
-        image: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&h=600&fit=crop&q=80',
-        caption: 'Caminata matutina en el bosque de bambú antes de que lleguen las multitudes.',
-        tag: '🎋 Arashiyama',
-        span: '',
-    },
-    {
-        id: 7,
-        title: 'Momiji y Hojas Rojas en Templo Tofuku-ji',
-        location: 'Kioto, Japón',
-        season: 'otono',
-        year: '2024',
-        image: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=1000&h=700&fit=crop&q=80',
-        caption: 'Los tonos dorados y rojizos del otoño japonés en su máximo esplendor.',
-        tag: '🍁 Momiji Otoño',
-        span: 'wide',
-    },
-    {
-        id: 8,
-        title: 'Calles Tradicionales de Bukchon Hanok',
-        location: 'Seúl, Corea del Sur',
-        season: 'corea',
-        year: '2025',
-        image: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?w=800&h=600&fit=crop&q=80',
-        caption: 'Recorriendo los rincones históricos de Seúl con guías locales y anfitriones.',
-        tag: '🇰🇷 Bukchon',
-        span: '',
-    },
-    {
-        id: 9,
-        title: 'Noche de Neón y Gastronomía en Dotonbori',
-        location: 'Osaka, Japón',
-        season: 'verano',
-        year: '2024',
-        image: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?w=800&h=1000&fit=crop&q=80',
-        caption: 'Tour gastronómico de takoyaki, okonomiyaki y fotos con el icónico Glico Man.',
-        tag: '🐙 Osaka Food',
-        span: 'tall',
-    },
-    {
-        id: 10,
-        title: 'Ceremonia Tradicional del Té en Kioto',
-        location: 'Gion, Kioto',
-        season: 'experiencia',
-        year: '2025',
-        image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&h=600&fit=crop&q=80',
-        caption: 'Experiencia inmersiva de té matcha con maestros certificados en una casa de té histórica.',
-        tag: '🍵 Ceremonia del Té',
-        span: '',
-    },
-    {
-        id: 11,
-        title: 'Parque de los Ciervos de Nara',
-        location: 'Nara, Japón',
-        season: 'general',
-        year: '2024',
-        image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=600&fit=crop&q=80',
-        caption: 'Alimentando a los ciervos sagrados de Nara frente al gran templo Todai-ji.',
-        tag: '🦌 Nara',
-        span: '',
-    },
-    {
-        id: 12,
-        title: 'Fuegos Artificiales Hanabi Matsuri',
-        location: 'Río Sumida, Tokio',
-        season: 'verano',
-        year: '2024',
-        image: 'https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?w=1000&h=700&fit=crop&q=80',
-        caption: 'Viviendo la tradición milenaria de los festivales de verano con yukatas.',
-        tag: '🎆 Hanabi Matsuri',
-        span: 'wide',
-    },
+        id: 'fallback-general',
+        title: 'General',
+        total: 6,
+        images: [
+            { id: 'f-g-1', src: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=1000&fit=crop&q=80', title: 'Fushimi Inari, Kyoto', caption: 'Túnel de mil Torii', album: 'General', span: 'tall' },
+            { id: 'f-g-2', src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&h=600&fit=crop&q=80', title: 'Tokyo Skyline', caption: 'Energía cosmopolita de Tokio', album: 'General', span: '' },
+            { id: 'f-g-3', src: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=600&fit=crop&q=80', title: 'Monte Fuji', caption: 'Vista despejada hacia el volcán sagrado', album: 'General', span: '' },
+        ]
+    }
 ]
 
 const EDITIONS = [
@@ -161,7 +95,7 @@ const EDITIONS = [
         dates: '1 Sep — 15 Mar',
         desc: 'Los templos milenarios teñidos de rojo y oro, clima templado perfecto para caminar y aguas termales Onsen.',
         badge: '🍁 Otoño / Invierno',
-        link: '/viajes/japon/kamakura',
+        link: '/tours/octubre-japon-2026',
     },
     {
         name: 'Corea del Sur K-Culture',
@@ -173,20 +107,95 @@ const EDITIONS = [
 ]
 
 export default function Portafolio() {
-    const [filter, setFilter] = useState('all')
-    const [selectedPhoto, setSelectedPhoto] = useState(null)
+    const [albums, setAlbums] = useState(FALLBACK_ALBUMS)
+    const [activeFilter, setActiveFilter] = useState('all') // 'all' | album title
+    const [expandedAlbums, setExpandedAlbums] = useState({}) // { [albumTitle]: boolean }
+    const [lightboxData, setLightboxData] = useState({ isOpen: false, images: [], index: 0 })
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => { window.scrollTo(0, 0) }, [])
 
-    const filteredItems = filter === 'all'
-        ? PORTFOLIO_ITEMS
-        : PORTFOLIO_ITEMS.filter(item => item.season === filter)
+    // Fetch all albums from CMS
+    useEffect(() => {
+        let isMounted = true
+        setIsLoading(true)
+
+        fetch('/api/galeria-nosotros?title=all')
+            .then(res => res.json())
+            .then(data => {
+                if (!isMounted) return
+                if (data.albums && data.albums.length > 0) {
+                    setAlbums(data.albums)
+                }
+                setIsLoading(false)
+            })
+            .catch(err => {
+                console.warn('[Portafolio] Error fetching albums:', err)
+                if (isMounted) setIsLoading(false)
+            })
+
+        return () => { isMounted = false }
+    }, [])
+
+    // Keyboard controls for Lightbox
+    useEffect(() => {
+        if (!lightboxData.isOpen) return
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') closeLightbox()
+            if (e.key === 'ArrowRight') nextLightbox()
+            if (e.key === 'ArrowLeft') prevLightbox()
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [lightboxData])
+
+    const openLightbox = (imagesList, startIndex) => {
+        setLightboxData({
+            isOpen: true,
+            images: imagesList,
+            index: startIndex,
+        })
+    }
+
+    const closeLightbox = () => {
+        setLightboxData(prev => ({ ...prev, isOpen: false }))
+    }
+
+    const nextLightbox = () => {
+        setLightboxData(prev => ({
+            ...prev,
+            index: (prev.index + 1) % prev.images.length
+        }))
+    }
+
+    const prevLightbox = () => {
+        setLightboxData(prev => ({
+            ...prev,
+            index: (prev.index - 1 + prev.images.length) % prev.images.length
+        }))
+    }
+
+    const toggleAlbumExpand = (albumTitle) => {
+        setExpandedAlbums(prev => ({
+            ...prev,
+            [albumTitle]: !prev[albumTitle]
+        }))
+    }
+
+    // Filter displayed albums
+    const displayedAlbums = activeFilter === 'all'
+        ? albums
+        : albums.filter(a => a.title.toLowerCase() === activeFilter.toLowerCase())
+
+    const totalPhotosCount = albums.reduce((sum, a) => sum + (a.images?.length || a.total || 0), 0)
+
+    const currentLightboxImg = lightboxData.images[lightboxData.index]
 
     return (
         <div className="portafolio-page">
             <Helmet>
-                <title>Portafolio de Viajes & Fotos Reales | RutaXAsia</title>
-                <meta name="description" content="Explora las fotos reales y momentos vividos por nuestros viajeros en Japón y Corea del Sur. Galería de expediciones reales con Juan y Ale de RutaXAsia." />
+                <title>Portafolio de Viajes & Álbumes Reales | RutaXAsia</title>
+                <meta name="description" content="Explora los álbumes y fotos reales de nuestros viajeros en Japón y Corea del Sur. Galerías seccionadas por expedición con Juan y Ale de RutaXAsia." />
             </Helmet>
 
             {/* ===== HERO ===== */}
@@ -197,82 +206,163 @@ export default function Portafolio() {
                 </div>
                 <div className="container port-hero-content">
                     <span className="port-hero-badge">
-                        <LuCamera size={14} /> PORTAFOLIO & GALERÍA DE VIAJEROS
+                        <LuCamera size={15} /> PORTAFOLIO & EXPEDICIONES REALES
                     </span>
                     <h1 className="port-hero-title">
                         Momentos Reales, <span className="port-glow-text">Historias Vivas</span>
                     </h1>
                     <p className="port-hero-sub">
-                        Cada fotografía es un testimonio de lo que significa viajar con nosotros. Sin filtros de catálogo, solo viajes reales y recuerdos para toda la vida.
+                        Sin filtros de catálogo ni imágenes de archivo: 100% fotografías capturadas durante nuestros viajes en grupo por Japón y Corea del Sur.
                     </p>
+
+                    {/* Stats Strip */}
+                    <div className="port-stats-bar">
+                        <div className="port-stat-item">
+                            <span className="port-stat-num">{totalPhotosCount}+</span>
+                            <span className="port-stat-lbl">Fotos en Galería</span>
+                        </div>
+                        <div className="port-stat-divider" />
+                        <div className="port-stat-item">
+                            <span className="port-stat-num">{albums.length}</span>
+                            <span className="port-stat-lbl">Álbumes / Expediciones</span>
+                        </div>
+                        <div className="port-stat-divider" />
+                        <div className="port-stat-item">
+                            <span className="port-stat-num">+500</span>
+                            <span className="port-stat-lbl">Viajeros Felices</span>
+                        </div>
+                        <div className="port-stat-divider" />
+                        <div className="port-stat-item">
+                            <span className="port-stat-num">4.9 ★</span>
+                            <span className="port-stat-lbl">Calificación Promedio</span>
+                        </div>
+                    </div>
 
                     {/* Filter Tabs */}
                     <div className="port-filters">
                         <button
-                            className={`port-filter-btn ${filter === 'all' ? 'active' : ''}`}
-                            onClick={() => setFilter('all')}
+                            type="button"
+                            className={`port-filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
+                            onClick={() => setActiveFilter('all')}
                         >
-                            Todos ({PORTFOLIO_ITEMS.length})
+                            ✨ Todos los Álbumes ({totalPhotosCount})
                         </button>
-                        <button
-                            className={`port-filter-btn ${filter === 'sakura' ? 'active' : ''}`}
-                            onClick={() => setFilter('sakura')}
-                        >
-                            🌸 Sakura
-                        </button>
-                        <button
-                            className={`port-filter-btn ${filter === 'verano' ? 'active' : ''}`}
-                            onClick={() => setFilter('verano')}
-                        >
-                            ☀️ Verano
-                        </button>
-                        <button
-                            className={`port-filter-btn ${filter === 'otono' ? 'active' : ''}`}
-                            onClick={() => setFilter('otono')}
-                        >
-                            🍁 Otoño Momiji
-                        </button>
-                        <button
-                            className={`port-filter-btn ${filter === 'corea' ? 'active' : ''}`}
-                            onClick={() => setFilter('corea')}
-                        >
-                            🇰🇷 Corea del Sur
-                        </button>
-                        <button
-                            className={`port-filter-btn ${filter === 'experiencia' ? 'active' : ''}`}
-                            onClick={() => setFilter('experiencia')}
-                        >
-                            🍵 Experiencias
-                        </button>
+                        {albums.map((alb) => {
+                            const meta = ALBUM_METADATA[alb.title] || { emoji: '📸' }
+                            return (
+                                <button
+                                    key={alb.id || alb.title}
+                                    type="button"
+                                    className={`port-filter-btn ${activeFilter === alb.title ? 'active' : ''}`}
+                                    onClick={() => setActiveFilter(alb.title)}
+                                >
+                                    {meta.emoji} {alb.title} ({alb.total || alb.images?.length || 0})
+                                </button>
+                            )
+                        })}
                     </div>
                 </div>
             </section>
 
-            {/* ===== BENTO PHOTO GALLERY ===== */}
-            <section className="container port-gallery-section">
-                <div className="port-grid">
-                    {filteredItems.map((item) => (
-                        <div
-                            key={item.id}
-                            className={`port-card ${item.span ? `port-card--${item.span}` : ''}`}
-                            onClick={() => setSelectedPhoto(item)}
-                        >
-                            <img src={item.image} alt={item.title} loading="lazy" />
-                            <div className="port-card-overlay">
-                                <div className="port-card-top-tags">
-                                    <span className="port-tag">{item.tag}</span>
-                                    <span className="port-year">{item.year}</span>
+            {/* ===== SECTIONED EXPEDITIONS ALBUMS ===== */}
+            <main className="port-albums-container">
+                {displayedAlbums.map((album, aIdx) => {
+                    const meta = ALBUM_METADATA[album.title] || {
+                        emoji: '🌸',
+                        badge: `Expedición · ${album.title}`,
+                        location: 'Japón / Asia',
+                        desc: 'Fotografías y vivencias compartidas por nuestros viajeros en este recorrido.',
+                        tourLink: '/viajes/japon',
+                        tourLabel: 'Conocer más',
+                    }
+
+                    const albumImages = album.images || []
+                    const isExpanded = !!expandedAlbums[album.title]
+                    const initialLimit = 8
+                    const visibleImages = isExpanded ? albumImages : albumImages.slice(0, initialLimit)
+
+                    return (
+                        <section key={album.id || album.title} className="port-album-section" id={`album-${album.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                            <div className="container">
+                                {/* Album Header Card */}
+                                <div className="port-album-header">
+                                    <div className="port-album-header-left">
+                                        <div className="port-album-badge-row">
+                                            <span className="port-album-badge">
+                                                {meta.emoji} {meta.badge}
+                                            </span>
+                                            <span className="port-album-count-badge">
+                                                <LuImage size={13} /> {albumImages.length} fotos
+                                            </span>
+                                        </div>
+                                        <h2 className="port-album-title">{album.title}</h2>
+                                        <p className="port-album-location">
+                                            <LuMapPin size={15} /> {meta.location}
+                                        </p>
+                                        <p className="port-album-desc">{meta.desc}</p>
+                                    </div>
+
+                                    <div className="port-album-header-right">
+                                        <Link to={meta.tourLink} className="btn btn-outline port-album-cta-btn">
+                                            <span>{meta.tourLabel}</span>
+                                            <LuArrowRight size={15} />
+                                        </Link>
+                                    </div>
                                 </div>
-                                <div className="port-card-info">
-                                    <span className="port-location"><LuMapPin size={13} /> {item.location}</span>
-                                    <h3 className="port-title">{item.title}</h3>
-                                    <p className="port-caption">{item.caption}</p>
+
+                                {/* Bento Grid for this Album */}
+                                <div className="port-grid">
+                                    {visibleImages.map((img, i) => (
+                                        <div
+                                            key={img.id || i}
+                                            className={`port-card ${img.span ? `port-card--${img.span}` : ''}`}
+                                            onClick={() => openLightbox(albumImages, i)}
+                                        >
+                                            <img
+                                                src={img.src}
+                                                alt={img.title || img.caption || 'Foto del tour'}
+                                                loading="lazy"
+                                                onError={(e) => {
+                                                    e.target.src = 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&fit=crop'
+                                                }}
+                                            />
+                                            <div className="port-card-overlay">
+                                                <div className="port-card-top-tags">
+                                                    <span className="port-tag">{meta.emoji} {album.title}</span>
+                                                    <span className="port-year">#{i + 1}</span>
+                                                </div>
+                                                <div className="port-card-info">
+                                                    <span className="port-location"><LuMapPin size={13} /> {meta.location.split(',')[0]}</span>
+                                                    <h3 className="port-title">{img.title}</h3>
+                                                    {img.caption && img.caption !== img.title && (
+                                                        <p className="port-caption">{img.caption}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
+
+                                {/* View More Photos for this Album */}
+                                {albumImages.length > initialLimit && (
+                                    <div className="port-album-footer">
+                                        <button
+                                            type="button"
+                                            className="port-album-more-btn"
+                                            onClick={() => toggleAlbumExpand(album.title)}
+                                        >
+                                            {isExpanded
+                                                ? '▲ Ver menos fotos'
+                                                : `📸 Ver todas las fotos de ${album.title} (${albumImages.length})`
+                                            }
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+                        </section>
+                    )
+                })}
+            </main>
 
             {/* ===== EDITIONS RECAP BAR ===== */}
             <section className="port-editions-section">
@@ -280,7 +370,7 @@ export default function Portafolio() {
                     <div className="section-header" style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                         <span className="section-tag">Nuestras Rutas</span>
                         <h2 className="section-title">¿Cuál es tu <span className="text-accent">temporada soñada</span>?</h2>
-                        <p className="section-subtitle">Descubre las ediciones anuales y aparta tu lugar con anticipación.</p>
+                        <p className="section-subtitle">Descubre las próximas ediciones anuales y aparta tu lugar con anticipación.</p>
                     </div>
 
                     <div className="port-editions-grid">
@@ -304,7 +394,7 @@ export default function Portafolio() {
                 <div className="container port-cta-box">
                     <div className="port-cta-text">
                         <h2>¿Listo para ser el protagonista de la próxima foto?</h2>
-                        <p>Platícanos qué fecha tienes en mente y te asesoramos personalmente.</p>
+                        <p>Platícanos qué fecha y destino tienes en mente. Juan y Ale te asesoran personalmente sin compromiso.</p>
                     </div>
                     <a
                         href={`${WHATSAPP_BASE}SW-Hola%20vi%20el%20portafolio%20de%20fotos%20y%20quiero%20cotizar%20mi%20viaje`}
@@ -312,26 +402,71 @@ export default function Portafolio() {
                         rel="noopener noreferrer"
                         className="btn btn-primary port-cta-btn"
                     >
-                        <span>💬 Cotizar mi Aventura →</span>
+                        <span>💬 Cotizar mi Aventura por WhatsApp →</span>
                     </a>
                 </div>
             </section>
 
-            {/* ===== LIGHTBOX MODAL ===== */}
-            {selectedPhoto && (
-                <div className="port-lightbox" onClick={() => setSelectedPhoto(null)}>
-                    <div className="port-lightbox-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="port-lightbox-close" onClick={() => setSelectedPhoto(null)}>
-                            <LuX size={24} />
+            {/* ===== LIGHTBOX MODAL VIA PORTAL ===== */}
+            {lightboxData.isOpen && currentLightboxImg && createPortal(
+                <div className="port-lightbox-overlay" onClick={closeLightbox}>
+                    <div className="port-lightbox-dialog" onClick={(e) => e.stopPropagation()}>
+                        <button className="port-lightbox-close" onClick={closeLightbox} aria-label="Cerrar foto">
+                            <LuX size={22} />
                         </button>
-                        <img src={selectedPhoto.image} alt={selectedPhoto.title} />
-                        <div className="port-lightbox-info">
-                            <span className="port-lightbox-tag">{selectedPhoto.tag} · {selectedPhoto.location}</span>
-                            <h3>{selectedPhoto.title}</h3>
-                            <p>{selectedPhoto.caption}</p>
+
+                        {lightboxData.images.length > 1 && (
+                            <>
+                                <button
+                                    type="button"
+                                    className="port-lightbox-arrow port-lightbox-arrow--prev"
+                                    onClick={prevLightbox}
+                                    aria-label="Foto anterior"
+                                >
+                                    <LuChevronLeft size={28} />
+                                </button>
+                                <button
+                                    type="button"
+                                    className="port-lightbox-arrow port-lightbox-arrow--next"
+                                    onClick={nextLightbox}
+                                    aria-label="Siguiente foto"
+                                >
+                                    <LuChevronRight size={28} />
+                                </button>
+                            </>
+                        )}
+
+                        <div className="port-lightbox-img-wrapper">
+                            <img
+                                src={currentLightboxImg.src}
+                                alt={currentLightboxImg.title || 'Foto de viaje'}
+                                className="port-lightbox-img"
+                            />
+                        </div>
+
+                        <div className="port-lightbox-info-bar">
+                            <div>
+                                <span className="port-lightbox-album-tag">
+                                    {currentLightboxImg.album} · Foto {lightboxData.index + 1} de {lightboxData.images.length}
+                                </span>
+                                <h3 className="port-lightbox-title">{currentLightboxImg.title}</h3>
+                                {currentLightboxImg.caption && (
+                                    <p className="port-lightbox-caption">{currentLightboxImg.caption}</p>
+                                )}
+                            </div>
+
+                            <a
+                                href={`${WHATSAPP_BASE}SW-Hola%20me%20encanto%20la%20foto%20de%20${encodeURIComponent(currentLightboxImg.album || 'viaje')}%20y%20quiero%20informes`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-primary port-lightbox-cta"
+                            >
+                                💬 Quiero este viaje
+                            </a>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

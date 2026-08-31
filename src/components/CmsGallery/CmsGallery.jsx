@@ -16,22 +16,26 @@ export default function CmsGallery({
     subtitle = 'Momentos reales de nuestros viajeros en Asia',
     tag = 'Momentos reales',
     initialCategory = 'General',
+    fixedCategory = null,
+    showTabs = true,
     maxInitial = 9,
     theme = 'light' // 'light' | 'dark'
 }) {
     const [galleryImages, setGalleryImages] = useState(DEFAULT_FALLBACK_GALLERY)
     const [categories, setCategories] = useState([])
-    const [activeCategory, setActiveCategory] = useState(initialCategory)
+    const [activeCategory, setActiveCategory] = useState(fixedCategory || initialCategory)
     const [showAllPhotos, setShowAllPhotos] = useState(false)
     const [lightboxIndex, setLightboxIndex] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
+
+    const currentCategory = fixedCategory || activeCategory
 
     // Fetch dynamic gallery from CMS
     useEffect(() => {
         let isMounted = true
         setIsLoading(true)
 
-        fetch(`/api/galeria-nosotros?title=${encodeURIComponent(activeCategory)}`)
+        fetch(`/api/galeria-nosotros?title=${encodeURIComponent(currentCategory)}`)
             .then(res => res.json())
             .then(data => {
                 if (!isMounted) return
@@ -49,7 +53,7 @@ export default function CmsGallery({
             })
 
         return () => { isMounted = false }
-    }, [activeCategory])
+    }, [currentCategory])
 
     // Keyboard navigation for Lightbox
     useEffect(() => {
@@ -74,8 +78,8 @@ export default function CmsGallery({
                     {subtitle && <p className="cms-gallery-subtitle">{subtitle}</p>}
                 </div>
 
-                {/* Category Tabs */}
-                {categories.length > 1 && (
+                {/* Category Tabs (only if showTabs is true and multiple categories exist) */}
+                {showTabs && !fixedCategory && categories.length > 1 && (
                     <div className="cms-gallery-tabs">
                         {categories.map((cat) => (
                             <button

@@ -206,12 +206,13 @@ export default function RegistroTurismo() {
                 </div>
             </section>
 
-            {/* ===== EXPERIENCIAS REALES / FOTOS DE VIAJEROS (CMS Galeriadenosotros) ===== */}
+            {/* ===== EXPERIENCIAS REALES / FOTOS DE VIAJEROS (CMS Galeriadenosotros - General) ===== */}
             <CmsGallery
                 tag="Evidencia y Transparencia"
                 title="Momentos reales con nuestros viajeros"
                 subtitle="Fotos tomadas durante nuestros tours en Japón y Corea. Cada experiencia respaldada por una agencia 100% legal y formal."
-                initialCategory="General"
+                fixedCategory="General"
+                showTabs={false}
                 maxInitial={6}
                 theme="light"
             />
