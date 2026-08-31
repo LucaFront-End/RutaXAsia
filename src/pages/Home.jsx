@@ -271,8 +271,6 @@ function Home({ cityOverride } = {}) {
             const track = hTrackRef.current
             if (!wrapper || !track) return
 
-            // Track handles all sizes now
-
             const rect = wrapper.getBoundingClientRect()
             const totalScrollable = wrapper.offsetHeight - window.innerHeight
             const scrolled = -rect.top
@@ -299,7 +297,12 @@ function Home({ cityOverride } = {}) {
             })
         }
         window.addEventListener('scroll', handleScroll, { passive: true })
-        return () => window.removeEventListener('scroll', handleScroll)
+        window.addEventListener('resize', handleScroll, { passive: true })
+        handleScroll()
+        return () => {
+            window.removeEventListener('scroll', handleScroll)
+            window.removeEventListener('resize', handleScroll)
+        }
     }, [])
 
     const currentTrip = TRIPS[activeSlide]

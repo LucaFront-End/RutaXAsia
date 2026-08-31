@@ -153,7 +153,12 @@ function LandingHome({ landingData }) {
             })
         }
         window.addEventListener('scroll', handleScroll, { passive: true })
-        return () => window.removeEventListener('scroll', handleScroll)
+        window.addEventListener('resize', handleScroll, { passive: true })
+        handleScroll()
+        return () => {
+            window.removeEventListener('scroll', handleScroll)
+            window.removeEventListener('resize', handleScroll)
+        }
     }, [])
 
     // Timeline scroll-fill
