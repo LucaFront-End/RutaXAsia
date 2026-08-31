@@ -230,7 +230,7 @@ export default function AboutUs() {
                                 <img
                                     src="/images/team/juan-rutaxasia.jpg"
                                     alt="Juan Santiago - Fundador"
-                                    className="au-founder-img"
+                                    className="au-founder-img au-founder-img--juan"
                                     onError={(e) => {
                                         e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop&q=80'
                                     }}
@@ -263,7 +263,7 @@ export default function AboutUs() {
                                 <img
                                     src="/images/team/ale-rutaxasia.jpg"
                                     alt="Alejandra - Co-fundadora & Anfitriona"
-                                    className="au-founder-img"
+                                    className="au-founder-img au-founder-img--ale"
                                     onError={(e) => {
                                         e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1000&fit=crop&q=80'
                                     }}
