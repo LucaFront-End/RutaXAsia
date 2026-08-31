@@ -35,195 +35,99 @@ const CATEGORIES_CONFIG = [
     },
 ]
 
-// Logical City Order Priority for Clean Grouping
-const CITY_ORDER_PRIORITY = {
-    'tokio': 1,
-    'tokyo': 1,
-    'kioto': 2,
-    'kyoto': 2,
-    'osaka': 3,
-    'nara': 4,
-    'takayama': 5,
-    'shirakawago': 6,
-    'kanazawa': 7,
-    'hiroshima': 8,
-    'fuji': 9,
-    'hakone': 9,
-    'kamakura': 10,
-    'nikko': 11,
-    'kobe': 12,
-    'himeji': 13,
+// Helper to normalize and extract city directly from CMS tour data
+function getTourCity(tour) {
+    const raw = (tour.city || tour.ciudad || '').trim()
+    const low = raw.toLowerCase()
+    if (!raw || low === 'japón' || low === 'japon') {
+        const titleLower = (tour.title || '').toLowerCase()
+        if (titleLower.includes('tokio') || titleLower.includes('tokyo') || titleLower.includes('barrio') || titleLower.includes('asakusa') || titleLower.includes('akihabara')) return 'Tokio'
+        if (titleLower.includes('kioto') || titleLower.includes('kyoto')) return 'Kioto'
+        if (titleLower.includes('osaka')) return 'Osaka'
+        if (titleLower.includes('hiroshima')) return 'Hiroshima'
+        if (titleLower.includes('nara')) return 'Nara'
+        if (titleLower.includes('fuji') || titleLower.includes('hakone')) return 'Monte Fuji y Hakone'
+        if (titleLower.includes('takayama')) return 'Takayama'
+        if (titleLower.includes('kanazawa')) return 'Kanazawa'
+        if (titleLower.includes('nikko')) return 'Nikko'
+        if (titleLower.includes('kamakura')) return 'Kamakura'
+        if (titleLower.includes('uji')) return 'Uji'
+        if (titleLower.includes('shirakawa')) return 'Shirakawago'
+        if (titleLower.includes('fukuoka')) return 'Fukuoka'
+        if (titleLower.includes('kobe')) return 'Kobe'
+        if (titleLower.includes('himeji')) return 'Himeji'
+        if (titleLower.includes('miyajima')) return 'Miyajima'
+        if (titleLower.includes('naoshima')) return 'Naoshima'
+        return 'Otras ciudades'
+    }
+    if (low.includes('tokio') || low.includes('tokyo')) return 'Tokio'
+    if (low.includes('kioto') || low.includes('kyoto')) return 'Kioto'
+    if (low.includes('osaka')) return 'Osaka'
+    if (low.includes('hiroshima')) return 'Hiroshima'
+    if (low.includes('nara')) return 'Nara'
+    if (low.includes('fuji') || low.includes('hakone')) return 'Monte Fuji y Hakone'
+    if (low.includes('takayama')) return 'Takayama'
+    if (low.includes('kanazawa')) return 'Kanazawa'
+    if (low.includes('nikko')) return 'Nikko'
+    if (low.includes('kamakura')) return 'Kamakura'
+    if (low.includes('uji')) return 'Uji'
+    if (low.includes('shirakawa')) return 'Shirakawago'
+    if (low.includes('fukuoka')) return 'Fukuoka'
+    if (low.includes('kobe')) return 'Kobe'
+    if (low.includes('himeji')) return 'Himeji'
+    if (low.includes('miyajima')) return 'Miyajima'
+    if (low.includes('naoshima')) return 'Naoshima'
+    return raw
 }
 
-// Grouping of individual cities (1 franja por ciudad) for "Rutas por Japón"
-const CITY_GROUPS = [
-    {
-        key: 'tokio',
-        name: 'Tokio',
-        icon: '🗼',
-        tag: 'Barrios icónicos · Asakusa · Akihabara · Sky Tree',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return (raw.includes('tokio') || raw.includes('tokyo') || raw.includes('asakusa') || raw.includes('akihabara') || raw.includes('barrios')) &&
-                   !raw.includes('nikko') && !raw.includes('fuji') && !raw.includes('hakone') && !raw.includes('kamakura') && !raw.includes('gotemba')
-        }
-    },
-    {
-        key: 'fuji-hakone',
-        name: 'Monte Fuji y Hakone',
-        icon: '🗻',
-        tag: 'Vistas panorámicas del Monte Fuji · Lago Ashi · Gotemba',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('fuji') || raw.includes('hakone') || raw.includes('gotemba')
-        }
-    },
-    {
-        key: 'nikko',
-        name: 'Nikko',
-        icon: '⛩️',
-        tag: 'Santuarios Patrimonio de la Humanidad y naturaleza',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('nikko')
-        }
-    },
-    {
-        key: 'kamakura',
-        name: 'Kamakura',
-        icon: '🌊',
-        tag: 'Gran Buda de Kamakura · Templos y costa',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('kamakura')
-        }
-    },
-    {
-        key: 'osaka',
-        name: 'Osaka',
-        icon: '🏯',
-        tag: 'Castillo de Osaka · Dotonbori · Gastronomía callejera',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return (raw.includes('osaka') || raw.includes('dotonbori')) && !raw.includes('himeji') && !raw.includes('naoshima')
-        }
-    },
-    {
-        key: 'kioto',
-        name: 'Kioto',
-        icon: '⛩️',
-        tag: 'Templos milenarios · Gion · Pabellón Dorado y Arashiyama',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return (raw.includes('kyoto') || raw.includes('kioto')) && !raw.includes('osaka') && !raw.includes('nara') && !raw.includes('uji')
-        }
-    },
-    {
-        key: 'nara',
-        name: 'Nara',
-        icon: '🦌',
-        tag: 'Parque de los Ciervos Sagrados y Templo Todaiji',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('nara')
-        }
-    },
-    {
-        key: 'uji',
-        name: 'Uji',
-        icon: '🍵',
-        tag: 'Cuna del Té Matcha y Santuarios tradicionales',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('uji') && !raw.includes('nara')
-        }
-    },
-    {
-        key: 'himeji-kobe',
-        name: 'Himeji y Kobe',
-        icon: '🏰',
-        tag: 'Castillo de la Garza Blanca y Bahía de Kobe',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('himeji') || raw.includes('kobe')
-        }
-    },
-    {
-        key: 'naoshima',
-        name: 'Isla de Naoshima',
-        icon: '🎨',
-        tag: 'Isla del Arte Moderno y esculturas icónicas',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('naoshima')
-        }
-    },
-    {
-        key: 'hiroshima',
-        name: 'Hiroshima',
-        icon: '🕊️',
-        tag: 'Parque Memorial de la Paz y Castillo de Hiroshima',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('hiroshima') && !raw.includes('miyajima')
-        }
-    },
-    {
-        key: 'miyajima',
-        name: 'Isla de Miyajima',
-        icon: '⛩️',
-        tag: 'Torii Flotante del Santuario Itsukushima',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('miyajima')
-        }
-    },
-    {
-        key: 'fukuoka',
-        name: 'Fukuoka',
-        icon: '🍜',
-        tag: 'Capital de Kyushu · Puestos Yatai y ramen Hakata',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('fukuoka')
-        }
-    },
-    {
-        key: 'takayama',
-        name: 'Takayama',
-        icon: '🏮',
-        tag: 'Casco antiguo Sanmachi Suji y sake tradicional',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return (raw.includes('takayama') || (t.city && t.city.toLowerCase().includes('takayama'))) && !raw.includes('shirakawa') && !raw.includes('kanazawa')
-        }
-    },
-    {
-        key: 'shirakawago',
-        name: 'Shirakawago',
-        icon: '🏔️',
-        tag: 'Aldea histórica con casas tradicionales Gassho-zukuri',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return raw.includes('shirakawago') || raw.includes('shirakawa')
-        }
-    },
-    {
-        key: 'kanazawa',
-        name: 'Kanazawa',
-        icon: '🏯',
-        tag: 'Jardín Kenrokuen y barrio de Geishas Higashi Chaya',
-        matchFn: (t) => {
-            const raw = `${t.city || ''} ${t.title || ''}`.toLowerCase()
-            return (raw.includes('kanazawa') || (t.city && t.city.toLowerCase().includes('kanazawa'))) && !raw.includes('shirakawa') && !raw.includes('takayama')
-        }
-    },
-]
+function getCityIcon(cityName = '') {
+    const low = cityName.toLowerCase()
+    if (low.includes('tokio') || low.includes('tokyo')) return '🗼'
+    if (low.includes('fuji') || low.includes('hakone')) return '🗻'
+    if (low.includes('kioto') || low.includes('kyoto')) return '⛩️'
+    if (low.includes('osaka')) return '🏯'
+    if (low.includes('hiroshima')) return '🕊️'
+    if (low.includes('nara')) return '🦌'
+    if (low.includes('takayama')) return '🏮'
+    if (low.includes('kanazawa')) return '🏯'
+    if (low.includes('nikko')) return '⛩️'
+    if (low.includes('kamakura')) return '🌊'
+    if (low.includes('uji')) return '🍵'
+    if (low.includes('shirakawa')) return '🏔️'
+    if (low.includes('fukuoka')) return '🍜'
+    if (low.includes('kobe') || low.includes('himeji')) return '🏰'
+    if (low.includes('miyajima')) return '⛩️'
+    if (low.includes('naoshima')) return '🎨'
+    return '📍'
+}
 
-function getCityPriority(tour) {
-    const raw = `${tour.city || ''} ${tour.title || ''}`.toLowerCase()
+// Logical Priority for dynamic City ordering
+const CITY_ORDER_PRIORITY = {
+    'tokio': 1,
+    'kioto': 2,
+    'osaka': 3,
+    'nara': 4,
+    'monte fuji y hakone': 5,
+    'fuji': 5,
+    'hakone': 5,
+    'hiroshima': 6,
+    'miyajima': 7,
+    'takayama': 8,
+    'shirakawago': 9,
+    'kanazawa': 10,
+    'nikko': 11,
+    'kamakura': 12,
+    'uji': 13,
+    'kobe': 14,
+    'himeji': 15,
+    'fukuoka': 16,
+    'naoshima': 17,
+}
+
+function getCityPriority(cityName) {
+    const low = (cityName || '').toLowerCase()
     for (const [key, prio] of Object.entries(CITY_ORDER_PRIORITY)) {
-        if (raw.includes(key)) return prio
+        if (low.includes(key)) return prio
     }
     return 99
 }
@@ -428,12 +332,22 @@ export default function RecommendedExperiencesCMS({
                         const catTours = (tours || [])
                             .filter(t => Boolean(t.apareceEnLista))
                             .filter(catConfig.matchFn)
-                            .sort((a, b) => {
-                                const prioA = getCityPriority(a)
-                                const prioB = getCityPriority(b)
-                                if (prioA !== prioB) return prioA - prioB
-                                return (a.city || '').localeCompare(b.city || '')
-                            })
+
+                        // Group catTours dynamically by their CMS City column
+                        const toursByCity = {}
+                        catTours.forEach(tour => {
+                            const cityName = getTourCity(tour)
+                            if (!toursByCity[cityName]) toursByCity[cityName] = []
+                            toursByCity[cityName].push(tour)
+                        })
+
+                        const sortedCities = Object.keys(toursByCity).sort((a, b) => {
+                            const prioA = getCityPriority(a)
+                            const prioB = getCityPriority(b)
+                            if (prioA !== prioB) return prioA - prioB
+                            return a.localeCompare(b)
+                        })
+
                         const isOpen = openCategories.includes(catConfig.key)
 
                         return (
@@ -474,22 +388,21 @@ export default function RecommendedExperiencesCMS({
                                             <p className="rec-cms-empty">No hay tours en esta categoría actualmente.</p>
                                         ) : catConfig.key === 'rutas' ? (
                                             <div className="rec-cms-city-groups-list">
-                                                {CITY_GROUPS.map((cityGrp) => {
-                                                    const grpTours = catTours.filter(cityGrp.matchFn)
+                                                {sortedCities.map((cityName) => {
+                                                    const grpTours = toursByCity[cityName] || []
                                                     if (grpTours.length === 0) return null
 
                                                     return (
-                                                        <div key={cityGrp.key} className="rec-cms-city-group-block">
+                                                        <div key={cityName} className="rec-cms-city-group-block">
                                                             <div className="rec-cms-city-group-header">
                                                                 <div className="rec-cms-city-group-title-wrap">
-                                                                    <span className="rec-cms-city-group-icon">{cityGrp.icon}</span>
+                                                                    <span className="rec-cms-city-group-icon">{getCityIcon(cityName)}</span>
                                                                     <div>
-                                                                        <h5 className="rec-cms-city-group-title">{cityGrp.name}</h5>
-                                                                        <span className="rec-cms-city-group-tag">{cityGrp.tag}</span>
+                                                                        <h5 className="rec-cms-city-group-title">{cityName}</h5>
                                                                     </div>
                                                                 </div>
                                                                 <span className="rec-cms-city-group-badge">
-                                                                    {grpTours.length} tour{grpTours.length !== 1 ? 's' : ''} disponibles
+                                                                    {grpTours.length} tour{grpTours.length !== 1 ? 's' : ''} disponible{grpTours.length !== 1 ? 's' : ''}
                                                                 </span>
                                                             </div>
 

@@ -28,6 +28,7 @@ export default function CheckoutModal({
     selectedTours = [],
     pendingTour = null,
     onConfirmTour = () => {},
+    isWhatsAppMode = false,
 }) {
     if (!isOpen) return null
 
@@ -553,8 +554,8 @@ export default function CheckoutModal({
                                                     onChange={() => setAssistanceType('locataria')}
                                                 />
                                             </div>
-                                            <p style={{ fontSize: '0.8rem', color: '#475569', margin: '4px 0 0', lineHeight: 1.45 }}>
-                                                Te acompañamos con un locatario bilingüe especializado que conoce las mejores rutas, transportes y gastronomía del lugar.
+                                            <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '4px 0 0', lineHeight: 1.4 }}>
+                                                Te acompaña un guía local residente en la ciudad para coordinar traslados, accesos y actividades paso a paso.
                                             </p>
                                         </div>
 
@@ -575,8 +576,8 @@ export default function CheckoutModal({
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                     <span style={{ fontSize: '1.4rem' }}>👑</span>
                                                     <div>
-                                                        <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>Anfitrión RutaXAsia</strong>
-                                                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Coordinador exclusivo de nuestro equipo</span>
+                                                        <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>Anfitrión de Viaje RutaXAsia</strong>
+                                                        <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 750 }}>Tarifa Estándar Optimizado</span>
                                                     </div>
                                                 </div>
                                                 <input
@@ -586,8 +587,8 @@ export default function CheckoutModal({
                                                     onChange={() => setAssistanceType('anfitrion')}
                                                 />
                                             </div>
-                                            <p style={{ fontSize: '0.8rem', color: '#475569', margin: '4px 0 0', lineHeight: 1.45 }}>
-                                                Un anfitrión de nuestro equipo te acompañará durante todo el recorrido brindando asistencia VIP personalizada.
+                                            <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '4px 0 0', lineHeight: 1.4 }}>
+                                                Acompañamiento por nuestro equipo oficial RutaXAsia. Grupos reducidos con la mejor experiencia inmersiva.
                                             </p>
                                         </div>
                                     </div>
@@ -620,12 +621,15 @@ export default function CheckoutModal({
                         {((isToursSueltos && step === 2) || (!isToursSueltos && step === 1)) && (
                             <div>
                                 <div className="jtb-form-section" style={{ marginTop: '6px' }}>
-                                    <h4 style={{ fontSize: '0.98rem', fontWeight: 800, marginBottom: '12px', color: 'var(--color-dark)' }}>
-                                        👤 {isToursSueltos ? 'Paso 2 de 4: Información del Comprador (Titular)' : '1. Información del Comprador (Titular)'}
+                                    <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '6px', color: 'var(--color-dark)' }}>
+                                        👤 {isToursSueltos ? 'Paso 2 de 4: Datos del Comprador (Titular)' : 'Paso 1 de 3: Datos del Comprador'}
                                     </h4>
+                                    <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '14px' }}>
+                                        Ingresa los datos de contacto a donde enviaremos tus confirmaciones de reserva.
+                                    </p>
 
-                                    <div className="jtb-input-group" style={{ marginBottom: '12px' }}>
-                                        <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Nombre Completo</label>
+                                    <div className="jtb-form-group" style={{ marginBottom: '12px' }}>
+                                        <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Nombre Completo *</label>
                                         <input
                                             type="text"
                                             placeholder="Como aparece en tu pasaporte o identificación oficial"
@@ -639,7 +643,7 @@ export default function CheckoutModal({
 
                                     <div className="jtb-input-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '12px' }}>
                                         <div className="jtb-input-group">
-                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Correo Electrónico</label>
+                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Correo Electrónico *</label>
                                             <input
                                                 type="email"
                                                 placeholder="correo@ejemplo.com"
@@ -652,12 +656,12 @@ export default function CheckoutModal({
                                         </div>
 
                                         <div className="jtb-input-group">
-                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Teléfono (WhatsApp)</label>
+                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Teléfono (WhatsApp 10 dígitos) *</label>
                                             <input
                                                 type="tel"
                                                 inputMode="numeric"
                                                 maxLength={10}
-                                                placeholder="10 dígitos (ej. 5512345678)"
+                                                placeholder="5512345678"
                                                 value={telefono}
                                                 onChange={(e) => handlePhoneChange(e.target.value)}
                                                 className={errors.telefono ? 'input-error' : ''}
@@ -716,15 +720,9 @@ export default function CheckoutModal({
                                             type="button"
                                             className="btn btn-outline"
                                             style={{ padding: '12px 16px', borderRadius: '100px', fontSize: '0.85rem', color: '#64748b', borderColor: '#cbd5e1' }}
-                                            onClick={() => {
-                                                if (isToursSueltos && !pendingTour) {
-                                                    onClose()
-                                                } else {
-                                                    handlePrevStep()
-                                                }
-                                            }}
+                                            onClick={handlePrevStep}
                                         >
-                                            {isToursSueltos && !pendingTour ? '← Volver al Catálogo' : '← Modalidad'}
+                                            ← Modalidad
                                         </button>
                                     )}
                                     <button
@@ -745,54 +743,65 @@ export default function CheckoutModal({
                         {((isToursSueltos && step === 3) || (!isToursSueltos && step === 2)) && (
                             <div>
                                 <div className="jtb-form-section" style={{ marginTop: '6px' }}>
-                                    <h4 className="jtb-checkout-section-title">
-                                        📋 {isToursSueltos ? `Paso 3 de 4: Datos de los ${totalTravelers} Asistentes` : `2. Datos de los ${totalTravelers} Viajeros`}
+                                    <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '6px', color: 'var(--color-dark)' }}>
+                                        👥 {isToursSueltos ? 'Paso 3 de 4: Datos de los Asistentes' : 'Paso 2 de 3: Datos de los Viajeros'} ({totalTravelers} personas)
                                     </h4>
-                                    <p style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '10px' }}>
-                                        Ingresa los nombres tal como aparecen en su identificación oficial o pasaporte:
+                                    <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '14px' }}>
+                                        Ingresa los nombres de las personas que asistirán a los tours para registrar sus pases:
                                     </p>
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '38vh', overflowY: 'auto', paddingRight: '4px' }}>
-                                        {travelers.map((t, idx) => (
-                                            <div key={idx} style={{
-                                                background: '#f8fafc',
-                                                border: '1px solid #e2e8f0',
-                                                borderRadius: '12px',
-                                                padding: '12px',
-                                            }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
+                                        {travelers.map((traveler, idx) => (
+                                            <div
+                                                key={traveler.id}
+                                                style={{
+                                                    background: '#f8fafc',
+                                                    border: errors[`traveler_${idx}`] ? '1.5px solid #ef4444' : '1px solid #e2e8f0',
+                                                    borderRadius: '12px',
+                                                    padding: '12px 14px'
+                                                }}
+                                            >
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-dark)' }}>
+                                                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155' }}>
                                                         Persona {idx + 1} {idx === 0 ? '(Titular)' : ''}
                                                     </span>
-                                                    <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: t.type === 'Menor' ? '#fef3c7' : '#e0f2fe', color: t.type === 'Menor' ? '#92400e' : '#0369a1' }}>
-                                                        {t.type}
+                                                    <span style={{ fontSize: '0.72rem', background: traveler.type === 'Menor' ? '#fef3c7' : '#e0f2fe', color: traveler.type === 'Menor' ? '#92400e' : '#0369a1', padding: '2px 8px', borderRadius: '100px', fontWeight: 700 }}>
+                                                        {traveler.type}
                                                     </span>
                                                 </div>
 
-                                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '8px' }}>
-                                                    <div>
-                                                        <label style={{ fontSize: '0.72rem', color: '#475569', display: 'block', marginBottom: '2px' }}>Nombre Completo *</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: traveler.type === 'Menor' ? '2fr 1fr' : '1fr', gap: '8px' }}>
+                                                    <input
+                                                        type="text"
+                                                        className={`jtb-input${errors[`traveler_${idx}`] ? ' jtb-input--error' : ''}`}
+                                                        placeholder={`Nombre Completo Persona ${idx + 1}`}
+                                                        value={traveler.fullName}
+                                                        onChange={e => {
+                                                            const val = e.target.value
+                                                            setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, fullName: val } : t))
+                                                            setErrors(prev => ({ ...prev, [`traveler_${idx}`]: '' }))
+                                                        }}
+                                                        style={{ padding: '8px 12px', fontSize: '0.84rem' }}
+                                                    />
+                                                    {traveler.type === 'Menor' && (
                                                         <input
-                                                            type="text"
-                                                            placeholder={`Nombre completo persona ${idx + 1}`}
-                                                            value={t.fullName}
-                                                            onChange={(e) => handleTravelerChange(idx, 'fullName', e.target.value)}
-                                                            style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: errors[`traveler_${idx}`] ? '1px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.82rem' }}
+                                                            type="number"
+                                                            className="jtb-input"
+                                                            placeholder="Edad"
+                                                            min={2}
+                                                            max={11}
+                                                            value={traveler.age}
+                                                            onChange={e => {
+                                                                const val = e.target.value
+                                                                setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, age: val } : t))
+                                                            }}
+                                                            style={{ padding: '8px 10px', fontSize: '0.84rem' }}
                                                         />
-                                                        {errors[`traveler_${idx}`] && <span style={{ color: '#ef4444', fontSize: '0.68rem' }}>{errors[`traveler_${idx}`]}</span>}
-                                                    </div>
-
-                                                    <div>
-                                                        <label style={{ fontSize: '0.72rem', color: '#475569', display: 'block', marginBottom: '2px' }}>Edad</label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Ej. 25"
-                                                            value={t.age}
-                                                            onChange={(e) => handleTravelerChange(idx, 'age', e.target.value)}
-                                                            style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
-                                                        />
-                                                    </div>
+                                                    )}
                                                 </div>
+                                                {errors[`traveler_${idx}`] && (
+                                                    <span className="jtb-error-text" style={{ marginTop: '4px' }}>{errors[`traveler_${idx}`]}</span>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
@@ -887,7 +896,7 @@ export default function CheckoutModal({
                                                     <div>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                                                             <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#059669', background: '#ecfdf5', padding: '2px 6px', borderRadius: '4px' }}>
-                                                                100% Liquidado
+                                                                💎 100% Liquidado
                                                             </span>
                                                             <input
                                                                 type="radio"
@@ -976,7 +985,7 @@ export default function CheckoutModal({
                                                     <span>{formatPrice(remainder)} MXN</span>
                                                 </div>
                                                 <div className="jtb-checkout-summary-row">
-                                                    <span>Plan de Facturas Mensuales:</span>
+                                                    <span>Plan de Mensualidades:</span>
                                                     <span style={{ color: '#0284c7', fontWeight: 800 }}>{selectedInstallments} cuotas de {formatPrice(monthlyInstallment)} MXN/mes</span>
                                                 </div>
                                             </>
@@ -987,7 +996,7 @@ export default function CheckoutModal({
                                         <div className="jtb-checkout-summary-row highlight">
                                             <span style={{ fontSize: '0.9rem', fontWeight: 800 }}>
                                                 {isToursSueltos
-                                                    ? 'Total Estimado de Tours:'
+                                                    ? 'Total de Tours a Pagar:'
                                                     : (packagePaymentMode === 'anticipo' ? 'Monto a Pagar Hoy (Anticipo):' : 'Total a Pagar en Línea (100%):')}
                                             </span>
                                             <span style={{ color: 'var(--color-primary, #e11d48)', fontWeight: 900, fontSize: '1.25rem' }}>
@@ -999,15 +1008,19 @@ export default function CheckoutModal({
                                     {/* Information Banner */}
                                     <div className="jtb-checkout-disclaimer" style={{
                                         marginBottom: '14px',
-                                        background: isToursSueltos ? '#ecfdf5' : ((packagePaymentMode === 'anticipo') ? '#eff6ff' : '#ecfdf5'),
-                                        borderColor: isToursSueltos ? '#a7f3d0' : ((packagePaymentMode === 'anticipo') ? '#bfdbfe' : '#a7f3d0'),
-                                        color: isToursSueltos ? '#065f46' : ((packagePaymentMode === 'anticipo') ? '#1e40af' : '#065f46'),
+                                        background: (isToursSueltos && isWhatsAppMode) ? '#ecfdf5' : ((packagePaymentMode === 'anticipo') ? '#eff6ff' : '#ecfdf5'),
+                                        borderColor: (isToursSueltos && isWhatsAppMode) ? '#a7f3d0' : ((packagePaymentMode === 'anticipo') ? '#bfdbfe' : '#a7f3d0'),
+                                        color: (isToursSueltos && isWhatsAppMode) ? '#065f46' : ((packagePaymentMode === 'anticipo') ? '#1e40af' : '#065f46'),
                                         fontSize: '0.82rem',
                                         padding: '10px 14px',
                                         borderRadius: '12px',
                                     }}>
                                         {isToursSueltos ? (
-                                            <span>💬 <strong>Atención Directa por WhatsApp:</strong> Al hacer clic serás transferido a nuestro WhatsApp oficial con tu itinerario listo. Nuestro equipo te confirmará disponibilidad y te brindará asistencia personalizada inmediata.</span>
+                                            isWhatsAppMode ? (
+                                                <span>💬 <strong>Atención Directa por WhatsApp:</strong> Al hacer clic serás transferido a nuestro WhatsApp oficial con tu itinerario listo. Nuestro equipo te confirmará disponibilidad y te brindará asistencia personalizada inmediata.</span>
+                                            ) : (
+                                                <span>🔒 <strong>Pago Seguro en Línea (Wix Payments):</strong> Pagarás <strong>{formatPrice(paymentAmount)} MXN</strong> en Wix Checkout para confirmar y asegurar de inmediato la reserva de tus tours seleccionados.</span>
+                                            )
                                         ) : (packagePaymentMode === 'anticipo' ? (
                                             <span>📧 <strong>Apartado + Invoicing Automático:</strong> Pagarás tu anticipo de <strong>$5,000 MXN</strong> en la pasarela segura de Wix para congelar tu tarifa. El saldo se liquidará mediante <strong>5 facturas mensuales de {formatPrice(monthlyInstallment)} MXN</strong> enviadas a <strong>{correo}</strong>.</span>
                                         ) : (
@@ -1016,8 +1029,8 @@ export default function CheckoutModal({
                                     </div>
 
                                     {/* Action Buttons */}
-                                    {isToursSueltos ? (
-                                        /* Tours Sueltos: Direct WhatsApp Booking */
+                                    {(isToursSueltos && isWhatsAppMode) ? (
+                                        /* Tours Sueltos WhatsApp Mode: Direct WhatsApp Booking */
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                             <button
                                                 type="button"
@@ -1086,12 +1099,14 @@ export default function CheckoutModal({
                                             </button>
                                         </div>
                                     ) : (
-                                        /* Travel Packages: Online Payment Options */
+                                        /* Online Payment Options (Wix Payments for Tours Individuales & Travel Packages) */
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                             <button type="submit" className="jtb-checkout-submit-btn">
-                                                {packagePaymentMode === 'anticipo'
-                                                    ? `💳 Pagar Anticipo de $5,000 MXN en Wix`
-                                                    : `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`}
+                                                {isToursSueltos
+                                                    ? `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`
+                                                    : (packagePaymentMode === 'anticipo'
+                                                        ? `💳 Pagar Anticipo de $5,000 MXN en Wix`
+                                                        : `💳 Pagar Total de ${formatPrice(paymentAmount)} MXN en Wix`)}
                                             </button>
 
                                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -1101,7 +1116,7 @@ export default function CheckoutModal({
                                                     style={{ padding: '11px 16px', borderRadius: '100px', fontSize: '0.82rem', color: '#64748b', borderColor: '#cbd5e1' }}
                                                     onClick={handlePrevStep}
                                                 >
-                                                    ← Viajeros
+                                                    ← {isToursSueltos ? 'Volver a Viajeros' : 'Viajeros'}
                                                 </button>
                                                 
                                                 <a
@@ -1111,7 +1126,7 @@ export default function CheckoutModal({
                                                     className="btn btn-outline"
                                                     style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '11px 14px', borderRadius: '100px', fontSize: '0.84rem', color: '#25D366', borderColor: '#25D366', fontWeight: 800 }}
                                                 >
-                                                    💬 {packagePaymentMode === 'anticipo' ? 'Apartar por WhatsApp' : 'Pagar Total por WhatsApp'}
+                                                    💬 {isToursSueltos ? 'O Cotizar por WhatsApp' : (packagePaymentMode === 'anticipo' ? 'Apartar por WhatsApp' : 'Pagar Total por WhatsApp')}
                                                 </a>
                                             </div>
                                         </div>

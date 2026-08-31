@@ -135,6 +135,57 @@ export default function ToursIndividualesPage({ whatsappOnly = false }) {
         return () => { isMounted = false }
     }, [])
 
+const CITY_ORDER_PRIORITY = {
+    'tokio': 1,
+    'kioto': 2,
+    'osaka': 3,
+    'nara': 4,
+    'monte fuji': 5,
+    'fuji': 5,
+    'hakone': 5,
+    'hiroshima': 6,
+    'miyajima': 7,
+    'takayama': 8,
+    'shirakawago': 9,
+    'kanazawa': 10,
+    'nikko': 11,
+    'kamakura': 12,
+    'uji': 13,
+    'kobe': 14,
+    'himeji': 15,
+    'fukuoka': 16,
+    'naoshima': 17,
+}
+
+function getCityPriority(cityName) {
+    const low = (cityName || '').toLowerCase()
+    for (const [key, prio] of Object.entries(CITY_ORDER_PRIORITY)) {
+        if (low.includes(key)) return prio
+    }
+    return 99
+}
+
+function getCityIcon(cityName = '') {
+    const low = cityName.toLowerCase()
+    if (low.includes('tokio') || low.includes('tokyo')) return '🗼'
+    if (low.includes('fuji') || low.includes('hakone')) return '🗻'
+    if (low.includes('kioto') || low.includes('kyoto')) return '⛩️'
+    if (low.includes('osaka')) return '🏯'
+    if (low.includes('hiroshima')) return '🕊️'
+    if (low.includes('nara')) return '🦌'
+    if (low.includes('takayama')) return '🏮'
+    if (low.includes('kanazawa')) return '🏯'
+    if (low.includes('nikko')) return '⛩️'
+    if (low.includes('kamakura')) return '🌊'
+    if (low.includes('uji')) return '🍵'
+    if (low.includes('shirakawa')) return '🏔️'
+    if (low.includes('fukuoka')) return '🍜'
+    if (low.includes('kobe') || low.includes('himeji')) return '🏰'
+    if (low.includes('miyajima')) return '⛩️'
+    if (low.includes('naoshima')) return '🎨'
+    return '📍'
+}
+
     // Extract dynamic unique cities from CMS data (only for tours appearing in list)
     const availableCities = useMemo(() => {
         const citySet = new Set()
@@ -153,17 +204,30 @@ export default function ToursIndividualesPage({ whatsappOnly = false }) {
                     else if (low.includes('himeji')) citySet.add('Himeji')
                     else if (low.includes('kamakura')) citySet.add('Kamakura')
                     else if (low.includes('nikko')) citySet.add('Nikko')
+                    else if (low.includes('takayama')) citySet.add('Takayama')
+                    else if (low.includes('kanazawa')) citySet.add('Kanazawa')
+                    else if (low.includes('uji')) citySet.add('Uji')
+                    else if (low.includes('shirakawa')) citySet.add('Shirakawago')
+                    else if (low.includes('fukuoka')) citySet.add('Fukuoka')
+                    else if (low.includes('miyajima')) citySet.add('Miyajima')
+                    else if (low.includes('naoshima')) citySet.add('Naoshima')
                     else citySet.add(p)
                 })
             }
         })
-        return ['Todas', ...Array.from(citySet).sort()]
+        const sorted = Array.from(citySet).sort((a, b) => {
+            const prioA = getCityPriority(a)
+            const prioB = getCityPriority(b)
+            if (prioA !== prioB) return prioA - prioB
+            return a.localeCompare(b)
+        })
+        return ['Todas', ...sorted]
     }, [tours])
 
     // Dropdown options
     const cityOptions = useMemo(() => [
         { value: 'Todas', label: 'Todas las ciudades', icon: '📍' },
-        ...availableCities.filter(c => c !== 'Todas').map(c => ({ value: c, label: c, icon: '📍' }))
+        ...availableCities.filter(c => c !== 'Todas').map(c => ({ value: c, label: c, icon: getCityIcon(c) }))
     ], [availableCities])
 
     const categoryOptions = useMemo(() => [
@@ -1087,6 +1151,7 @@ export default function ToursIndividualesPage({ whatsappOnly = false }) {
                 selectedTours={selectedTours}
                 pendingTour={pendingTour}
                 onConfirmTour={handleConfirmTour}
+                isWhatsAppMode={isWhatsAppMode}
                 desglose={
                     `Tours seleccionados (${(pendingTour && !selectedTours.some(t => t.id === pendingTour.id) ? [...selectedTours, pendingTour] : selectedTours).length}): ` +
                     (pendingTour && !selectedTours.some(t => t.id === pendingTour.id) ? [...selectedTours, pendingTour] : selectedTours).map(t => `${t.name} [${t.modalityLabel || (t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria')}] (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [${formatPrice((t.price || 0) * (t.quantity || 1))} MXN]`).join('; ')
