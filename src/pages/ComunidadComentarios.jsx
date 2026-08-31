@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { LuStar, LuMessageSquare, LuHeart, LuSend, LuCircleCheck, LuMapPin, LuCalendar, LuFilter, LuSparkles } from 'react-icons/lu'
@@ -6,6 +6,44 @@ import { submitFormToCMS } from '../lib/wixClient'
 import './ComunidadComentarios.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
+
+// Helper to compress user uploaded photo to compact web-safe JPEG data URL
+function compressImage(file, maxWidth = 850, maxHeight = 850, quality = 0.84) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = (event) => {
+            const img = new Image()
+            img.src = event.target.result
+            img.onload = () => {
+                let width = img.width
+                let height = img.height
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width)
+                        width = maxWidth
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height)
+                        height = maxHeight
+                    }
+                }
+
+                const canvas = document.createElement('canvas')
+                canvas.width = width
+                canvas.height = height
+                const ctx = canvas.getContext('2d')
+                ctx.drawImage(img, 0, 0, width, height)
+                const dataUrl = canvas.toDataURL('image/jpeg', quality)
+                resolve(dataUrl)
+            }
+            img.onerror = (err) => reject(err)
+        }
+        reader.onerror = (err) => reject(err)
+    })
+}
 
 const INITIAL_REVIEWS = [
     {
@@ -181,6 +219,11 @@ export default function ComunidadComentarios() {
     const [justPublishedToast, setJustPublishedToast] = useState(false)
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
+    // Photo Upload State
+    const fileInputRef = useRef(null)
+    const [uploadedPhoto, setUploadedPhoto] = useState(null)
+    const [uploadingPhoto, setUploadingPhoto] = useState(false)
+
     // Form state
     const [formData, setFormData] = useState({
         name: '',
@@ -192,6 +235,30 @@ export default function ComunidadComentarios() {
         instagram: '',
     })
     const [submitting, setSubmitting] = useState(false)
+
+    const handlePhotoChange = async (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        if (!file.type.startsWith('image/')) {
+            setFormError('Por favor selecciona un archivo de imagen válido (JPG, PNG, WebP).')
+            return
+        }
+        if (file.size > 15 * 1024 * 1024) {
+            setFormError('La foto no debe superar los 15MB.')
+            return
+        }
+        try {
+            setUploadingPhoto(true)
+            const compressed = await compressImage(file, 850, 850, 0.84)
+            setUploadedPhoto(compressed)
+            setFormError(null)
+        } catch (err) {
+            console.error('Error processing photo:', err)
+            setFormError('No pudimos procesar la foto. Intenta con otra imagen.')
+        } finally {
+            setUploadingPhoto(false)
+        }
+    }
 
     // Load persisted reviews
     useEffect(() => {
@@ -249,7 +316,7 @@ export default function ComunidadComentarios() {
                 correo: formData.email || 'comunidad@rutaxasia.com',
                 estado: formData.city || 'México',
                 viaje: formData.trip,
-                mensaje: `[RESEÑA ${formData.rating}★] ${formData.comment}`,
+                mensaje: `[RESEÑA ${formData.rating}★${uploadedPhoto ? ' Con Foto' : ''}] ${formData.comment}`,
             }).catch(err => console.warn('CMS submission warning:', err))
 
             // Add review to local list instantly
@@ -261,8 +328,8 @@ export default function ComunidadComentarios() {
                 season: sTag,
                 rating: formData.rating,
                 date: 'Recién publicado',
-                photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80',
-                tripPhoto: null,
+                photo: uploadedPhoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80',
+                tripPhoto: uploadedPhoto || null,
                 comment: formData.comment.trim(),
                 likes: 1,
                 verified: true,
@@ -287,6 +354,8 @@ export default function ComunidadComentarios() {
                 comment: '',
                 instagram: '',
             })
+            setUploadedPhoto(null)
+            if (fileInputRef.current) fileInputRef.current.value = ''
             setIsReviewModalOpen(false)
             setJustPublishedToast(true)
             setTimeout(() => setJustPublishedToast(false), 6000)
@@ -419,7 +488,14 @@ export default function ComunidadComentarios() {
                     {filteredReviews.map(r => (
                         <div className="com-review-card" key={r.id}>
                             <div className="com-card-top">
-                                <img src={r.photo} alt={r.name} className="com-user-avatar" />
+                                <img
+                                    src={r.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'}
+                                    alt={r.name}
+                                    className="com-user-avatar"
+                                    onError={(e) => {
+                                        e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'
+                                    }}
+                                />
                                 <div className="com-user-meta">
                                     <div className="com-user-name-row">
                                         <h4>{r.name}</h4>
@@ -452,7 +528,14 @@ export default function ComunidadComentarios() {
 
                             {r.tripPhoto && (
                                 <div className="com-card-photo">
-                                    <img src={r.tripPhoto} alt={`Foto de viaje de ${r.name}`} loading="lazy" />
+                                    <img
+                                        src={r.tripPhoto}
+                                        alt={`Foto de viaje de ${r.name}`}
+                                        loading="lazy"
+                                        onError={(e) => {
+                                            if (e.target.parentElement) e.target.parentElement.style.display = 'none'
+                                        }}
+                                    />
                                 </div>
                             )}
 
@@ -563,6 +646,49 @@ export default function ComunidadComentarios() {
                                             setFormData({ ...formData, comment: e.target.value })
                                         }}
                                     />
+                                </div>
+
+                                <div className="form-group com-photo-upload-group">
+                                    <label>📸 Sube tu foto (Perfil o en tu Viaje)</label>
+                                    {uploadedPhoto ? (
+                                        <div className="com-photo-preview-box">
+                                            <img src={uploadedPhoto} alt="Foto cargada" className="com-photo-preview-img" />
+                                            <div className="com-photo-preview-info">
+                                                <span className="com-photo-preview-success">✓ Foto lista para tu reseña</span>
+                                                <p>Se publicará junto a tu nombre y testimonio.</p>
+                                                <button
+                                                    type="button"
+                                                    className="com-photo-remove-btn"
+                                                    onClick={() => {
+                                                        setUploadedPhoto(null)
+                                                        if (fileInputRef.current) fileInputRef.current.value = ''
+                                                    }}
+                                                >
+                                                    ✕ Cambiar o quitar foto
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div 
+                                            className={`com-photo-dropzone${uploadingPhoto ? ' com-photo-dropzone--loading' : ''}`}
+                                            onClick={() => fileInputRef.current?.click()}
+                                        >
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                accept="image/*"
+                                                onChange={handlePhotoChange}
+                                                style={{ display: 'none' }}
+                                            />
+                                            <div className="com-photo-dropzone-inner">
+                                                <span className="com-photo-icon">📷</span>
+                                                <div>
+                                                    <strong>{uploadingPhoto ? 'Procesando imagen...' : 'Agregar foto a mi reseña'}</strong>
+                                                    <span>Selecciona una foto desde tu celular o computadora</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="form-group">
