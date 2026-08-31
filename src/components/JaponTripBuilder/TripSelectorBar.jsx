@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useTripSearch } from '../../context/TripContext'
 import './TripSelectorBar.css'
@@ -89,7 +90,7 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
     }, [])
 
     const handleApplyDates = () => {
-        const finalEnd = getCalculatedEndDate(tempStartDate, selectedNights)
+        const finalEnd = getCalculatedEndDate(tempStartDate, daysCount)
         handleUpdate({
             dateMode: dateTab,
             startDate: tempStartDate,
@@ -203,14 +204,23 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                 )}
             </div>
 
-            {/* Modal / Popover Content */}
-            {openModal && (
+            {/* Modal / Popover Content via Portal */}
+            {openModal && createPortal(
                 <div className="trip-selector-popover-overlay" onClick={() => setOpenModal(null)}>
                     <div
                         className={`trip-selector-popover ${openModal === 'dates' ? 'popover-dates' : openModal === 'destino' ? 'popover-destino' : 'popover-passengers'}`}
                         ref={modalRef}
                         onClick={e => e.stopPropagation()}
                     >
+                        <button
+                            type="button"
+                            className="popover-close-btn"
+                            onClick={() => setOpenModal(null)}
+                            aria-label="Cerrar modal"
+                        >
+                            ✕
+                        </button>
+
                         {/* ================= DESTINO POPOVER ================= */}
                         {openModal === 'destino' && (
                             <div className="passengers-popover-content">
@@ -433,7 +443,8 @@ export default function TripSelectorBar({ selectorData, onChange, variant = 'bar
                             </div>
                         )}
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )
