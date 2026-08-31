@@ -2780,31 +2780,82 @@
     flex: 1;
 }
 
-.jtb-input-group label {
-    font-size: 0.78rem;
+.jtb-input-group label,
+.jtb-form-group label {
+    font-size: 0.8rem;
     font-weight: 700;
-    color: var(--color-dark);
+    color: #334155;
+    margin-bottom: 4px;
 }
 
+/* Modern, rounded, beautiful inputs for checkout modal */
+.jtb-input,
+.jtb-form-group input,
 .jtb-input-group input {
-    padding: 12px 16px;
+    width: 100%;
+    padding: 12px 15px;
     border-radius: 12px;
-    border: 1px solid rgba(12, 14, 22, 0.12);
-    font-size: 0.92rem;
-    background: #fff;
-    color: var(--color-dark);
-    transition: all 0.3s;
-}
-
-.jtb-input-group input:focus {
+    border: 1.5px solid #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: #ffffff;
+    color: #0f172a;
     outline: none;
-    border-color: var(--jtb-primary);
-    box-shadow: 0 0 0 3px rgba(214, 51, 108, 0.1);
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease-in-out;
+    font-family: inherit;
 }
 
+.jtb-input::placeholder,
+.jtb-form-group input::placeholder,
+.jtb-input-group input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.jtb-input:hover,
+.jtb-form-group input:hover,
+.jtb-input-group input:hover {
+    border-color: #cbd5e1;
+    background: #fafbfc;
+}
+
+.jtb-input:focus,
+.jtb-form-group input:focus,
+.jtb-input-group input:focus {
+    border-color: var(--color-primary, #e11d48);
+    background: #ffffff;
+    box-shadow: 0 0 0 3.5px rgba(225, 29, 72, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.jtb-input--error,
+.jtb-input.input-error,
+.jtb-form-group input.input-error,
 .jtb-input-group input.input-error {
-    border-color: #d6336c;
-    background: rgba(214, 51, 108, 0.02);
+    border-color: #ef4444 !important;
+    background: #fef2f2 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+}
+
+/* Traveler Attendee Card Styles */
+.jtb-traveler-card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease;
+}
+
+.jtb-traveler-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.jtb-traveler-card--error {
+    border-color: #ef4444 !important;
+    background: #fffcfc !important;
 }
 
 .jtb-input-row {
@@ -2812,10 +2863,13 @@
     gap: 16px;
 }
 
-.error-text {
-    font-size: 0.72rem;
-    color: #d6336c;
+.error-text,
+.jtb-error-text {
+    font-size: 0.74rem;
+    color: #ef4444;
     font-weight: 600;
+    margin-top: 4px;
+    display: block;
 }
 
 .jtb-checkout-disclaimer {

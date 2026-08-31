@@ -628,35 +628,33 @@ export default function CheckoutModal({
                                         Ingresa los datos de contacto a donde enviaremos tus confirmaciones de reserva.
                                     </p>
 
-                                    <div className="jtb-form-group" style={{ marginBottom: '12px' }}>
-                                        <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Nombre Completo *</label>
+                                    <div className="jtb-form-group" style={{ marginBottom: '14px' }}>
+                                        <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Nombre Completo *</label>
                                         <input
                                             type="text"
                                             placeholder="Como aparece en tu pasaporte o identificación oficial"
                                             value={nombre}
                                             onChange={(e) => handleBuyerNameChange(e.target.value)}
-                                            className={errors.nombre ? 'input-error' : ''}
-                                            style={{ width: '100%', padding: '11px 13px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                                            className={`jtb-input${errors.nombre ? ' jtb-input--error' : ''}`}
                                         />
-                                        {errors.nombre && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.73rem', marginTop: '2px', display: 'block' }}>{errors.nombre}</span>}
+                                        {errors.nombre && <span className="jtb-error-text">{errors.nombre}</span>}
                                     </div>
 
-                                    <div className="jtb-input-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '12px' }}>
+                                    <div className="jtb-input-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '14px' }}>
                                         <div className="jtb-input-group">
-                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Correo Electrónico *</label>
+                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Correo Electrónico *</label>
                                             <input
                                                 type="email"
                                                 placeholder="correo@ejemplo.com"
                                                 value={correo}
                                                 onChange={(e) => { setErrors(prev => ({ ...prev, correo: '' })); setCorreo(e.target.value); }}
-                                                className={errors.correo ? 'input-error' : ''}
-                                                style={{ width: '100%', padding: '11px 13px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                                                className={`jtb-input${errors.correo ? ' jtb-input--error' : ''}`}
                                             />
-                                            {errors.correo && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.73rem', marginTop: '2px', display: 'block' }}>{errors.correo}</span>}
+                                            {errors.correo && <span className="jtb-error-text">{errors.correo}</span>}
                                         </div>
 
                                         <div className="jtb-input-group">
-                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Teléfono (WhatsApp 10 dígitos) *</label>
+                                            <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Teléfono (WhatsApp 10 dígitos) *</label>
                                             <input
                                                 type="tel"
                                                 inputMode="numeric"
@@ -664,10 +662,9 @@ export default function CheckoutModal({
                                                 placeholder="5512345678"
                                                 value={telefono}
                                                 onChange={(e) => handlePhoneChange(e.target.value)}
-                                                className={errors.telefono ? 'input-error' : ''}
-                                                style={{ width: '100%', padding: '11px 13px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                                                className={`jtb-input${errors.telefono ? ' jtb-input--error' : ''}`}
                                             />
-                                            {errors.telefono && <span className="error-text" style={{ color: '#ef4444', fontSize: '0.73rem', marginTop: '2px', display: 'block' }}>{errors.telefono}</span>}
+                                            {errors.telefono && <span className="jtb-error-text">{errors.telefono}</span>}
                                         </div>
                                     </div>
 
@@ -754,51 +751,48 @@ export default function CheckoutModal({
                                         {travelers.map((traveler, idx) => (
                                             <div
                                                 key={traveler.id}
-                                                style={{
-                                                    background: '#f8fafc',
-                                                    border: errors[`traveler_${idx}`] ? '1.5px solid #ef4444' : '1px solid #e2e8f0',
-                                                    borderRadius: '12px',
-                                                    padding: '12px 14px'
-                                                }}
+                                                className={`jtb-traveler-card${errors[`traveler_${idx}`] ? ' jtb-traveler-card--error' : ''}`}
                                             >
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155' }}>
-                                                        Persona {idx + 1} {idx === 0 ? '(Titular)' : ''}
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <span>👤</span> Persona {idx + 1} {idx === 0 ? <strong style={{ color: 'var(--color-primary, #e11d48)' }}>(Titular)</strong> : ''}
                                                     </span>
-                                                    <span style={{ fontSize: '0.72rem', background: traveler.type === 'Menor' ? '#fef3c7' : '#e0f2fe', color: traveler.type === 'Menor' ? '#92400e' : '#0369a1', padding: '2px 8px', borderRadius: '100px', fontWeight: 700 }}>
+                                                    <span style={{ fontSize: '0.72rem', background: traveler.type === 'Menor' ? '#fef3c7' : '#e0f2fe', color: traveler.type === 'Menor' ? '#92400e' : '#0369a1', padding: '3px 10px', borderRadius: '100px', fontWeight: 700 }}>
                                                         {traveler.type}
                                                     </span>
                                                 </div>
 
-                                                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: '8px' }}>
-                                                    <input
-                                                        type="text"
-                                                        className={`jtb-input${errors[`traveler_${idx}`] ? ' jtb-input--error' : ''}`}
-                                                        placeholder={`Nombre Completo Persona ${idx + 1}`}
-                                                        value={traveler.fullName}
-                                                        onChange={e => {
-                                                            const val = e.target.value
-                                                            setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, fullName: val } : t))
-                                                            setErrors(prev => ({ ...prev, [`traveler_${idx}`]: '' }))
-                                                        }}
-                                                        style={{ padding: '8px 12px', fontSize: '0.84rem' }}
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        className="jtb-input"
-                                                        placeholder="Edad"
-                                                        min={1}
-                                                        max={120}
-                                                        value={traveler.age}
-                                                        onChange={e => {
-                                                            const val = e.target.value
-                                                            setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, age: val } : t))
-                                                        }}
-                                                        style={{ padding: '8px 10px', fontSize: '0.84rem' }}
-                                                    />
+                                                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: '10px' }}>
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            className={`jtb-input${errors[`traveler_${idx}`] ? ' jtb-input--error' : ''}`}
+                                                            placeholder={`Nombre completo persona ${idx + 1}`}
+                                                            value={traveler.fullName}
+                                                            onChange={e => {
+                                                                const val = e.target.value
+                                                                setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, fullName: val } : t))
+                                                                setErrors(prev => ({ ...prev, [`traveler_${idx}`]: '' }))
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <input
+                                                            type="number"
+                                                            className="jtb-input"
+                                                            placeholder="Edad"
+                                                            min={1}
+                                                            max={120}
+                                                            value={traveler.age}
+                                                            onChange={e => {
+                                                                const val = e.target.value
+                                                                setTravelers(prev => prev.map((t, i) => i === idx ? { ...t, age: val } : t))
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
                                                 {errors[`traveler_${idx}`] && (
-                                                    <span className="jtb-error-text" style={{ marginTop: '4px' }}>{errors[`traveler_${idx}`]}</span>
+                                                    <span className="jtb-error-text" style={{ marginTop: '6px' }}>{errors[`traveler_${idx}`]}</span>
                                                 )}
                                             </div>
                                         ))}
