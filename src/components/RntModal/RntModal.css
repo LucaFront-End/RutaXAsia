@@ -1,5 +1,5 @@
 /* ============================================================
-   RNT MODAL / SECTUR VERIFICATION EMBEDDED VIEWER
+   RNT MODAL / SECTUR VERIFICATION EMBEDDED VIEWER & CÉDULA DIGITAL
    ============================================================ */
 
 .rnt-modal-overlay {
@@ -12,9 +12,9 @@
     width: 100vw !important;
     height: 100vh !important;
     z-index: 99999999 !important;
-    background: rgba(10, 12, 18, 0.75) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    background: rgba(10, 12, 18, 0.78) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -37,15 +37,15 @@
 .rnt-modal-dialog {
     position: relative;
     width: 100%;
-    max-width: 1060px;
-    height: 90vh;
-    max-height: 850px;
+    max-width: 920px;
+    height: auto;
+    max-height: 92vh;
     background: #ffffff;
     border-radius: 24px;
-    overflow: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -54,7 +54,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 1.75rem;
+    padding: 1.2rem 1.6rem;
     background: #0f131a;
     color: #ffffff;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -63,15 +63,15 @@
 .rnt-modal-header-title {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.9rem;
 }
 
 .rnt-modal-sectur-icon {
-    font-size: 2rem;
+    font-size: 1.8rem;
     background: rgba(255, 255, 255, 0.1);
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -81,7 +81,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -90,7 +90,7 @@
 }
 
 .rnt-modal-header-title h3 {
-    font-size: 1.15rem;
+    font-size: 1.12rem;
     font-weight: 700;
     color: #ffffff;
     margin: 0;
@@ -101,8 +101,8 @@
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #ffffff;
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -116,24 +116,175 @@
     border-color: var(--color-primary, #e91e7a);
 }
 
-/* Top Data Strip with Copy Buttons */
-.rnt-modal-info-strip {
-    background: #f8fafc;
-    padding: 0.85rem 1.75rem;
-    border-bottom: 1px solid #e2e8f0;
+/* Tabs */
+.rnt-modal-tabs {
     display: flex;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.5rem 1.5rem 0;
+    gap: 0.6rem;
+}
+
+.rnt-modal-tab-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.5rem;
+    padding: 0.65rem 1.2rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rnt-modal-tab-btn:hover {
+    color: #0f172a;
+}
+
+.rnt-modal-tab-btn.active {
+    color: #0f172a;
+    background: #ffffff;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: 3px solid var(--color-primary, #e91e7a);
+}
+
+.rnt-tab-pill-success {
+    font-size: 0.68rem;
+    background: #dcfce7;
+    color: #15803d;
+    padding: 0.15rem 0.55rem;
+    border-radius: 100px;
+    font-weight: 800;
+}
+
+/* ===== TAB 1: CÉDULA OFICIAL DIGITAL ===== */
+.rnt-cedula-container {
+    padding: 1.6rem;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+.rnt-cedula-sheet {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.rnt-cedula-top-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.2rem;
+    gap: 1rem;
     flex-wrap: wrap;
 }
 
-.rnt-modal-data-box {
+.rnt-cedula-gov-logo {
     display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
+    align-items: center;
+    gap: 0.75rem;
 }
 
-.rnt-modal-data-label {
+.rnt-gov-flag {
+    font-size: 1.8rem;
+}
+
+.rnt-gov-text-1 {
+    display: block;
+    font-size: 0.84rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.06em;
+}
+
+.rnt-gov-text-2 {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.04em;
+}
+
+.rnt-cedula-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #047857;
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 0.4rem 0.9rem;
+    border-radius: 100px;
+    letter-spacing: 0.05em;
+}
+
+.rnt-status-dot {
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    animation: rntPulse 2s infinite;
+}
+
+@keyframes rntPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.rnt-cedula-main-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.rnt-cedula-main-title h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.3rem 0;
+    letter-spacing: 0.03em;
+}
+
+.rnt-cedula-main-title p {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.rnt-cedula-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.rnt-cedula-field {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.rnt-cedula-field--highlight {
+    background: #fff5f8;
+    border-color: rgba(233, 30, 122, 0.2);
+}
+
+.rnt-field-lbl {
     font-size: 0.72rem;
     font-weight: 700;
     color: #64748b;
@@ -141,68 +292,144 @@
     letter-spacing: 0.04em;
 }
 
-.rnt-modal-data-val-row {
+.rnt-field-val {
+    font-size: 0.9rem;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.rnt-field-val-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
 }
 
-.rnt-modal-code {
+.rnt-field-code {
     font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     font-weight: 800;
     color: #0f172a;
-    background: #ffffff;
-    padding: 0.25rem 0.65rem;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
     letter-spacing: 0.04em;
 }
 
-.rnt-copy-btn {
+.rnt-sheet-copy-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     background: #ffffff;
     border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 0.25rem 0.65rem;
-    font-size: 0.78rem;
-    font-weight: 700;
+    border-radius: 6px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 750;
     color: #334155;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.rnt-copy-btn:hover {
+.rnt-sheet-copy-btn:hover {
     background: var(--color-primary, #e91e7a);
     border-color: var(--color-primary, #e91e7a);
     color: #ffffff;
 }
 
-.rnt-modal-direct-btn-box {
-    margin-left: auto;
+.rnt-cedula-guarantees {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 1.2rem;
 }
 
-.rnt-external-btn {
-    display: inline-flex;
+.rnt-guarantee-badge {
+    flex: 1;
+    min-width: 260px;
+    display: flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.55rem 1.25rem;
-    font-size: 0.85rem;
+    gap: 0.5rem;
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
+    color: #334155;
+}
+
+.rnt-guarantee-badge svg {
+    color: #059669;
+    flex-shrink: 0;
+}
+
+.rnt-cedula-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.rnt-action-cta {
+    padding: 0.75rem 1.6rem;
+    font-size: 0.88rem;
+    font-weight: 750;
     border-radius: 100px;
     text-decoration: none;
-    white-space: nowrap;
 }
 
-/* Embedded Iframe */
+.rnt-action-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1.3rem;
+    font-size: 0.86rem;
+    font-weight: 700;
+    border-radius: 100px;
+    cursor: pointer;
+}
+
+/* ===== TAB 2: PORTAL FEDERAL SECTUR ===== */
+.rnt-web-tab-container {
+    display: flex;
+    flex-direction: column;
+    height: 65vh;
+}
+
+.rnt-web-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: #fffbeb;
+    border-bottom: 1px solid #fef3c7;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: #92400e;
+}
+
+.rnt-notice-icon {
+    flex-shrink: 0;
+    color: #d97706;
+}
+
+.rnt-web-notice p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+.rnt-external-direct-btn {
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 750;
+    border-radius: 100px;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
 .rnt-iframe-wrapper {
     position: relative;
     flex: 1;
     width: 100%;
     background: #f1f5f9;
-    overflow: hidden;
 }
 
 .rnt-iframe-loading {
@@ -214,17 +441,15 @@
     justify-content: center;
     gap: 1rem;
     color: #64748b;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 600;
-    text-align: center;
-    padding: 2rem;
     background: #f8fafc;
     z-index: 2;
 }
 
 .rnt-spinner {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border: 3px solid #e2e8f0;
     border-top-color: var(--color-primary, #e91e7a);
     border-radius: 50%;
@@ -233,6 +458,58 @@
 
 @keyframes rntSpin {
     to { transform: rotate(360deg); }
+}
+
+.rnt-iframe-timeout-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background: #ffffff;
+    z-index: 5;
+}
+
+.rnt-timeout-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.rnt-iframe-timeout-fallback h4 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.5rem 0;
+}
+
+.rnt-iframe-timeout-fallback p {
+    font-size: 0.88rem;
+    color: #64748b;
+    max-width: 500px;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+}
+
+.rnt-timeout-btns {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.rnt-timeout-btns .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.4rem;
+    font-size: 0.86rem;
+    font-weight: 700;
+    border-radius: 100px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .rnt-iframe {
@@ -248,50 +525,30 @@
     opacity: 1;
 }
 
-/* Footer Notice */
-.rnt-modal-footer {
-    padding: 0.75rem 1.75rem;
-    background: #ffffff;
-    border-top: 1px solid #e2e8f0;
-}
-
-.rnt-modal-footer p {
-    margin: 0;
-    font-size: 0.82rem;
-    color: #475569;
-    line-height: 1.5;
-}
-
-.rnt-modal-footer code {
-    background: #f1f5f9;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-weight: 700;
-    color: #0f172a;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-    .rnt-modal-dialog {
-        height: 94vh;
-        max-height: 94vh;
+    .rnt-cedula-grid {
+        grid-template-columns: 1fr;
     }
-    .rnt-modal-info-strip {
-        padding: 0.75rem 1rem;
-        gap: 0.75rem;
+    .rnt-cedula-top-banner {
+        flex-direction: column;
+        align-items: flex-start;
     }
-    .rnt-modal-direct-btn-box {
+    .rnt-web-notice {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .rnt-external-direct-btn {
         width: 100%;
-        margin-left: 0;
+        text-align: center;
     }
-    .rnt-external-btn {
+    .rnt-cedula-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .rnt-action-cta, .rnt-action-secondary {
         width: 100%;
         justify-content: center;
-    }
-    .rnt-modal-header {
-        padding: 1rem;
-    }
-    .rnt-modal-footer {
-        padding: 0.6rem 1rem;
+        text-align: center;
     }
 }
