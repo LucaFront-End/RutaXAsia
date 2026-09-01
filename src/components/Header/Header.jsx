@@ -113,7 +113,7 @@ function Header() {
                         </button>
                         <div className="nav-dropdown-panel nav-jac-panel">
                             <Link
-                                to="/japon-a-la-carta"
+                                to="/viajes/japon"
                                 className="nav-dropdown-item nav-jac-main"
                                 onClick={closeMenu}
                             >
