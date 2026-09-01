@@ -475,7 +475,7 @@ export default function ComunidadComentarios() {
                 {/* Reviews Feed Grid */}
                 <div className="com-reviews-grid">
                     {filteredReviews.map((r) => (
-                        <div className="com-review-card" key={r.id} data-animate="fade-up">
+                        <div className="com-review-card" key={r.id}>
                             <div className="com-card-top">
                                 <img
                                     src={r.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'}
@@ -515,7 +515,7 @@ export default function ComunidadComentarios() {
                                 "{r.comment}"
                             </p>
 
-                            {r.tripPhoto && r.tripPhoto !== r.photo && (
+                            {r.tripPhoto && (
                                 <div className="com-card-photo">
                                     <img
                                         src={r.tripPhoto}
