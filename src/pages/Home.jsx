@@ -501,7 +501,7 @@ function Home({ cityOverride } = {}) {
                                 </div>
                             </div>
                             
-                            <Link to="/viajes/japon" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Link to="/japon-a-la-carta" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                                 ¡Crea tu Japón a la Carta! <span>→</span>
                             </Link>
                         </div>
@@ -510,26 +510,26 @@ function Home({ cityOverride } = {}) {
                             <div className="hm-season-shortcuts">
                                 <h3 className="hm-season-shortcuts-title">Explorar por Temporada</h3>
                                 <div className="hm-season-links">
-                                    <Link to="/viajes/japon/sakura" className="hm-season-link" style={{ '--season-primary': '#e91e7a' }}>
+                                    <Link to="/temporadas/primavera" className="hm-season-link" style={{ '--season-primary': '#e91e7a' }}>
                                         <div className="hm-season-link-label">
                                             <span className="hm-season-link-emoji">🌸</span>
-                                            <span className="hm-season-link-name">Sakura — Cerezos en Flor</span>
+                                            <span className="hm-season-link-name">Primavera — Cerezos en Flor</span>
                                         </div>
                                         <span className="hm-season-link-arrow">→</span>
                                     </Link>
                                     
-                                    <Link to="/viajes/japon/akari" className="hm-season-link" style={{ '--season-primary': '#2d6a4f' }}>
+                                    <Link to="/temporadas/verano" className="hm-season-link" style={{ '--season-primary': '#2d6a4f' }}>
                                         <div className="hm-season-link-label">
                                             <span className="hm-season-link-emoji">☀️</span>
-                                            <span className="hm-season-link-name">Akari — Verano, Festivales y Hanabi</span>
+                                            <span className="hm-season-link-name">Verano — Festivales y Hanabi</span>
                                         </div>
                                         <span className="hm-season-link-arrow">→</span>
                                     </Link>
                                     
-                                    <Link to="/viajes/japon/kamakura" className="hm-season-link" style={{ '--season-primary': '#c44900' }}>
+                                    <Link to="/temporadas/otono" className="hm-season-link" style={{ '--season-primary': '#c44900' }}>
                                         <div className="hm-season-link-label">
                                             <span className="hm-season-link-emoji">🍁</span>
-                                            <span className="hm-season-link-name">Kamakura — Otoño y Templos Dorados</span>
+                                            <span className="hm-season-link-name">Otoño — Momiji y Templos Dorados</span>
                                         </div>
                                         <span className="hm-season-link-arrow">→</span>
                                     </Link>
@@ -557,7 +557,7 @@ function Home({ cityOverride } = {}) {
                                 temp: '10°C — 20°C',
                                 photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop',
                                 color: '#f8b4c8',
-                                link: '/viajes/japon/sakura',
+                                link: '/temporadas/primavera',
                                 highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'],
                             },
                             {
@@ -567,7 +567,7 @@ function Home({ cityOverride } = {}) {
                                 temp: '25°C — 35°C',
                                 photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop',
                                 color: '#f5a623',
-                                link: '/viajes/japon/akari',
+                                link: '/temporadas/verano',
                                 highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'],
                             },
                             {
@@ -577,7 +577,7 @@ function Home({ cityOverride } = {}) {
                                 temp: '10°C — 20°C',
                                 photo: '/otono-japan.jpg',
                                 color: '#d4602a',
-                                link: '/viajes/japon/kamakura',
+                                link: '/temporadas/otono',
                                 highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'],
                             },
                             {
@@ -587,7 +587,7 @@ function Home({ cityOverride } = {}) {
                                 temp: '-2°C — 10°C',
                                 photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop',
                                 color: '#7bb8d9',
-                                link: '/viajes/japon',
+                                link: '/temporadas/invierno',
                                 highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'],
                             },
                         ].map((s, i) => (

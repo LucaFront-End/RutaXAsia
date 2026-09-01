@@ -19,6 +19,7 @@ import Viajes from './pages/Viajes'
 import ViajesJapon from './pages/ViajesJapon'
 import JaponTemporada from './pages/JaponTemporada'
 import JaponExperiencia from './pages/JaponExperiencia'
+import JaponALaCartaPage from './pages/JaponALaCartaPage'
 import ViajesCorea from './pages/ViajesCorea'
 import ViajesChina from './pages/ViajesChina'
 import Zonas from './pages/Zonas'
@@ -74,8 +75,27 @@ createRoot(document.getElementById('root')).render(
                         <Route path="terminos-y-condiciones" element={<TerminosCondiciones />} />
                         <Route path="viajes" element={<Viajes />} />
                         <Route path="viajes/japon" element={<ViajesJapon />} />
+                        <Route path="tours/japon" element={<ViajesJapon />} />
+
+                        {/* Temporadas Landings (Formato Corea) */}
+                        <Route path="temporadas/:temporada" element={<JaponTemporada />} />
+                        <Route path="temporada/:temporada" element={<JaponTemporada />} />
+                        <Route path="viajes/temporada/:temporada" element={<JaponTemporada />} />
+                        <Route path="viajes/temporadas/:temporada" element={<JaponTemporada />} />
+                        <Route path="viajes/japon/temporada/:temporada" element={<JaponTemporada />} />
                         <Route path="viajes/japon/:temporada" element={<JaponTemporada />} />
+                        <Route path="viajes/primavera" element={<JaponTemporada />} />
+                        <Route path="viajes/verano" element={<JaponTemporada />} />
+                        <Route path="viajes/otono" element={<JaponTemporada />} />
+                        <Route path="viajes/invierno" element={<JaponTemporada />} />
+
+                        {/* Japón a la Carta (Interactive Builder & 4 Estilos) */}
+                        <Route path="japon-a-la-carta" element={<JaponALaCartaPage />} />
+                        <Route path="viajes/a-la-carta" element={<JaponALaCartaPage />} />
+                        <Route path="viajes/japon/a-la-carta" element={<JaponALaCartaPage />} />
+                        <Route path="a-la-carta" element={<JaponALaCartaPage />} />
                         <Route path="viajes/japon/:temporada/:experiencia" element={<JaponExperiencia />} />
+                        <Route path="japon-a-la-carta/:temporada/:experiencia" element={<JaponExperiencia />} />
                         <Route path="viajes/corea" element={<ViajesCorea />} />
                         <Route path="viajes/china" element={<ViajesChina />} />
                         <Route path="zonas" element={<Zonas />} />
