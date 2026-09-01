@@ -132,19 +132,6 @@ export default function TourDetailSakuraV2() {
             const data = await fetchTourIndividuales()
             if (isMounted) {
                 setAllTours(data || [])
-                const freeTours = (data || []).filter(t => Boolean(t.completo))
-                if (freeTours.length > 0) {
-                    setSelectedExps(prev => {
-                        if (prev.length === 0) {
-                            return freeTours.map(t => ({
-                                id: t.id,
-                                name: t.title || t.name,
-                                price: 0
-                            }))
-                        }
-                        return prev
-                    })
-                }
             }
         }
         loadTours()
@@ -181,9 +168,9 @@ export default function TourDetailSakuraV2() {
     }
 
     const basePrice = activePass.priceNum
-    const freeExpLimit = activePass.freeTours || 1
-    const includedExpsList = selectedExps.slice(0, freeExpLimit).map(e => e.name)
-    const extraItems = selectedExps.slice(freeExpLimit)
+    const freeExpLimit = 0
+    const includedExpsList = []
+    const extraItems = selectedExps
     const extraTotal = extraItems.reduce((sum, item) => sum + (item.price || 0), 0)
     const passengersCount = (selectorData.adults || 1) + (selectorData.children || 0)
     const totalPrice = (basePrice * passengersCount) + (extraTotal * passengersCount)
@@ -392,7 +379,7 @@ export default function TourDetailSakuraV2() {
                                                 border: 'none',
                                             }}
                                         >
-                                            {pkg.freeTours === 1 ? '🎁 Incluye 1 Experiencia Extra Gratis' : '🎁 Incluye 2 Experiencias Extras Gratis'}
+                                            {pkg.daysNum === 14 ? '✨ Modalidad Extendida (14 Días)' : '🌸 Modalidad Clásica (12 Días)'}
                                         </span>
                                         <div className="libre-duration-check">{isSelected ? '✓' : ''}</div>
                                         <span className="libre-duration-pass-name" style={{ fontSize: '1.25rem', color: '#e91e63' }}>{pkg.name}</span>
@@ -682,9 +669,9 @@ export default function TourDetailSakuraV2() {
                                         <div className="jtb-tokyo-card-footer">
                                             <div className="jtb-tokyo-card-price-wrap">
                                                 <span className="jtb-tokyo-card-price">
-                                                    {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString('es-MX')}` : 'Incluido')}
+                                                    {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString('es-MX')}` : '$1,850')}
                                                 </span>
-                                                {t.priceNum ? <span className="jtb-tokyo-card-currency">MXN</span> : null}
+                                                <span className="jtb-tokyo-card-currency">MXN</span>
                                             </div>
                                             <button
                                                 type="button"

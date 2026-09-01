@@ -109,26 +109,13 @@ export default function StepAcompanado({ season, temporadaKey }) {
         return () => { isMounted = false }
     }, [])
 
-    // Load individual tours for Tokyo modal and preselect free tours
+    // Load individual tours for Tokyo modal
     useEffect(() => {
         let isMounted = true
         async function loadTours() {
             const data = await fetchTourIndividuales()
             if (isMounted) {
                 setAllTours(data || [])
-                const freeTours = (data || []).filter(t => Boolean(t.completo))
-                if (freeTours.length > 0) {
-                    setSelectedExps(prev => {
-                        if (prev.length === 0) {
-                            return freeTours.map(t => ({
-                                id: t.id,
-                                name: t.title || t.name,
-                                price: 0
-                            }))
-                        }
-                        return prev
-                    })
-                }
             }
         }
         loadTours()
@@ -175,10 +162,10 @@ export default function StepAcompanado({ season, temporadaKey }) {
     }
 
     const basePrice = activePass.priceNum
-    const freeExpLimit = activePass.freeTours || 1
+    const freeExpLimit = 0
 
-    const includedExpsList = selectedExps.slice(0, freeExpLimit).map(e => e.name)
-    const extraItems = selectedExps.slice(freeExpLimit)
+    const includedExpsList = []
+    const extraItems = selectedExps
     const extraTotal = extraItems.reduce((sum, item) => sum + (item.price || 0), 0)
 
     // Select dynamic itinerary from CMS or fallback to local data
@@ -302,7 +289,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                                 style={{ padding: '24px 20px', cursor: 'pointer' }}
                                             >
                                                 <span className="libre-duration-card-badge">
-                                                    {pkg.freeTours === 1 ? '🎁 Incluye 1 Experiencia Extra Gratis' : '🎁 Incluye 2 Experiencias Extras Gratis'}
+                                                    {pkg.daysNum === 14 ? '✨ Modalidad Extendida (14 Días)' : '🌸 Modalidad Clásica (12 Días)'}
                                                 </span>
                                                 <div className="libre-duration-check">{isSelected ? '✓' : ''}</div>
                                                 <span className="libre-duration-pass-name" style={{ fontSize: '1.25rem' }}>{pkg.name}</span>
@@ -460,9 +447,9 @@ export default function StepAcompanado({ season, temporadaKey }) {
                                         <div className="jtb-tokyo-card-footer">
                                             <div className="jtb-tokyo-card-price-wrap">
                                                 <span className="jtb-tokyo-card-price">
-                                                    {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString('es-MX')}` : 'Incluido')}
+                                                    {t.priceText || (t.priceNum ? `$${t.priceNum.toLocaleString('es-MX')}` : '$1,850')}
                                                 </span>
-                                                {t.priceNum ? <span className="jtb-tokyo-card-currency">MXN</span> : null}
+                                                <span className="jtb-tokyo-card-currency">MXN</span>
                                             </div>
                                             <button
                                                 type="button"
@@ -502,7 +489,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                         </h3>
                         
                         <p style={{ fontSize: '0.95rem', color: '#555', marginBottom: '24px', lineHeight: '1.5' }}>
-                            Tu <strong>{activePass.name}</strong> incluye {freeExpLimit} experiencia extra gratis y permite hasta {currentTourLimit} experiencias en total. ¿Deseas ampliar a <strong>PASE GRAND TOUR (14 días)</strong> para obtener 2 experiencias gratis y mayor límite?
+                            Tu <strong>{activePass.name}</strong> te permite viajar {activePass.days} y seleccionar hasta {currentTourLimit} experiencias en total. ¿Deseas ampliar a <strong>PASE GRAND TOUR (14 días)</strong> para disfrutar de más días y opciones en Japón?
                         </p>
 
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -546,8 +533,7 @@ export default function StepAcompanado({ season, temporadaKey }) {
                     `Pase: ${activePass.name} (${activePass.days}). ` +
                     `Pasajeros: ${adults} Adultos, ${children} Menores. ` +
                     `Fechas: ${cmsDatesText || (season?.key === 'momiji' ? '15 Oct — 28 Oct 2026' : '22 Marzo — 2 Abril 2027')}. ` +
-                    `Incluidas (${freeExpLimit} gratis): ${includedExpsList.join(', ') || 'Ninguna'}. ` +
-                    (extraItems.length ? `Adicionales: ${extraItems.map(e => e.name).join(', ')} (+${formatPrice(extraTotal)} MXN). ` : '') +
+                    (extraItems.length ? `Experiencias extras en días libres: ${extraItems.map(e => e.name).join(', ')} (+${formatPrice(extraTotal)} MXN). ` : '') +
                     `Extras: ${selectedComps.join(', ') || 'Ninguno'}.`
                 }
             />

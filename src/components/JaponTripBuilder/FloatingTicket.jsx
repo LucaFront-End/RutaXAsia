@@ -144,7 +144,7 @@ export default function FloatingTicket({
                             onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(225, 29, 72, 0.06)'}
                         >
                             <span style={{ fontSize: '0.74rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary, #e11d48)' }}>
-                                ✨ {estilo === 'Reserva' ? 'Incluido en tu viaje:' : `Tours Incluidos (${freeExpLimit || includedExps.length} Gratis):`}
+                                ✨ {estilo === 'Reserva' ? 'Incluido en tu viaje:' : (estilo === 'Completo' ? 'Servicios del Itinerario:' : `Tours Incluidos (${freeExpLimit || includedExps.length} Gratis):`)}
                             </span>
                             <span style={{
                                 fontSize: '0.85rem',
@@ -161,13 +161,13 @@ export default function FloatingTicket({
                         {!isIncludesCollapsed && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '4px' }}>
                                 {includedExps.map((name, i) => (
-                                    <div className={estilo === 'Reserva' ? 'libre-calc-inc-clean' : 'libre-calc-included-pill'} key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div className={estilo === 'Reserva' || estilo === 'Completo' ? 'libre-calc-inc-clean' : 'libre-calc-included-pill'} key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
                                             <span className="libre-calc-inc-check">✓</span>
                                             <span className="libre-calc-inc-text">{name}</span>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                                            {estilo !== 'Reserva' && <span className="libre-calc-free-tag">GRATIS</span>}
+                                            {estilo !== 'Reserva' && estilo !== 'Completo' && (freeExpLimit > 0 || freeExpLimit === null) && <span className="libre-calc-free-tag">GRATIS</span>}
                                             {onRemoveTour && (
                                                 <button
                                                     type="button"

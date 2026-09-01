@@ -148,8 +148,8 @@ export default function RecommendedExperiencesCMS({
     const checkIsFreeForThisPlan = (tour) => {
         if (!tour) return false
         const s = (planStyle || '').toLowerCase()
+        if (s.includes('completo') || s.includes('acompañado') || s.includes('acompanado')) return false
         if (s.includes('esencial') || s.includes('guiado')) return Boolean(tour.esencial)
-        if (s.includes('completo') || s.includes('acompañado') || s.includes('acompanado')) return Boolean(tour.completo)
         if (s.includes('libre')) return Boolean(tour.libre)
         if (s.includes('signature') || s.includes('vip')) return Boolean(tour.signature)
         return false
