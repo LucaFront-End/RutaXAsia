@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
+import { LuEye, LuEyeOff, LuStar, LuCheck, LuClock, LuPlus, LuUser, LuLock, LuMapPin, LuPhone, LuMail } from 'react-icons/lu'
 import './UserPortalPage.css'
 
 export default function UserPortalPage() {
     const [searchParams] = useSearchParams()
     const urlEmail = searchParams.get('email') || ''
-    const urlReserva = searchParams.get('reserva') || ''
 
     // Session / Auth state
     const [sessionUser, setSessionUser] = useState(() => {
@@ -14,58 +14,97 @@ export default function UserPortalPage() {
         return saved ? JSON.parse(saved) : null
     })
 
-    const [authMode, setAuthMode] = useState('login') // 'login' | 'register'
+    // Auth Form State
+    const [authMode, setAuthMode] = useState('login') // 'login' | 'register' | 'forgot'
     const [loginEmail, setLoginEmail] = useState(urlEmail || sessionUser?.email || '')
-    const [loginReserva, setLoginReserva] = useState(urlReserva || sessionUser?.reserva || '')
+    const [loginPassword, setLoginPassword] = useState('')
+    const [showLoginPassword, setShowLoginPassword] = useState(false)
+
+    // Register Form State
     const [regName, setRegName] = useState('')
     const [regEmail, setRegEmail] = useState('')
     const [regPhone, setRegPhone] = useState('')
+    const [regCity, setRegCity] = useState('')
+    const [regPassword, setRegPassword] = useState('')
+    const [showRegPassword, setShowRegPassword] = useState(false)
+
+    // Forgot Password State
+    const [forgotEmail, setForgotEmail] = useState('')
+    const [forgotSuccessMsg, setForgotSuccessMsg] = useState('')
 
     const [loading, setLoading] = useState(false)
     const [authError, setAuthError] = useState('')
 
     // Dashboard Data State
     const [portalData, setPortalData] = useState(null)
-    const [activeTab, setActiveTab] = useState('viajes') // 'viajes' | 'pagos' | 'extras' | 'pasajeros'
+    const [activeTab, setActiveTab] = useState('viajes') // 'viajes' | 'pagos' | 'pasajeros' | 'resenas' | 'perfil'
 
     // Passenger Editor State
     const [selectedReservaId, setSelectedReservaId] = useState('')
     const [passengersList, setPassengersList] = useState([])
-    const [travelNotes, setTravelNotes] = useState('')
     const [isSavingPassengers, setIsSavingPassengers] = useState(false)
     const [saveSuccessMsg, setSaveSuccessMsg] = useState('')
 
+    // Review Modal State (from Portal)
+    const [showReviewModal, setShowReviewModal] = useState(false)
+    const [revTrip, setRevTrip] = useState('')
+    const [revRating, setRevRating] = useState(5)
+    const [revComment, setRevComment] = useState('')
+    const [revPhoto, setRevPhoto] = useState('')
+    const [isSubmittingReview, setIsSubmittingReview] = useState(false)
+    const [reviewSuccessModal, setReviewSuccessModal] = useState(false)
+
+    // Profile Edit State
+    const [profileName, setProfileName] = useState('')
+    const [profilePhone, setProfilePhone] = useState('')
+    const [profileCity, setProfileCity] = useState('')
+    const [profilePhoto, setProfilePhoto] = useState('')
+    const [currentPassword, setCurrentPassword] = useState('')
+    const [newPassword, setNewPassword] = useState('')
+    const [confirmNewPassword, setConfirmNewPassword] = useState('')
+    const [isSavingProfile, setIsSavingProfile] = useState(false)
+    const [profileSuccessMsg, setProfileSuccessMsg] = useState('')
+    const [profileErrorMsg, setProfileErrorMsg] = useState('')
+
     const formatPrice = (n) => `$${(Number(n) || 0).toLocaleString('es-MX')} MXN`
 
-    const fetchPortalData = async (emailParam, reservaParam, memberIdParam) => {
+    const fetchPortalData = async (emailParam, contactIdParam) => {
         setLoading(true)
         setAuthError('')
         try {
             let url = '/api/user-portal?'
             const params = new URLSearchParams()
             if (emailParam) params.append('email', emailParam.trim())
-            if (reservaParam) params.append('reserva', reservaParam.trim())
-            if (memberIdParam) params.append('memberId', memberIdParam.trim())
+            if (contactIdParam) params.append('contactId', contactIdParam.trim())
             url += params.toString()
 
             const res = await fetch(url)
             const data = await res.json()
 
             if (!res.ok || data.error) {
-                throw new Error(data.error || 'No pudimos encontrar reservas con los datos proporcionados.')
+                throw new Error(data.error || 'No pudimos encontrar datos para esta cuenta.')
             }
 
             setPortalData(data)
             const sessionObj = {
                 email: data.user.email || emailParam,
                 name: data.user.name,
+                contactId: data.user.contactId,
                 memberId: data.user.memberId,
-                reserva: data.reservaCode || reservaParam || '',
+                phone: data.user.phone,
+                city: data.user.city,
+                photo: data.user.photo,
             }
             setSessionUser(sessionObj)
             localStorage.setItem('rutaxasia_user_session', JSON.stringify(sessionObj))
 
-            // Init passengers directly from data.pasajeros or fallback to reservation or user
+            // Initialize profile form
+            setProfileName(data.user.name || '')
+            setProfilePhone(data.user.phone || '')
+            setProfileCity(data.user.city || 'México')
+            setProfilePhoto(data.user.photo || '')
+
+            // Init passengers
             if (data.pasajeros && data.pasajeros.length > 0) {
                 const mapped = data.pasajeros.map((p, idx) => ({
                     id: p._id || idx + 1,
@@ -101,6 +140,9 @@ export default function UserPortalPage() {
 
             if (data.reservas && data.reservas.length > 0) {
                 setSelectedReservaId(data.reservas[0]._id)
+                setRevTrip(data.reservas[0].temporada || 'Japón')
+            } else {
+                setRevTrip('Experiencia RutaXAsia')
             }
         } catch (err) {
             setAuthError(err.message)
@@ -113,7 +155,6 @@ export default function UserPortalPage() {
         if (!reserva) return
         const text = reserva.desgloseCompleto || ''
 
-        // Parse existing passengers if present
         const travelersMatch = text.match(/--- DATOS DE PASAJEROS ACTUALIZADOS ---\n([\s\S]*)/)
         if (travelersMatch && travelersMatch[1]) {
             const lines = travelersMatch[1].split('\n').filter(l => l.startsWith('Pasajero'))
@@ -146,7 +187,6 @@ export default function UserPortalPage() {
             }
         }
 
-        // Fallback: create default 1 passenger with reserva buyer info
         setPassengersList([
             {
                 id: 1,
@@ -164,51 +204,113 @@ export default function UserPortalPage() {
     }
 
     useEffect(() => {
-        if (urlEmail && urlReserva) {
-            fetchPortalData(urlEmail, urlReserva)
-        } else if (sessionUser?.email && sessionUser?.reserva) {
-            fetchPortalData(sessionUser.email, sessionUser.reserva)
-        } else if (sessionUser?.email && sessionUser?.memberId) {
-            fetchPortalData(sessionUser.email, '', sessionUser.memberId)
+        if (sessionUser?.email) {
+            fetchPortalData(sessionUser.email, sessionUser.contactId)
         }
     }, [])
 
-    const handleLoginSubmit = (e) => {
+    // 1. Submit Login (Email + Password)
+    const handleLoginSubmit = async (e) => {
         e.preventDefault()
-        if (!loginEmail.trim() || !loginReserva.trim()) {
-            setAuthError('Por favor ingresa tanto tu correo electrónico como tu código de reserva.')
+        if (!loginEmail.trim() || !loginPassword.trim()) {
+            setAuthError('Por favor ingresa tu correo electrónico y tu contraseña.')
             return
         }
-        fetchPortalData(loginEmail.trim(), loginReserva.trim())
-    }
 
-    const handleRegisterSubmit = async (e) => {
-        e.preventDefault()
-        if (!regEmail.trim() || !regName.trim()) {
-            setAuthError('Por favor completa tu nombre y correo electrónico.')
-            return
-        }
         setLoading(true)
         setAuthError('')
+
         try {
-            const res = await fetch('/api/user-register', {
+            const res = await fetch('/api/auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    fullName: regName.trim(),
-                    email: regEmail.trim(),
-                    phone: regPhone.trim(),
+                    action: 'login',
+                    email: loginEmail.trim(),
+                    password: loginPassword.trim()
                 })
             })
+
+            const data = await res.json()
+            if (!res.ok || data.error) {
+                throw new Error(data.error || 'Error al iniciar sesión.')
+            }
+
+            // Successfully authenticated, load portal data
+            await fetchPortalData(data.user.email, data.user.contactId)
+        } catch (err) {
+            setAuthError(err.message)
+            setLoading(false)
+        }
+    }
+
+    // 2. Submit Register
+    const handleRegisterSubmit = async (e) => {
+        e.preventDefault()
+        if (!regEmail.trim() || !regName.trim() || !regPassword.trim()) {
+            setAuthError('Por favor completa tu nombre, correo electrónico y contraseña.')
+            return
+        }
+
+        if (regPassword.length < 6) {
+            setAuthError('La contraseña debe tener un mínimo de 6 caracteres.')
+            return
+        }
+
+        setLoading(true)
+        setAuthError('')
+
+        try {
+            const res = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'register',
+                    name: regName.trim(),
+                    email: regEmail.trim(),
+                    phone: regPhone.trim(),
+                    city: regCity.trim(),
+                    password: regPassword.trim(),
+                })
+            })
+
             const data = await res.json()
             if (!res.ok || data.error) {
                 throw new Error(data.error || 'Error al registrar la cuenta')
             }
 
             // Immediately load their dashboard with their new account
-            await fetchPortalData(regEmail.trim(), '')
+            await fetchPortalData(data.user.email, data.user.contactId)
         } catch (err) {
             setAuthError(err.message)
+            setLoading(false)
+        }
+    }
+
+    // 3. Submit Forgot Password
+    const handleForgotSubmit = async (e) => {
+        e.preventDefault()
+        if (!forgotEmail.trim()) {
+            setAuthError('Por favor ingresa tu correo electrónico.')
+            return
+        }
+
+        setLoading(true)
+        setAuthError('')
+        try {
+            const res = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'forgot-password',
+                    email: forgotEmail.trim()
+                })
+            })
+            const data = await res.json()
+            setForgotSuccessMsg(data.message || 'Instrucciones enviadas.')
+        } catch (err) {
+            setAuthError(err.message)
+        } finally {
             setLoading(false)
         }
     }
@@ -218,7 +320,7 @@ export default function UserPortalPage() {
         setSessionUser(null)
         setPortalData(null)
         setLoginEmail('')
-        setLoginReserva('')
+        setLoginPassword('')
     }
 
     const handleReservaSelect = (reservaId) => {
@@ -226,6 +328,7 @@ export default function UserPortalPage() {
         const target = portalData?.reservas?.find(r => r._id === reservaId)
         if (target) {
             initPassengersFromReserva(target)
+            setRevTrip(target.temporada || 'Japón')
         }
     }
 
@@ -244,6 +347,7 @@ export default function UserPortalPage() {
                 id: prev.length + 1,
                 fullName: '',
                 passport: '',
+                passportExpiry: '',
                 age: '25',
                 birthDate: '',
                 nationality: 'Mexicana',
@@ -263,9 +367,6 @@ export default function UserPortalPage() {
         if (!selectedReservaId && portalData?.reservas?.[0]?._id) {
             setSelectedReservaId(portalData.reservas[0]._id)
         }
-        const targetId = selectedReservaId || portalData?.reservas?.[0]?._id
-        if (!targetId) return
-
         setIsSavingPassengers(true)
         setSaveSuccessMsg('')
         try {
@@ -273,69 +374,157 @@ export default function UserPortalPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    reservaId: targetId,
-                    viajeros: passengersList,
-                    notasAdicionales: travelNotes
+                    reservaId: selectedReservaId || portalData?.reservas?.[0]?._id,
+                    email: portalData.user.email,
+                    passengers: passengersList,
                 })
             })
             const data = await res.json()
-            if (!res.ok || data.error) {
-                throw new Error(data.error || 'Error al guardar los datos')
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || 'Error al guardar los pasajeros')
             }
-            setSaveSuccessMsg('✨ ¡Datos de pasajeros y pasaportes actualizados con éxito!')
-            setTimeout(() => setSaveSuccessMsg(''), 6000)
+            setSaveSuccessMsg('✓ ¡Los datos de los pasajeros se guardaron con éxito!')
+            setTimeout(() => setSaveSuccessMsg(''), 5000)
+        } catch (err) {
+            alert('Error al guardar: ' + err.message)
+        } finally {
+            setIsSavingPassengers(false)
+        }
+    }
 
-            // Re-fetch portal data dynamically
-            if (sessionUser?.email) {
-                fetchPortalData(sessionUser.email)
-            }
+    // Submit Review from Portal
+    const handlePortalReviewSubmit = async (e) => {
+        e.preventDefault()
+        if (!revComment.trim()) {
+            alert('Por favor escribe tu reseña o testimonio.')
+            return
+        }
+
+        setIsSubmittingReview(true)
+        try {
+            const res = await fetch('/api/resenas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: portalData.user.name,
+                    email: portalData.user.email,
+                    phone: portalData.user.phone,
+                    city: portalData.user.city || 'México',
+                    trip: revTrip || 'Experiencia RutaXAsia',
+                    rating: revRating,
+                    comment: revComment.trim(),
+                    photo: revPhoto.trim() || portalData.user.photo || '',
+                })
+            })
+
+            const data = await res.json()
+            if (!res.ok || data.error) throw new Error(data.error || 'Error al enviar reseña')
+
+            setShowReviewModal(false)
+            setReviewSuccessModal(true)
+            setRevComment('')
+
+            // Refresh portal reviews
+            await fetchPortalData(portalData.user.email, portalData.user.contactId)
         } catch (err) {
             alert('Error: ' + err.message)
         } finally {
-            setIsSavingPassengers(false)
+            setIsSubmittingReview(false)
+        }
+    }
+
+    // Save Profile Changes & Password Change
+    const handleSaveProfile = async (e) => {
+        e.preventDefault()
+        setProfileErrorMsg('')
+        setProfileSuccessMsg('')
+
+        if (newPassword && newPassword !== confirmNewPassword) {
+            setProfileErrorMsg('Las contraseñas nuevas no coinciden.')
+            return
+        }
+
+        if (newPassword && newPassword.length < 6) {
+            setProfileErrorMsg('La nueva contraseña debe tener al menos 6 caracteres.')
+            return
+        }
+
+        setIsSavingProfile(true)
+
+        try {
+            const res = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update-profile',
+                    email: portalData.user.email,
+                    name: profileName.trim(),
+                    phone: profilePhone.trim(),
+                    city: profileCity.trim(),
+                    photo: profilePhoto.trim(),
+                    currentPassword: currentPassword ? currentPassword.trim() : undefined,
+                    newPassword: newPassword ? newPassword.trim() : undefined,
+                })
+            })
+
+            const data = await res.json()
+            if (!res.ok || data.error) throw new Error(data.error || 'Error al actualizar perfil')
+
+            setProfileSuccessMsg('✓ ¡Perfil actualizado correctamente!')
+            setCurrentPassword('')
+            setNewPassword('')
+            setConfirmNewPassword('')
+
+            // Refresh user state
+            await fetchPortalData(data.user.email, data.user.contactId)
+            setTimeout(() => setProfileSuccessMsg(''), 5000)
+        } catch (err) {
+            setProfileErrorMsg(err.message)
+        } finally {
+            setIsSavingProfile(false)
         }
     }
 
     return (
         <div className="portal-container">
             <Helmet>
-                <title>Portal del Viajero | Mi Cuenta — RutaXAsia</title>
-                <meta name="description" content="Consulta tus reservas, calendario de cuotas, extras contratados y gestiona los datos de tus pasajeros en RutaXAsia." />
+                <title>Mi Cuenta & Portal de Viajero | RutaXAsia</title>
+                <meta name="description" content="Gestiona tus viajes, plan de cuotas, pasajeros, pasaportes y reseñas en RutaXAsia." />
             </Helmet>
 
             <div className="portal-wrap">
-                {/* 1. AUTH SCREEN (LOGIN OR REGISTER) */}
+                {/* 1. AUTH SCREEN: LOGIN / REGISTER / FORGOT */}
                 {!portalData ? (
                     <div className="portal-auth-card">
                         <div className="portal-auth-icon">⛩️</div>
-                        <h1 className="portal-auth-title">Portal del Viajero</h1>
+                        <h1 className="portal-auth-title">Portal de Viajeros</h1>
                         <p className="portal-auth-desc">
-                            Gestiona tus viajes a Japón, consulta tus cuotas mensuales y mantén actualizados los datos de tus acompañantes.
+                            Accede a tus reservas, planes de cuotas, documentación de pasajeros y gestiona tus reseñas en un solo lugar.
                         </p>
 
-                        {/* Auth Mode Toggle Tabs (Ya tengo cuenta vs Crear mi cuenta) */}
+                        {/* Auth Mode Toggle Tabs */}
                         <div className="portal-auth-tabs">
                             <button
                                 type="button"
                                 className={`portal-auth-tab-btn${authMode === 'login' ? ' portal-auth-tab-btn--active' : ''}`}
-                                onClick={() => { setAuthMode('login'); setAuthError('') }}
+                                onClick={() => { setAuthMode('login'); setAuthError(''); setForgotSuccessMsg('') }}
                             >
-                                🔑 Ya tengo Reserva o Cuenta
+                                🔑 Iniciar Sesión
                             </button>
                             <button
                                 type="button"
                                 className={`portal-auth-tab-btn${authMode === 'register' ? ' portal-auth-tab-btn--active' : ''}`}
-                                onClick={() => { setAuthMode('register'); setAuthError('') }}
+                                onClick={() => { setAuthMode('register'); setAuthError(''); setForgotSuccessMsg('') }}
                             >
-                                ✨ Crear mi Cuenta
+                                ✨ Crear Cuenta
                             </button>
                         </div>
 
-                        {/* MODE 1: LOGIN / LOOKUP BY EMAIL AND RESERVATION CODE */}
+                        {/* MODE 1: LOGIN (EMAIL + PASSWORD) */}
                         {authMode === 'login' && (
                             <form onSubmit={handleLoginSubmit} className="portal-auth-form">
                                 <div className="portal-input-group">
-                                    <label htmlFor="login-email">Correo Electrónico *</label>
+                                    <label htmlFor="login-email">Correo Electrónico</label>
                                     <input
                                         id="login-email"
                                         type="email"
@@ -348,19 +537,35 @@ export default function UserPortalPage() {
                                 </div>
 
                                 <div className="portal-input-group">
-                                    <label htmlFor="login-reserva">Código de Reserva *</label>
-                                    <input
-                                        id="login-reserva"
-                                        type="text"
-                                        className="portal-input"
-                                        placeholder="ej. RUTA-1050"
-                                        value={loginReserva}
-                                        onChange={(e) => { setAuthError(''); setLoginReserva(e.target.value.toUpperCase()) }}
-                                        required
-                                    />
-                                    <span className="portal-input-hint">
-                                        ℹ️ Lo encuentras en el correo de confirmación de tu viaje (ej. RUTA-1050).
-                                    </span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <label htmlFor="login-password" style={{ margin: 0 }}>Contraseña</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => { setAuthMode('forgot'); setAuthError(''); setForgotEmail(loginEmail) }}
+                                            style={{ background: 'transparent', border: 'none', color: '#ec4899', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 700 }}
+                                        >
+                                            ¿Olvidaste tu contraseña?
+                                        </button>
+                                    </div>
+                                    <div className="portal-password-wrap">
+                                        <input
+                                            id="login-password"
+                                            type={showLoginPassword ? 'text' : 'password'}
+                                            className="portal-input"
+                                            placeholder="Ingresa tu contraseña"
+                                            value={loginPassword}
+                                            onChange={(e) => { setAuthError(''); setLoginPassword(e.target.value) }}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="portal-password-toggle"
+                                            onClick={() => setShowLoginPassword(!showLoginPassword)}
+                                            aria-label="Toggle password visibility"
+                                        >
+                                            {showLoginPassword ? <LuEyeOff /> : <LuEye />}
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {authError && (
@@ -374,40 +579,40 @@ export default function UserPortalPage() {
                                     className="portal-auth-btn"
                                     disabled={loading}
                                 >
-                                    {loading ? 'Verificando tus datos...' : 'Acceder a Mi Cuenta →'}
+                                    {loading ? 'Verificando credenciales...' : 'Acceder a Mi Cuenta →'}
                                 </button>
                             </form>
                         )}
 
-                        {/* MODE 2: REGISTER NEW TRAVELER */}
+                        {/* MODE 2: REGISTER */}
                         {authMode === 'register' && (
                             <form onSubmit={handleRegisterSubmit} className="portal-auth-form">
                                 <div className="portal-input-group">
-                                    <label>Nombre Completo (Nombre y Apellidos)</label>
+                                    <label>Nombre y Apellidos *</label>
                                     <input
                                         type="text"
                                         className="portal-input"
-                                        placeholder="ej. Carlos Santana"
+                                        placeholder="ej. Mariana Silva"
                                         value={regName}
-                                        onChange={(e) => setRegName(e.target.value)}
+                                        onChange={(e) => { setAuthError(''); setRegName(e.target.value) }}
                                         required
                                     />
                                 </div>
 
                                 <div className="portal-input-group">
-                                    <label>Correo Electrónico</label>
+                                    <label>Correo Electrónico *</label>
                                     <input
                                         type="email"
                                         className="portal-input"
                                         placeholder="ej. viajero@gmail.com"
                                         value={regEmail}
-                                        onChange={(e) => setRegEmail(e.target.value)}
+                                        onChange={(e) => { setAuthError(''); setRegEmail(e.target.value) }}
                                         required
                                     />
                                 </div>
 
                                 <div className="portal-input-group">
-                                    <label>Teléfono (WhatsApp)</label>
+                                    <label>Teléfono / WhatsApp</label>
                                     <input
                                         type="tel"
                                         className="portal-input"
@@ -417,8 +622,41 @@ export default function UserPortalPage() {
                                     />
                                 </div>
 
+                                <div className="portal-input-group">
+                                    <label>Ciudad / Estado</label>
+                                    <input
+                                        type="text"
+                                        className="portal-input"
+                                        placeholder="ej. Monterrey, N.L."
+                                        value={regCity}
+                                        onChange={(e) => setRegCity(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="portal-input-group">
+                                    <label>Crea tu Contraseña *</label>
+                                    <div className="portal-password-wrap">
+                                        <input
+                                            type={showRegPassword ? 'text' : 'password'}
+                                            className="portal-input"
+                                            placeholder="Mínimo 6 caracteres"
+                                            value={regPassword}
+                                            onChange={(e) => { setAuthError(''); setRegPassword(e.target.value) }}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="portal-password-toggle"
+                                            onClick={() => setShowRegPassword(!showRegPassword)}
+                                            aria-label="Toggle password visibility"
+                                        >
+                                            {showRegPassword ? <LuEyeOff /> : <LuEye />}
+                                        </button>
+                                    </div>
+                                </div>
+
                                 {authError && (
-                                    <div style={{ color: '#ef4444', fontSize: '0.85rem', background: 'rgba(239,68,68,0.1)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.25)' }}>
+                                    <div className="portal-auth-error-box">
                                         ⚠️ {authError}
                                     </div>
                                 )}
@@ -428,7 +666,57 @@ export default function UserPortalPage() {
                                     className="portal-auth-btn"
                                     disabled={loading}
                                 >
-                                    {loading ? 'Creando tu cuenta de viajero...' : 'Registrarme y Acceder →'}
+                                    {loading ? 'Creando tu cuenta...' : 'Crear mi Cuenta de Viajero →'}
+                                </button>
+                            </form>
+                        )}
+
+                        {/* MODE 3: FORGOT PASSWORD */}
+                        {authMode === 'forgot' && (
+                            <form onSubmit={handleForgotSubmit} className="portal-auth-form">
+                                <h3 style={{ fontSize: '1.1rem', color: '#fff', margin: '0 0 4px 0' }}>Restablecer Contraseña</h3>
+                                <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0 0 16px 0' }}>
+                                    Ingresa tu correo y te enviaremos las instrucciones para recuperar tu acceso.
+                                </p>
+
+                                <div className="portal-input-group">
+                                    <label>Correo Electrónico</label>
+                                    <input
+                                        type="email"
+                                        className="portal-input"
+                                        placeholder="ej. viajero@gmail.com"
+                                        value={forgotEmail}
+                                        onChange={(e) => { setAuthError(''); setForgotEmail(e.target.value) }}
+                                        required
+                                    />
+                                </div>
+
+                                {forgotSuccessMsg && (
+                                    <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '12px 16px', borderRadius: '10px', fontSize: '0.86rem', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                                        ✓ {forgotSuccessMsg}
+                                    </div>
+                                )}
+
+                                {authError && (
+                                    <div className="portal-auth-error-box">
+                                        ⚠️ {authError}
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    className="portal-auth-btn"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Enviando...' : 'Enviar Instrucciones →'}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => { setAuthMode('login'); setAuthError('') }}
+                                    style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '0.85rem', cursor: 'pointer', marginTop: '10px', textDecoration: 'underline' }}
+                                >
+                                    ← Volver al Inicio de Sesión
                                 </button>
                             </form>
                         )}
@@ -439,9 +727,12 @@ export default function UserPortalPage() {
                         {/* Header Profile Card */}
                         <div className="portal-header-card">
                             <div className="portal-user-profile">
-                                <div className="portal-user-avatar">
-                                    {(portalData.user.name || 'V').charAt(0).toUpperCase()}
-                                </div>
+                                <img
+                                    src={portalData.user.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'}
+                                    alt={portalData.user.name}
+                                    className="portal-user-avatar"
+                                    style={{ objectFit: 'cover' }}
+                                />
                                 <div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                                         <h2 className="portal-user-name">{portalData.user.name}</h2>
@@ -449,10 +740,11 @@ export default function UserPortalPage() {
                                     </div>
                                     <div className="portal-user-meta">
                                         <span>📧 {portalData.user.email}</span>
-                                        {portalData.user.memberId && (
-                                            <span>🆔 ID de Viajero: <code>{portalData.user.memberId.substring(0, 8)}...</code></span>
+                                        {portalData.user.contactId && (
+                                            <span>🆔 Contact ID: <code>{portalData.user.contactId.substring(0, 8)}...</code></span>
                                         )}
-                                        <span>🎒 {portalData.reservas.length} viaje{portalData.reservas.length !== 1 ? 's' : ''} registrado{portalData.reservas.length !== 1 ? 's' : ''}</span>
+                                        <span>🎒 {portalData.reservas.length} viaje{portalData.reservas.length !== 1 ? 's' : ''}</span>
+                                        <span>⭐ {portalData.misResenas?.length || 0} reseña{portalData.misResenas?.length !== 1 ? 's' : ''}</span>
                                     </div>
                                 </div>
                             </div>
@@ -483,17 +775,24 @@ export default function UserPortalPage() {
                             </button>
                             <button
                                 type="button"
-                                className={`portal-tab-btn${activeTab === 'extras' ? ' portal-tab-btn--active' : ''}`}
-                                onClick={() => setActiveTab('extras')}
-                            >
-                                🎡 Extras y Tours ({portalData.extras.length})
-                            </button>
-                            <button
-                                type="button"
                                 className={`portal-tab-btn${activeTab === 'pasajeros' ? ' portal-tab-btn--active' : ''}`}
                                 onClick={() => setActiveTab('pasajeros')}
                             >
-                                👥 Datos de Pasajeros ({passengersList.length > 0 ? passengersList.length : portalData.pasajeros.length})
+                                👥 Pasajeros ({passengersList.length > 0 ? passengersList.length : portalData.pasajeros.length})
+                            </button>
+                            <button
+                                type="button"
+                                className={`portal-tab-btn${activeTab === 'resenas' ? ' portal-tab-btn--active' : ''}`}
+                                onClick={() => setActiveTab('resenas')}
+                            >
+                                ⭐ Mis Reseñas ({portalData.misResenas?.length || 0})
+                            </button>
+                            <button
+                                type="button"
+                                className={`portal-tab-btn${activeTab === 'perfil' ? ' portal-tab-btn--active' : ''}`}
+                                onClick={() => setActiveTab('perfil')}
+                            >
+                                👤 Mi Perfil
                             </button>
                         </div>
 
@@ -508,7 +807,7 @@ export default function UserPortalPage() {
                                     </div>
                                 ) : (
                                     portalData.reservas.map((res) => {
-                                        const isPaid = (res.estadoReserva || '').toLowerCase() === 'pagado'
+                                        const isPaid = (res.estadoReserva || '').toLowerCase() === 'pagado' || (res.estadoDelPago || '').toLowerCase() === 'liquidado'
                                         return (
                                             <div key={res._id} className="portal-card">
                                                 <div className="portal-card-header">
@@ -519,17 +818,17 @@ export default function UserPortalPage() {
                                                         </span>
                                                     </div>
                                                     <span className={`portal-status-badge ${isPaid ? 'portal-status-paid' : 'portal-status-unpaid'}`}>
-                                                        {isPaid ? '✓ Pagado' : '⏳ No pagado'}
+                                                        {isPaid ? '✓ Pagado' : '⏳ En Cuotas'}
                                                     </span>
                                                 </div>
 
                                                 <div className="portal-data-row">
                                                     <span className="portal-data-label">Total del Viaje:</span>
-                                                    <span className="portal-data-value">{formatPrice(res.totalEstimado)}</span>
+                                                    <span className="portal-data-value">{formatPrice(res.totalEstimado || res.precioTotalMxn)}</span>
                                                 </div>
                                                 <div className="portal-data-row">
-                                                    <span className="portal-data-label">Anticipo Abonado:</span>
-                                                    <span className="portal-data-value">{formatPrice(res.montoAnticipo)}</span>
+                                                    <span className="portal-data-label">Anticipo / Abonado:</span>
+                                                    <span className="portal-data-value">{formatPrice(res.montoAnticipo || res.montoAbonadoMxn)}</span>
                                                 </div>
                                                 <div className="portal-data-row">
                                                     <span className="portal-data-label">Fecha de Registro:</span>
@@ -562,7 +861,7 @@ export default function UserPortalPage() {
                                     </div>
                                 ) : (
                                     portalData.pagosProgramados.map((pago) => {
-                                        const isPaid = pago.estatus === 'Pagado'
+                                        const isPaid = (pago.estatus || pago.estadoDelPago || '').toLowerCase() === 'pagado'
                                         return (
                                             <div key={pago._id} className="portal-installment-item">
                                                 <div className="portal-inst-left">
@@ -572,14 +871,14 @@ export default function UserPortalPage() {
                                                     <div>
                                                         <h4 className="portal-inst-title">{pago.concepto || `Cuota Mensual`}</h4>
                                                         <div className="portal-inst-date">
-                                                            📅 Vence el: <strong>{pago.fechaDeVencimiento || pago.fechaDeFacturacin}</strong>
+                                                            📅 Vence el: <strong>{pago.fechaDeVencimiento || pago.fechaDeFacturacin || 'Programado'}</strong>
                                                             {pago.reserva && <span style={{ marginLeft: '10px', opacity: 0.7 }}>({pago.reserva})</span>}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="portal-inst-right">
                                                     <div className="portal-inst-amount">
-                                                        {formatPrice(pago.importeNmero)}
+                                                        {formatPrice(pago.importeNmero || pago.monto)}
                                                     </div>
                                                     <span className={`portal-status-badge ${isPaid ? 'portal-status-paid' : 'portal-status-unpaid'}`}>
                                                         {isPaid ? '✓ Pagado' : '⏳ Pendiente'}
@@ -592,52 +891,7 @@ export default function UserPortalPage() {
                             </div>
                         )}
 
-                        {/* TAB 3: EXTRAS Y TOURS */}
-                        {activeTab === 'extras' && (
-                            <div className="portal-grid">
-                                {portalData.extras.length === 0 ? (
-                                    <div className="portal-empty-state" style={{ gridColumn: '1 / -1' }}>
-                                        <div className="portal-empty-icon">🎡</div>
-                                        <h3>No hay tours extras registrados</h3>
-                                        <p>Todas tus experiencias incluidas y adicionales se enlistarán aquí.</p>
-                                    </div>
-                                ) : (
-                                    portalData.extras.map((ex) => {
-                                        const isFree = (ex.tipoDeTourExtra || '').includes('Gratis') || ex.precioUnitario === '$0 MXN'
-                                        return (
-                                            <div key={ex._id} className="portal-card">
-                                                <div className="portal-card-header">
-                                                    <div>
-                                                        <h4 className="portal-card-title">{ex.nombre}</h4>
-                                                        <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-                                                            📍 Ciudad: <strong>{ex.ciudad || 'Japón'}</strong>
-                                                        </span>
-                                                    </div>
-                                                    <span className={`portal-status-badge ${isFree ? 'portal-status-paid' : 'portal-status-unpaid'}`}>
-                                                        {isFree ? '✨ Gratis (Incluida)' : '💎 Extra'}
-                                                    </span>
-                                                </div>
-
-                                                <div className="portal-data-row">
-                                                    <span className="portal-data-label">Boletos / Pasajeros:</span>
-                                                    <span className="portal-data-value">{ex.cantidad || 1}</span>
-                                                </div>
-                                                <div className="portal-data-row">
-                                                    <span className="portal-data-label">Precio Unitario:</span>
-                                                    <span className="portal-data-value">{ex.precioUnitario || '$0 MXN'}</span>
-                                                </div>
-                                                <div className="portal-data-row">
-                                                    <span className="portal-data-label">Subtotal:</span>
-                                                    <span className="portal-data-value">{ex.subtotal || '$0 MXN'}</span>
-                                                </div>
-                                            </div>
-                                        )
-                                    })
-                                )}
-                            </div>
-                        )}
-
-                        {/* TAB 4: PASAJEROS & PASAPORTES (EDICION EN TIEMPO REAL) */}
+                        {/* TAB 3: PASAJEROS & PASAPORTES */}
                         {activeTab === 'pasajeros' && (
                             <div className="portal-passengers-container">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
@@ -659,7 +913,6 @@ export default function UserPortalPage() {
                                     </button>
                                 </div>
 
-                                {/* Multi-reserva selector if user has > 1 booking */}
                                 {portalData.reservas.length > 1 && (
                                     <div style={{ marginBottom: '20px', background: 'rgba(15, 23, 42, 0.7)', padding: '14px 18px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                         <span style={{ fontSize: '0.9rem', color: '#cbd5e1', fontWeight: 700 }}>Seleccionar Viaje:</span>
@@ -725,26 +978,13 @@ export default function UserPortalPage() {
                                             </div>
 
                                             <div className="portal-input-group">
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap' }}>
-                                                    <label style={{ margin: 0 }}>Vigencia de Pasaporte (Calendario)</label>
-                                                    {passenger.passportExpiry && (() => {
-                                                        const d = new Date(passenger.passportExpiry)
-                                                        const now = new Date()
-                                                        const diffMonths = (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth())
-                                                        if (d < now) return <span style={{ color: '#ef4444', fontSize: '0.75rem', fontWeight: 800 }}>❌ Vencido</span>
-                                                        if (diffMonths < 6) return <span style={{ color: '#f59e0b', fontSize: '0.75rem', fontWeight: 800 }}>⚠️ Menor a 6 meses</span>
-                                                        return <span style={{ color: '#10b981', fontSize: '0.75rem', fontWeight: 800 }}>✓ Válido (+6 meses)</span>
-                                                    })()}
-                                                </div>
+                                                <label>Vigencia de Pasaporte (Calendario)</label>
                                                 <input
                                                     type="date"
                                                     className="portal-input"
                                                     value={passenger.passportExpiry}
                                                     onChange={(e) => handlePassengerChange(idx, 'passportExpiry', e.target.value)}
                                                 />
-                                                <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', display: 'block' }}>
-                                                    🛂 Mínimo 6 meses de vigencia requeridos posteriores a la fecha del viaje por autoridades migratorias.
-                                                </span>
                                             </div>
 
                                             <div className="portal-input-group">
@@ -755,17 +995,6 @@ export default function UserPortalPage() {
                                                     value={passenger.nationality}
                                                     onChange={(e) => handlePassengerChange(idx, 'nationality', e.target.value)}
                                                     placeholder="ej. Mexicana"
-                                                />
-                                            </div>
-
-                                            <div className="portal-input-group">
-                                                <label>Edad / Fecha de Nacimiento</label>
-                                                <input
-                                                    type="text"
-                                                    className="portal-input"
-                                                    value={passenger.age}
-                                                    onChange={(e) => handlePassengerChange(idx, 'age', e.target.value)}
-                                                    placeholder="ej. 28 años o DD/MM/AAAA"
                                                 />
                                             </div>
 
@@ -781,13 +1010,13 @@ export default function UserPortalPage() {
                                             </div>
 
                                             <div className="portal-input-group">
-                                                <label>Preferencias Dietéticas / Notas Médicas</label>
+                                                <label>Preferencias Dietéticas / Notas</label>
                                                 <input
                                                     type="text"
                                                     className="portal-input"
                                                     value={passenger.dietary}
                                                     onChange={(e) => handlePassengerChange(idx, 'dietary', e.target.value)}
-                                                    placeholder="ej. Vegetariano, alergia a mariscos"
+                                                    placeholder="ej. Vegetariano"
                                                 />
                                             </div>
                                         </div>
@@ -806,9 +1035,321 @@ export default function UserPortalPage() {
                                 </div>
                             </div>
                         )}
+
+                        {/* TAB 4: MIS RESEÑAS */}
+                        {activeTab === 'resenas' && (
+                            <div className="portal-reviews-container">
+                                <div className="portal-reviews-header">
+                                    <div>
+                                        <h3 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0 0 6px 0', color: '#fff' }}>
+                                            ⭐ Mis Reseñas & Experiencias
+                                        </h3>
+                                        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem' }}>
+                                            Tus opiniones compartidas con la comunidad de viajeros de RutaXAsia.
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="portal-write-review-btn"
+                                        onClick={() => setShowReviewModal(true)}
+                                    >
+                                        <LuPlus size={18} /> Escribir Reseña de mi Viaje
+                                    </button>
+                                </div>
+
+                                {(!portalData.misResenas || portalData.misResenas.length === 0) ? (
+                                    <div className="portal-empty-state">
+                                        <div className="portal-empty-icon">🌸</div>
+                                        <h3>Aún no has compartido una reseña</h3>
+                                        <p>¡Cuéntanos tu experiencia de viaje con Juan y Ale para inspirar a otros viajeros de la comunidad!</p>
+                                        <button
+                                            type="button"
+                                            className="portal-write-review-btn"
+                                            style={{ marginTop: '16px' }}
+                                            onClick={() => setShowReviewModal(true)}
+                                        >
+                                            ✍️ Dejar mi Primera Reseña
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="portal-reviews-grid">
+                                        {portalData.misResenas.map((rev) => (
+                                            <div key={rev.id} className="portal-review-card">
+                                                <div className="portal-review-top">
+                                                    <div>
+                                                        <h4 className="portal-review-trip-title">✈️ {rev.trip}</h4>
+                                                        <div className="portal-review-stars">
+                                                            {[...Array(5)].map((_, i) => (
+                                                                <span key={i} style={{ color: i < rev.rating ? '#f59e0b' : '#4b5563' }}>★</span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <span className={`portal-review-badge ${rev.isApproved ? 'portal-review-badge--approved' : 'portal-review-badge--pending'}`}>
+                                                        {rev.isApproved ? '✓ Publicada' : '⏳ En revisión'}
+                                                    </span>
+                                                </div>
+
+                                                <p className="portal-review-comment">"{rev.comment}"</p>
+
+                                                {rev.photo && (
+                                                    <img src={rev.photo} alt="Foto de viaje" className="portal-review-photo" />
+                                                )}
+
+                                                <div style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'flex', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                                                    <span>📅 {new Date(rev.date).toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })}</span>
+                                                    <span>{rev.statusLabel}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* TAB 5: MI PERFIL */}
+                        {activeTab === 'perfil' && (
+                            <div className="portal-profile-layout">
+                                <div className="portal-profile-sidebar-card">
+                                    <img
+                                        src={profilePhoto || portalData.user.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'}
+                                        alt={portalData.user.name}
+                                        className="portal-profile-avatar-large"
+                                    />
+                                    <div>
+                                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>{portalData.user.name}</h3>
+                                        <span style={{ fontSize: '0.85rem', color: '#ec4899', fontWeight: 700 }}>👑 Viajero Verificado</span>
+                                    </div>
+                                    <div style={{ background: 'rgba(15, 23, 42, 0.7)', padding: '12px 16px', borderRadius: '12px', fontSize: '0.8rem', color: '#cbd5e1', width: '100%', textAlign: 'left', lineHeight: '1.6' }}>
+                                        <div>📧 <strong>{portalData.user.email}</strong></div>
+                                        {portalData.user.contactId && <div>🆔 Contacto: <code>{portalData.user.contactId.substring(0, 12)}...</code></div>}
+                                        <div>📍 {portalData.user.city || 'México'}</div>
+                                    </div>
+                                </div>
+
+                                <form onSubmit={handleSaveProfile} className="portal-profile-form-card">
+                                    <div>
+                                        <h4 className="portal-profile-section-title">
+                                            <LuUser /> Información Personal
+                                        </h4>
+                                        <div className="portal-pass-form-grid">
+                                            <div className="portal-input-group">
+                                                <label>Nombre y Apellidos</label>
+                                                <input
+                                                    type="text"
+                                                    className="portal-input"
+                                                    value={profileName}
+                                                    onChange={(e) => setProfileName(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div className="portal-input-group">
+                                                <label>Teléfono / WhatsApp</label>
+                                                <input
+                                                    type="tel"
+                                                    className="portal-input"
+                                                    value={profilePhone}
+                                                    onChange={(e) => setProfilePhone(e.target.value)}
+                                                />
+                                            </div>
+
+                                            <div className="portal-input-group">
+                                                <label>Ciudad / Estado</label>
+                                                <input
+                                                    type="text"
+                                                    className="portal-input"
+                                                    value={profileCity}
+                                                    onChange={(e) => setProfileCity(e.target.value)}
+                                                />
+                                            </div>
+
+                                            <div className="portal-input-group">
+                                                <label>URL Foto de Perfil (Avatar)</label>
+                                                <input
+                                                    type="url"
+                                                    className="portal-input"
+                                                    placeholder="https://..."
+                                                    value={profilePhoto}
+                                                    onChange={(e) => setProfilePhoto(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="portal-profile-section-title">
+                                            <LuLock /> Seguridad & Contraseña
+                                        </h4>
+                                        <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0 0 16px 0' }}>
+                                            Si deseas cambiar tu contraseña, completa los siguientes campos:
+                                        </p>
+                                        <div className="portal-pass-form-grid">
+                                            <div className="portal-input-group">
+                                                <label>Contraseña Actual</label>
+                                                <input
+                                                    type="password"
+                                                    className="portal-input"
+                                                    placeholder="Tu contraseña actual"
+                                                    value={currentPassword}
+                                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                                />
+                                            </div>
+
+                                            <div className="portal-input-group">
+                                                <label>Nueva Contraseña</label>
+                                                <input
+                                                    type="password"
+                                                    className="portal-input"
+                                                    placeholder="Mínimo 6 caracteres"
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                />
+                                            </div>
+
+                                            <div className="portal-input-group">
+                                                <label>Confirmar Nueva Contraseña</label>
+                                                <input
+                                                    type="password"
+                                                    className="portal-input"
+                                                    placeholder="Repite la nueva contraseña"
+                                                    value={confirmNewPassword}
+                                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {profileSuccessMsg && (
+                                        <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '14px 20px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 700 }}>
+                                            {profileSuccessMsg}
+                                        </div>
+                                    )}
+
+                                    {profileErrorMsg && (
+                                        <div className="portal-auth-error-box">
+                                            ⚠️ {profileErrorMsg}
+                                        </div>
+                                    )}
+
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button
+                                            type="submit"
+                                            className="portal-save-btn"
+                                            disabled={isSavingProfile}
+                                        >
+                                            {isSavingProfile ? 'Guardando...' : '💾 Guardar Cambios de Perfil'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
                     </>
                 )}
             </div>
+
+            {/* WRITE REVIEW MODAL (FROM PORTAL) */}
+            {showReviewModal && (
+                <div className="portal-modal-backdrop" onClick={() => setShowReviewModal(false)}>
+                    <div className="portal-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="portal-modal-header">
+                            <h3>✍️ Escribir Reseña de mi Viaje</h3>
+                            <button
+                                type="button"
+                                className="portal-modal-close-btn"
+                                onClick={() => setShowReviewModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <form onSubmit={handlePortalReviewSubmit} className="portal-auth-form">
+                            <div className="portal-input-group">
+                                <label>Viaje o Experiencia</label>
+                                <input
+                                    type="text"
+                                    className="portal-input"
+                                    placeholder="ej. Japón Sakura 2027 o Corea del Sur"
+                                    value={revTrip}
+                                    onChange={(e) => setRevTrip(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="portal-input-group">
+                                <label>Calificación (Estrellas)</label>
+                                <div className="portal-star-picker">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            type="button"
+                                            key={star}
+                                            className={`portal-star-btn ${star <= revRating ? 'portal-star-btn--active' : ''}`}
+                                            onClick={() => setRevRating(star)}
+                                        >
+                                            ★
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="portal-input-group">
+                                <label>Tu Experiencia y Testimonio *</label>
+                                <textarea
+                                    className="portal-input"
+                                    rows="4"
+                                    placeholder="Cuéntanos qué fue lo más mágico de tu viaje, cómo fue la atención de los guías y por qué recomiendas RutaXAsia..."
+                                    value={revComment}
+                                    onChange={(e) => setRevComment(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="portal-input-group">
+                                <label>URL de Foto del Viaje (Opcional)</label>
+                                <input
+                                    type="url"
+                                    className="portal-input"
+                                    placeholder="https://..."
+                                    value={revPhoto}
+                                    onChange={(e) => setRevPhoto(e.target.value)}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="portal-auth-btn"
+                                disabled={isSubmittingReview}
+                            >
+                                {isSubmittingReview ? 'Enviando reseña...' : 'Enviar Reseña para Publicación →'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* REVIEW SENT CONFIRMATION MODAL */}
+            {reviewSuccessModal && (
+                <div className="portal-modal-backdrop" onClick={() => setReviewSuccessModal(false)}>
+                    <div className="portal-modal-content" onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
+                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '2rem' }}>
+                            ✓
+                        </div>
+                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', margin: '0 0 8px 0' }}>
+                            ¡Gracias por compartir tu experiencia! 🙌
+                        </h3>
+                        <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 24px 0' }}>
+                            Tu reseña ya fue recibida por nuestro equipo y vinculada a tu cuenta. Una vez revisada, aparecerá publicada en el muro público y en la página principal.
+                        </p>
+                        <button
+                            type="button"
+                            className="portal-save-btn"
+                            onClick={() => setReviewSuccessModal(false)}
+                            style={{ margin: '0 auto' }}
+                        >
+                            Entendido, ¡muchas gracias!
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

@@ -219,15 +219,19 @@ export default function ComunidadComentarios() {
     const [uploadedPhoto, setUploadedPhoto] = useState(null)
     const [uploadingPhoto, setUploadingPhoto] = useState(false)
 
-    // Form state
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        city: '',
-        trip: TOURS_OPTIONS[0],
-        rating: 5,
-        comment: '',
+    // Form state (autofilled if user is logged in)
+    const [formData, setFormData] = useState(() => {
+        const saved = localStorage.getItem('rutaxasia_user_session')
+        const user = saved ? JSON.parse(saved) : null
+        return {
+            name: user?.name || '',
+            email: user?.email || '',
+            phone: user?.phone || '',
+            city: user?.city || '',
+            trip: TOURS_OPTIONS[0],
+            rating: 5,
+            comment: '',
+        }
     })
     const [submitting, setSubmitting] = useState(false)
 
@@ -253,7 +257,25 @@ export default function ComunidadComentarios() {
         return () => { isMounted = false }
     }, [])
 
-    useEffect(() => { window.scrollTo(0, 0) }, [])
+    useEffect(() => {
+        window.scrollTo(0, 0)
+        // Sync logged in user if changed
+        try {
+            const saved = localStorage.getItem('rutaxasia_user_session')
+            if (saved) {
+                const user = JSON.parse(saved)
+                setFormData(prev => ({
+                    ...prev,
+                    name: prev.name || user.name || '',
+                    email: prev.email || user.email || '',
+                    phone: prev.phone || user.phone || '',
+                    city: prev.city || user.city || '',
+                }))
+            }
+        } catch {
+            // ignore
+        }
+    }, [])
 
     const handlePhotoChange = async (e) => {
         const file = e.target.files?.[0]

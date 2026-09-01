@@ -2,38 +2,80 @@ import { createClient, ApiKeyStrategy } from '@wix/sdk'
 import { items } from '@wix/data'
 
 /**
- * GET /api/user-portal?email=...&reserva=...&memberId=...
- * Enforces dual verification: requires BOTH Email and Reservation Code to authenticate.
+ * GET /api/user-portal?email=...&contactId=...&memberId=...&reserva=...
+ * Consolidates user data strictly isolated by Buyer Email or Contact ID
  */
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     if (req.method === 'OPTIONS') return res.status(200).end()
 
-    const { email, memberId, reserva } = req.query || {}
+    const { email, contactId, memberId, reserva } = req.query || {}
     let queryEmail = (email || '').trim().toLowerCase()
+    let queryContactId = (contactId || '').trim()
     let queryMemberId = (memberId || '').trim()
     const queryReserva = (reserva || '').trim().toUpperCase()
 
-    // 1. Enforce dual credential requirement (Email + Reservation Code) unless already authenticated with memberId
-    if (!queryMemberId) {
-        if (!queryEmail || !queryReserva) {
-            return res.status(400).json({
-                error: 'Por seguridad, debes ingresar tanto tu correo electrónico como tu código de reserva.'
-            })
-        }
+    if (!queryEmail && !queryContactId && !queryMemberId && !queryReserva) {
+        return res.status(400).json({ error: 'Debes proporcionar tu correo electrónico o iniciar sesión para acceder a tu panel.' })
     }
 
     try {
         const apiKey = process.env.VITE_WIX_API_KEY
-        const siteId = process.env.VITE_WIX_SITE_ID
+        const siteId = process.env.VITE_WIX_SITE_ID || 'eb570f22-c7fd-4816-9a7a-68911d31ff7b'
         const wixClient = createClient({
             modules: { items },
             auth: ApiKeyStrategy({ siteId, apiKey }),
         })
 
-        // 2. Fetch Bookings from 'ReservasdeViaje' CMS
+        // 1. Fetch User Profile from CuentasViajeros if registered
+        let userAccount = null
+        if (queryEmail) {
+            try {
+                const accQ = await wixClient.items.query('CuentasViajeros')
+                    .eq('title', queryEmail)
+                    .limit(1)
+                    .find()
+                userAccount = accQ.items?.[0]
+                if (userAccount) {
+                    if (!queryContactId && userAccount.contactId) queryContactId = userAccount.contactId
+                    if (!queryMemberId && userAccount.memberId) queryMemberId = userAccount.memberId
+                }
+            } catch (accErr) {
+                console.warn('[UserPortal] Notice querying CuentasViajeros:', accErr.message)
+            }
+        }
+
+        // 2. Fetch Wix Contact CRM Profile if needed
+        let contactProfile = null
+        if (queryContactId || queryEmail) {
+            try {
+                let contactUrl = 'https://www.wixapis.com/contacts/v4/contacts'
+                if (queryContactId && !queryContactId.startsWith('CNT-')) {
+                    contactUrl += `/${queryContactId}`
+                    const cRes = await fetch(contactUrl, { headers: { 'Authorization': apiKey, 'wix-site-id': siteId } })
+                    const cData = await cRes.json().catch(() => null)
+                    if (cData?.contact) contactProfile = cData.contact
+                } else if (queryEmail) {
+                    contactUrl += `?filter=${encodeURIComponent(JSON.stringify({ "info.emails.items": { "$hasSome": [{ "email": queryEmail }] } }))}`
+                    const cRes = await fetch(contactUrl, { headers: { 'Authorization': apiKey, 'wix-site-id': siteId } })
+                    const cData = await cRes.json().catch(() => null)
+                    if (cData?.contacts?.length > 0) {
+                        contactProfile = cData.contacts[0]
+                        if (!queryContactId) queryContactId = contactProfile.id
+                    }
+                }
+            } catch (cErr) {
+                console.warn('[UserPortal] Contact lookup error:', cErr.message)
+            }
+        }
+
+        const effectiveEmail = queryEmail || userAccount?.email || contactProfile?.info?.emails?.items?.[0]?.email || ''
+        const effectiveContactId = queryContactId || userAccount?.contactId || contactProfile?.id || ''
+        const effectiveMemberId = queryMemberId || userAccount?.memberId || effectiveContactId
+
+        // 3. Fetch Bookings from 'ReservasdeViaje' CMS strictly for this user
         let reservas = []
         try {
             const query = wixClient.items.query('ReservasdeViaje')
@@ -42,24 +84,28 @@ export default async function handler(req, res) {
 
             reservas = allItems.filter(r => {
                 const rEmail = (r.correoElectrnico || '').toLowerCase().trim()
+                const rTitle = (r.title || '').trim()
                 const rText = ((r.desgloseCompleto || '') + ' ' + (r._id || '')).toUpperCase()
 
-                if (queryReserva) {
-                    const matchesCode = rText.includes(queryReserva) || (r._id && r._id.toUpperCase().includes(queryReserva.replace('RUTA-', '')))
-                    if (queryEmail) {
-                        return matchesCode && rEmail === queryEmail
-                    }
-                    return matchesCode
-                }
-
-                if (queryEmail) return rEmail === queryEmail
+                if (queryReserva && rText.includes(queryReserva)) return true
+                if (effectiveEmail && rEmail === effectiveEmail) return true
+                if (effectiveContactId && (rTitle === effectiveContactId || r.contactId === effectiveContactId)) return true
                 return false
             })
         } catch (rErr) {
             console.error('[UserPortal] Error fetching ReservasdeViaje:', rErr.message)
         }
 
-        // 3. Fetch Scheduled Payments from 'Pagosprogramados' CMS
+        // 4. Compute exact user reservation codes set
+        const userReservaCodes = new Set()
+        if (queryReserva) userReservaCodes.add(queryReserva)
+        reservas.forEach(r => {
+            const codeMatch = (r.desgloseCompleto || '').match(/RUTA-\w+/i)
+            if (codeMatch) userReservaCodes.add(codeMatch[0].toUpperCase())
+            if (r._id) userReservaCodes.add(`RUTA-${r._id.slice(0, 6).toUpperCase()}`)
+        })
+
+        // 5. Fetch Scheduled Payments from 'Pagosprogramados' CMS strictly for this user
         let pagosProgramados = []
         try {
             const queryPagos = wixClient.items.query('Pagosprogramados')
@@ -71,53 +117,25 @@ export default async function handler(req, res) {
                 const pReserva = (p.reserva || '').trim().toUpperCase()
                 const baseCode = pReserva.split('-').slice(0, 2).join('-')
 
-                if (queryReserva) {
-                    const matchesReserva = pReserva.startsWith(queryReserva) || baseCode === queryReserva
-                    if (queryEmail) {
-                        return matchesReserva && pEmail === queryEmail
-                    }
-                    return matchesReserva
-                }
-
-                if (queryEmail) return pEmail === queryEmail
+                if (queryReserva && (pReserva.startsWith(queryReserva) || baseCode === queryReserva)) return true
+                if (effectiveEmail && pEmail === effectiveEmail) return true
+                if (userReservaCodes.has(baseCode) || userReservaCodes.has(pReserva)) return true
+                if (effectiveContactId && p.title === effectiveContactId) return true
                 return false
             })
         } catch (pErr) {
             console.error('[UserPortal] Error fetching Pagosprogramados:', pErr.message)
         }
 
-        // 4. If neither reservas nor pagos were found with matching credentials, deny access
-        if (reservas.length === 0 && pagosProgramados.length === 0) {
-            return res.status(401).json({
-                error: 'El correo electrónico y el código de reserva no coinciden o no existen en nuestro sistema. Por favor verifica tus datos.'
-            })
-        }
-
-        // 5. Fetch Member Profile from Wix Members API if exists
-        let memberProfile = null
-        if (queryEmail || queryMemberId) {
-            try {
-                let url = 'https://www.wixapis.com/members/v1/members'
-                if (queryMemberId) {
-                    url += `/${queryMemberId}`
-                    const mRes = await fetch(url, { headers: { 'Authorization': apiKey, 'wix-site-id': siteId } })
-                    const mData = await mRes.json().catch(() => null)
-                    if (mData?.member) memberProfile = mData.member
-                } else if (queryEmail) {
-                    url += `?filter=${encodeURIComponent(JSON.stringify({ "loginEmail": queryEmail }))}`
-                    const mRes = await fetch(url, { headers: { 'Authorization': apiKey, 'wix-site-id': siteId } })
-                    const mData = await mRes.json().catch(() => null)
-                    if (mData?.members?.length > 0) memberProfile = mData.members[0]
-                }
-            } catch (mErr) {
-                console.error('[UserPortal] Error fetching member profile:', mErr.message)
+        // Add any codes found in user's payments to userReservaCodes
+        pagosProgramados.forEach(p => {
+            if (p.reserva) {
+                const baseCode = p.reserva.split('-').slice(0, 2).join('-')
+                userReservaCodes.add(baseCode)
             }
-        }
+        })
 
-        const effectiveEmail = queryEmail || memberProfile?.loginEmail || reservas[0]?.correoElectrnico || pagosProgramados[0]?.emailCliente || ''
-        const effectiveMemberId = queryMemberId || memberProfile?.id || ''
-
-        // 6. Consolidate & Synthesize trip cards from Pagosprogramados if not present in ReservasdeViaje
+        // Synthesize trip cards from Pagosprogramados if not present in ReservasdeViaje
         if (reservas.length === 0 && pagosProgramados.length > 0) {
             const groupsByCode = {}
             pagosProgramados.forEach(p => {
@@ -134,9 +152,9 @@ export default async function handler(req, res) {
 
                 reservas.push({
                     _id: code,
-                    nombreCompleto: firstP.nombreCliente || memberProfile?.contact?.firstName || 'Viajero RutaXAsia',
+                    nombreCompleto: firstP.nombreCliente || userAccount?.nombreCompleto || 'Viajero RutaXAsia',
                     correoElectrnico: firstP.emailCliente || effectiveEmail,
-                    telfono: firstP.telefonoCliente || memberProfile?.contact?.phones?.[0] || '',
+                    telfono: firstP.telefonoCliente || userAccount?.telefono || '',
                     estadoDelPago: paidAmt >= totalAmt ? 'Liquidado' : (paidAmt > 0 ? 'En Cuotas' : 'Pendiente'),
                     precioTotalMxn: totalAmt,
                     montoAbonadoMxn: paidAmt,
@@ -147,10 +165,10 @@ export default async function handler(req, res) {
             })
         }
 
-        // 7. Fetch Passenger Records from 'Pasajeros' CMS
+        // 6. Fetch Passenger Records from 'PASAJEROS' / 'Pasajeros' CMS
         let pasajeros = []
         try {
-            const queryPasajeros = wixClient.items.query('Pasajeros')
+            const queryPasajeros = wixClient.items.query('PASAJEROS')
             const allPRes = await queryPasajeros.descending('_createdDate').limit(100).find()
             const allP = allPRes.items || []
 
@@ -161,14 +179,14 @@ export default async function handler(req, res) {
                 if (effectiveEmail && pEmail === effectiveEmail) return true
                 return false
             })
-        } catch (passErr) {
-            console.error('[UserPortal] Error fetching Pasajeros:', passErr.message)
+        } catch {
+            // best-effort
         }
 
-        // 8. Fetch Extras and Booked Add-ons from 'ExtrasReservados' CMS
+        // 7. Fetch Extras and Booked Add-ons from 'ExtrasReserva' / 'ExtrasReservados' CMS
         let extras = []
         try {
-            const queryExtras = wixClient.items.query('ExtrasReservados')
+            const queryExtras = wixClient.items.query('ExtrasReserva')
             const allExtRes = await queryExtras.descending('_createdDate').limit(100).find()
             const allExt = allExtRes.items || []
 
@@ -179,18 +197,83 @@ export default async function handler(req, res) {
                 if (effectiveEmail && eEmail === effectiveEmail) return true
                 return false
             })
-        } catch (extErr) {
-            console.error('[UserPortal] Error fetching ExtrasReservados:', extErr.message)
+        } catch {
+            // best-effort
         }
+
+        // 8. Fetch User's Submitted Reviews from 'Resenas' CMS
+        let misResenas = []
+        try {
+            const queryResenas = wixClient.items.query('Resenas')
+            const allResenasRes = await queryResenas.descending('_createdDate').limit(100).find()
+            const allResenas = allResenasRes.items || []
+
+            misResenas = allResenas.filter(rev => {
+                const rEmail = (rev.correo || rev.email || '').toLowerCase().trim()
+                const rTitle = (rev.title || '').trim()
+
+                if (effectiveEmail && rEmail === effectiveEmail) return true
+                if (effectiveContactId && rTitle === effectiveContactId) return true
+                if (effectiveMemberId && rTitle === effectiveMemberId) return true
+                return false
+            }).map(rev => {
+                let trip = 'Experiencia RutaXAsia'
+                let rawComment = rev.comentarioYExperiencia || rev.comentario || rev.comment || ''
+                const tagMatch = rawComment.match(/^\[(.*?)\]\s*/)
+                if (tagMatch) {
+                    trip = tagMatch[1]
+                    rawComment = rawComment.replace(/^\[.*?\]\s*/, '')
+                }
+
+                const rawAprobado = String(rev.aprobado || '').trim().toLowerCase()
+                const isApproved = rawAprobado === 'sí' || rawAprobado === 'si' || rawAprobado === 'true' || rawAprobado === 'aprobado' || rawAprobado === 'yes'
+
+                return {
+                    id: rev._id,
+                    trip,
+                    rating: Number(rev.calificacin || rev.calificacion || rev.rating) || 5,
+                    comment: rawComment,
+                    photo: rev.fotografa || rev.foto || rev.photo || '',
+                    date: rev.fechaVisible || rev._createdDate,
+                    aprobado: isApproved ? 'Sí' : 'No',
+                    statusLabel: isApproved ? 'Publicada en la Web' : 'En revisión por el equipo',
+                    isApproved,
+                }
+            })
+        } catch (revErr) {
+            console.warn('[UserPortal] Error fetching Resenas:', revErr.message)
+        }
+
+        // Compute resolved User Name
+        const resolvedName = userAccount?.nombreCompleto
+            || (contactProfile?.info?.name?.first ? `${contactProfile.info.name.first} ${contactProfile.info.name.last || ''}`.trim() : null)
+            || reservas[0]?.nombreCompleto
+            || pagosProgramados[0]?.nombreCliente
+            || 'Viajero RutaXAsia'
+
+        const resolvedPhone = userAccount?.telefono
+            || contactProfile?.info?.phones?.items?.[0]?.phone
+            || reservas[0]?.telfono
+            || pagosProgramados[0]?.telefonoCliente
+            || ''
+
+        const resolvedCity = userAccount?.ciudad
+            || contactProfile?.info?.addresses?.items?.[0]?.address?.city
+            || 'México'
+
+        const resolvedPhoto = userAccount?.fotoPerfil
+            || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'
 
         return res.status(200).json({
             success: true,
             user: {
-                name: memberProfile?.contact?.firstName
-                    ? `${memberProfile.contact.firstName} ${memberProfile.contact.lastName || ''}`.trim()
-                    : (reservas[0]?.nombreCompleto || 'Viajero RutaXAsia'),
+                id: userAccount?._id || effectiveContactId,
+                name: resolvedName,
                 email: effectiveEmail,
-                phone: memberProfile?.contact?.phones?.[0] || reservas[0]?.telfono || '',
+                phone: resolvedPhone,
+                city: resolvedCity,
+                photo: resolvedPhoto,
+                contactId: effectiveContactId,
                 memberId: effectiveMemberId,
             },
             reservaCode: queryReserva,
@@ -198,6 +281,7 @@ export default async function handler(req, res) {
             pagosProgramados,
             pasajeros,
             extras,
+            misResenas,
         })
     } catch (err) {
         console.error('[UserPortal] Global Handler Error:', err)

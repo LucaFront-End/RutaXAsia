@@ -115,35 +115,32 @@ export default async function handler(req, res) {
 
             const wixClient = getWixClient();
 
-            // Try to find existing Wix member to link the review
-            let memberTitleId = `REV-${Date.now()}`;
+            // Find existing user account or contact ID to link the review
+            let userTitleId = `REV-${Date.now()}`;
+            let userPhoto = photo || '';
+
             if (email) {
+                const cleanEmail = email.trim().toLowerCase();
                 try {
-                    const { members } = await import('@wix/members');
-                    const memberClient = createClient({
-                        modules: { members },
-                        auth: ApiKeyStrategy({ siteId: SITE_ID, apiKey: API_KEY }),
-                    });
-                    const memberQuery = await memberClient.members.queryMembers()
-                        .eq('loginEmail', email.trim().toLowerCase())
-                        .find();
-                    if (memberQuery.items?.length > 0) {
-                        memberTitleId = memberQuery.items[0]._id || memberTitleId;
+                    const accQ = await wixClient.items.query('CuentasViajeros').eq('title', cleanEmail).limit(1).find();
+                    if (accQ.items?.[0]) {
+                        userTitleId = accQ.items[0].contactId || accQ.items[0]._id || userTitleId;
+                        if (!userPhoto && accQ.items[0].fotoPerfil) userPhoto = accQ.items[0].fotoPerfil;
                     }
                 } catch {
-                    // Non-critical: member lookup is best-effort
+                    // best-effort
                 }
             }
 
             const payload = {
-                title: memberTitleId,
+                title: userTitleId,
                 nombre: name.trim(),
                 correo: email?.trim() || '',
                 telfono: phone?.trim() || '',
                 ciudad: city?.trim() || 'México',
                 calificacin: Math.min(5, Math.max(1, Number(rating) || 5)),
                 comentarioYExperiencia: trip ? `[${trip}] ${comment.trim()}` : comment.trim(),
-                fotografa: photo || '',
+                fotografa: userPhoto,
                 aprobado: 'No',
                 fechaVisible: new Date(),
             };
