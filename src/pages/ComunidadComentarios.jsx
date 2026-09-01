@@ -452,7 +452,7 @@ export default function ComunidadComentarios() {
                 {/* Filter Tabs & Header */}
                 <div className="com-feed-header">
                     <h2>Experiencias de la Comunidad ({filteredReviews.length})</h2>
-                    <div className="com-filter-pills">
+                    <div className="com-filters">
                         {[
                             { key: 'all', label: 'Todos los Viajes' },
                             { key: 'sakura', label: '🌸 Primavera Sakura' },
@@ -463,7 +463,7 @@ export default function ComunidadComentarios() {
                             <button
                                 key={item.key}
                                 type="button"
-                                className={`com-filter-pill ${filter === item.key ? 'active' : ''}`}
+                                className={`com-filter-btn ${filter === item.key ? 'active' : ''}`}
                                 onClick={() => setFilter(item.key)}
                             >
                                 {item.label}
@@ -476,7 +476,7 @@ export default function ComunidadComentarios() {
                 <div className="com-reviews-grid">
                     {filteredReviews.map((r) => (
                         <div className="com-review-card" key={r.id} data-animate="fade-up">
-                            <div className="com-user-header">
+                            <div className="com-card-top">
                                 <img
                                     src={r.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'}
                                     alt={r.name}
@@ -502,7 +502,7 @@ export default function ComunidadComentarios() {
                                 </div>
                                 <div className="com-stars">
                                     {[...Array(r.rating || 5)].map((_, i) => (
-                                        <LuStar key={i} size={14} className="com-star-filled" />
+                                        <LuStar key={i} size={15} className="com-star-filled" />
                                     ))}
                                 </div>
                             </div>
