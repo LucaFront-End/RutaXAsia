@@ -15,14 +15,16 @@ function hashPassword(password, salt) {
     return crypto.scryptSync(password, salt, 64).toString('hex')
 }
 
-// Find or Create contact in Wix Contacts CRM
+// Find or Create contact in Wix Contacts CRM with strictly unique ID per email
 async function getOrCreateWixContact(name, email, phone, city) {
     if (!email) return null
     const siteId = process.env.VITE_WIX_SITE_ID || 'eb570f22-c7fd-4816-9a7a-68911d31ff7b'
     const apiKey = process.env.VITE_WIX_API_KEY
+    const cleanEmail = email.trim().toLowerCase()
+
     try {
-        // 1. Search existing contact by email
-        const searchRes = await fetch(`https://www.wixapis.com/contacts/v4/contacts?filter=${encodeURIComponent(JSON.stringify({ "info.emails.items": { "$hasSome": [{ "email": email.trim().toLowerCase() }] } }))}`, {
+        // 1. Fetch contacts list and accurately match by email
+        const searchRes = await fetch('https://www.wixapis.com/contacts/v4/contacts?paging.limit=100', {
             headers: {
                 'Authorization': apiKey,
                 'wix-site-id': siteId,
@@ -30,11 +32,19 @@ async function getOrCreateWixContact(name, email, phone, city) {
             }
         })
         const searchData = await searchRes.json().catch(() => null)
-        if (searchData?.contacts?.length > 0) {
-            return searchData.contacts[0].id
+        const contacts = searchData?.contacts || []
+
+        const matched = contacts.find(c => {
+            const primaryEmail = (c.primaryInfo?.email || '').trim().toLowerCase()
+            const itemEmails = (c.info?.emails?.items || []).map(e => (e.email || '').trim().toLowerCase())
+            return primaryEmail === cleanEmail || itemEmails.includes(cleanEmail)
+        })
+
+        if (matched?.id && (cleanEmail === 'hola@dilodigitalmx.com' || matched.id !== '0fd8d34b-f6c0-43bd-be2c-c531fced4030')) {
+            return matched.id
         }
 
-        // 2. Create new contact in Wix CRM if not found
+        // 2. Create new unique contact in Wix CRM if not found
         const parts = (name || '').trim().split(' ')
         const firstName = parts[0] || 'Viajero'
         const lastName = parts.slice(1).join(' ') || 'RutaXAsia'
@@ -42,24 +52,67 @@ async function getOrCreateWixContact(name, email, phone, city) {
         const createRes = await fetch('https://www.wixapis.com/contacts/v4/contacts', {
             method: 'POST',
             headers: {
-                'Authorization': API_KEY,
-                'wix-site-id': SITE_ID,
+                'Authorization': apiKey,
+                'wix-site-id': siteId,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 info: {
                     name: { first: firstName, last: lastName },
-                    emails: { items: [{ tag: 'MAIN', email: email.trim().toLowerCase() }] },
-                    phones: phone ? { items: [{ tag: 'MOBILE', phone: phone.trim() }] } : undefined,
+                    emails: { items: [{ tag: 'MAIN', email: cleanEmail, primary: true }] },
+                    phones: phone ? { items: [{ tag: 'MOBILE', phone: phone.trim(), primary: true }] } : undefined,
                     addresses: city ? { items: [{ tag: 'HOME', address: { city: city.trim(), country: 'MEX' } }] } : undefined
                 }
             })
         })
         const createData = await createRes.json().catch(() => null)
-        return createData?.contact?.id || null
+        if (createData?.contact?.id) {
+            console.log(`[Auth] ✅ Created new Wix Contact ${createData.contact.id} for ${cleanEmail}`)
+            return createData.contact.id
+        }
+        return `CNT-${Date.now()}`
     } catch (err) {
         console.warn('[Auth] Contact CRM sync notice:', err.message)
-        return null
+        return `CNT-${Date.now()}`
+    }
+}
+
+// Update existing Wix Contact in CRM
+async function updateWixContact(contactId, name, phone, city) {
+    if (!contactId || contactId.startsWith('CNT-')) return
+    const siteId = process.env.VITE_WIX_SITE_ID || 'eb570f22-c7fd-4816-9a7a-68911d31ff7b'
+    const apiKey = process.env.VITE_WIX_API_KEY
+
+    try {
+        const getRes = await fetch(`https://www.wixapis.com/contacts/v4/contacts/${contactId}`, {
+            headers: { 'Authorization': apiKey, 'wix-site-id': siteId }
+        })
+        const getData = await getRes.json().catch(() => null)
+        if (!getData?.contact) return
+
+        const parts = (name || '').trim().split(' ')
+        const firstName = parts[0] || getData.contact.info?.name?.first || 'Viajero'
+        const lastName = parts.slice(1).join(' ') || getData.contact.info?.name?.last || 'RutaXAsia'
+
+        await fetch(`https://www.wixapis.com/contacts/v4/contacts/${contactId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': apiKey,
+                'wix-site-id': siteId,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                info: {
+                    name: { first: firstName, last: lastName },
+                    phones: phone ? { items: [{ tag: 'MOBILE', phone: phone.trim(), primary: true }] } : getData.contact.info?.phones,
+                    addresses: city ? { items: [{ tag: 'HOME', address: { city: city.trim(), country: 'MEX' } }] } : getData.contact.info?.addresses
+                },
+                revision: getData.contact.revision
+            })
+        })
+        console.log(`[Auth] ✅ Synced updated profile to Wix Contact ${contactId}`)
+    } catch (err) {
+        console.warn('[Auth] Error updating Wix contact:', err.message)
     }
 }
 
@@ -101,8 +154,8 @@ export default async function handler(req, res) {
                 return res.status(409).json({ error: 'Ya existe una cuenta registrada con este correo electrónico. Por favor inicia sesión.' })
             }
 
-            // Sync with Wix CRM Contacts
-            const contactId = await getOrCreateWixContact(name, cleanEmail, phone, city) || `CNT-${Date.now()}`
+            // Sync with Wix CRM Contacts ensuring unique ID
+            const contactId = await getOrCreateWixContact(name, cleanEmail, phone, city)
 
             // Hash password securely
             const salt = crypto.randomBytes(16).toString('hex')
@@ -165,7 +218,7 @@ export default async function handler(req, res) {
                 .limit(1)
                 .find()
 
-            const account = query.items?.[0]
+            let account = query.items?.[0]
 
             // If account does NOT exist in CuentasViajeros yet:
             // Check if traveler has bookings in ReservasdeViaje or Pagosprogramados
@@ -187,7 +240,7 @@ export default async function handler(req, res) {
                     const rData = reservasQuery.items?.[0] || pagosQuery.items?.[0]
                     const travelerName = rData.nombreCompleto || rData.nombreCliente || 'Viajero RutaXAsia'
                     const travelerPhone = rData.telfono || rData.telefonoCliente || ''
-                    const contactId = await getOrCreateWixContact(travelerName, cleanEmail, travelerPhone, 'México') || `CNT-${Date.now()}`
+                    const contactId = await getOrCreateWixContact(travelerName, cleanEmail, travelerPhone, 'México')
 
                     const salt = crypto.randomBytes(16).toString('hex')
                     const passHash = hashPassword(password, salt)
@@ -229,6 +282,16 @@ export default async function handler(req, res) {
                 return res.status(404).json({
                     error: 'No encontramos una cuenta con este correo. Por favor crea tu cuenta para comenzar.'
                 })
+            }
+
+            // Auto-heal legacy accounts that had the bugged default contactId
+            if (account.contactId === '0fd8d34b-f6c0-43bd-be2c-c531fced4030' && cleanEmail !== 'hola@dilodigitalmx.com') {
+                const uniqueContactId = await getOrCreateWixContact(account.nombreCompleto, cleanEmail, account.telefono, account.ciudad)
+                if (uniqueContactId && uniqueContactId !== '0fd8d34b-f6c0-43bd-be2c-c531fced4030') {
+                    account.contactId = uniqueContactId
+                    account.memberId = uniqueContactId
+                    await wixClient.items.update('CuentasViajeros', account).catch(() => {})
+                }
             }
 
             // Verify password
@@ -306,18 +369,30 @@ export default async function handler(req, res) {
                 passHash = hashPassword(newPassword, salt)
             }
 
+            // Make sure contactId is valid
+            let validContactId = account.contactId
+            if (!validContactId || validContactId === '0fd8d34b-f6c0-43bd-be2c-c531fced4030' && cleanEmail !== 'hola@dilodigitalmx.com') {
+                validContactId = await getOrCreateWixContact(name || account.nombreCompleto, cleanEmail, phone || account.telefono, city || account.ciudad)
+            }
+
             const updatedPayload = {
                 ...account,
                 nombreCompleto: name ? name.trim() : account.nombreCompleto,
                 telefono: phone !== undefined ? phone.trim() : account.telefono,
                 ciudad: city !== undefined ? city.trim() : account.ciudad,
                 fotoPerfil: photo !== undefined ? photo : account.fotoPerfil,
+                contactId: validContactId,
+                memberId: validContactId,
                 passwordHash: passHash,
                 passwordSalt: salt,
-                ultimoAcceso: new Date()
+                ultimoAcceso: new Date(),
+                _updatedDate: new Date()
             }
 
             await wixClient.items.update('CuentasViajeros', updatedPayload)
+
+            // Also update in Wix Contacts CRM
+            updateWixContact(validContactId, updatedPayload.nombreCompleto, updatedPayload.telefono, updatedPayload.ciudad).catch(() => {})
 
             return res.status(200).json({
                 success: true,
@@ -328,8 +403,8 @@ export default async function handler(req, res) {
                     email: cleanEmail,
                     phone: updatedPayload.telefono,
                     city: updatedPayload.ciudad,
-                    contactId: account.contactId,
-                    memberId: account.memberId,
+                    contactId: validContactId,
+                    memberId: validContactId,
                     photo: updatedPayload.fotoPerfil,
                 }
             })
@@ -350,14 +425,6 @@ export default async function handler(req, res) {
 
         try {
             const query = await wixClient.items.query('CuentasViajeros').eq('title', cleanEmail).limit(1).find()
-            if (!query.items || query.items.length === 0) {
-                // Return success anyway for security so emails cannot be enumerated
-                return res.status(200).json({
-                    success: true,
-                    message: 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña en los próximos minutos.'
-                })
-            }
-
             return res.status(200).json({
                 success: true,
                 message: 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña en los próximos minutos.'

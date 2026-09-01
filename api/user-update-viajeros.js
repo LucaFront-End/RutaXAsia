@@ -114,7 +114,7 @@ export default async function handler(req, res) {
         return res.status(200).json({
             success: true,
             message: 'Datos de pasajeros actualizados correctamente.',
-            reservaId: savedResult._id,
+            reservaId: currentItem?._id || reservaId,
             viajerosActualizados: viajeros.length
         })
     } catch (error) {

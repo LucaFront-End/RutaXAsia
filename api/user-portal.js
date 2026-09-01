@@ -51,19 +51,26 @@ export default async function handler(req, res) {
         let contactProfile = null
         if (queryContactId || queryEmail) {
             try {
-                let contactUrl = 'https://www.wixapis.com/contacts/v4/contacts'
-                if (queryContactId && !queryContactId.startsWith('CNT-')) {
-                    contactUrl += `/${queryContactId}`
-                    const cRes = await fetch(contactUrl, { headers: { 'Authorization': apiKey, 'wix-site-id': siteId } })
+                if (queryContactId && !queryContactId.startsWith('CNT-') && queryContactId !== '0fd8d34b-f6c0-43bd-be2c-c531fced4030') {
+                    const cRes = await fetch(`https://www.wixapis.com/contacts/v4/contacts/${queryContactId}`, {
+                        headers: { 'Authorization': apiKey, 'wix-site-id': siteId }
+                    })
                     const cData = await cRes.json().catch(() => null)
                     if (cData?.contact) contactProfile = cData.contact
                 } else if (queryEmail) {
-                    contactUrl += `?filter=${encodeURIComponent(JSON.stringify({ "info.emails.items": { "$hasSome": [{ "email": queryEmail }] } }))}`
-                    const cRes = await fetch(contactUrl, { headers: { 'Authorization': apiKey, 'wix-site-id': siteId } })
+                    const cRes = await fetch('https://www.wixapis.com/contacts/v4/contacts?paging.limit=100', {
+                        headers: { 'Authorization': apiKey, 'wix-site-id': siteId }
+                    })
                     const cData = await cRes.json().catch(() => null)
-                    if (cData?.contacts?.length > 0) {
-                        contactProfile = cData.contacts[0]
-                        if (!queryContactId) queryContactId = contactProfile.id
+                    const contacts = cData?.contacts || []
+                    const matched = contacts.find(c => {
+                        const primaryEmail = (c.primaryInfo?.email || '').trim().toLowerCase()
+                        const itemEmails = (c.info?.emails?.items || []).map(e => (e.email || '').trim().toLowerCase())
+                        return primaryEmail === queryEmail || itemEmails.includes(queryEmail)
+                    })
+                    if (matched) {
+                        contactProfile = matched
+                        queryContactId = matched.id
                     }
                 }
             } catch (cErr) {
