@@ -401,22 +401,27 @@ export default function ComunidadComentarios() {
                             <span className="com-score-num">4.9</span>
                             <div className="com-score-stars">
                                 {[...Array(5)].map((_, i) => (
-                                    <LuStar key={i} size={18} className="com-star-filled" />
+                                    <LuStar key={i} size={20} className="com-star-filled" />
                                 ))}
                             </div>
                             <span className="com-score-label">Calificación Promedio</span>
                         </div>
-                        <div className="com-rating-stat">
-                            <strong>+500</strong>
-                            <span>Viajeros Felices</span>
-                        </div>
-                        <div className="com-rating-stat">
-                            <strong>100%</strong>
-                            <span>Acompañamiento Real</span>
-                        </div>
-                        <div className="com-rating-stat">
-                            <strong>15+</strong>
-                            <span>Grupos Exitosos</span>
+
+                        <div className="com-rating-divider" />
+
+                        <div className="com-rating-stats-grid">
+                            <div className="com-rating-stat">
+                                <strong>+500</strong>
+                                <span>Viajeros Felices</span>
+                            </div>
+                            <div className="com-rating-stat">
+                                <strong>100%</strong>
+                                <span>Acompañamiento Real</span>
+                            </div>
+                            <div className="com-rating-stat">
+                                <strong>15+</strong>
+                                <span>Grupos Exitosos</span>
+                            </div>
                         </div>
                     </div>
                 </div>
