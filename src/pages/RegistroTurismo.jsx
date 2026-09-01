@@ -101,9 +101,9 @@ export default function RegistroTurismo() {
                                     onClick={() => setShowRntModal(true)}
                                 >
                                     <LuSearch size={16} />
-                                    <span>Consultar Certificado en Línea</span>
+                                    <span>Consultar Registro Oficial SECTUR</span>
                                 </button>
-                                <span className="rnt-hero-action-hint">⚡ Consulta oficial en tiempo real sin salir de la web</span>
+                                <span className="rnt-hero-action-hint">⚡ Datos oficiales y acceso directo al buscador de SECTUR</span>
                             </div>
                         </div>
 
@@ -115,7 +115,7 @@ export default function RegistroTurismo() {
                                 className="rnt-trust-item"
                                 onClick={() => setShowRntModal(true)}
                                 style={{ cursor: 'pointer' }}
-                                title="Haz clic para verificar constancia en línea"
+                                title="Haz clic para consultar registro oficial ante SECTUR"
                             >
                                 <span className="rnt-trust-icon">🏛️</span>
                                 <div>
@@ -286,7 +286,7 @@ export default function RegistroTurismo() {
                                                 gap: '6px'
                                             }}
                                         >
-                                            <LuSearch size={14} /> Abrir Consulta Oficial SECTUR en pantalla →
+                                            <LuSearch size={14} /> Ver Datos y Consultar en SECTUR →
                                         </button>
                                     </div>
                                 </div>
