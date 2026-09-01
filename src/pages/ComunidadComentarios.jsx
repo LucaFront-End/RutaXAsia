@@ -607,11 +607,11 @@ export default function ComunidadComentarios() {
 
                                 <div className="form-group-row">
                                     <div className="form-group">
-                                        <label>Correo Electrónico (Tu cuenta de viajero) *</label>
+                                        <label>Correo Electrónico *</label>
                                         <input
                                             type="email"
                                             required
-                                            placeholder="sofia@gmail.com"
+                                            placeholder="ej. viajero@gmail.com"
                                             value={formData.email}
                                             onChange={(e) => {
                                                 setFormError(null)

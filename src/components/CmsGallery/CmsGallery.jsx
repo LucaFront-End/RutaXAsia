@@ -114,7 +114,16 @@ export default function CmsGallery({
                                 }}
                             />
                             <div className="cms-gallery-caption">
-                                <span>{img.caption}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '100%' }}>
+                                    <span style={{ fontSize: '0.78rem', color: '#ff6b9d', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                        📍 {img.city || (img.title && !img.title.startsWith('IMG_') ? img.title : currentCategory)}
+                                    </span>
+                                    {(img.description || (img.caption && !img.caption.startsWith('IMG_') && img.caption !== img.title)) && (
+                                        <span style={{ fontSize: '0.98rem', fontWeight: 700, color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                                            {img.description || img.caption}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -171,8 +180,15 @@ export default function CmsGallery({
                             alt={galleryImages[lightboxIndex].caption || 'Foto ampliada'}
                             className="cms-lightbox-img"
                         />
-                        <div className="cms-lightbox-caption">
-                            {galleryImages[lightboxIndex].caption} ({lightboxIndex + 1} de {galleryImages.length})
+                        <div className="cms-lightbox-caption" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ fontSize: '0.82rem', color: '#ff6b9d', fontWeight: 800, textTransform: 'uppercase' }}>
+                                📍 {galleryImages[lightboxIndex].city || currentCategory} · ({lightboxIndex + 1} de {galleryImages.length})
+                            </span>
+                            {galleryImages[lightboxIndex].description && (
+                                <span style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>
+                                    {galleryImages[lightboxIndex].description}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>,

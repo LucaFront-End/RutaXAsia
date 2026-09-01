@@ -332,10 +332,11 @@ export default function Portafolio() {
                                                     <span className="port-year">#{i + 1}</span>
                                                 </div>
                                                 <div className="port-card-info">
-                                                    <span className="port-location"><LuMapPin size={13} /> {meta.location.split(',')[0]}</span>
-                                                    <h3 className="port-title">{img.title}</h3>
-                                                    {img.caption && img.caption !== img.title && (
-                                                        <p className="port-caption">{img.caption}</p>
+                                                    <span className="port-location">
+                                                        <LuMapPin size={13} /> {img.city || (img.title && !img.title.startsWith('IMG_') ? img.title : meta.location.split(',')[0])}
+                                                    </span>
+                                                    {(img.description || (img.caption && !img.caption.startsWith('IMG_') && img.caption !== img.title)) && (
+                                                        <p className="port-caption">{img.description || img.caption}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -449,14 +450,18 @@ export default function Portafolio() {
                                 <span className="port-lightbox-album-tag">
                                     {currentLightboxImg.album} · Foto {lightboxData.index + 1} de {lightboxData.images.length}
                                 </span>
-                                <h3 className="port-lightbox-title">{currentLightboxImg.title}</h3>
-                                {currentLightboxImg.caption && (
-                                    <p className="port-lightbox-caption">{currentLightboxImg.caption}</p>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ff6b9d', fontSize: '0.92rem', fontWeight: 800, textTransform: 'uppercase', marginTop: '6px' }}>
+                                    <LuMapPin size={15} /> {currentLightboxImg.city || (currentLightboxImg.title && !currentLightboxImg.title.startsWith('IMG_') ? currentLightboxImg.title : currentLightboxImg.album)}
+                                </div>
+                                {currentLightboxImg.description && (
+                                    <p className="port-lightbox-caption" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginTop: '4px' }}>
+                                        {currentLightboxImg.description}
+                                    </p>
                                 )}
                             </div>
 
                             <a
-                                href={`${WHATSAPP_BASE}SW-Hola%20me%20encanto%20la%20foto%20de%20${encodeURIComponent(currentLightboxImg.album || 'viaje')}%20y%20quiero%20informes`}
+                                href={`${WHATSAPP_BASE}SW-Hola%20me%20encanto%20la%20foto%20de%20${encodeURIComponent(currentLightboxImg.city || currentLightboxImg.album || 'viaje')}%20y%20quiero%20informes`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-primary port-lightbox-cta"

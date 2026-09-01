@@ -16,6 +16,15 @@ function formatWixImageUrl(wixUrl, slug) {
     return wixUrl;
 }
 
+function isFilename(str) {
+    if (!str || typeof str !== 'string') return true;
+    const clean = str.trim();
+    return /^img[-_]?\d+/i.test(clean) || 
+           /^dsc[-_]?\d+/i.test(clean) || 
+           /^\d+\.(jpg|jpeg|png|webp|heic)$/i.test(clean) || 
+           /\.(jpg|jpeg|png|webp|heic)$/i.test(clean);
+}
+
 function formatMediaItem(img, idx, albumTitle = 'General') {
     const src = formatWixImageUrl(img.src, img.slug);
     const width = img.settings?.width || 1080;
@@ -27,14 +36,22 @@ function formatMediaItem(img, idx, albumTitle = 'General') {
     if (isTall && idx % 3 === 0) span = 'tall';
     else if (isWide && idx % 4 === 1) span = 'wide';
 
+    // In Wix CMS: img.title is the City (e.g. "Busan", "Tokio", "Kioto", "Seúl")
+    // img.description is the Description of the photo (e.g. "Tour Entretenimiento")
+    const rawTitle = (img.title || '').trim();
+    const rawDesc = (img.description || '').trim();
+
+    const city = !isFilename(rawTitle) ? rawTitle : '';
+    const description = !isFilename(rawDesc) ? rawDesc : '';
+
     return {
         id: img.slug || `img-${albumTitle}-${idx}`,
         src,
-        title: img.title && !img.title.startsWith('IMG_') && !img.title.match(/^\d+\.jpg$/i)
-            ? img.title.replace(/\.[^/.]+$/, '')
-            : `${albumTitle} - Foto #${idx + 1}`,
-        caption: img.description || img.title || `Momento en ${albumTitle}`,
-        alt: img.alt || img.title || `Viaje ${albumTitle} con RutaXAsia`,
+        city: city || albumTitle,
+        title: city || albumTitle,
+        description: description,
+        caption: description || city || `Momento en ${albumTitle}`,
+        alt: description || city || `Viaje ${albumTitle} con RutaXAsia`,
         album: albumTitle,
         span,
         width,
