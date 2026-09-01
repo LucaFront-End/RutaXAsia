@@ -22,6 +22,15 @@ import './pages.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
+function WhatsAppIcon() {
+    return (
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 01-4.243-1.215l-.304-.182-2.87.852.852-2.87-.182-.304A8 8 0 1112 20z" />
+        </svg>
+    )
+}
+
 export default function TourDetailSakuraV2() {
     const tour = TOURS['sakura-2027']
     const season = TEMPORADAS.sakura
@@ -176,6 +185,8 @@ export default function TourDetailSakuraV2() {
     const includedExpsList = selectedExps.slice(0, freeExpLimit).map(e => e.name)
     const extraItems = selectedExps.slice(freeExpLimit)
     const extraTotal = extraItems.reduce((sum, item) => sum + (item.price || 0), 0)
+    const passengersCount = (selectorData.adults || 1) + (selectorData.children || 0)
+    const totalPrice = (basePrice * passengersCount) + (extraTotal * passengersCount)
 
     // Dynamic itinerary filtered by pass
     const filteredItinerario = useMemo(() => {
@@ -220,8 +231,12 @@ export default function TourDetailSakuraV2() {
         ? [...tour.gallery]
         : [{ img: tour.heroImage, caption: tour.title }]
 
+    // WhatsApp reservation link
+    const waText = `¡Hola! Me gustaría reservar o pedir información sobre Sakura 2027 (${activePass.name} - ${activePass.days}). Fechas: ${cmsDatesText.replace(' (Salida Grupal)', '')}. Pasajeros: ${passengersCount} (${selectorData.adults || 1} adultos, ${selectorData.children || 0} niños).`
+    const waLink = `${WHATSAPP_BASE}${encodeURIComponent(waText)}`
+
     return (
-        <div className="td-v2-container">
+        <div className="td-v2-container" style={{ '--jtb-primary': '#e91e63' }}>
             <Helmet>
                 <title>{tour.seoTitle} | RutaXAsia</title>
                 <meta name="description" content={tour.seoDescription} />
@@ -326,9 +341,9 @@ export default function TourDetailSakuraV2() {
                 </section>
             </div>
 
-            {/* ===== 4. ITINERARIO FUNCIONAL DE SAKURA COMPLETO (REEMPLAZO DE ¿QUÉ INCLUYE?) ===== */}
+            {/* ===== 4. ITINERARIO FUNCIONAL DE SAKURA COMPLETO (ANCHO COMPLETO Y NORMAL) ===== */}
             <section className="step3-section" style={{ background: '#fdfbf7', padding: '60px 0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-                <div className="container">
+                <div className="container" style={{ maxWidth: '960px', margin: '0 auto' }}>
                     {/* Checklist Todo Incluido Banner */}
                     <div style={{ marginBottom: '40px' }}>
                         <div className="step3-section-title">✅ Todo Incluido — Tu Pase de Viaje Grupal Sakura 2027</div>
@@ -355,128 +370,139 @@ export default function TourDetailSakuraV2() {
                         fixedDatesText={cmsDatesText}
                     />
 
-                    {/* Modalidad de Viaje Completo + Itinerario Shinkansen + Floating Ticket */}
-                    <div className="libre-layout" style={{ marginTop: '30px' }}>
-                        <div>
-                            {/* Selector de Pases (Explorador 12d vs Grand Tour 14d) */}
-                            <div style={{ marginBottom: 40 }}>
-                                <div className="step3-section-title">🎋 Elige la modalidad de tu Viaje Sakura Completo</div>
-                                <div className="libre-duration-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-                                    {packages.map((pkg, i) => {
-                                        const isSelected = selectedPassIndex === i
-                                        return (
-                                            <div
-                                                key={i}
-                                                className={`libre-duration-card${isSelected ? ' libre-duration-card--selected' : ''}`}
-                                                onClick={() => setSelectedPassIndex(i)}
-                                                style={{ padding: '24px 20px', cursor: 'pointer' }}
-                                            >
-                                                <span className="libre-duration-card-badge">
-                                                    {pkg.freeTours === 1 ? '🎁 Incluye 1 Experiencia Extra Gratis' : '🎁 Incluye 2 Experiencias Extras Gratis'}
-                                                </span>
-                                                <div className="libre-duration-check">{isSelected ? '✓' : ''}</div>
-                                                <span className="libre-duration-pass-name" style={{ fontSize: '1.25rem' }}>{pkg.name}</span>
-                                                <div className="libre-duration-days">{pkg.days.split(' ')[0]} días</div>
-                                                <div className="libre-duration-nights">{pkg.days.split(' ').slice(1).join(' ')}</div>
-                                                <div className="libre-duration-price">{pkg.priceText || formatPrice(pkg.priceNum)}</div>
-                                                <span className="libre-duration-per">MXN / persona</span>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Itinerario Shinkansen Día por Día */}
-                            <div style={{ marginBottom: '50px' }}>
-                                <div className="step3-section-title">
-                                    🚄 Ruta JR Line — Itinerario Completo ({activePass.name}: {activePass.days})
-                                </div>
-                                <div className="acomp-shinkansen-timeline">
-                                    <div className="acomp-railway-track" style={{ '--rail-color': '#e91e63' }} />
-                                    {filteredItinerario.map((item) => {
-                                        const titleLower = (item.title || '').toLowerCase()
-                                        const descLower = (item.desc || '').toLowerCase()
-                                        const isReturnDay = titleLower.includes('regreso') || titleLower.includes('vuelta') || descLower.includes('regreso')
-                                        const isTokyoFreeDay = !isReturnDay && (titleLower.includes('libre') || descLower.includes('libre'))
-
-                                        return (
-                                            <div className="acomp-station-item" key={item.day}>
-                                                <div className="acomp-station-marker" style={{ backgroundColor: '#e91e63' }}>
-                                                    <span className="acomp-station-number">{item.day}</span>
-                                                </div>
-                                                <div className="acomp-station-card" style={isTokyoFreeDay ? { border: '2px solid #e91e63', background: 'rgba(233,30,99,0.03)' } : {}}>
-                                                    <div className="acomp-station-header">
-                                                        <span className="acomp-station-icon">{item.icon}</span>
-                                                        <h4 className="acomp-station-title">
-                                                            {item.title.startsWith('Día') ? item.title : `Día ${item.day}: ${item.title}`}
-                                                        </h4>
-                                                    </div>
-                                                    <p className="acomp-station-desc">{item.desc}</p>
-                                                    
-                                                    {isTokyoFreeDay && (
-                                                        <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(233,30,99,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                                                            <span style={{ fontSize: '0.82rem', fontWeight: '750', color: '#e91e63' }}>
-                                                                🎯 Día libre en Tokio — Personaliza tu día:
-                                                            </span>
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-primary"
-                                                                style={{ fontSize: '0.8rem', padding: '6px 16px', borderRadius: '100px', fontWeight: '750' }}
-                                                                onClick={() => setIsTokyoModalOpen(true)}
-                                                            >
-                                                                ✨ Elegir Experiencias en Tokio
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Complementos Adicionales (Opcionales) */}
-                            <div style={{ marginTop: '30px' }}>
-                                <div className="step3-section-title">✨ Complementos adicionales (opcionales)</div>
-                                <div className="jtb-extras-grid">
-                                    {COMPLEMENTOS.map((item, i) => {
-                                        const isSelected = selectedComps.includes(item.title)
-                                        return (
-                                            <div
-                                                className={`jtb-extra-card${isSelected ? ' jtb-extra-card--selected' : ''}`}
-                                                key={i}
-                                                onClick={() => toggleComp(item.title)}
-                                            >
-                                                {isSelected && <span className="jtb-extra-card-badge">✓</span>}
-                                                <div className="jtb-extra-icon">{item.icon}</div>
-                                                <h4 className="jtb-extra-title">{item.title}</h4>
-                                                <p className="jtb-extra-desc">{item.desc}</p>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
+                    {/* Selector de Pases (Explorador 12d vs Grand Tour 14d) */}
+                    <div style={{ margin: '40px 0 30px' }}>
+                        <div className="step3-section-title">🎋 Elige la modalidad de tu Viaje Sakura Completo</div>
+                        <div className="libre-duration-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                            {packages.map((pkg, i) => {
+                                const isSelected = selectedPassIndex === i
+                                return (
+                                    <div
+                                        key={i}
+                                        className={`libre-duration-card${isSelected ? ' libre-duration-card--selected' : ''}`}
+                                        onClick={() => setSelectedPassIndex(i)}
+                                        style={{ padding: '30px 20px 24px', cursor: 'pointer' }}
+                                    >
+                                        <span
+                                            className="libre-duration-card-badge"
+                                            style={{
+                                                backgroundColor: '#e91e63',
+                                                color: '#ffffff',
+                                                boxShadow: '0 4px 14px rgba(233, 30, 99, 0.4)',
+                                                border: 'none',
+                                            }}
+                                        >
+                                            {pkg.freeTours === 1 ? '🎁 Incluye 1 Experiencia Extra Gratis' : '🎁 Incluye 2 Experiencias Extras Gratis'}
+                                        </span>
+                                        <div className="libre-duration-check">{isSelected ? '✓' : ''}</div>
+                                        <span className="libre-duration-pass-name" style={{ fontSize: '1.25rem', color: '#e91e63' }}>{pkg.name}</span>
+                                        <div className="libre-duration-days">{pkg.days.split(' ')[0]} días</div>
+                                        <div className="libre-duration-nights">{pkg.days.split(' ').slice(1).join(' ')}</div>
+                                        <div className="libre-duration-price">{pkg.priceText || formatPrice(pkg.priceNum)}</div>
+                                        <span className="libre-duration-per">MXN / persona</span>
+                                    </div>
+                                )
+                            })}
                         </div>
+                    </div>
 
-                        {/* Floating Ticket Sidebar */}
-                        <FloatingTicket
-                            season={{ name: 'Sakura 2027', colors: { primary: '#e91e63', bg: '#fdf2f8' } }}
-                            temporadaKey="sakura"
-                            estilo="Completo"
-                            selectorData={selectorData}
-                            tourDate={cmsDatesText.replace(' (Salida Grupal)', '')}
-                            selectedPkg={{ name: activePass.name, days: activePass.days, priceNum: basePrice }}
-                            includedExps={includedExpsList}
-                            addedItems={extraItems}
-                            selectedComps={selectedComps}
-                            freeExpLimit={freeExpLimit}
-                            basePrice={basePrice}
-                            extraTotal={extraTotal}
-                            onOpenCheckout={() => setIsCheckoutOpen(true)}
-                            onRemoveTour={(tourNameOrId) => {
-                                setSelectedExps(prev => prev.filter(e => e.id !== tourNameOrId && e.name !== tourNameOrId))
-                            }}
-                        />
+                    {/* Itinerario Shinkansen Día por Día */}
+                    <div style={{ marginBottom: '50px' }}>
+                        <div className="step3-section-title">
+                            🚄 Ruta JR Line — Itinerario Completo ({activePass.name}: {activePass.days})
+                        </div>
+                        <div className="acomp-shinkansen-timeline">
+                            <div className="acomp-railway-track" style={{ '--rail-color': '#e91e63' }} />
+                            {filteredItinerario.map((item) => {
+                                const titleLower = (item.title || '').toLowerCase()
+                                const descLower = (item.desc || '').toLowerCase()
+                                const isReturnDay = titleLower.includes('regreso') || titleLower.includes('vuelta') || descLower.includes('regreso')
+                                const isTokyoFreeDay = !isReturnDay && (titleLower.includes('libre') || descLower.includes('libre'))
+
+                                return (
+                                    <div className="acomp-station-item" key={item.day}>
+                                        <div className="acomp-station-marker" style={{ backgroundColor: '#e91e63' }}>
+                                            <span className="acomp-station-number">{item.day}</span>
+                                        </div>
+                                        <div className="acomp-station-card" style={isTokyoFreeDay ? { border: '2px solid #e91e63', background: 'rgba(233,30,99,0.03)' } : {}}>
+                                            <div className="acomp-station-header">
+                                                <span className="acomp-station-icon">{item.icon}</span>
+                                                <h4 className="acomp-station-title">
+                                                    {item.title.startsWith('Día') ? item.title : `Día ${item.day}: ${item.title}`}
+                                                </h4>
+                                            </div>
+                                            <p className="acomp-station-desc">{item.desc}</p>
+                                            
+                                            {isTokyoFreeDay && (
+                                                <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(233,30,99,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                                                    <span style={{ fontSize: '0.82rem', fontWeight: '750', color: '#e91e63' }}>
+                                                        🎯 Día libre en Tokio — Personaliza tu día:
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-primary"
+                                                        style={{ fontSize: '0.8rem', padding: '6px 16px', borderRadius: '100px', fontWeight: '750' }}
+                                                        onClick={() => setIsTokyoModalOpen(true)}
+                                                    >
+                                                        ✨ Elegir Experiencias en Tokio
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Complementos Adicionales (Opcionales) */}
+                    <div style={{ marginTop: '40px', marginBottom: '40px' }}>
+                        <div className="step3-section-title">✨ Complementos adicionales (opcionales)</div>
+                        <div className="jtb-extras-grid">
+                            {COMPLEMENTOS.map((item, i) => {
+                                const isSelected = selectedComps.includes(item.title)
+                                return (
+                                    <div
+                                        className={`jtb-extra-card${isSelected ? ' jtb-extra-card--selected' : ''}`}
+                                        key={i}
+                                        onClick={() => toggleComp(item.title)}
+                                    >
+                                        {isSelected && <span className="jtb-extra-card-badge">✓</span>}
+                                        <div className="jtb-extra-icon">{item.icon}</div>
+                                        <h4 className="jtb-extra-title">{item.title}</h4>
+                                        <p className="jtb-extra-desc">{item.desc}</p>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Action Card at bottom of itinerary */}
+                    <div style={{ textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '32px 24px', border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', marginTop: '40px' }}>
+                        <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-heading)', color: 'var(--color-dark)', margin: '0 0 8px' }}>
+                            {activePass.name} ({activePass.days}) · {cmsDatesText.replace(' (Salida Grupal)', '')}
+                        </h3>
+                        <p style={{ fontSize: '0.92rem', color: '#666', margin: '0 0 20px' }}>
+                            Aparta hoy mismo con $5,000 MXN de anticipo por pasajero y asegura tu lugar en grupo con guía hispanohablante.
+                        </p>
+                        <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                style={{ padding: '14px 28px', fontSize: '1rem', borderRadius: '100px', fontWeight: '800', cursor: 'pointer' }}
+                                onClick={() => setIsTicketModalOpen(true)}
+                            >
+                                🎟️ Ver Desglose y Reservar ({formatPrice(totalPrice)} MXN)
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-outline"
+                                style={{ padding: '14px 24px', fontSize: '1rem', borderRadius: '100px', fontWeight: '750', cursor: 'pointer' }}
+                                onClick={() => setIsPdfModalOpen(true)}
+                            >
+                                📄 Descargar Itinerario PDF
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -511,7 +537,7 @@ export default function TourDetailSakuraV2() {
                             type="button"
                             className="td-bottom-btn td-bottom-btn--reserve"
                             style={{ border: 'none', cursor: 'pointer' }}
-                            onClick={() => setIsCheckoutOpen(true)}
+                            onClick={() => setIsTicketModalOpen(true)}
                         >
                             Reservar mi Lugar
                         </button>
@@ -548,13 +574,74 @@ export default function TourDetailSakuraV2() {
                             type="button"
                             className="td-float-btn"
                             style={{ border: 'none', cursor: 'pointer' }}
-                            onClick={() => setIsCheckoutOpen(true)}
+                            onClick={() => setIsTicketModalOpen(true)}
                         >
                             Reservar
                         </button>
                     </div>
                 </div>
             </div>
+
+            {/* ===== TICKET POPUP MODAL (DESGLOSE COMPLETO AL TOCAR RESERVAR) ===== */}
+            {isTicketModalOpen && (
+                <div className="td-ticket-modal-backdrop" onClick={() => setIsTicketModalOpen(false)}>
+                    <div className="td-ticket-modal-dialog" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className="td-ticket-modal-close"
+                            onClick={() => setIsTicketModalOpen(false)}
+                            aria-label="Cerrar"
+                        >
+                            ✕
+                        </button>
+                        <div className="td-ticket-modal-header">
+                            <span className="td-ticket-modal-tag">🎟️ Desglose de Reserva</span>
+                            <h3 className="td-ticket-modal-title">Sakura 2027 — {activePass.name}</h3>
+                            <p className="td-ticket-modal-sub">{cmsDatesText.replace(' (Salida Grupal)', '')} · {activePass.days}</p>
+                        </div>
+                        <div className="td-ticket-modal-body">
+                            <FloatingTicket
+                                season={{ name: 'Sakura 2027', colors: { primary: '#e91e63', bg: '#fdf2f8' } }}
+                                temporadaKey="sakura"
+                                estilo="Completo"
+                                selectorData={selectorData}
+                                tourDate={cmsDatesText.replace(' (Salida Grupal)', '')}
+                                selectedPkg={{ name: activePass.name, days: activePass.days, priceNum: basePrice }}
+                                includedExps={includedExpsList}
+                                addedItems={extraItems}
+                                selectedComps={selectedComps}
+                                freeExpLimit={freeExpLimit}
+                                basePath="/viajes/japon/sakura"
+                                basePrice={basePrice}
+                                extraTotal={extraTotal}
+                                anticipoDisplay="$5,000 MXN"
+                                anticipoText="Anticipo $5,000 MXN + Plan de Cuotas"
+                                customReserveBtnText="Apartar Online ($5,000 MXN)"
+                                onOpenCheckout={() => {
+                                    setIsTicketModalOpen(false)
+                                    setIsCheckoutOpen(true)
+                                }}
+                                onOpenDownloadPdf={() => {
+                                    setIsTicketModalOpen(false)
+                                    setIsPdfModalOpen(true)
+                                }}
+                                onRemoveTour={(tourNameOrId) => {
+                                    setSelectedExps(prev => prev.filter(e => e.id !== tourNameOrId && e.name !== tourNameOrId))
+                                }}
+                            />
+                            <div className="td-ticket-modal-wa-wrap">
+                                <a
+                                    href={waLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="td-ticket-wa-cta"
+                                >
+                                    <WhatsAppIcon /> Reservar o Consultar por WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Modal: Experiencias en Tokio */}
             {isTokyoModalOpen && (
