@@ -15,7 +15,8 @@ export default function UserPortalPage() {
     })
 
     const [authMode, setAuthMode] = useState('login') // 'login' | 'register'
-    const [loginInput, setLoginInput] = useState(urlEmail || urlReserva || '')
+    const [loginEmail, setLoginEmail] = useState(urlEmail || sessionUser?.email || '')
+    const [loginReserva, setLoginReserva] = useState(urlReserva || sessionUser?.reserva || '')
     const [regName, setRegName] = useState('')
     const [regEmail, setRegEmail] = useState('')
     const [regPhone, setRegPhone] = useState('')
@@ -36,14 +37,16 @@ export default function UserPortalPage() {
 
     const formatPrice = (n) => `$${(Number(n) || 0).toLocaleString('es-MX')} MXN`
 
-    const fetchPortalData = async (queryParam) => {
+    const fetchPortalData = async (emailParam, reservaParam, memberIdParam) => {
         setLoading(true)
         setAuthError('')
         try {
-            const isEmail = queryParam.includes('@')
-            const url = isEmail
-                ? `/api/user-portal?email=${encodeURIComponent(queryParam)}`
-                : `/api/user-portal?reserva=${encodeURIComponent(queryParam)}`
+            let url = '/api/user-portal?'
+            const params = new URLSearchParams()
+            if (emailParam) params.append('email', emailParam.trim())
+            if (reservaParam) params.append('reserva', reservaParam.trim())
+            if (memberIdParam) params.append('memberId', memberIdParam.trim())
+            url += params.toString()
 
             const res = await fetch(url)
             const data = await res.json()
@@ -53,16 +56,14 @@ export default function UserPortalPage() {
             }
 
             setPortalData(data)
-            setSessionUser({
-                email: data.user.email || queryParam,
+            const sessionObj = {
+                email: data.user.email || emailParam,
                 name: data.user.name,
                 memberId: data.user.memberId,
-            })
-            localStorage.setItem('rutaxasia_user_session', JSON.stringify({
-                email: data.user.email || queryParam,
-                name: data.user.name,
-                memberId: data.user.memberId,
-            }))
+                reserva: data.reservaCode || reservaParam || '',
+            }
+            setSessionUser(sessionObj)
+            localStorage.setItem('rutaxasia_user_session', JSON.stringify(sessionObj))
 
             // Init passengers directly from data.pasajeros or fallback to reservation or user
             if (data.pasajeros && data.pasajeros.length > 0) {
@@ -163,20 +164,22 @@ export default function UserPortalPage() {
     }
 
     useEffect(() => {
-        if (urlEmail || urlReserva) {
-            fetchPortalData(urlEmail || urlReserva)
-        } else if (sessionUser?.email) {
-            fetchPortalData(sessionUser.email)
+        if (urlEmail && urlReserva) {
+            fetchPortalData(urlEmail, urlReserva)
+        } else if (sessionUser?.email && sessionUser?.reserva) {
+            fetchPortalData(sessionUser.email, sessionUser.reserva)
+        } else if (sessionUser?.email && sessionUser?.memberId) {
+            fetchPortalData(sessionUser.email, '', sessionUser.memberId)
         }
     }, [])
 
     const handleLoginSubmit = (e) => {
         e.preventDefault()
-        if (!loginInput.trim()) {
-            setAuthError('Por favor ingresa tu correo electrónico o código de reserva.')
+        if (!loginEmail.trim() || !loginReserva.trim()) {
+            setAuthError('Por favor ingresa tanto tu correo electrónico como tu código de reserva.')
             return
         }
-        fetchPortalData(loginInput.trim())
+        fetchPortalData(loginEmail.trim(), loginReserva.trim())
     }
 
     const handleRegisterSubmit = async (e) => {
@@ -203,7 +206,7 @@ export default function UserPortalPage() {
             }
 
             // Immediately load their dashboard with their new account
-            await fetchPortalData(regEmail.trim())
+            await fetchPortalData(regEmail.trim(), '')
         } catch (err) {
             setAuthError(err.message)
             setLoading(false)
@@ -214,7 +217,8 @@ export default function UserPortalPage() {
         localStorage.removeItem('rutaxasia_user_session')
         setSessionUser(null)
         setPortalData(null)
-        setLoginInput('')
+        setLoginEmail('')
+        setLoginReserva('')
     }
 
     const handleReservaSelect = (reservaId) => {
@@ -327,24 +331,40 @@ export default function UserPortalPage() {
                             </button>
                         </div>
 
-                        {/* MODE 1: LOGIN / LOOKUP BY EMAIL OR CODE */}
+                        {/* MODE 1: LOGIN / LOOKUP BY EMAIL AND RESERVATION CODE */}
                         {authMode === 'login' && (
                             <form onSubmit={handleLoginSubmit} className="portal-auth-form">
                                 <div className="portal-input-group">
-                                    <label htmlFor="login-input">Correo Electrónico o Código de Reserva</label>
+                                    <label htmlFor="login-email">Correo Electrónico *</label>
                                     <input
-                                        id="login-input"
-                                        type="text"
+                                        id="login-email"
+                                        type="email"
                                         className="portal-input"
-                                        placeholder="ej. viajero@gmail.com o RUTA-1045"
-                                        value={loginInput}
-                                        onChange={(e) => setLoginInput(e.target.value)}
+                                        placeholder="ej. viajero@gmail.com"
+                                        value={loginEmail}
+                                        onChange={(e) => { setAuthError(''); setLoginEmail(e.target.value) }}
                                         required
                                     />
                                 </div>
 
+                                <div className="portal-input-group">
+                                    <label htmlFor="login-reserva">Código de Reserva *</label>
+                                    <input
+                                        id="login-reserva"
+                                        type="text"
+                                        className="portal-input"
+                                        placeholder="ej. RUTA-1050"
+                                        value={loginReserva}
+                                        onChange={(e) => { setAuthError(''); setLoginReserva(e.target.value.toUpperCase()) }}
+                                        required
+                                    />
+                                    <span className="portal-input-hint">
+                                        ℹ️ Lo encuentras en el correo de confirmación de tu viaje (ej. RUTA-1050).
+                                    </span>
+                                </div>
+
                                 {authError && (
-                                    <div style={{ color: '#ef4444', fontSize: '0.85rem', background: 'rgba(239,68,68,0.1)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.25)' }}>
+                                    <div className="portal-auth-error-box">
                                         ⚠️ {authError}
                                     </div>
                                 )}
@@ -354,7 +374,7 @@ export default function UserPortalPage() {
                                     className="portal-auth-btn"
                                     disabled={loading}
                                 >
-                                    {loading ? 'Accediendo a tu cuenta...' : 'Acceder a Mi Cuenta →'}
+                                    {loading ? 'Verificando tus datos...' : 'Acceder a Mi Cuenta →'}
                                 </button>
                             </form>
                         )}
