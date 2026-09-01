@@ -74,8 +74,8 @@ export default async function handler(req, res) {
             await wixClient.items.update('ReservasdeViaje', updatedItem).catch(err => console.error('Error updating ReservasdeViaje:', err.message))
         }
 
-        // 4. Extract booking code (e.g. RUTA-1001)
-        const codeMatch = ((currentItem?.desgloseCompleto || '') + ' ' + reservaId).match(/RUTA-\w+/i)
+        // 4. Extract booking code (e.g. RUTA-1001 or RUTA-OCT-2026)
+        const codeMatch = ((currentItem?.desgloseCompleto || '') + ' ' + reservaId).match(/RUTA-[\w-]+/i)
         const reservaCode = codeMatch ? codeMatch[0].toUpperCase() : (reservaId.startsWith('RUTA-') ? reservaId : `RUTA-${(currentItem?._id || reservaId).slice(0, 6).toUpperCase()}`)
 
         // 5. Update/Insert in 'PASAJEROS' CMS

@@ -107,7 +107,7 @@ export default async function handler(req, res) {
         const userReservaCodes = new Set()
         if (queryReserva) userReservaCodes.add(queryReserva)
         reservas.forEach(r => {
-            const codeMatch = (r.desgloseCompleto || '').match(/RUTA-\w+/i)
+            const codeMatch = (r.desgloseCompleto || '').match(/RUTA-[\w-]+/i)
             if (codeMatch) userReservaCodes.add(codeMatch[0].toUpperCase())
             if (r._id) userReservaCodes.add(`RUTA-${r._id.slice(0, 6).toUpperCase()}`)
         })
@@ -180,14 +180,15 @@ export default async function handler(req, res) {
             const allP = allPRes.items || []
 
             pasajeros = allP.filter(p => {
-                const pEmail = (p.correoTitular || p.email || '').toLowerCase().trim()
-                const pReserva = (p.codigoReserva || p.reserva || '').trim().toUpperCase()
-                if (queryReserva && pReserva.includes(queryReserva)) return true
+                const pEmail = (p.correo || p.correoTitular || p.email || '').toLowerCase().trim()
+                const pReserva = (p.title || p.codigoReserva || p.reserva || '').trim().toUpperCase()
+                if (queryReserva && (pReserva === queryReserva || pReserva.includes(queryReserva))) return true
+                if (userReservaCodes.has(pReserva) || Array.from(userReservaCodes).some(code => pReserva.includes(code))) return true
                 if (effectiveEmail && pEmail === effectiveEmail) return true
                 return false
             })
-        } catch {
-            // best-effort
+        } catch (pasErr) {
+            console.warn('[UserPortal] Error fetching PASAJEROS:', pasErr.message)
         }
 
         // 7. Fetch Extras and Booked Add-ons from 'ExtrasReserva' / 'ExtrasReservados' CMS
@@ -198,14 +199,15 @@ export default async function handler(req, res) {
             const allExt = allExtRes.items || []
 
             extras = allExt.filter(ext => {
-                const eEmail = (ext.correoCliente || ext.email || '').toLowerCase().trim()
-                const eReserva = (ext.codigoReserva || ext.reserva || '').trim().toUpperCase()
-                if (queryReserva && eReserva.includes(queryReserva)) return true
+                const eEmail = (ext.correoCliente || ext.email || ext.correo || '').toLowerCase().trim()
+                const eReserva = (ext.title || ext.codigoReserva || ext.reserva || '').trim().toUpperCase()
+                if (queryReserva && (eReserva === queryReserva || eReserva.includes(queryReserva))) return true
+                if (userReservaCodes.has(eReserva) || Array.from(userReservaCodes).some(code => eReserva.includes(code))) return true
                 if (effectiveEmail && eEmail === effectiveEmail) return true
                 return false
             })
-        } catch {
-            // best-effort
+        } catch (extErr) {
+            console.warn('[UserPortal] Error fetching ExtrasReserva:', extErr.message)
         }
 
         // 8. Fetch User's Submitted Reviews from 'Resenas' CMS
@@ -285,6 +287,7 @@ export default async function handler(req, res) {
             },
             reservaCode: queryReserva,
             reservas,
+            pagos: pagosProgramados,
             pagosProgramados,
             pasajeros,
             extras,
