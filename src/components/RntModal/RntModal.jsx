@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { LuExternalLink, LuCopy, LuCheck, LuShieldCheck, LuBuilding2, LuX, LuFileText, LuGlobe, LuCircleAlert, LuMapPin } from 'react-icons/lu'
+import { LuExternalLink, LuCopy, LuCheck, LuShieldCheck, LuBuilding2, LuX, LuFileText, LuGlobe, LuCircleAlert, LuMapPin, LuSearch, LuArrowRight } from 'react-icons/lu'
 import './RntModal.css'
 
 const RNT_NUMBER = '0409015ae266f'
@@ -9,10 +9,8 @@ const SECTUR_URL = 'https://rnt-consulta.sectur.gob.mx/'
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
 export default function RntModal({ isOpen, onClose }) {
-    const [activeTab, setActiveTab] = useState('cedula') // 'cedula' | 'web'
+    const [activeTab, setActiveTab] = useState('cedula') // 'cedula' | 'portal'
     const [copiedField, setCopiedField] = useState(null)
-    const [iframeLoaded, setIframeLoaded] = useState(false)
-    const [iframeTimeout, setIframeTimeout] = useState(false)
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -23,15 +21,6 @@ export default function RntModal({ isOpen, onClose }) {
         window.addEventListener('keydown', handleKeyDown)
         return () => window.removeEventListener('keydown', handleKeyDown)
     }, [isOpen, onClose])
-
-    useEffect(() => {
-        if (activeTab === 'web' && !iframeLoaded) {
-            const timer = setTimeout(() => {
-                setIframeTimeout(true)
-            }, 8000)
-            return () => clearTimeout(timer)
-        }
-    }, [activeTab, iframeLoaded])
 
     if (!isOpen) return null
 
@@ -74,11 +63,11 @@ export default function RntModal({ isOpen, onClose }) {
                     </button>
                     <button
                         type="button"
-                        className={`rnt-modal-tab-btn ${activeTab === 'web' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('web')}
+                        className={`rnt-modal-tab-btn ${activeTab === 'portal' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('portal')}
                     >
                         <LuGlobe size={15} />
-                        <span>Portal Web SECTUR</span>
+                        <span>Consultar en Portal Federal SECTUR</span>
                     </button>
                 </div>
 
@@ -187,81 +176,94 @@ export default function RntModal({ isOpen, onClose }) {
                             <button
                                 type="button"
                                 className="btn btn-outline rnt-action-secondary"
-                                onClick={() => setActiveTab('web')}
+                                onClick={() => setActiveTab('portal')}
                             >
                                 <LuGlobe size={15} />
-                                <span>Ver Portal Federal SECTUR</span>
+                                <span>Ver Cómo Consultar en SECTUR</span>
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* TAB 2: PORTAL FEDERAL SECTUR */}
-                {activeTab === 'web' && (
-                    <div className="rnt-web-tab-container">
-                        {/* Notice Strip */}
-                        <div className="rnt-web-notice">
-                            <LuCircleAlert size={18} className="rnt-notice-icon" />
-                            <div>
+                {/* TAB 2: CONSULTA EN PORTAL FEDERAL SECTUR (GUÍA Y ENLACE DIRECTO) */}
+                {activeTab === 'portal' && (
+                    <div className="rnt-portal-guide-container">
+                        <div className="rnt-portal-guide-card">
+                            <div className="rnt-portal-guide-header">
+                                <div className="rnt-portal-icon-box">🏛️</div>
+                                <div>
+                                    <h4>Buscador de Prestadores de Servicios Turísticos</h4>
+                                    <p>Secretaría de Turismo del Gobierno Federal (SECTUR)</p>
+                                </div>
+                            </div>
+
+                            <div className="rnt-portal-security-notice">
+                                <LuShieldCheck size={18} className="rnt-sec-icon" />
                                 <p>
-                                    <strong>Aviso sobre el servidor gubernamental:</strong> El portal de consulta federal de SECTUR (<code>rnt-consulta.sectur.gob.mx</code>) suele presentar tiempos de carga lentos o bloqueos de conexión externa. Si no carga el visor abajo, utiliza el botón directo o consulta la <strong>Cédula Oficial Digital</strong> en la primera pestaña.
+                                    <strong>Aviso de Seguridad Web:</strong> Por normatividad del Gobierno de México (política <code>X-Frame-Options</code>), los buscadores federales no permiten ser incrustados en marcos internos. Para verificar nuestra alta oficial, haz clic en el botón inferior para abrir el portal directamente.
                                 </p>
                             </div>
-                            <a
-                                href={SECTUR_URL}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-primary rnt-external-direct-btn"
-                            >
-                                <span>Abrir en SECTUR ↗</span>
-                            </a>
-                        </div>
 
-                        {/* Embedded Iframe with fallback */}
-                        <div className="rnt-iframe-wrapper">
-                            {!iframeLoaded && !iframeTimeout && (
-                                <div className="rnt-iframe-loading">
-                                    <div className="rnt-spinner" />
-                                    <p>Conectando con el servidor central de SECTUR...</p>
+                            {/* Steps to verify */}
+                            <div className="rnt-portal-steps">
+                                <div className="rnt-portal-step-item">
+                                    <span className="rnt-portal-step-badge">Paso 1</span>
+                                    <div className="rnt-portal-step-body">
+                                        <strong>Copia nuestro Folio o RFC oficial:</strong>
+                                        <div className="rnt-portal-copy-row">
+                                            <div className="rnt-portal-copy-pill">
+                                                <span>Folio RNT: <code>{RNT_NUMBER}</code></span>
+                                                <button
+                                                    type="button"
+                                                    className="rnt-mini-copy"
+                                                    onClick={() => handleCopy(RNT_NUMBER, 'rnt-p')}
+                                                >
+                                                    {copiedField === 'rnt-p' ? <><LuCheck size={12} /> Copiado</> : <><LuCopy size={12} /> Copiar</>}
+                                                </button>
+                                            </div>
+                                            <div className="rnt-portal-copy-pill">
+                                                <span>RFC: <code>{RFC_NUMBER}</code></span>
+                                                <button
+                                                    type="button"
+                                                    className="rnt-mini-copy"
+                                                    onClick={() => handleCopy(RFC_NUMBER, 'rfc-p')}
+                                                >
+                                                    {copiedField === 'rfc-p' ? <><LuCheck size={12} /> Copiado</> : <><LuCopy size={12} /> Copiar</>}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
 
-                            {iframeTimeout && !iframeLoaded && (
-                                <div className="rnt-iframe-timeout-fallback">
-                                    <div className="rnt-timeout-icon">⏳</div>
-                                    <h4>El servidor de SECTUR tardó en responder</h4>
-                                    <p>
-                                        Los servidores del Gobierno de México pueden demorar o restringir la visualización dentro de otras páginas.
-                                    </p>
-                                    <div className="rnt-timeout-btns">
+                                <div className="rnt-portal-step-item">
+                                    <span className="rnt-portal-step-badge">Paso 2</span>
+                                    <div className="rnt-portal-step-body">
+                                        <strong>Ingresa al Portal Oficial de SECTUR:</strong>
+                                        <p>Pega el Folio o RFC en el buscador para consultar la constancia pública de legalidad.</p>
                                         <a
                                             href={SECTUR_URL}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="btn btn-primary"
+                                            className="btn btn-primary rnt-portal-main-cta"
                                         >
-                                            <LuExternalLink size={15} />
-                                            <span>Abrir {SECTUR_URL} en Pestaña Nueva</span>
+                                            <LuSearch size={16} />
+                                            <span>Abrir Buscador Oficial rnt-consulta.sectur.gob.mx ↗</span>
                                         </a>
-                                        <button
-                                            type="button"
-                                            className="btn btn-outline"
-                                            onClick={() => setActiveTab('cedula')}
-                                        >
-                                            <LuFileText size={15} />
-                                            <span>Regresar a la Cédula Digital</span>
-                                        </button>
                                     </div>
                                 </div>
-                            )}
+                            </div>
+                        </div>
 
-                            <iframe
-                                src={SECTUR_URL}
-                                title="Consulta Registro Nacional de Turismo SECTUR México"
-                                className={`rnt-iframe ${iframeLoaded ? 'rnt-iframe--loaded' : ''}`}
-                                onLoad={() => setIframeLoaded(true)}
-                                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                            />
+                        {/* Return to Cedula */}
+                        <div className="rnt-portal-footer-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline"
+                                onClick={() => setActiveTab('cedula')}
+                            >
+                                <LuFileText size={15} />
+                                <span>Regresar a la Cédula Digital Verificada</span>
+                            </button>
                         </div>
                     </div>
                 )}
