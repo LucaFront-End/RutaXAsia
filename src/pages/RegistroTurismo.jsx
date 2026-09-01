@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useSearchParams } from 'react-router-dom'
-import { LuShieldCheck, LuFileCheck, LuCircleCheck, LuBuilding2, LuCreditCard, LuHeartHandshake, LuExternalLink, LuLock, LuInfo, LuSearch } from 'react-icons/lu'
+import { LuShieldCheck, LuFileCheck, LuCircleCheck, LuBuilding2, LuCreditCard, LuHeartHandshake, LuExternalLink, LuLock, LuInfo, LuSearch, LuCopy, LuCheck } from 'react-icons/lu'
 import CmsGallery from '../components/CmsGallery/CmsGallery'
 import RntModal from '../components/RntModal/RntModal'
 import './RegistroTurismo.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
+const RNT_NUMBER = '0409015ae266f'
+const RFC_NUMBER = 'SARJ740301GS3'
 
 export default function RegistroTurismo() {
     const [searchParams] = useSearchParams()
     const [showRntModal, setShowRntModal] = useState(false)
+    const [copiedField, setCopiedField] = useState(null)
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -18,6 +21,13 @@ export default function RegistroTurismo() {
             setShowRntModal(true)
         }
     }, [searchParams])
+
+    const handleCopy = (text, fieldName) => {
+        navigator.clipboard.writeText(text).then(() => {
+            setCopiedField(fieldName)
+            setTimeout(() => setCopiedField(null), 2200)
+        }).catch(() => {})
+    }
 
     return (
         <div className="rnt-page">
@@ -44,38 +54,95 @@ export default function RegistroTurismo() {
                         Tu tranquilidad y seguridad son nuestra máxima prioridad. Conoce las certificaciones, registros gubernamentales y garantías que respaldan cada uno de nuestros viajes desde México.
                     </p>
 
-                    <div className="rnt-hero-trust-bar">
-                        <div
-                            className="rnt-trust-item"
-                            onClick={() => setShowRntModal(true)}
-                            style={{ cursor: 'pointer' }}
-                            title="Haz clic para verificar constancia en línea"
-                        >
-                            <span className="rnt-trust-icon">🏛️</span>
-                            <div>
-                                <strong>SECTUR México</strong>
-                                <small style={{ color: 'var(--color-primary, #e91e7a)', fontWeight: 700 }}>Verificar en Línea →</small>
+                    {/* Top Hero Verification Container */}
+                    <div className="rnt-hero-verification-card">
+                        <div className="rnt-hero-card-top">
+                            <div className="rnt-hero-card-info">
+                                <span className="rnt-hero-card-badge">
+                                    <LuShieldCheck size={14} /> CERTIFICACIÓN OFICIAL SECTUR GOBIERNO DE MÉXICO
+                                </span>
+                                <div className="rnt-hero-credentials-row">
+                                    <div className="rnt-hero-cred-box">
+                                        <span className="rnt-hero-cred-label">Folio RNT Oficial:</span>
+                                        <div className="rnt-hero-cred-value">
+                                            <code className="rnt-code-tag">{RNT_NUMBER}</code>
+                                            <button
+                                                type="button"
+                                                className="rnt-hero-copy-btn"
+                                                onClick={() => handleCopy(RNT_NUMBER, 'rnt')}
+                                                title="Copiar Folio RNT"
+                                            >
+                                                {copiedField === 'rnt' ? <><LuCheck size={13} /> ¡Copiado!</> : <><LuCopy size={13} /> Copiar</>}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="rnt-hero-cred-box">
+                                        <span className="rnt-hero-cred-label">RFC Registrado SAT:</span>
+                                        <div className="rnt-hero-cred-value">
+                                            <code className="rnt-code-tag">{RFC_NUMBER}</code>
+                                            <button
+                                                type="button"
+                                                className="rnt-hero-copy-btn"
+                                                onClick={() => handleCopy(RFC_NUMBER, 'rfc')}
+                                                title="Copiar RFC"
+                                            >
+                                                {copiedField === 'rfc' ? <><LuCheck size={13} /> ¡Copiado!</> : <><LuCopy size={13} /> Copiar</>}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="rnt-hero-card-action">
+                                <button
+                                    type="button"
+                                    className="btn btn-primary rnt-hero-verify-cta"
+                                    onClick={() => setShowRntModal(true)}
+                                >
+                                    <LuSearch size={16} />
+                                    <span>Consultar Certificado en Línea</span>
+                                </button>
+                                <span className="rnt-hero-action-hint">⚡ Consulta oficial en tiempo real sin salir de la web</span>
                             </div>
                         </div>
-                        <div className="rnt-trust-item">
-                            <span className="rnt-trust-icon">📄</span>
-                            <div>
-                                <strong>SAT & Facturación</strong>
-                                <small>Empresa 100% formal</small>
+
+                        <div className="rnt-hero-card-divider" />
+
+                        {/* 4 Trust Badges in Grid */}
+                        <div className="rnt-hero-trust-grid">
+                            <div
+                                className="rnt-trust-item"
+                                onClick={() => setShowRntModal(true)}
+                                style={{ cursor: 'pointer' }}
+                                title="Haz clic para verificar constancia en línea"
+                            >
+                                <span className="rnt-trust-icon">🏛️</span>
+                                <div>
+                                    <strong>SECTUR México</strong>
+                                    <small style={{ color: 'var(--color-primary, #e91e7a)', fontWeight: 700 }}>Inscritos en RNT →</small>
+                                </div>
                             </div>
-                        </div>
-                        <div className="rnt-trust-item">
-                            <span className="rnt-trust-icon">🏥</span>
-                            <div>
-                                <strong>Asistencia Médica</strong>
-                                <small>Seguro Internacional</small>
+                            <div className="rnt-trust-item">
+                                <span className="rnt-trust-icon">📄</span>
+                                <div>
+                                    <strong>SAT & Facturación</strong>
+                                    <small>Empresa 100% formal</small>
+                                </div>
                             </div>
-                        </div>
-                        <div className="rnt-trust-item">
-                            <span className="rnt-trust-icon">🔒</span>
-                            <div>
-                                <strong>Pagos Protegidos</strong>
-                                <small>Cuentas bancarias oficiales</small>
+                            <div className="rnt-trust-item">
+                                <span className="rnt-trust-icon">🏥</span>
+                                <div>
+                                    <strong>Asistencia Médica</strong>
+                                    <small>Seguro Internacional 24/7</small>
+                                </div>
+                            </div>
+                            <div className="rnt-trust-item">
+                                <span className="rnt-trust-icon">🔒</span>
+                                <div>
+                                    <strong>Pagos Protegidos</strong>
+                                    <small>Cuentas bancarias oficiales</small>
+                                </div>
                             </div>
                         </div>
                     </div>
