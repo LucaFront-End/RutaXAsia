@@ -6,6 +6,7 @@ import './index.css'
 import App from './App'
 import Home from './pages/Home'
 import TourDetail from './pages/TourDetail'
+import TourDetailSakuraV2 from './pages/TourDetailSakuraV2'
 import AboutUs from './pages/AboutUs'
 import FAQ from './pages/FAQ'
 import Contact from './pages/Contact'
@@ -39,6 +40,9 @@ createRoot(document.getElementById('root')).render(
                     <Routes>
                         <Route path="/" element={<App />}>
                         <Route index element={<Home />} />
+                        <Route path="tours/sakura-2027-v2" element={<TourDetailSakuraV2 />} />
+                        <Route path="tours/sakura-2027-preview" element={<TourDetailSakuraV2 />} />
+                        <Route path="viajes/japon/sakura/completo-preview" element={<TourDetailSakuraV2 />} />
                         <Route path="tours/:slug" element={<TourDetail />} />
                         <Route path="tours-individuales" element={<ToursIndividualesPage />} />
                         <Route path="tour-individuales" element={<ToursIndividualesPage />} />
