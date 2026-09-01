@@ -48,11 +48,11 @@ export const TEMPORADAS = {
     },
     kamakura: {
         key: 'kamakura',
-        name: 'Kamakura',
-        fullName: 'Kamakura',
+        name: 'Otoño',
+        fullName: 'Kamakura (Otoño)',
         emoji: '🍁',
-        months: '1 de Septiembre — 15 de Marzo',
-        description: 'Los colores del otoño y templos serenos transforman Japón. Paisajes mágicos, gastronomía de temporada y experiencias inolvidables.',
+        months: '1 de Septiembre — 30 de Noviembre',
+        description: 'Los colores del otoño y templos serenos transforman Japón. Paisajes mágicos de Momiji, gastronomía de temporada y experiencias inolvidables.',
         heroImage: '/otono-japan.jpg',
         cardImage: '/otono-japan.jpg',
         colors: {
@@ -62,16 +62,39 @@ export const TEMPORADAS = {
             gradient: 'linear-gradient(135deg, #fde8d0 0%, #e8a87c 100%)',
             heroBg: 'linear-gradient(135deg, #7f2b0a 0%, #c44900 50%, #e65100 100%)',
         },
-        highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'],
+        highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal', 'Clima fresco y templado'],
+    },
+    invierno: {
+        key: 'invierno',
+        name: 'Invierno',
+        fullName: 'Fuyu (Invierno)',
+        emoji: '❄️',
+        months: '1 de Diciembre — 28 de Febrero',
+        description: 'Paisajes nevados, aguas termales Onsen humeantes con vista al Monte Fuji y las iluminaciones invernales más espectaculares del planeta.',
+        heroImage: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1920&h=900&fit=crop&q=85',
+        cardImage: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop&q=85',
+        colors: {
+            primary: '#0284c7',
+            secondary: '#7dd3fc',
+            bg: '#f0f9ff',
+            gradient: 'linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 100%)',
+            heroBg: 'linear-gradient(135deg, #0c4a6e 0%, #0284c7 50%, #38bdf8 100%)',
+        },
+        highlights: ['Onsen tradicional en la nieve', 'Monte Fuji nevado', 'Iluminaciones navideñas & Año Nuevo', 'Monos de nieve en Jigokudani'],
     },
 }
 
-// Aliases for backward compatibility
+// Aliases for seasons
+TEMPORADAS.primavera = TEMPORADAS.sakura
 TEMPORADAS.verano = TEMPORADAS.akari
+TEMPORADAS.otono = TEMPORADAS.kamakura
+TEMPORADAS.otoño = TEMPORADAS.kamakura
 TEMPORADAS.momiji = TEMPORADAS.kamakura
 TEMPORADAS.koyo = TEMPORADAS.kamakura
+TEMPORADAS.fuyu = TEMPORADAS.invierno
+TEMPORADAS.nieve = TEMPORADAS.invierno
 
-export const TEMPORADA_ORDER = ['sakura', 'akari', 'kamakura']
+export const TEMPORADA_ORDER = ['sakura', 'akari', 'kamakura', 'invierno']
 
 /* ==========================================
    EXPERIENCIAS (Travel Styles)
