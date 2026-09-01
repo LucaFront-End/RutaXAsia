@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
 
-/* ===== COUNTRY GALLERY CARDS (replaces city-specific gallery in landing hero) ===== */
+/* ===== COUNTRY GALLERY CARDS (for landing hero) ===== */
 const COUNTRY_CARDS = [
     {
         title: 'Japón',
@@ -28,35 +28,57 @@ const COUNTRY_CARDS = [
 ]
 
 /* ===== HERO BACKGROUNDS for landing pages (cycle through destinations) ===== */
-const LANDING_HERO_IMAGES = [
+const DEFAULT_HERO_IMAGES = [
     'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&h=1080&fit=crop&q=85',
+    'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=1920&h=1080&fit=crop&q=85',
+    'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&h=1080&fit=crop&q=85',
     'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=1920&h=1080&fit=crop&q=85',
-    'https://images.unsplash.com/photo-1723174391648-9e73f8865a12?w=1920&h=1080&fit=crop&q=85',
-]
-
-/* ===== TIMELINE DATA (same as Home) ===== */
-const TIMELINE_EVENTS = [
-    { year: '2009', title: 'Mi primer viaje a Japón', desc: 'Juan viaja a Japón como becario y obtiene su primera certificación como facilitador.', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&h=400&fit=crop&q=80', side: 'left' },
-    { year: '2011', title: 'Segunda certificación en Japón', desc: 'Con más preparación y estudio, Juan vuelve a Japón y lo disfruta al máximo.', image: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600&h=400&fit=crop&q=80', side: 'right' },
-    { year: '2011-18', title: 'Años de experiencia profesional', desc: 'Viajes frecuentes como consultor, ponente y coordinador de logística.', image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&h=400&fit=crop&q=80', side: 'left' },
-    { year: '2018', title: 'Nace Juan Santiago Mx Viajes', desc: 'El primer tour turístico con clientes: la ya clásica edición Otoño en Japón.', image: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=600&h=400&fit=crop&q=80', side: 'right' },
-    { year: '2019', title: '6 viajes grupales', desc: '3 grupos en Sakura, 2 en verano y 2 en otoño.', image: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&h=400&fit=crop&q=80', side: 'left' },
-    { year: '2020', title: 'Pausa y reinvención', desc: 'La pandemia nos obligó a pausar, pero nos sirvió para replantearnos. Alejandra se integra.', image: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=600&h=400&fit=crop&q=80', side: 'right' },
-    { year: '2023', title: 'Volvimos con todo 🚀', desc: 'De las primeras agencias en regresar a Japón post-pandemia. 7 fechas, grupos llenos.', image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop&q=80', side: 'left' },
-    { year: '2024', title: 'Corea entra en la ruta', desc: 'Se aumentaron frecuencias y fuimos de las primeras agencias en ingresar a Corea del Sur.', image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=600&h=400&fit=crop&q=80', side: 'right' },
-    { year: '2025', title: '9 ediciones — nuestro récord', desc: 'Entre Japón y Corea, 9 ediciones de viajes. Servicios perfeccionados, rutas ampliadas.', image: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=600&h=400&fit=crop&q=80', side: 'left' },
-    { year: '2026', title: 'Nace Ruta x Asia ✨', desc: 'Año de transformación. Nace oficialmente Ruta x Asia.', image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&h=400&fit=crop&q=80', side: 'right' },
 ]
 
 /* ===== DAY JOURNEY DATA ===== */
 const JOURNEY_TITLE_IMG = 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&h=1600&fit=crop&q=80'
 
 const DAY_JOURNEY = [
-    { time: '08:00 AM', activity: 'Río Sumida', heading: 'Caminata matutina por el río Sumida y fotos del amanecer sobre Tokyo', image: '/images/journey/rio-sumida.jpg', type: 'image', layout: 'horizontal' },
-    { time: '10:00 AM', activity: 'Senso-ji & Asakusa', heading: 'Visita el templo Senso-ji y recorre el histórico barrio de Asakusa', image: '/images/journey/sensoji.jpeg', type: 'image', layout: 'vertical' },
-    { time: '12:00 PM', activity: 'Kimono en Asakusa', heading: 'Vestite de kimono y recorré las calles históricas de Asakusa', image: '/images/journey/kimono-asakusa.jpg', type: 'image', layout: 'horizontal' },
-    { time: '02:00 PM', activity: 'Ramen japonés', heading: 'Saborea un auténtico ramen japonés en uno de los mejores restaurantes locales', image: '/images/journey/ramen.jpg', type: 'image', layout: 'horizontal' },
-    { time: '08:00 PM', activity: 'Neón nocturno', heading: 'Piérdete en la magia de las calles de neón de Shinjuku y Shibuya', image: '/images/journey/shibuya-noche.jpg', type: 'image', layout: 'vertical' },
+    {
+        time: '08:00 AM',
+        activity: 'Río Sumida',
+        heading: 'Caminata matutina por el río Sumida y fotos del amanecer sobre Tokyo',
+        image: '/images/journey/rio-sumida.jpg',
+        type: 'image',
+        layout: 'horizontal',
+    },
+    {
+        time: '10:00 AM',
+        activity: 'Senso-ji & Asakusa',
+        heading: 'Visita el templo Senso-ji y recorre el histórico barrio de Asakusa',
+        image: '/images/journey/sensoji.jpeg',
+        type: 'image',
+        layout: 'vertical',
+    },
+    {
+        time: '12:00 PM',
+        activity: 'Kimono en Asakusa',
+        heading: 'Vestite de kimono y recorré las calles históricas de Asakusa',
+        image: '/images/journey/kimono-asakusa.jpg',
+        type: 'image',
+        layout: 'horizontal',
+    },
+    {
+        time: '02:00 PM',
+        activity: 'Ramen japonés',
+        heading: 'Saborea un auténtico ramen japonés en uno de los mejores restaurantes locales',
+        image: '/images/journey/ramen.jpg',
+        type: 'image',
+        layout: 'horizontal',
+    },
+    {
+        time: '08:00 PM',
+        activity: 'Neón nocturno',
+        heading: 'Piérdete en la magia de las calles de neón de Shinjuku y Shibuya',
+        image: '/images/journey/shibuya-noche.jpg',
+        type: 'image',
+        layout: 'vertical',
+    },
 ]
 
 const TESTIMONIALS = [
@@ -70,20 +92,82 @@ const TESTIMONIALS = [
 
 /* ===== TRIPS DATA (for boarding pass cards section) ===== */
 const TRIPS = [
-    { id: 'sakura-2027', title: 'Sakura 2027', excerpt: 'Cerezos en flor, templos milenarios y la esencia más pura de Japón. 12 días inolvidables.', date: '22 marzo – 2 abril', duration: '12 días', flagIcons: [{ code: 'jp', name: 'Japón' }], badge: 'DISPONIBLE 2027', soldOut: false, image: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=600&h=400&fit=crop', includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass incluido', 'Guía hispanohablante'] },
-    { id: 'octubre-japon-2026', title: 'Japón Octubre', excerpt: '12 días descubriendo Japón en la mejor época. Clima perfecto y los primeros colores otoñales.', date: '2 – 13 octubre', duration: '12 días', flagIcons: [{ code: 'jp', name: 'Japón' }], badge: '🍁 Trilogía Otoño', image: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=600&h=400&fit=crop', includes: ['10 noches con desayuno', 'Tours y entradas con guía', 'Transportación y tren bala', 'Coordinador 24/7 y Wi-Fi'] },
-    { id: 'japon-corea-2026', title: 'Japón y Corea', excerpt: '14 días explorando lo mejor de dos mundos. Tokyo, Kyoto, Osaka, Seúl y Busan.', date: '17 – 30 octubre', duration: '14 días', flagIcons: [{ code: 'jp', name: 'Japón' }, { code: 'kr', name: 'Corea' }], badge: '🆕 Ya a la venta', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&h=400&fit=crop', includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass + KTX', 'Guía hispanohablante'] },
-    { id: 'corea-otono-2026', title: 'Corea en Otoño', excerpt: '12 días viviendo la magia del otoño en Corea del Sur. Seúl, Busan y Gyeongju.', date: '27 octubre – 7 noviembre', duration: '12 días', flagIcons: [{ code: 'kr', name: 'Corea' }], badge: '🍁 Otoño 2026', soldOut: false, image: '/images/tours/gyeongju-otono-korea.jpg', includes: ['10 noches con desayuno', 'Tours y entradas con guía', 'Transportación y KTX', 'Coordinador 24/7 y Wi-Fi'] },
+    {
+        id: 'sakura-2027',
+        title: 'Sakura 2027',
+        heroTagline: 'Japón',
+        heroHeading: 'JAPÓN',
+        heroSubheading: 'Sakura',
+        excerpt: 'Cerezos en flor, templos milenarios y la esencia más pura de Japón. 12 días inolvidables.',
+        date: '22 marzo – 2 abril',
+        duration: '12 días',
+        flagIcons: [{ code: 'jp', name: 'Japón' }],
+        badge: 'DISPONIBLE 2027',
+        soldOut: false,
+        image: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=600&h=400&fit=crop',
+        heroImage: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&h=1080&fit=crop&q=85',
+        includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass incluido', 'Guía hispanohablante'],
+    },
+    {
+        id: 'octubre-japon-2026',
+        title: 'Japón Octubre',
+        heroTagline: 'Japón',
+        heroHeading: 'KYOTO',
+        heroSubheading: '& Osaka',
+        excerpt: '12 días descubriendo Japón en la mejor época. Clima perfecto y los primeros colores otoñales.',
+        date: '2 – 13 octubre',
+        duration: '12 días',
+        flagIcons: [{ code: 'jp', name: 'Japón' }],
+        badge: '🍁 Trilogía Otoño',
+        image: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=600&h=400&fit=crop',
+        heroImage: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=1920&h=1080&fit=crop&q=85',
+        includes: ['10 noches con desayuno', 'Tours y entradas con guía', 'Transportación y tren bala', 'Coordinador 24/7 y Wi-Fi'],
+    },
+    {
+        id: 'japon-corea-2026',
+        title: 'Japón y Corea',
+        heroTagline: 'Japón & Corea',
+        heroHeading: 'JAPÓN',
+        heroSubheading: '& COREA',
+        excerpt: '14 días explorando lo mejor de dos mundos. Tokyo, Kyoto, Osaka, Seúl y Busan.',
+        date: '17 – 30 octubre',
+        duration: '14 días',
+        flagIcons: [{ code: 'jp', name: 'Japón' }, { code: 'kr', name: 'Corea' }],
+        badge: '🆕 Ya a la venta',
+        image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&h=400&fit=crop',
+        heroImage: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&h=1080&fit=crop&q=85',
+        includes: ['Vuelos desde CDMX', 'Hospedaje incluido', 'JR Pass + KTX', 'Guía hispanohablante'],
+    },
+    {
+        id: 'corea-otono-2026',
+        title: 'Corea en Otoño',
+        heroTagline: 'Corea del Sur',
+        heroHeading: 'COREA OTOÑO',
+        heroSubheading: 'Seúl y Busan',
+        excerpt: '12 días viviendo la magia del otoño en Corea del Sur. Seúl, Busan y Gyeongju.',
+        date: '27 octubre – 7 noviembre',
+        duration: '12 días',
+        flagIcons: [{ code: 'kr', name: 'Corea' }],
+        badge: '🍁 Otoño 2026',
+        soldOut: false,
+        image: '/images/tours/gyeongju-otono-korea.jpg',
+        heroImage: '/images/tours/gyeongju-otono-korea.jpg',
+        includes: ['10 noches con desayuno', 'Tours y entradas con guía', 'Transportación y KTX', 'Coordinador 24/7 y Wi-Fi'],
+    },
 ]
 
 /**
  * LandingHome — Dynamic clone of the Home page for city landings.
  * 
- * Differences from Home:
- * 1. Hero title & excerpt come from CMS (props)
- * 2. Gallery cards show 3 countries (Japón, Corea, China) instead of tour photos
- * 3. Two CTA buttons: WhatsApp + Ver Viajes
- * 4. All other sections (Day Journey, Timeline, Tours, Testimonials, etc.) are the same
+ * Features:
+ * 1. Dynamic Hero from CMS props (Title, Excerpt, City, WhatsApp)
+ * 2. 1. Japón a la Carta Showcase (Modality steps & season shortcuts)
+ * 3. 2. Seasons Explorer (¿Cuándo Viajar? 4 Estaciones)
+ * 4. 3. Horizontal Day Journey (Sticky scroll with animations & video/images)
+ * 5. 4. Próximas Salidas (Boarding Pass Cards)
+ * 6. 5. Why Us (Swiss Grid 4 Pillars)
+ * 7. 6. Comunidad Viajera (Dynamic CMS /api/resenas reviews)
+ * 8. 7. CTA Final (Boarding Pass Ticket with dynamic city)
  */
 function LandingHome({ landingData }) {
     const whatsappUrl = landingData?.whatsapp
@@ -92,23 +176,50 @@ function LandingHome({ landingData }) {
 
     const heroTitle = landingData?.title || 'RutaXAsia'
     const heroExcerpt = landingData?.excerpt || 'Agencia #1 de viajes a Japón y Corea del Sur desde México.'
+    const cityName = landingData?.city || 'México'
+
+    // Combine custom landing hero image if present
+    const heroImages = landingData?.heroImage
+        ? [landingData.heroImage, ...DEFAULT_HERO_IMAGES.filter(img => img !== landingData.heroImage)]
+        : DEFAULT_HERO_IMAGES
 
     const [activeHeroBg, setActiveHeroBg] = useState(0)
+    const [testimonials, setTestimonials] = useState(TESTIMONIALS)
     const timerRef = useRef(null)
     const hScrollRef = useRef(null)
     const hTrackRef = useRef(null)
     const hScrollProgressRef = useRef(null)
     const djSvgPaths = useRef([])
-    const timelineRef = useRef(null)
-    const timelineLineRef = useRef(null)
+
+    // Fetch approved CMS reviews for Comunidad Viajera section
+    useEffect(() => {
+        let isMounted = true
+        fetch('/api/resenas')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (isMounted && data?.success && Array.isArray(data.reviews) && data.reviews.length > 0) {
+                    const cmsPolaroids = data.reviews.map((r, idx) => ({
+                        name: r.name,
+                        trip: r.trip,
+                        location: r.city,
+                        text: r.comment,
+                        photo: r.tripPhoto || r.photo,
+                        rotate: (idx % 2 === 0 ? -1 : 1) * ((idx % 3) + 1.5)
+                    }))
+                    setTestimonials([...cmsPolaroids, ...TESTIMONIALS].slice(0, 8))
+                }
+            })
+            .catch(() => {})
+        return () => { isMounted = false }
+    }, [])
 
     // Auto-advance hero background every 6s
     useEffect(() => {
         timerRef.current = setInterval(() => {
-            setActiveHeroBg(prev => (prev + 1) % LANDING_HERO_IMAGES.length)
+            setActiveHeroBg(prev => (prev + 1) % heroImages.length)
         }, 6000)
         return () => clearInterval(timerRef.current)
-    }, [])
+    }, [heroImages.length])
 
     // Scroll-triggered animations
     useEffect(() => {
@@ -161,27 +272,10 @@ function LandingHome({ landingData }) {
         }
     }, [])
 
-    // Timeline scroll-fill
-    useEffect(() => {
-        const handleTimelineScroll = () => {
-            if (!timelineRef.current || !timelineLineRef.current) return
-            const section = timelineRef.current
-            const rect = section.getBoundingClientRect()
-            const sectionTop = rect.top + window.scrollY
-            const sectionH = section.offsetHeight
-            const scrollPos = window.scrollY + window.innerHeight * 0.5
-            const progress = Math.max(0, Math.min(1, (scrollPos - sectionTop) / sectionH))
-            timelineLineRef.current.style.height = `${progress * 100}%`
-        }
-        window.addEventListener('scroll', handleTimelineScroll, { passive: true })
-        handleTimelineScroll()
-        return () => window.removeEventListener('scroll', handleTimelineScroll)
-    }, [])
-
     // Preload hero images
     useEffect(() => {
-        LANDING_HERO_IMAGES.forEach(src => { const img = new Image(); img.src = src })
-    }, [])
+        heroImages.forEach(src => { const img = new Image(); img.src = src })
+    }, [heroImages])
 
     return (
         <>
@@ -189,7 +283,7 @@ function LandingHome({ landingData }) {
             <section className="hero" id="hero">
                 {/* Background images */}
                 <div className="hero-backgrounds">
-                    {LANDING_HERO_IMAGES.map((src, i) => (
+                    {heroImages.map((src, i) => (
                         <div className={`hero-bg${i === activeHeroBg ? ' hero-bg--active' : ''}`} key={i}>
                             <img src={src} alt="" />
                         </div>
@@ -203,7 +297,7 @@ function LandingHome({ landingData }) {
                     <div className="hero-main-content">
                         <div className="hero-destination-label">
                             <span className="hero-dest-line" />
-                            <span>✈ Tu viaje a Asia empieza aquí</span>
+                            <span>✈ Viajes a Asia desde {cityName}</span>
                         </div>
 
                         <h1 className="hero-title landing-hero-title">{heroTitle}</h1>
@@ -213,7 +307,7 @@ function LandingHome({ landingData }) {
                         {/* Dual CTA buttons */}
                         <div className="hero-meta-chips" style={{ gap: '12px', marginTop: '1.5rem' }}>
                             <a
-                                href={`${whatsappUrl}SW-Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`}
+                                href={`${whatsappUrl}SW-Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia%20desde%20${encodeURIComponent(cityName)}`}
                                 className="btn btn-primary hero-btn-explore"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -254,20 +348,170 @@ function LandingHome({ landingData }) {
                     </div>
                 </div>
 
-                {/* Bottom Footer Area (simplified for landings) */}
+                {/* Bottom Footer Area */}
                 <div className="hero-footer">
                     <div className="hero-controls" />
                     <div className="hero-progress">
                         <span className="hero-progress-num">{String(activeHeroBg + 1).padStart(2, '0')}</span>
                         <div className="hero-progress-track">
-                            <div className="hero-progress-fill" style={{ width: `${((activeHeroBg + 1) / LANDING_HERO_IMAGES.length) * 100}%` }} />
+                            <div className="hero-progress-fill" style={{ width: `${((activeHeroBg + 1) / heroImages.length) * 100}%` }} />
                         </div>
-                        <span className="hero-progress-num">{String(LANDING_HERO_IMAGES.length).padStart(2, '0')}</span>
+                        <span className="hero-progress-num">{String(heroImages.length).padStart(2, '0')}</span>
                     </div>
                 </div>
             </section>
 
-            {/* ===== HORIZONTAL DAY JOURNEY ===== */}
+            {/* ===== 1. JAPÓN A LA CARTA SHOWCASE SECTION ===== */}
+            <section className="home-modality-showcase">
+                <div className="container">
+                    <div className="hm-grid">
+                        <div className="hm-left" data-animate="fade-right">
+                            <span className="hm-left-tag">Nueva Forma de Viajar</span>
+                            <h2 className="hm-title">
+                                Diseña tu aventura con <br /><span>Japón a la Carta</span>
+                            </h2>
+                            <p className="hm-subtitle">
+                                Elige tu temporada preferida, selecciona el estilo de viaje que se adapte a tu ritmo y complementa con actividades a tu medida. Vivir Japón nunca fue tan flexible y personalizado.
+                            </p>
+                            
+                            <div className="hm-steps">
+                                <div className="hm-step">
+                                    <div className="hm-step-circle">1</div>
+                                    <div>
+                                        <h4 className="hm-step-title">Elige tu Temporada 🌸</h4>
+                                        <p className="hm-step-desc">Sakura en primavera, Verano de festivales o los colores del Momiji en otoño.</p>
+                                    </div>
+                                </div>
+                                <div className="hm-step">
+                                    <div className="hm-step-circle">2</div>
+                                    <div>
+                                        <h4 className="hm-step-title">Elige tu Estilo de Viaje ⛩️</h4>
+                                        <p className="hm-step-desc">Desde Libre (viaje a tu ritmo) hasta Signature (acompañamiento premium completo).</p>
+                                    </div>
+                                </div>
+                                <div className="hm-step">
+                                    <div className="hm-step-circle">3</div>
+                                    <div>
+                                        <h4 className="hm-step-title">Personaliza y Disfruta ✈️</h4>
+                                        <p className="hm-step-desc">Agrega extensiones, upgrades de hoteles y actividades tradicionales exclusivas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <Link to="/viajes/japon" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                                ¡Crea tu Japón a la Carta! <span>→</span>
+                            </Link>
+                        </div>
+                        
+                        <div className="hm-right" data-animate="fade-left">
+                            <div className="hm-season-shortcuts">
+                                <h3 className="hm-season-shortcuts-title">Explorar por Temporada</h3>
+                                <div className="hm-season-links">
+                                    <Link to="/viajes/japon/sakura" className="hm-season-link" style={{ '--season-primary': '#e91e7a' }}>
+                                        <div className="hm-season-link-label">
+                                            <span className="hm-season-link-emoji">🌸</span>
+                                            <span className="hm-season-link-name">Sakura — Cerezos en Flor</span>
+                                        </div>
+                                        <span className="hm-season-link-arrow">→</span>
+                                    </Link>
+                                    
+                                    <Link to="/viajes/japon/akari" className="hm-season-link" style={{ '--season-primary': '#2d6a4f' }}>
+                                        <div className="hm-season-link-label">
+                                            <span className="hm-season-link-emoji">☀️</span>
+                                            <span className="hm-season-link-name">Akari — Verano, Festivales y Hanabi</span>
+                                        </div>
+                                        <span className="hm-season-link-arrow">→</span>
+                                    </Link>
+                                    
+                                    <Link to="/viajes/japon/kamakura" className="hm-season-link" style={{ '--season-primary': '#c44900' }}>
+                                        <div className="hm-season-link-label">
+                                            <span className="hm-season-link-emoji">🍁</span>
+                                            <span className="hm-season-link-name">Kamakura — Otoño y Templos Dorados</span>
+                                        </div>
+                                        <span className="hm-season-link-arrow">→</span>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ===== 2. SEASONS EXPLORER (¿Cuándo Viajar?) ===== */}
+            <section className="seasons-section" id="blog" style={{ backgroundColor: '#f5f0e8' }}>
+                <div className="container">
+                    <div className="section-header" data-animate="fade-up">
+                        <span className="section-tag">¿Cuándo Viajar?</span>
+                        <h2 className="section-title">Cada estación tiene su <span className="text-accent">magia</span></h2>
+                        <p className="section-subtitle">{typeof window !== 'undefined' && window.innerWidth <= 768 ? 'Tocá una estación para descubrir lo que te espera.' : 'Pasá el cursor sobre una estación para descubrir lo que te espera.'}</p>
+                    </div>
+                    <div className="seasons-panels" data-animate="fade-up">
+                        {[
+                            {
+                                season: 'Primavera',
+                                emoji: '🌸',
+                                months: '16 Mar — 15 Abr',
+                                temp: '10°C — 20°C',
+                                photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop',
+                                color: '#f8b4c8',
+                                link: '/viajes/japon/sakura',
+                                highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'],
+                            },
+                            {
+                                season: 'Verano',
+                                emoji: '☀️',
+                                months: '16 Abr — 31 Ago',
+                                temp: '25°C — 35°C',
+                                photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop',
+                                color: '#f5a623',
+                                link: '/viajes/japon/akari',
+                                highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'],
+                            },
+                            {
+                                season: 'Otoño',
+                                emoji: '🍂',
+                                months: '1 Sep — 15 Mar',
+                                temp: '10°C — 20°C',
+                                photo: '/otono-japan.jpg',
+                                color: '#d4602a',
+                                link: '/viajes/japon/kamakura',
+                                highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'],
+                            },
+                            {
+                                season: 'Invierno',
+                                emoji: '❄️',
+                                months: 'Diciembre — Febrero',
+                                temp: '-2°C — 10°C',
+                                photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop',
+                                color: '#7bb8d9',
+                                link: '/viajes/japon',
+                                highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'],
+                            },
+                        ].map((s, i) => (
+                            <div className="season-panel" key={i} style={{ '--accent': s.color }}>
+                                <img src={s.photo} alt={s.season} className="season-photo" loading="lazy" />
+                                <div className="season-overlay" />
+                                <div className="season-label">
+                                    <span className="season-emoji">{s.emoji}</span>
+                                    <h3 className="season-name">{s.season}</h3>
+                                    <span className="season-months">{s.months}</span>
+                                </div>
+                                <div className="season-details">
+                                    <span className="season-temp">{s.temp}</span>
+                                    <ul className="season-highlights">
+                                        {s.highlights.map((h, j) => <li key={j}>{h}</li>)}
+                                    </ul>
+                                    <Link to={s.link} className="season-cta">
+                                        Ver viajes →
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ===== 3. HORIZONTAL DAY JOURNEY (Un día con RutaXAsia) ===== */}
             <section className="hscroll-wrapper" ref={hScrollRef}>
                 <div className="hscroll-sticky">
                     <div className="hscroll-track" ref={hTrackRef}>
@@ -288,31 +532,101 @@ function LandingHome({ landingData }) {
                             </svg>
                         </div>
 
-                        {/* Day Journey Items */}
-                        {DAY_JOURNEY.map((item, i) => (
-                            <div className={`dj-content-group${item.layout === 'vertical' ? ' dj-content-group--vertical' : ''}`} key={i}>
-                                <div className={`dj-item dj-item--${item.layout}`}>
-                                    <div className="dj-item-img-wrap">
-                                        <img src={item.image} alt={item.activity} className="dj-item-img" loading="lazy" />
-                                        <div className="dj-reveal-mask" />
+                        {/* Day Journey Item 0 */}
+                        <div className="dj-content-group">
+                            <div className={`dj-item dj-item--${DAY_JOURNEY[0].layout}`}>
+                                <div className="dj-item-img-wrap">
+                                    <img src={DAY_JOURNEY[0].image} alt={DAY_JOURNEY[0].activity} className="dj-item-img" loading="lazy" />
+                                    <div className="dj-reveal-mask" />
+                                </div>
+                                <div className="dj-item-content">
+                                    <div className="dj-time-row">
+                                        <span className="dj-time">{DAY_JOURNEY[0].time}</span>
+                                        <span className="dj-time-line" />
+                                        <span className="dj-activity">{DAY_JOURNEY[0].activity}</span>
                                     </div>
-                                    <div className="dj-item-content">
-                                        <div className="dj-time-row">
-                                            <span className="dj-time">{item.time}</span>
-                                            <span className="dj-time-line" />
-                                            <span className="dj-activity">{item.activity}</span>
-                                        </div>
-                                        <h2 className="dj-heading">{item.heading}</h2>
-                                    </div>
+                                    <h2 className="dj-heading">{DAY_JOURNEY[0].heading}</h2>
                                 </div>
                             </div>
-                        ))}
+                        </div>
+
+                        {/* Day Journey Item 1 */}
+                        <div className="dj-content-group dj-content-group--vertical">
+                            <div className={`dj-item dj-item--${DAY_JOURNEY[1].layout}`}>
+                                <div className="dj-item-img-wrap">
+                                    <img src={DAY_JOURNEY[1].image} alt={DAY_JOURNEY[1].activity} className="dj-item-img" loading="lazy" />
+                                    <div className="dj-reveal-mask" />
+                                </div>
+                                <div className="dj-item-content">
+                                    <div className="dj-time-row">
+                                        <span className="dj-time">{DAY_JOURNEY[1].time}</span>
+                                        <span className="dj-time-line" />
+                                        <span className="dj-activity">{DAY_JOURNEY[1].activity}</span>
+                                    </div>
+                                    <h2 className="dj-heading">{DAY_JOURNEY[1].heading}</h2>
+                                </div>
+                            </div>
+                        </div>
 
                         {/* SVG #2: Sakura Branch */}
                         <div className="dj-svg-wrap dj-svg-2">
                             <svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path ref={el => djSvgPaths.current[1] = el} d="M10 380 C60 350 130 280 200 220 C270 160 320 130 400 100 C440 85 470 60 490 30 M200 220 C190 190 210 160 230 170 C250 180 230 210 200 220 M200 220 C170 210 160 180 180 165 C200 150 215 175 200 220 M300 160 C290 130 310 100 330 110 C350 120 330 150 300 160 M300 160 C270 150 260 120 280 105 C300 90 315 115 300 160 M400 100 C390 70 410 40 430 50 C450 60 430 90 400 100 M400 100 C370 90 360 60 380 45 C400 30 415 55 400 100 M130 300 C120 270 140 240 160 250 C180 260 160 290 130 300 M130 300 C100 290 90 260 110 245 C130 230 145 255 130 300" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
+                        </div>
+
+                        {/* Day Journey Item 2 */}
+                        <div className="dj-content-group">
+                            <div className={`dj-item dj-item--${DAY_JOURNEY[2].layout}`}>
+                                <div className="dj-item-img-wrap">
+                                    <img src={DAY_JOURNEY[2].image} alt={DAY_JOURNEY[2].activity} className="dj-item-img" loading="lazy" />
+                                    <div className="dj-reveal-mask" />
+                                </div>
+                                <div className="dj-item-content">
+                                    <div className="dj-time-row">
+                                        <span className="dj-time">{DAY_JOURNEY[2].time}</span>
+                                        <span className="dj-time-line" />
+                                        <span className="dj-activity">{DAY_JOURNEY[2].activity}</span>
+                                    </div>
+                                    <h2 className="dj-heading">{DAY_JOURNEY[2].heading}</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Day Journey Item 3 */}
+                        <div className="dj-content-group dj-content-group--vertical">
+                            <div className={`dj-item dj-item--${DAY_JOURNEY[3].layout}`}>
+                                <div className="dj-item-img-wrap">
+                                    <img src={DAY_JOURNEY[3].image} alt={DAY_JOURNEY[3].activity} className="dj-item-img" loading="lazy" />
+                                    <div className="dj-reveal-mask" />
+                                </div>
+                                <div className="dj-item-content">
+                                    <div className="dj-time-row">
+                                        <span className="dj-time">{DAY_JOURNEY[3].time}</span>
+                                        <span className="dj-time-line" />
+                                        <span className="dj-activity">{DAY_JOURNEY[3].activity}</span>
+                                    </div>
+                                    <h2 className="dj-heading">{DAY_JOURNEY[3].heading}</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Day Journey Item 4 */}
+                        <div className="dj-content-group dj-content-group--vertical">
+                            <div className={`dj-item dj-item--${DAY_JOURNEY[4].layout}`}>
+                                <div className="dj-item-img-wrap">
+                                    <img src={DAY_JOURNEY[4].image} alt={DAY_JOURNEY[4].activity} className="dj-item-img" loading="lazy" />
+                                    <div className="dj-reveal-mask" />
+                                </div>
+                                <div className="dj-item-content">
+                                    <div className="dj-time-row">
+                                        <span className="dj-time">{DAY_JOURNEY[4].time}</span>
+                                        <span className="dj-time-line" />
+                                        <span className="dj-activity">{DAY_JOURNEY[4].activity}</span>
+                                    </div>
+                                    <h2 className="dj-heading">{DAY_JOURNEY[4].heading}</h2>
+                                </div>
+                            </div>
                         </div>
 
                         {/* SVG #3: Japanese Fan */}
@@ -325,43 +639,25 @@ function LandingHome({ landingData }) {
                         {/* CTA panel */}
                         <div className="dj-cta-panel">
                             <span className="dj-cta-tag">Empieza tu aventura</span>
-                            <h2 className="dj-cta-heading">Diseñemos tu viaje perfecto a Asia. Habla hoy con nuestros expertos.</h2>
-                            <a href={`${whatsappUrl}SW-Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia`} className="btn btn-primary dj-cta-btn" target="_blank" rel="noopener noreferrer">Cotizar mi Viaje →</a>
+                            <h2 className="dj-cta-heading">Diseñemos tu viaje perfecto a Asia desde {cityName}. Habla hoy con nuestros expertos.</h2>
+                            <a
+                                href={`${whatsappUrl}SW-Hola%20quiero%20cotizar%20un%20viaje%20a%20Asia%20desde%20${encodeURIComponent(cityName)}`}
+                                className="btn btn-primary dj-cta-btn"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Cotizar mi Viaje →
+                            </a>
                         </div>
                     </div>
+
                     <div className="hscroll-section-progress">
                         <div className="hscroll-section-fill" ref={hScrollProgressRef} />
                     </div>
                 </div>
             </section>
 
-            {/* ===== TIMELINE ===== */}
-            <section className="timeline-section" id="nuestra-historia" ref={timelineRef} style={{ backgroundColor: '#f5f0e8' }}>
-                <div className="container">
-                    <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag">Nuestra Historia</span>
-                        <h2 className="section-title">El viaje que nos trajo <span className="text-accent">hasta aquí</span></h2>
-                        <p className="section-subtitle">Cada año sumó una nueva razón para compartir Asia con el mundo.</p>
-                    </div>
-                    <div className="tl-track">
-                        <div className="tl-spine"><div className="tl-spine-fill" ref={timelineLineRef} /></div>
-                        {TIMELINE_EVENTS.map((evt, i) => (
-                            <div key={i} className={`tl-node tl-node--${evt.side}`} data-animate="fade-up" data-delay={String(i * 80)}>
-                                <div className="tl-year-badge"><span>{evt.year}</span></div>
-                                <div className="tl-card">
-                                    <div className="tl-card-img-wrap"><img src={evt.image} alt={evt.title} className="tl-card-img" loading="lazy" /></div>
-                                    <div className="tl-card-body">
-                                        <h3 className="tl-card-title">{evt.title}</h3>
-                                        <p className="tl-card-desc">{evt.desc}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== PRÓXIMAS SALIDAS ===== */}
+            {/* ===== 4. PRÓXIMAS SALIDAS (Boarding Pass Cards) ===== */}
             <section className="departures-section" id="proximos-viajes">
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
@@ -377,11 +673,13 @@ function LandingHome({ landingData }) {
                                     <div className="bp-card-photo-overlay" />
                                     {trip.badge && <div className="bp-badge">{trip.badge}</div>}
                                 </div>
+
                                 <div className="bp-tear">
                                     <div className="bp-tear-circle bp-tear-circle--top" />
                                     <div className="bp-tear-line" />
                                     <div className="bp-tear-circle bp-tear-circle--bottom" />
                                 </div>
+
                                 <div className="bp-card-info">
                                     <div className="bp-card-header">
                                         <span className="bp-card-label">DESTINO</span>
@@ -389,17 +687,38 @@ function LandingHome({ landingData }) {
                                     </div>
                                     <h3 className="bp-card-title">{trip.title}</h3>
                                     <p className="bp-card-excerpt">{trip.excerpt}</p>
+
                                     <div className="bp-card-details">
-                                        <div className="bp-detail"><span className="bp-detail-label">FECHA</span><span className="bp-detail-value">{trip.date}</span></div>
-                                        <div className="bp-detail"><span className="bp-detail-label">DURACIÓN</span><span className="bp-detail-value">{trip.duration}</span></div>
-                                        <div className="bp-detail"><span className="bp-detail-label">GRUPO</span><span className="bp-detail-value">Máx. 20</span></div>
+                                        <div className="bp-detail">
+                                            <span className="bp-detail-label">FECHA</span>
+                                            <span className="bp-detail-value">{trip.date}</span>
+                                        </div>
+                                        <div className="bp-detail">
+                                            <span className="bp-detail-label">DURACIÓN</span>
+                                            <span className="bp-detail-value">{trip.duration}</span>
+                                        </div>
+                                        <div className="bp-detail">
+                                            <span className="bp-detail-label">GRUPO</span>
+                                            <span className="bp-detail-value">Máx. 20</span>
+                                        </div>
                                     </div>
+
                                     <div className="bp-card-includes">
                                         {trip.includes.map((inc, j) => <span key={j} className="bp-include-tag">{inc}</span>)}
                                     </div>
+
                                     <div className="bp-card-actions">
-                                        <a href={`${whatsappUrl}SW-Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}`} className="btn btn-primary bp-btn" target="_blank" rel="noopener noreferrer">Cotizar Ahora</a>
-                                        <Link to={`/tours/${trip.id}`} className="btn btn-outline bp-btn">Ver Itinerario</Link>
+                                        <a
+                                            href={`${whatsappUrl}SW-Hola%20quiero%20cotizar%20${encodeURIComponent(trip.title)}%20desde%20${encodeURIComponent(cityName)}`}
+                                            className="btn btn-primary bp-btn"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Cotizar Ahora
+                                        </a>
+                                        <Link to={`/tours/${trip.id}`} className="btn btn-outline bp-btn">
+                                            Ver Itinerario
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -408,7 +727,7 @@ function LandingHome({ landingData }) {
                 </div>
             </section>
 
-            {/* ===== WHY US ===== */}
+            {/* ===== 5. WHY US (Swiss Grid) ===== */}
             <section className="why-us" id="nosotros">
                 <div className="container">
                     <div className="wu-layout">
@@ -419,10 +738,26 @@ function LandingHome({ landingData }) {
                         </div>
                         <div className="wu-right">
                             {[
-                                { title: 'Todo Incluido', desc: 'Vuelos, hospedaje, transporte, entradas y guía. Solo preocúpate por disfrutar.', icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 28L4 20l4-2 8 5 8-5 4 2-12 8z" /><path d="M4 20V10l12-8 12 8v10" /><path d="M16 18V2" /><path d="M4 10l12 8 12-8" /></svg> },
-                                { title: 'Grupos Reducidos', desc: 'Máximo 20 personas para garantizar una experiencia personalizada y cercana.', icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="10" r="4" /><circle cx="22" cy="10" r="3" /><path d="M2 26c0-5 4-8 9-8s9 3 9 8" /><path d="M22 18c4 0 8 2.5 8 8" /></svg> },
-                                { title: 'Experiencias Únicas', desc: 'Atención personalizada, vestir kimono tradicional, ceremonias del té y servicios exclusivos.', icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 2l3.5 7.5L28 11l-6 5.5 1.5 8.5L16 21l-7.5 4 1.5-8.5L4 11l8.5-1.5z" /></svg> },
-                                { title: 'Asistencia Presencial', desc: 'Antes y durante tu viaje, Juan y Ale están contigo presencialmente.', icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="16" cy="10" r="5" /><path d="M6 28c0-5.5 4.5-10 10-10s10 4.5 10 10" /><circle cx="24" cy="8" r="2" fill="currentColor" /><path d="M24 10v2" /></svg> },
+                                {
+                                    title: 'Todo Incluido',
+                                    desc: 'Vuelos, hospedaje, transporte, entradas y guía. Solo preocúpate por disfrutar.',
+                                    icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 28L4 20l4-2 8 5 8-5 4 2-12 8z" /><path d="M4 20V10l12-8 12 8v10" /><path d="M16 18V2" /><path d="M4 10l12 8 12-8" /></svg>,
+                                },
+                                {
+                                    title: 'Grupos Reducidos',
+                                    desc: 'Máximo 20 personas para garantizar una experiencia personalizada y cercana.',
+                                    icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="10" r="4" /><circle cx="22" cy="10" r="3" /><path d="M2 26c0-5 4-8 9-8s9 3 9 8" /><path d="M22 18c4 0 8 2.5 8 8" /></svg>,
+                                },
+                                {
+                                    title: 'Experiencias Únicas',
+                                    desc: 'Atención personalizada de Juan y Ale, vestir kimono tradicional, ceremonias del té y servicios adicionales exclusivos.',
+                                    icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 2l3.5 7.5L28 11l-6 5.5 1.5 8.5L16 21l-7.5 4 1.5-8.5L4 11l8.5-1.5z" /></svg>,
+                                },
+                                {
+                                    title: 'Asistencia Presencial',
+                                    desc: 'Antes y durante tu viaje, Juan y Ale están contigo presencialmente. Siempre disponibles por WhatsApp.',
+                                    icon: <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="16" cy="10" r="5" /><path d="M6 28c0-5.5 4.5-10 10-10s10 4.5 10 10" /><circle cx="24" cy="8" r="2" fill="currentColor" /><path d="M24 10v2" /></svg>,
+                                },
                             ].map((f, i) => (
                                 <div className="wu-card" key={i} data-animate="fade-up" data-delay={String(i * 100)}>
                                     <span className="wu-card-number">{String(i + 1).padStart(2, '0')}</span>
@@ -436,7 +771,7 @@ function LandingHome({ landingData }) {
                 </div>
             </section>
 
-            {/* ===== TESTIMONIALS ===== */}
+            {/* ===== 6. TESTIMONIALS (Comunidad Viajera) ===== */}
             <section className="polaroid-section" id="comunidad" style={{ backgroundColor: '#0c0e16' }}>
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
@@ -445,8 +780,14 @@ function LandingHome({ landingData }) {
                         <p className="section-subtitle" style={{ color: 'rgba(255,255,255,0.5)' }}>Cada foto es una historia. Pasá el cursor para conocerla.</p>
                     </div>
                     <div className="polaroid-grid">
-                        {TESTIMONIALS.map((t, i) => (
-                            <div className="polaroid-card" key={i} style={{ '--rotate': `${t.rotate}deg` }} data-animate="fade-up" data-delay={String(i * 80)}>
+                        {testimonials.map((t, i) => (
+                            <div
+                                className="polaroid-card"
+                                key={i}
+                                style={{ '--rotate': `${t.rotate}deg` }}
+                                data-animate="fade-up"
+                                data-delay={String(i * 80)}
+                            >
                                 <div className="polaroid-photo">
                                     <img src={t.photo} alt={`${t.name} en ${t.location}`} loading="lazy" />
                                     <div className="polaroid-overlay">
@@ -456,7 +797,10 @@ function LandingHome({ landingData }) {
                                 </div>
                                 <div className="polaroid-caption">
                                     <span className="polaroid-location">{t.location}</span>
-                                    <div className="polaroid-author"><strong>{t.name}</strong><span>{t.trip}</span></div>
+                                    <div className="polaroid-author">
+                                        <strong>{t.name}</strong>
+                                        <span>{t.trip}</span>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -464,67 +808,70 @@ function LandingHome({ landingData }) {
                 </div>
             </section>
 
-            {/* ===== SEASONS ===== */}
-            <section className="seasons-section" id="blog" style={{ backgroundColor: '#f5f0e8' }}>
-                <div className="container">
-                    <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag">¿Cuándo Viajar?</span>
-                        <h2 className="section-title">Cada estación tiene su <span className="text-accent">magia</span></h2>
-                    </div>
-                    <div className="seasons-panels" data-animate="fade-up">
-                        {[
-                            { season: 'Primavera', emoji: '🌸', months: 'Marzo — Mayo', temp: '10°C — 20°C', photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop', color: '#f8b4c8', link: '/viajes/japon/sakura', highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'] },
-                            { season: 'Verano', emoji: '☀️', months: 'Junio — Agosto', temp: '25°C — 35°C', photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop', color: '#f5a623', link: '/viajes/japon/akari', highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'] },
-                            { season: 'Otoño', emoji: '🍂', months: 'Sept — Noviembre', temp: '10°C — 20°C', photo: '/otono-japan.jpg', color: '#d4602a', link: '/viajes/japon/kamakura', highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'] },
-                            { season: 'Invierno', emoji: '❄️', months: 'Diciembre — Febrero', temp: '-2°C — 10°C', photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop', color: '#7bb8d9', link: '/viajes/japon', highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'] },
-                        ].map((s, i) => (
-                            <div className="season-panel" key={i} style={{ '--accent': s.color }}>
-                                <img src={s.photo} alt={s.season} className="season-photo" loading="lazy" />
-                                <div className="season-overlay" />
-                                <div className="season-label">
-                                    <span className="season-emoji">{s.emoji}</span>
-                                    <h3 className="season-name">{s.season}</h3>
-                                    <span className="season-months">{s.months}</span>
-                                </div>
-                                <div className="season-details">
-                                    <span className="season-temp">{s.temp}</span>
-                                    <ul className="season-highlights">{s.highlights.map((h, j) => <li key={j}>{h}</li>)}</ul>
-                                    <Link to={s.link} className="season-cta">Ver viajes →</Link>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== CTA FINAL ===== */}
+            {/* ===== 7. CTA FINAL (Último Paso) ===== */}
             <section className="cta-bp-section" style={{ backgroundColor: '#0c0e16' }}>
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
                         <span className="section-tag" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.12)' }}>Último Paso</span>
                         <h2 className="section-title" style={{ color: '#fff', fontSize: '2.4rem' }}>Tu asiento está reservado.<br /><span style={{ color: 'var(--color-primary)' }}>Solo falta tu nombre.</span></h2>
-                        <p className="section-subtitle" style={{ color: 'rgba(255,255,255,0.5)' }}>Escríbenos por WhatsApp y en menos de 2 horas tenés tu cotización personalizada.</p>
+                        <p className="section-subtitle" style={{ color: 'rgba(255,255,255,0.5)' }}>Escríbenos por WhatsApp y en menos de 2 horas tenés tu cotización personalizada desde {cityName}.</p>
                     </div>
+
                     <div className="bp-ticket" data-animate="fade-up">
                         <div className="bp-ticket-left">
                             <div className="bp-ticket-header">
                                 <span className="bp-airline">RUTAXASIA AIRLINES</span>
-                                <span className="bp-urgency"><span className="bp-urgency-dot" />Últimos 8 lugares</span>
+                                <span className="bp-urgency">
+                                    <span className="bp-urgency-dot" />
+                                    Últimos 8 lugares
+                                </span>
                             </div>
+
                             <div className="bp-ticket-route">
-                                <div className="bp-route-point"><span className="bp-route-code">MEX</span><span className="bp-route-city">Tu Ciudad</span></div>
-                                <div className="bp-route-line"><span className="bp-route-plane">✈</span></div>
-                                <div className="bp-route-point"><span className="bp-route-code">TYO</span><span className="bp-route-city">Japón & Corea</span></div>
+                                <div className="bp-route-point">
+                                    <span className="bp-route-code">{cityName.substring(0, 3).toUpperCase()}</span>
+                                    <span className="bp-route-city">{cityName}</span>
+                                </div>
+                                <div className="bp-route-line">
+                                    <span className="bp-route-plane">✈</span>
+                                </div>
+                                <div className="bp-route-point">
+                                    <span className="bp-route-code">TYO</span>
+                                    <span className="bp-route-city">Japón & Corea</span>
+                                </div>
                             </div>
+
                             <div className="bp-ticket-fields">
-                                <div className="bp-field bp-field--highlight"><span className="bp-field-label">PASAJERO</span><span className="bp-field-value bp-field-blink">TU NOMBRE<span className="bp-cursor">|</span></span></div>
-                                <div className="bp-field"><span className="bp-field-label">FECHA</span><span className="bp-field-value">2025 — 2026</span></div>
-                                <div className="bp-field"><span className="bp-field-label">GATE</span><span className="bp-field-value">RXA</span></div>
-                                <div className="bp-field"><span className="bp-field-label">CLASE</span><span className="bp-field-value">FIRST ★</span></div>
+                                <div className="bp-field bp-field--highlight">
+                                    <span className="bp-field-label">PASAJERO</span>
+                                    <span className="bp-field-value bp-field-blink">TU NOMBRE<span className="bp-cursor">|</span></span>
+                                </div>
+                                <div className="bp-field">
+                                    <span className="bp-field-label">FECHA</span>
+                                    <span className="bp-field-value">2026 — 2027</span>
+                                </div>
+                                <div className="bp-field">
+                                    <span className="bp-field-label">GATE</span>
+                                    <span className="bp-field-value">RXA</span>
+                                </div>
+                                <div className="bp-field">
+                                    <span className="bp-field-label">CLASE</span>
+                                    <span className="bp-field-value">FIRST ★</span>
+                                </div>
                             </div>
-                            <div className="bp-barcode">{Array.from({ length: 30 }).map((_, i) => (<span key={i} className="bp-barcode-line" style={{ height: `${Math.random() * 20 + 10}px` }} />))}</div>
+
+                            <div className="bp-barcode">
+                                {Array.from({ length: 30 }).map((_, i) => (
+                                    <span key={i} className="bp-barcode-line" style={{ height: `${Math.random() * 20 + 10}px` }} />
+                                ))}
+                            </div>
                         </div>
-                        <div className="bp-tear-line"><div className="bp-tear-circle bp-tear-circle--top" /><div className="bp-tear-circle bp-tear-circle--bottom" /></div>
+
+                        <div className="bp-tear-line">
+                            <div className="bp-tear-circle bp-tear-circle--top" />
+                            <div className="bp-tear-circle bp-tear-circle--bottom" />
+                        </div>
+
                         <div className="bp-ticket-right">
                             <div className="bp-stamps">
                                 <img src="https://flagcdn.com/w40/jp.png" alt="Japón" className="bp-stamp-flag" style={{ transform: 'rotate(-8deg)' }} />
@@ -532,13 +879,20 @@ function LandingHome({ landingData }) {
                             </div>
                             <div className="bp-ticket-cta">
                                 <p className="bp-cta-headline">¿Listo para despegar?</p>
-                                <a href={`${whatsappUrl}SW-Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20🎫✈️`} className="bp-cta-button bp-cta-pulse" target="_blank" rel="noopener noreferrer">
-                                    <WhatsAppIcon /><span>¡Reservar mi lugar!</span>
+                                <a
+                                    href={`${whatsappUrl}SW-Hola%20quiero%20reservar%20mi%20lugar%20para%20viajar%20a%20Asia%20desde%20${encodeURIComponent(cityName)}%20🎫✈️`}
+                                    className="bp-cta-button bp-cta-pulse"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <WhatsAppIcon />
+                                    <span>¡Reservar mi lugar!</span>
                                 </a>
                                 <p className="bp-cta-sub">✓ Sin compromiso · ✓ Respuesta en &lt;2hs</p>
                             </div>
                         </div>
                     </div>
+
                     <div className="bp-secondary" data-animate="fade-up">
                         <div className="bp-secondary-options">
                             <a href="tel:+525657929121" className="bp-phone-link">📞 Prefiero llamar</a>
