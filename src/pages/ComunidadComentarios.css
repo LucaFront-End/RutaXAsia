@@ -355,16 +355,19 @@
 .com-user-name-row {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
     margin-bottom: 0.25rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .com-user-name-row h4 {
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     font-weight: 800;
     color: #111827;
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .com-verified-badge {
@@ -378,6 +381,8 @@
     border: 1px solid #a7f3d0;
     padding: 2px 8px;
     border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .com-user-sub {
@@ -386,6 +391,9 @@
     gap: 0.6rem;
     font-size: 0.8rem;
     color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .com-user-sub span {
@@ -397,6 +405,8 @@
 .com-stars {
     display: flex;
     gap: 2px;
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 .com-trip-tag {
