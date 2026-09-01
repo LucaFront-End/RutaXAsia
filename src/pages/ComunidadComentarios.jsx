@@ -759,18 +759,18 @@ export default function ComunidadComentarios() {
                             <div className="com-pending-icon-wrap">
                                 <LuCheck size={36} />
                             </div>
-                            <h3>¡Gracias por tu reseña, {pendingModalData.name}!</h3>
+                            <h3>¡Gracias por tu reseña, {pendingModalData.name}! 🙌</h3>
                             <p className="com-pending-sub">
-                                Tu testimonio y fotografía han sido registrados con éxito en nuestro sistema de <strong>Reseñas</strong>.
+                                Tu experiencia nos llena de alegría y ya fue recibida por nuestro equipo.
                             </p>
 
                             <div className="com-pending-status-box">
                                 <div className="com-pending-status-header">
                                     <LuClock size={16} />
-                                    <span>Estado: Pendiente de Aprobación</span>
+                                    <span>En revisión</span>
                                 </div>
                                 <p>
-                                    Para proteger a la comunidad de spam, nuestro equipo revisará y activará tu reseña (columna <strong>Aprobado: Sí</strong>) en el CMS para que se muestre en el muro público y en la página principal.
+                                    Estamos dándole un último vistazo antes de publicarla, para que toda nuestra comunidad la vea en el mejor estado posible. Normalmente la publicamos en menos de 24 hs. ¡Gracias por la paciencia! 🌸
                                 </p>
                             </div>
 
