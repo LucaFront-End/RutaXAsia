@@ -597,7 +597,6 @@ function Home({ cityOverride } = {}) {
                                 <div className="season-label">
                                     <span className="season-emoji">{s.emoji}</span>
                                     <h3 className="season-name">{s.season}</h3>
-                                    <span className="season-months">{s.months}</span>
                                 </div>
                                 <div className="season-details">
                                     <span className="season-temp">{s.temp}</span>
