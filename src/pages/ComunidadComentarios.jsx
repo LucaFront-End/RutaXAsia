@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import { LuStar, LuMessageSquare, LuHeart, LuSend, LuCircleCheck, LuMapPin, LuCalendar, LuFilter, LuSparkles } from 'react-icons/lu'
-import { submitFormToCMS } from '../lib/wixClient'
+import { LuStar, LuMessageSquare, LuHeart, LuSend, LuCircleCheck, LuMapPin, LuCalendar, LuFilter, LuSparkles, LuCheck, LuClock } from 'react-icons/lu'
 import './ComunidadComentarios.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
@@ -26,7 +25,7 @@ function compressImage(file, maxWidth = 850, maxHeight = 850, quality = 0.84) {
                     }
                 } else {
                     if (height > maxHeight) {
-                        width = Math.round((width * maxHeight) / height)
+                        width = Math.round((height * maxHeight) / height)
                         height = maxHeight
                     }
                 }
@@ -47,7 +46,7 @@ function compressImage(file, maxWidth = 850, maxHeight = 850, quality = 0.84) {
 
 const INITIAL_REVIEWS = [
     {
-        id: 1,
+        id: 'init-1',
         name: 'María Rodríguez',
         city: 'Ciudad de México',
         trip: 'Sakura en Japón 2025',
@@ -61,7 +60,7 @@ const INITIAL_REVIEWS = [
         verified: true,
     },
     {
-        id: 2,
+        id: 'init-2',
         name: 'Carlos López',
         city: 'Guadalajara, Jalisco',
         trip: 'Verano de Festivales 2024',
@@ -75,7 +74,7 @@ const INITIAL_REVIEWS = [
         verified: true,
     },
     {
-        id: 3,
+        id: 'init-3',
         name: 'Ana Sofía Garza',
         city: 'Monterrey, NL',
         trip: 'Otoño Momiji & Templos 2024',
@@ -89,7 +88,7 @@ const INITIAL_REVIEWS = [
         verified: true,
     },
     {
-        id: 4,
+        id: 'init-4',
         name: 'Diego Martínez & Andrea Ruiz',
         city: 'Puebla, Pue.',
         trip: 'Corea del Sur K-Drama Experience 2025',
@@ -98,59 +97,81 @@ const INITIAL_REVIEWS = [
         date: 'Mayo 2025',
         photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&q=80',
         tripPhoto: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=600&fit=crop&q=80',
-        comment: 'Seúl nos enamoró por completo. La comida callejera en Myeongdong, la visita a los palacios en Hanbok tradicional y los spots de K-Dramas estuvieron de 10. La logística de Juan es insuperable.',
-        likes: 18,
+        comment: 'Corea del Sur nos voló la cabeza. Desde el Palacio Gyeongbokgung vestidos con hanbok tradicional hasta las calles iluminadas de Hongdae y Busan. La comida callejera en Myeongdong fue una locura deliciosa.',
+        likes: 28,
         verified: true,
     },
     {
-        id: 5,
+        id: 'init-5',
         name: 'Lucía Fernández',
         city: 'Querétaro, Qro.',
-        trip: 'Sakura en Japón 2024',
+        trip: 'Japón Clásico de Ensueño 2024',
         season: 'sakura',
         rating: 5,
-        date: 'Marzo 2024',
+        date: 'Abril 2024',
         photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&q=80',
         tripPhoto: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=600&fit=crop&q=80',
-        comment: 'Ver el Monte Fuji nevado rodeado de cerezos en flor es una experiencia que te cambia la vida. Toda la asesoría previa al viaje sobre qué empacar y cómo movernos fue clave. ¡Son los mejores!',
-        likes: 27,
+        comment: 'Ver el Monte Fuji despejado al atardecer fue un momento que nunca voy a olvidar. Todo estuvo organizado al mínimo detalle, sin prisas y con tiempo para disfrutar cada cafetería y callejón mágico.',
+        likes: 22,
         verified: true,
     },
     {
-        id: 6,
-        name: 'Roberto & Marcela Sánchez',
+        id: 'init-6',
+        name: 'Roberto Sánchez',
         city: 'Mérida, Yucatán',
-        trip: 'Japón Completo & Verano 2024',
-        season: 'verano',
+        trip: 'Japón & Corea Gran Ruta 2024',
+        season: 'corea',
         rating: 5,
-        date: 'Julio 2024',
-        photo: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300&h=300&fit=crop&q=80',
-        tripPhoto: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&h=600&fit=crop&q=80',
-        comment: 'Viajamos en pareja y fue perfecto. Atención personalizada, mucha libertad en las tardes libres y apoyo constante de los guías. La comida en Osaka fue espectacular. Ya estamos ahorrando para el tour de 2027.',
-        likes: 15,
+        date: 'Octubre 2024',
+        photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&q=80',
+        tripPhoto: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&h=600&fit=crop&q=80',
+        comment: 'La combinación de Japón y Corea fue perfecta. Pasar de la paz de los templos de Nara al bullicio futurista de Seúl fue algo impresionante. Juan y Ale conocen los mejores lugares que no salen en las guías turísticas normales.',
+        likes: 35,
         verified: true,
     },
 ]
 
 const TOURS_OPTIONS = [
     'Japón Sakura (Primavera)',
-    'Japón Akari (Verano)',
-    'Japón Kamakura (Otoño / Invierno)',
-    'Japón a la Carta (Personalizado)',
+    'Verano en Japón & Festivales',
+    'Otoño Momiji & Tradición',
     'Corea del Sur K-Drama',
     'Japón + Corea Combinado',
-    'Tours Individuales / Día libre',
+    'Tours Individuales / Experiencia a Medida',
+]
+
+const POPULAR_CITIES = [
+    'Ciudad de México (CDMX)',
+    'Guadalajara, Jalisco',
+    'Monterrey, Nuevo León',
+    'Puebla, Puebla',
+    'Cancún, Quintana Roo',
+    'Querétaro, Qro.',
+    'Mérida, Yucatán',
+    'León, Guanajuato',
+    'Tijuana, Baja California',
+    'Toluca, Estado de México',
+    'San Luis Potosí, S.L.P.',
+    'Aguascalientes, Ags.',
+    'Hermosillo, Sonora',
+    'Chihuahua, Chih.',
+    'Veracruz, Ver.',
 ]
 
 const STORAGE_KEY = 'rutaxasia_comunidad_reviews'
 
-// Smart gibberish and profanity filter
-function validateReviewContent(name, comment) {
+// Smart validation
+function validateReviewContent(name, comment, email) {
     const cleanName = (name || '').trim()
     const cleanComment = (comment || '').trim()
+    const cleanEmail = (email || '').trim()
 
     if (cleanName.length < 2) {
         return { isValid: false, error: 'Por favor ingresa tu nombre completo o apodo.' }
+    }
+
+    if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+        return { isValid: false, error: 'Por favor ingresa un correo electrónico válido para registrar tu reseña.' }
     }
 
     if (cleanComment.length < 15) {
@@ -162,27 +183,16 @@ function validateReviewContent(name, comment) {
         return { isValid: false, error: 'Por favor escribe al menos 3 o 4 palabras explicando tu vivencia de viaje.' }
     }
 
-    // 1. Check for keyboard smash patterns & repetitive junk (e.g., asdasd, dwdada, qwerty, zzzzz)
+    // Check for keyboard smash patterns
     const keyboardSmashRegex = /(asdf|asd|dwd|qwer|zxcv|hjkl|jkl|lkj|1234|aaaa|bbbb|cccc|dddd|eeee|ffff|gggg|hhhh|iiii|jjjj|kkkk|llll|mmmm|nnnn|oooo|pppp|qqqq|rrrr|ssss|tttt|uuuu|vvvv|wwww|xxxx|yyyy|zzzz)/i
     if (keyboardSmashRegex.test(cleanComment.toLowerCase()) && cleanComment.length < 40) {
-        return { isValid: false, error: 'El comentario parece contener texto de prueba o caracteres repetidos. Por favor escribe una reseña real.' }
+        return { isValid: false, error: 'El comentario parece contener texto de prueba. Por favor escribe una reseña real.' }
     }
 
-    // 2. Check for extremely long single words (> 26 characters without space)
-    for (const word of words) {
-        if (word.length > 26) {
-            return { isValid: false, error: 'Detectamos palabras demasiado largas o sin sentido. Por favor escribe frases coherentes.' }
-        }
-        // Words with 5+ letters and no vowels
-        if (word.length >= 5 && !/[aeiouáéíóúü]/i.test(word) && !word.startsWith('@') && !word.startsWith('#')) {
-            return { isValid: false, error: 'Por favor escribe palabras comprensibles en español.' }
-        }
-    }
-
-    // 3. Profanity and offensive words filter
+    // Profanity and offensive words filter
     const bannedPatterns = [
         /\b(puto|puta|mierda|verga|pendejo|pendeja|estupido|estupida|imbecil|chingar|chingada|culero|cabron|cabrona|malparido|gonorrea|coño|maricon|zorra|estafa|scam|viagra|casino|porn|xxx)\b/i,
-        /https?:\/\//i, // links
+        /https?:\/\//i,
     ]
 
     for (const pattern of bannedPatterns) {
@@ -195,29 +205,14 @@ function validateReviewContent(name, comment) {
 }
 
 export default function ComunidadComentarios() {
-    const [reviews, setReviews] = useState(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY)
-            if (saved) {
-                const parsed = JSON.parse(saved)
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    // Merge local user-added reviews with INITIAL_REVIEWS if not present
-                    const initialIds = new Set(INITIAL_REVIEWS.map(r => r.id))
-                    const customUserReviews = parsed.filter(r => !initialIds.has(r.id))
-                    return [...customUserReviews, ...INITIAL_REVIEWS]
-                }
-            }
-        } catch (e) {
-            console.error('Error loading saved reviews:', e)
-        }
-        return INITIAL_REVIEWS
-    })
-
+    const [reviews, setReviews] = useState(INITIAL_REVIEWS)
     const [filter, setFilter] = useState('all')
     const [likedIds, setLikedIds] = useState([])
     const [formError, setFormError] = useState(null)
-    const [justPublishedToast, setJustPublishedToast] = useState(false)
+    const [pendingModalData, setPendingModalData] = useState(null)
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
+    const [citySuggestions, setCitySuggestions] = useState([])
+    const [showCityDropdown, setShowCityDropdown] = useState(false)
 
     // Photo Upload State
     const fileInputRef = useRef(null)
@@ -227,14 +222,38 @@ export default function ComunidadComentarios() {
     // Form state
     const [formData, setFormData] = useState({
         name: '',
-        city: '',
         email: '',
+        phone: '',
+        city: '',
         trip: TOURS_OPTIONS[0],
         rating: 5,
         comment: '',
-        instagram: '',
     })
     const [submitting, setSubmitting] = useState(false)
+
+    // Fetch approved reviews from Wix CMS API on mount
+    useEffect(() => {
+        let isMounted = true
+        async function fetchApprovedReviews() {
+            try {
+                const res = await fetch('/api/resenas')
+                if (!res.ok) return
+                const data = await res.json()
+                if (isMounted && data.success && Array.isArray(data.reviews) && data.reviews.length > 0) {
+                    // Combine approved CMS reviews with initial reviews, avoiding duplicates
+                    const cmsIds = new Set(data.reviews.map(r => r.id))
+                    const uniqueInitial = INITIAL_REVIEWS.filter(r => !cmsIds.has(r.id))
+                    setReviews([...data.reviews, ...uniqueInitial])
+                }
+            } catch (err) {
+                console.warn('Could not fetch reviews from API, using fallback:', err)
+            }
+        }
+        fetchApprovedReviews()
+        return () => { isMounted = false }
+    }, [])
+
+    useEffect(() => { window.scrollTo(0, 0) }, [])
 
     const handlePhotoChange = async (e) => {
         const file = e.target.files?.[0]
@@ -260,22 +279,22 @@ export default function ComunidadComentarios() {
         }
     }
 
-    // Load persisted reviews
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY)
-            if (saved) {
-                const parsed = JSON.parse(saved)
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    setReviews(parsed)
-                }
-            }
-        } catch (err) {
-            console.warn('LocalStorage load error:', err)
+    const handleCityInput = (val) => {
+        setFormData(prev => ({ ...prev, city: val }))
+        if (!val.trim()) {
+            setCitySuggestions(POPULAR_CITIES.slice(0, 6))
+            setShowCityDropdown(true)
+        } else {
+            const matches = POPULAR_CITIES.filter(c => c.toLowerCase().includes(val.toLowerCase()))
+            setCitySuggestions(matches)
+            setShowCityDropdown(matches.length > 0)
         }
-    }, [])
+    }
 
-    useEffect(() => { window.scrollTo(0, 0) }, [])
+    const selectCity = (city) => {
+        setFormData(prev => ({ ...prev, city }))
+        setShowCityDropdown(false)
+    }
 
     const handleLike = (id) => {
         if (likedIds.includes(id)) {
@@ -291,8 +310,7 @@ export default function ComunidadComentarios() {
         e.preventDefault()
         setFormError(null)
 
-        // Run smart content validation
-        const validation = validateReviewContent(formData.name, formData.comment)
+        const validation = validateReviewContent(formData.name, formData.comment, formData.email)
         if (!validation.isValid) {
             setFormError(validation.error)
             return
@@ -301,67 +319,54 @@ export default function ComunidadComentarios() {
         setSubmitting(true)
 
         try {
-            // Determine season tag
-            let sTag = 'all'
-            const tripLower = formData.trip.toLowerCase()
-            if (tripLower.includes('sakura') || tripLower.includes('primavera')) sTag = 'sakura'
-            else if (tripLower.includes('akari') || tripLower.includes('verano')) sTag = 'verano'
-            else if (tripLower.includes('kamakura') || tripLower.includes('otoño')) sTag = 'otono'
-            else if (tripLower.includes('corea')) sTag = 'corea'
-
-            // Save to CMS / API
-            submitFormToCMS({
-                nombre: formData.name,
-                telefono: formData.instagram || 'N/A',
-                correo: formData.email || 'comunidad@rutaxasia.com',
-                estado: formData.city || 'México',
-                viaje: formData.trip,
-                mensaje: `[RESEÑA ${formData.rating}★${uploadedPhoto ? ' Con Foto' : ''}] ${formData.comment}`,
-            }).catch(err => console.warn('CMS submission warning:', err))
-
-            // Add review to local list instantly
-            const newReview = {
-                id: Date.now(),
+            const payload = {
                 name: formData.name.trim(),
+                email: formData.email.trim(),
+                phone: formData.phone.trim(),
                 city: formData.city.trim() || 'México',
                 trip: formData.trip,
-                season: sTag,
                 rating: formData.rating,
-                date: 'Recién publicado',
-                photo: uploadedPhoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80',
-                tripPhoto: uploadedPhoto || null,
                 comment: formData.comment.trim(),
-                likes: 1,
-                verified: true,
-                isNew: true,
+                photo: uploadedPhoto || '',
             }
 
-            const updatedList = [newReview, ...reviews]
-            setReviews(updatedList)
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList))
-            } catch (err) {
-                console.warn('LocalStorage save error:', err)
+            const res = await fetch('/api/resenas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+
+            const data = await res.json()
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || 'No se pudo guardar la reseña en el servidor.')
             }
 
-            // Reset form, close modal and show success toast
+            // Close form modal and open Pending Approval confirmation modal
+            setIsReviewModalOpen(false)
+            setPendingModalData({
+                name: formData.name.trim(),
+                photo: uploadedPhoto,
+                trip: formData.trip,
+                rating: formData.rating,
+                comment: formData.comment.trim(),
+            })
+
+            // Reset form
             setFormData({
                 name: '',
-                city: '',
                 email: '',
+                phone: '',
+                city: '',
                 trip: TOURS_OPTIONS[0],
                 rating: 5,
                 comment: '',
-                instagram: '',
             })
             setUploadedPhoto(null)
             if (fileInputRef.current) fileInputRef.current.value = ''
-            setIsReviewModalOpen(false)
-            setJustPublishedToast(true)
-            setTimeout(() => setJustPublishedToast(false), 6000)
         } catch (error) {
             console.error('Error submitting review:', error)
-            setFormError('Hubo un inconveniente al publicar. Inténtalo nuevamente.')
+            setFormError(error.message || 'Hubo un inconveniente al enviar la reseña. Inténtalo nuevamente.')
         } finally {
             setSubmitting(false)
         }
@@ -395,7 +400,7 @@ export default function ComunidadComentarios() {
                         Más de 500 viajeros han recorrido Asia con nosotros. Lee sus vivencias reales o comparte tu propia historia de viaje.
                     </p>
 
-                    {/* Rating Overview Strip */}
+                    {/* Rating Overview Strip (2 Rows: Score on row 1, 3 stats on row 2) */}
                     <div className="com-rating-bar">
                         <div className="com-rating-score">
                             <span className="com-score-num">4.9</span>
@@ -444,55 +449,34 @@ export default function ComunidadComentarios() {
                     </button>
                 </div>
 
-                {justPublishedToast && (
-                    <div className="com-toast-success" style={{ margin: '1.5rem 0' }}>
-                        <span>🎉 ¡Tu reseña fue publicada con éxito y ya aparece en el muro de la comunidad!</span>
-                    </div>
-                )}
-
                 {/* Filter Tabs & Header */}
                 <div className="com-feed-header">
                     <h2>Experiencias de la Comunidad ({filteredReviews.length})</h2>
-                    
-                    <div className="com-filters">
-                        <button
-                            className={`com-filter-btn ${filter === 'all' ? 'active' : ''}`}
-                            onClick={() => setFilter('all')}
-                        >
-                            Todas ({reviews.length})
-                        </button>
-                        <button
-                            className={`com-filter-btn ${filter === 'sakura' ? 'active' : ''}`}
-                            onClick={() => setFilter('sakura')}
-                        >
-                            🌸 Sakura
-                        </button>
-                        <button
-                            className={`com-filter-btn ${filter === 'verano' ? 'active' : ''}`}
-                            onClick={() => setFilter('verano')}
-                        >
-                            ☀️ Verano
-                        </button>
-                        <button
-                            className={`com-filter-btn ${filter === 'otono' ? 'active' : ''}`}
-                            onClick={() => setFilter('otono')}
-                        >
-                            🍁 Otoño
-                        </button>
-                        <button
-                            className={`com-filter-btn ${filter === 'corea' ? 'active' : ''}`}
-                            onClick={() => setFilter('corea')}
-                        >
-                            🇰🇷 Corea
-                        </button>
+                    <div className="com-filter-pills">
+                        {[
+                            { key: 'all', label: 'Todos los Viajes' },
+                            { key: 'sakura', label: '🌸 Primavera Sakura' },
+                            { key: 'verano', label: '🎋 Verano & Festivales' },
+                            { key: 'otono', label: '🍁 Otoño Momiji' },
+                            { key: 'corea', label: '🇰🇷 Corea del Sur' },
+                        ].map((item) => (
+                            <button
+                                key={item.key}
+                                type="button"
+                                className={`com-filter-pill ${filter === item.key ? 'active' : ''}`}
+                                onClick={() => setFilter(item.key)}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                {/* Review Cards Responsive Grid */}
+                {/* Reviews Feed Grid */}
                 <div className="com-reviews-grid">
-                    {filteredReviews.map(r => (
-                        <div className="com-review-card" key={r.id}>
-                            <div className="com-card-top">
+                    {filteredReviews.map((r) => (
+                        <div className="com-review-card" key={r.id} data-animate="fade-up">
+                            <div className="com-user-header">
                                 <img
                                     src={r.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&q=80'}
                                     alt={r.name}
@@ -517,7 +501,7 @@ export default function ComunidadComentarios() {
                                     </div>
                                 </div>
                                 <div className="com-stars">
-                                    {[...Array(r.rating)].map((_, i) => (
+                                    {[...Array(r.rating || 5)].map((_, i) => (
                                         <LuStar key={i} size={14} className="com-star-filled" />
                                     ))}
                                 </div>
@@ -531,7 +515,7 @@ export default function ComunidadComentarios() {
                                 "{r.comment}"
                             </p>
 
-                            {r.tripPhoto && (
+                            {r.tripPhoto && r.tripPhoto !== r.photo && (
                                 <div className="com-card-photo">
                                     <img
                                         src={r.tripPhoto}
@@ -599,15 +583,61 @@ export default function ComunidadComentarios() {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="form-group-row">
+                                    <div className="form-group">
+                                        <label>Correo Electrónico (Tu cuenta de viajero) *</label>
+                                        <input
+                                            type="email"
+                                            required
+                                            placeholder="sofia@gmail.com"
+                                            value={formData.email}
+                                            onChange={(e) => {
+                                                setFormError(null)
+                                                setFormData({ ...formData, email: e.target.value })
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>WhatsApp o Teléfono (Opcional)</label>
+                                        <input
+                                            type="tel"
+                                            placeholder="55 1234 5678"
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group com-city-group">
                                     <label>Ciudad / Estado (México) *</label>
                                     <input
                                         type="text"
                                         required
-                                        placeholder="Ej. CDMX, Guadalajara, Monterrey..."
+                                        placeholder="Ej. Ciudad de México, Guadalajara, Monterrey..."
                                         value={formData.city}
-                                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                        onChange={(e) => handleCityInput(e.target.value)}
+                                        onFocus={() => {
+                                            if (!formData.city) {
+                                                setCitySuggestions(POPULAR_CITIES.slice(0, 6))
+                                                setShowCityDropdown(true)
+                                            }
+                                        }}
                                     />
+                                    {showCityDropdown && (
+                                        <div className="com-city-dropdown">
+                                            {citySuggestions.map((c, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="com-city-opt"
+                                                    onClick={() => selectCity(c)}
+                                                >
+                                                    <LuMapPin size={13} />
+                                                    <span>{c}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="form-group">
@@ -660,7 +690,7 @@ export default function ComunidadComentarios() {
                                             <img src={uploadedPhoto} alt="Foto cargada" className="com-photo-preview-img" />
                                             <div className="com-photo-preview-info">
                                                 <span className="com-photo-preview-success">✓ Foto lista para tu reseña</span>
-                                                <p>Se publicará junto a tu nombre y testimonio.</p>
+                                                <p>Se guardará en tu reseña y se mostrará al ser aprobada.</p>
                                                 <button
                                                     type="button"
                                                     className="com-photo-remove-btn"
@@ -696,27 +726,17 @@ export default function ComunidadComentarios() {
                                     )}
                                 </div>
 
-                                <div className="form-group">
-                                    <label>Instagram o Email (Opcional)</label>
-                                    <input
-                                        type="text"
-                                        placeholder="@tuusuario o correo"
-                                        value={formData.instagram}
-                                        onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                                    />
-                                </div>
-
                                 <button
                                     type="submit"
                                     className="btn btn-primary com-submit-btn"
                                     disabled={submitting}
                                 >
-                                    {submitting ? 'Publicando...' : 'Publicar mi Experiencia →'}
+                                    {submitting ? 'Enviando a revisión...' : 'Enviar mi Reseña al Equipo →'}
                                 </button>
                             </form>
 
                             <div className="com-form-wa-card">
-                                <p>¿Prefieres enviarnos tus fotos o un video testimonio?</p>
+                                <p>¿Prefieres enviarnos tus fotos o un video testimonio directo?</p>
                                 <a
                                     href={`${WHATSAPP_BASE}SW-Hola%20quiero%20compartir%20mis%20fotos%20y%20resena%20de%20mi%20viaje%20con%20RutaXAsia`}
                                     target="_blank"
@@ -726,6 +746,41 @@ export default function ComunidadComentarios() {
                                     💬 Enviar por WhatsApp
                                 </a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ===== CONFIRMATION MODAL: PENDING APPROVAL ===== */}
+            {pendingModalData && (
+                <div className="com-modal-backdrop" onClick={() => setPendingModalData(null)}>
+                    <div className="com-modal-dialog com-pending-modal-dialog" onClick={e => e.stopPropagation()}>
+                        <div className="com-pending-modal-content">
+                            <div className="com-pending-icon-wrap">
+                                <LuCheck size={36} />
+                            </div>
+                            <h3>¡Gracias por tu reseña, {pendingModalData.name}!</h3>
+                            <p className="com-pending-sub">
+                                Tu testimonio y fotografía han sido registrados con éxito en nuestro sistema de <strong>Reseñas</strong>.
+                            </p>
+
+                            <div className="com-pending-status-box">
+                                <div className="com-pending-status-header">
+                                    <LuClock size={16} />
+                                    <span>Estado: Pendiente de Aprobación</span>
+                                </div>
+                                <p>
+                                    Para proteger a la comunidad de spam, nuestro equipo revisará y activará tu reseña (columna <strong>Aprobado: Sí</strong>) en el CMS para que se muestre en el muro público y en la página principal.
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="btn btn-primary com-pending-close-btn"
+                                onClick={() => setPendingModalData(null)}
+                            >
+                                Entendido, ¡muchas gracias!
+                            </button>
                         </div>
                     </div>
                 </div>

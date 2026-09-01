@@ -189,6 +189,31 @@ function Home({ cityOverride } = {}) {
         goToSlide((activeSlide - 1 + TRIPS.length) % TRIPS.length)
     }, [activeSlide, goToSlide])
 
+    const [testimonials, setTestimonials] = useState(TESTIMONIALS)
+
+    // Fetch approved CMS reviews for Comunidad Viajera section
+    useEffect(() => {
+        let isMounted = true
+        fetch('/api/resenas')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (isMounted && data?.success && Array.isArray(data.reviews) && data.reviews.length > 0) {
+                    const cmsPolaroids = data.reviews.map((r, idx) => ({
+                        name: r.name,
+                        trip: r.trip,
+                        location: r.city,
+                        text: r.comment,
+                        photo: r.tripPhoto || r.photo,
+                        rotate: (idx % 2 === 0 ? -1 : 1) * ((idx % 3) + 1.5)
+                    }))
+                    // Merge CMS polaroids with defaults
+                    setTestimonials([...cmsPolaroids, ...TESTIMONIALS].slice(0, 8))
+                }
+            })
+            .catch(() => {})
+        return () => { isMounted = false }
+    }, [])
+
     // Auto-advance every 6 seconds
     useEffect(() => {
         timerRef.current = setInterval(() => {
@@ -878,7 +903,7 @@ function Home({ cityOverride } = {}) {
                         <p className="section-subtitle" style={{ color: 'rgba(255,255,255,0.5)' }}>Cada foto es una historia. Pasá el cursor para conocerla.</p>
                     </div>
                     <div className="polaroid-grid">
-                        {TESTIMONIALS.map((t, i) => (
+                        {testimonials.map((t, i) => (
                             <div
                                 className="polaroid-card"
                                 key={i}
