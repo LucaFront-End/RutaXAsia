@@ -57,26 +57,30 @@ export default async function handler(req, res) {
     // ==========================================
     if (req.method === 'GET') {
         try {
-            const queryRes = await wixClient.items.query('Resenas').limit(100).find();
+            const queryRes = await wixClient.items.query('Resenas')
+                .descending('_createdDate')
+                .limit(100)
+                .find();
             const allItems = queryRes.items || [];
 
-            // Filter for items where 'aprobado' is 'Sí', 'Si', 'SI', 'si' or 'true'
+            // Filter for items where 'aprobado' is 'Sí', 'Si', 'SI', 'si', 'aprobado' or 'true'
             const approvedItems = allItems.filter(item => {
-                const val = String(item.aprobado || '').trim().toLowerCase();
-                return val === 'sí' || val === 'si' || val === 'true';
+                const raw = String(item.aprobado || '').trim().toLowerCase();
+                const normalized = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                return normalized === 'si' || normalized === 'true' || normalized === '1' || normalized === 'aprobado' || normalized === 'yes';
             });
 
             const formattedReviews = approvedItems.map(item => {
                 let trip = 'Experiencia RutaXAsia';
-                let comment = item.comentarioYExperiencia || '';
+                let rawComment = item.comentarioYExperiencia || item.comentario || item.comment || item.mensaje || '';
 
-                const tagMatch = comment.match(/^\[(.*?)\]\s*/);
+                const tagMatch = rawComment.match(/^\[(.*?)\]\s*/);
                 if (tagMatch) {
                     trip = tagMatch[1];
-                    comment = comment.replace(/^\[.*?\]\s*/, '');
+                    rawComment = rawComment.replace(/^\[.*?\]\s*/, '');
                 }
 
-                // Determine season
+                // Determine season tag
                 let season = 'all';
                 const lowerTrip = trip.toLowerCase();
                 if (lowerTrip.includes('sakura') || lowerTrip.includes('primavera')) season = 'sakura';
@@ -84,19 +88,19 @@ export default async function handler(req, res) {
                 else if (lowerTrip.includes('otoño') || lowerTrip.includes('momiji') || lowerTrip.includes('kamakura')) season = 'otono';
                 else if (lowerTrip.includes('corea')) season = 'corea';
 
-                const photo = formatWixImageUrl(item.fotografa) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&q=80';
+                const photoUrl = formatWixImageUrl(item.fotografa || item.foto || item.photo || item.imagen) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&q=80';
 
                 return {
                     id: item._id,
-                    name: item.nombre || 'Viajero RutaXAsia',
-                    city: item.ciudad || 'México',
+                    name: item.nombre || item.name || 'Viajero RutaXAsia',
+                    city: item.ciudad || item.city || item.estado || 'México',
                     trip,
                     season,
-                    rating: Number(item.calificacin) || 5,
+                    rating: Number(item.calificacin || item.calificacion || item.rating) || 5,
                     date: formatDateDisplay(item.fechaVisible || item._createdDate),
-                    photo,
-                    tripPhoto: photo,
-                    comment,
+                    photo: photoUrl,
+                    tripPhoto: photoUrl,
+                    comment: rawComment,
                     likes: Math.floor(Math.random() * 15) + 12,
                     verified: true,
                 };
