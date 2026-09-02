@@ -140,9 +140,9 @@ export default function UserPortalPage() {
 
             if (data.reservas && data.reservas.length > 0) {
                 setSelectedReservaId(data.reservas[0]._id)
-                setRevTrip(data.reservas[0].temporada || 'Japón')
+                setRevTrip(data.reservas[0].temporada || '')
             } else {
-                setRevTrip('Experiencia RutaXAsia')
+                setRevTrip('')
             }
         } catch (err) {
             setAuthError(err.message)
