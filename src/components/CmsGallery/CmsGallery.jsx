@@ -3,12 +3,16 @@ import { createPortal } from 'react-dom'
 import './CmsGallery.css'
 
 const DEFAULT_FALLBACK_GALLERY = [
-    { src: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=1000&fit=crop&q=80', caption: 'Templo Fushimi Inari, Kyoto', span: 'tall' },
-    { src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&h=600&fit=crop&q=80', caption: 'Tokyo Skyline & Torre de Tokio', span: '' },
-    { src: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=600&fit=crop&q=80', caption: 'Monte Fuji desde Chureito', span: '' },
-    { src: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&h=600&fit=crop&q=80', caption: 'Bosque de Bambú, Arashiyama', span: '' },
-    { src: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=1000&fit=crop&q=80', caption: 'Calles tradicionales de Seúl', span: 'tall' },
-    { src: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=800&h=600&fit=crop&q=80', caption: 'Temporada Sakura en Japón', span: '' },
+    { src: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&h=1000&fit=crop&q=80', caption: 'Templo Fushimi Inari, Kyoto', city: 'Kioto', span: 'tall' },
+    { src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&h=600&fit=crop&q=80', caption: 'Tokyo Skyline & Torre de Tokio', city: 'Tokio', span: '' },
+    { src: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=600&fit=crop&q=80', caption: 'Monte Fuji desde Chureito', city: 'Monte Fuji', span: '' },
+    { src: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&h=600&fit=crop&q=80', caption: 'Bosque de Bambú, Arashiyama', city: 'Kioto', span: '' },
+    { src: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=1000&fit=crop&q=80', caption: 'Calles tradicionales de Seúl', city: 'Seúl', span: 'tall' },
+    { src: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=800&h=600&fit=crop&q=80', caption: 'Temporada Sakura en Japón', city: 'Japón', span: '' },
+    { src: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&h=600&fit=crop&q=80', caption: 'Torre de Tokio de noche, Roppongi', city: 'Tokio', span: '' },
+    { src: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=800&h=600&fit=crop&q=80', caption: 'Templo Senso-ji, Asakusa', city: 'Tokio', span: '' },
+    { src: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&h=600&fit=crop&q=80', caption: 'Palacio Real Gyeongbokgung, Seúl', city: 'Seúl', span: '' },
+    { src: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&h=600&fit=crop&q=80', caption: 'Parque de Nara y ciervos sagrados', city: 'Nara', span: '' },
 ]
 
 export default function CmsGallery({ 
@@ -18,7 +22,7 @@ export default function CmsGallery({
     initialCategory = 'General',
     fixedCategory = null,
     showTabs = true,
-    maxInitial = 9,
+    maxInitial = 7,
     theme = 'light' // 'light' | 'dark'
 }) {
     const [galleryImages, setGalleryImages] = useState(DEFAULT_FALLBACK_GALLERY)

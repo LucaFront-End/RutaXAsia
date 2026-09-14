@@ -374,7 +374,7 @@ export default function AboutUs() {
                 subtitle=""
                 fixedCategory="General"
                 showTabs={false}
-                maxInitial={9}
+                maxInitial={7}
                 theme="light"
             />
 

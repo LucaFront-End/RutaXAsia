@@ -335,7 +335,7 @@ export default function RegistroTurismo() {
                 subtitle="Fotos tomadas durante nuestros tours en Japón y Corea. Cada experiencia respaldada por una agencia 100% legal y formal."
                 fixedCategory="General"
                 showTabs={false}
-                maxInitial={6}
+                maxInitial={7}
                 theme="light"
             />
 
