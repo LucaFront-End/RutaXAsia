@@ -58,6 +58,9 @@ export default function JaponTemporada() {
 
     const displayDestinos = cmsDestinos.length > 0 ? cmsDestinos : DESTINOS_DISPONIBLES
 
+    const [activeSplit, setActiveSplit] = useState(null)
+    const [mobileSeasonTab, setMobileSeasonTab] = useState('otono')
+
     if (!season) return <Navigate to="/viajes/japon" replace />
 
     return (
@@ -67,39 +70,149 @@ export default function JaponTemporada() {
                 <meta name="description" content={`Elige tu forma de viajar a Japón en ${season.name}. Libre, Esencial, Completo o Signature. ${season.description} RutaXAsia.`} />
             </Helmet>
 
-            {/* ===== HERO ===== */}
-            <section
-                className="jac-hero jac-hero--season"
-                style={{ '--season-primary': season.colors.primary }}
-            >
-                <div className="jac-hero-bg">
-                    <img src={season.heroImage} alt={season.name} />
-                    <div className="jac-hero-overlay" />
-                </div>
-                <FallingElements season={seasonKey} />
-                <div className="jac-hero-content container">
-                    <span className="jac-hero-tag" data-animate="fade-up" data-delay="100">
-                        {season.emoji} Temporada {season.name}
-                    </span>
-                    <div className="jac-hero-torii" data-animate="fade-up" data-delay="200">⛩️</div>
-                    <h1 className="jac-hero-title" data-animate="fade-up" data-delay="300">
-                        VIVE JAPÓN EN <span className="jac-hero-title-accent">{season.name.toUpperCase()}</span>
-                    </h1>
-                    <p className="jac-hero-subtitle" data-animate="fade-up" data-delay="400">
-                        {season.months} — {season.description}
-                    </p>
-                    <div className="jac-hero-chips" data-animate="fade-up" data-delay="500">
-                        {season.highlights.map((h, i) => (
-                            <span className="jac-hero-chip" key={i}>
-                                {season.emoji} {h}
-                            </span>
-                        ))}
+            {/* ===== HERO: DUAL SPLIT SLIDE FOR KAMAKURA (OTOÑO / INVIERNO) ===== */}
+            {seasonKey === 'kamakura' ? (
+                <section className="jac-split-hero">
+                    {/* Mobile toggle between Otoño and Invierno */}
+                    <div className="jac-split-mobile-switch">
+                        <button
+                            type="button"
+                            className={mobileSeasonTab === 'otono' ? 'active' : ''}
+                            onClick={() => setMobileSeasonTab('otono')}
+                        >
+                            🍁 Otoño
+                        </button>
+                        <button
+                            type="button"
+                            className={mobileSeasonTab === 'invierno' ? 'active' : ''}
+                            onClick={() => setMobileSeasonTab('invierno')}
+                        >
+                            ❄️ Invierno
+                        </button>
                     </div>
-                    <a href="#estilos" className="jac-hero-scroll-btn" data-animate="fade-up" data-delay="600">
-                        Elige tu estilo de viaje <span className="jac-hero-scroll-arrow">↓</span>
-                    </a>
-                </div>
-            </section>
+
+                    {/* Panel 1: Otoño (Momiji) */}
+                    <div
+                        className={`jac-split-panel jac-split-panel--otono ${activeSplit === 'otono' ? 'is-expanded' : activeSplit === 'invierno' ? 'is-collapsed' : ''} ${mobileSeasonTab === 'otono' ? 'mobile-active' : 'mobile-hidden'}`}
+                        onMouseEnter={() => setActiveSplit('otono')}
+                        onMouseLeave={() => setActiveSplit(null)}
+                        onClick={() => setActiveSplit(activeSplit === 'otono' ? null : 'otono')}
+                    >
+                        <div className="jac-split-bg">
+                            <img src="/otono-japan.jpg" alt="Otoño en Japón" />
+                            <div className="jac-hero-overlay" />
+                        </div>
+                        <FallingElements type="momiji" />
+
+                        {/* Collapsed vertical indicator */}
+                        <div className="jac-split-collapsed-label">
+                            <span>🍁 OTOÑO (MOMIJI)</span>
+                        </div>
+
+                        <div className="jac-split-content">
+                            <span className="jac-hero-tag">
+                                🍁 Temporada Otoño
+                            </span>
+                            <div className="jac-hero-torii">⛩️</div>
+                            <h1 className="jac-hero-title">
+                                VIVE JAPÓN EN <span className="jac-hero-title-accent" style={{ background: 'linear-gradient(90deg, #e65100, #ffb74d, #e65100)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>OTOÑO</span>
+                            </h1>
+                            <p className="jac-hero-subtitle">
+                                Los colores del otoño y templos serenos transforman Japón. Paisajes mágicos de Momiji, gastronomía de temporada y experiencias inolvidables.
+                            </p>
+                            <div className="jac-hero-chips">
+                                <span className="jac-hero-chip">🍁 Momiji (Hojas rojas)</span>
+                                <span className="jac-hero-chip">🍁 Templos en tonos dorados</span>
+                                <span className="jac-hero-chip">🍁 Gastronomía otoñal</span>
+                                <span className="jac-hero-chip">🍁 Clima fresco y templado</span>
+                            </div>
+                            <a href="#estilos" className="jac-hero-scroll-btn" onClick={e => e.stopPropagation()}>
+                                Elige tu estilo de viaje <span className="jac-hero-scroll-arrow">↓</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Panel 2: Invierno (Nieve & Onsen) */}
+                    <div
+                        className={`jac-split-panel jac-split-panel--invierno ${activeSplit === 'invierno' ? 'is-expanded' : activeSplit === 'otono' ? 'is-collapsed' : ''} ${mobileSeasonTab === 'invierno' ? 'mobile-active' : 'mobile-hidden'}`}
+                        onMouseEnter={() => setActiveSplit('invierno')}
+                        onMouseLeave={() => setActiveSplit(null)}
+                        onClick={() => setActiveSplit(activeSplit === 'invierno' ? null : 'invierno')}
+                    >
+                        <div className="jac-split-bg">
+                            <img src="https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1920&h=900&fit=crop&q=85" alt="Invierno en Japón" />
+                            <div className="jac-hero-overlay" />
+                        </div>
+                        <FallingElements type="invierno" />
+
+                        {/* Collapsed vertical indicator */}
+                        <div className="jac-split-collapsed-label">
+                            <span>❄️ INVIERNO (NIEVE & ONSEN)</span>
+                        </div>
+
+                        <div className="jac-split-content">
+                            <span className="jac-hero-tag" style={{ borderColor: 'rgba(56, 189, 248, 0.4)', background: 'rgba(2, 132, 199, 0.15)' }}>
+                                ❄️ Temporada Invierno
+                            </span>
+                            <div className="jac-hero-torii" style={{ filter: 'drop-shadow(0 0 20px rgba(56, 189, 248, 0.6))' }}>⛩️</div>
+                            <h1 className="jac-hero-title">
+                                VIVE JAPÓN EN <span className="jac-hero-title-accent" style={{ background: 'linear-gradient(90deg, #38bdf8, #bae6fd, #38bdf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>INVIERNO</span>
+                            </h1>
+                            <p className="jac-hero-subtitle">
+                                Paisajes nevados, aguas termales Onsen humeantes con vista al Monte Fuji y las iluminaciones invernales más espectaculares de Japón.
+                            </p>
+                            <div className="jac-hero-chips">
+                                <span className="jac-hero-chip">❄️ Onsen tradicional en la nieve</span>
+                                <span className="jac-hero-chip">🏔️ Monte Fuji nevado</span>
+                                <span className="jac-hero-chip">🏮 Iluminaciones invernales</span>
+                                <span className="jac-hero-chip">🐒 Monos de nieve en Jigokudani</span>
+                            </div>
+                            <a href="#estilos" className="jac-hero-scroll-btn" onClick={e => e.stopPropagation()}>
+                                Elige tu estilo de viaje <span className="jac-hero-scroll-arrow">↓</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Subtle central hint */}
+                    <div className={`jac-split-hint ${activeSplit ? 'is-hidden' : ''}`}>
+                        <span>⇄ Pasa el mouse para explorar cada temporada</span>
+                    </div>
+                </section>
+            ) : (
+                /* Standard Hero for Sakura & Akari */
+                <section
+                    className="jac-hero jac-hero--season"
+                    style={{ '--season-primary': season.colors.primary }}
+                >
+                    <div className="jac-hero-bg">
+                        <img src={season.heroImage} alt={season.name} />
+                        <div className="jac-hero-overlay" />
+                    </div>
+                    <FallingElements season={seasonKey} />
+                    <div className="jac-hero-content container">
+                        <span className="jac-hero-tag" data-animate="fade-up" data-delay="100">
+                            {season.emoji} Temporada {season.name}
+                        </span>
+                        <div className="jac-hero-torii" data-animate="fade-up" data-delay="200">⛩️</div>
+                        <h1 className="jac-hero-title" data-animate="fade-up" data-delay="300">
+                            VIVE JAPÓN EN <span className="jac-hero-title-accent">{season.name.toUpperCase()}</span>
+                        </h1>
+                        <p className="jac-hero-subtitle" data-animate="fade-up" data-delay="400">
+                            {season.description}
+                        </p>
+                        <div className="jac-hero-chips" data-animate="fade-up" data-delay="500">
+                            {season.highlights.map((h, i) => (
+                                <span className="jac-hero-chip" key={i}>
+                                    {season.emoji} {h}
+                                </span>
+                            ))}
+                        </div>
+                        <a href="#estilos" className="jac-hero-scroll-btn" data-animate="fade-up" data-delay="600">
+                            Elige tu estilo de viaje <span className="jac-hero-scroll-arrow">↓</span>
+                        </a>
+                    </div>
+                </section>
+            )}
 
             {/* ===== 4 ESTILOS DE VIAJE ===== */}
             <section className="jac-experiences" id="estilos">

@@ -5,8 +5,15 @@ import { useEffect, useRef } from 'react'
  * Rendered as an overlay on Hero components.
  * @param {string} type - 'sakura' | 'verano' | 'momiji'
  */
-export default function FallingElements({ type }) {
+export default function FallingElements({ type, season }) {
     const canvasRef = useRef(null)
+
+    const raw = (type || season || '').toLowerCase()
+    const effectiveType = (raw === 'invierno' || raw === 'fuyu' || raw === 'nieve') ? 'invierno'
+        : (raw === 'momiji' || raw === 'kamakura' || raw === 'otono' || raw === 'otoño') ? 'momiji'
+        : (raw === 'verano' || raw === 'akari') ? 'verano'
+        : (raw === 'sakura' || raw === 'primavera') ? 'sakura'
+        : raw || 'sakura'
 
     useEffect(() => {
         // Respect accessibility settings
@@ -30,7 +37,7 @@ export default function FallingElements({ type }) {
         window.addEventListener('resize', handleResize)
 
         // Particle configuration based on season
-        const maxParticles = type === 'verano' ? 40 : 60
+        const maxParticles = effectiveType === 'verano' ? 40 : 60
         
         class Particle {
             constructor(isInitial = false) {
@@ -43,7 +50,7 @@ export default function FallingElements({ type }) {
                 this.y = isInitial ? Math.random() * height : -20
                 this.size = Math.random() * 8 + 4
                 
-                if (type === 'sakura') {
+                if (effectiveType === 'sakura') {
                     // Sakura petals fall down and drift right due to wind
                     this.speedX = Math.random() * 1.5 + 0.5
                     this.speedY = Math.random() * 1.2 + 0.8
@@ -53,7 +60,7 @@ export default function FallingElements({ type }) {
                     this.swingSpeed = Math.random() * 0.02 + 0.01
                     this.swingRange = Math.random() * 15 + 5
                     this.swingAngle = Math.random() * Math.PI * 2
-                } else if (type === 'momiji') {
+                } else if (effectiveType === 'momiji') {
                     // Momiji leaves fall slightly faster and swing wider
                     this.speedX = Math.random() * 1.2 - 0.2
                     this.speedY = Math.random() * 1.4 + 1.0
@@ -72,7 +79,7 @@ export default function FallingElements({ type }) {
                         '183, 28, 28',  // Crimson Red
                     ]
                     this.color = colors[Math.floor(Math.random() * colors.length)]
-                } else if (type === 'verano') {
+                } else if (effectiveType === 'verano') {
                     // Summer fireflies drift upwards/around gently
                     this.speedX = Math.random() * 0.8 - 0.4
                     this.speedY = -(Math.random() * 0.5 + 0.2)
@@ -80,15 +87,20 @@ export default function FallingElements({ type }) {
                     this.opacity = Math.random() * 0.5 + 0.1
                     this.fadeSpeed = Math.random() * 0.008 + 0.003
                     this.fadeDirection = Math.random() > 0.5 ? 1 : -1
-                    // Set spawn boundary for upward motion
-                    if (!isInitial) {
-                        this.y = height + 20
-                    }
+                } else if (effectiveType === 'invierno') {
+                    // Soft winter snowflakes drifting gently
+                    this.speedX = Math.random() * 0.8 - 0.4
+                    this.speedY = Math.random() * 1.1 + 0.6
+                    this.size = Math.random() * 3.5 + 2
+                    this.opacity = Math.random() * 0.6 + 0.35
+                    this.swingSpeed = Math.random() * 0.02 + 0.01
+                    this.swingRange = Math.random() * 12 + 5
+                    this.swingAngle = Math.random() * Math.PI * 2
                 }
             }
 
             update() {
-                if (type === 'sakura') {
+                if (effectiveType === 'sakura') {
                     this.y += this.speedY
                     this.swingAngle += this.swingSpeed
                     this.x += this.speedX + Math.sin(this.swingAngle) * 0.3
@@ -98,7 +110,7 @@ export default function FallingElements({ type }) {
                     if (this.y > height + 20 || this.x > width + 20) {
                         this.reset()
                     }
-                } else if (type === 'momiji') {
+                } else if (effectiveType === 'momiji') {
                     this.y += this.speedY
                     this.swingAngle += this.swingSpeed
                     this.x += this.speedX + Math.sin(this.swingAngle) * 0.5
@@ -107,7 +119,7 @@ export default function FallingElements({ type }) {
                     if (this.y > height + 20 || this.x > width + 20 || this.x < -20) {
                         this.reset()
                     }
-                } else if (type === 'verano') {
+                } else if (effectiveType === 'verano') {
                     this.y += this.speedY
                     this.x += this.speedX + Math.sin(this.y * 0.01) * 0.2
                     
@@ -122,11 +134,18 @@ export default function FallingElements({ type }) {
                     if (this.y < -20 || this.x > width + 20 || this.x < -20) {
                         this.reset()
                     }
+                } else if (effectiveType === 'invierno') {
+                    this.y += this.speedY
+                    this.swingAngle += this.swingSpeed
+                    this.x += this.speedX + Math.sin(this.swingAngle) * 0.4
+                    if (this.y > height + 10 || this.x > width + 10 || this.x < -10) {
+                        this.reset()
+                    }
                 }
             }
 
             draw() {
-                if (type === 'sakura') {
+                if (effectiveType === 'sakura') {
                     ctx.save()
                     ctx.translate(this.x, this.y)
                     ctx.rotate(this.angle)
@@ -140,7 +159,7 @@ export default function FallingElements({ type }) {
                     ctx.shadowBlur = 4
                     ctx.fill()
                     ctx.restore()
-                } else if (type === 'momiji') {
+                } else if (effectiveType === 'momiji') {
                     ctx.save()
                     ctx.translate(this.x, this.y)
                     ctx.rotate(this.angle)
@@ -164,7 +183,7 @@ export default function FallingElements({ type }) {
                     ctx.shadowBlur = 5
                     ctx.fill()
                     ctx.restore()
-                } else if (type === 'verano') {
+                } else if (effectiveType === 'verano') {
                     ctx.save()
                     ctx.beginPath()
                     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
@@ -178,6 +197,15 @@ export default function FallingElements({ type }) {
                     grad.addColorStop(1, 'rgba(255, 235, 59, 0)')
                     
                     ctx.fillStyle = grad
+                    ctx.fill()
+                    ctx.restore()
+                } else if (effectiveType === 'invierno') {
+                    ctx.save()
+                    ctx.beginPath()
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+                    ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`
+                    ctx.shadowColor = 'rgba(255, 255, 255, 0.8)'
+                    ctx.shadowBlur = 4
                     ctx.fill()
                     ctx.restore()
                 }
@@ -205,7 +233,7 @@ export default function FallingElements({ type }) {
             window.removeEventListener('resize', handleResize)
             cancelAnimationFrame(animationFrameId)
         }
-    }, [type])
+    }, [effectiveType])
 
     return (
         <canvas
