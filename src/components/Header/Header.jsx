@@ -7,6 +7,7 @@ const WHATSAPP_URL = 'https://wa.me/525657929121?text=SW-Hola%20quiero%20cotizar
 const TOUR_LINKS = [
     { slug: 'sakura-2027', title: 'Sakura 2027', flag: 'jp', sub: 'Japón · 22 Marzo – 2 Abril 2027' },
     { slug: 'octubre-japon-2026', title: 'Japón Octubre', flag: 'jp', sub: 'Japón · 2 – 13 Octubre 2026' },
+    { slug: 'tokio-compras-sabores-2026', title: 'Tokio Compras & Sabores', flag: 'jp', sub: 'Tokio · 26 Nov – 5 Dic 2026' },
     { slug: 'japon-corea-2026', title: 'Japón y Corea', flag: 'jp', sub: 'Japón & Corea · 17 – 30 Octubre 2026' },
     { slug: 'corea-otono-2026', title: 'Corea en Otoño', flag: 'kr', sub: 'Corea del Sur · 27 Oct – 7 Nov 2026' },
 ]

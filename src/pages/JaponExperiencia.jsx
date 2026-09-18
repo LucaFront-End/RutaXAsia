@@ -24,12 +24,14 @@ export default function JaponExperiencia() {
     const rawTemp = (temporada || '').toLowerCase()
     const rawExp = (experiencia || '').toLowerCase()
 
-    // Normalize Season Aliases (akari/verano, kamakura/momiji/koyo, sakura)
+    // Normalize Season Aliases (akari/verano, kamakura/momiji/koyo, sakura, invierno/fuyu)
     const seasonKey = (rawTemp === 'verano' || rawTemp === 'akari')
         ? 'akari'
-        : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono')
-            ? 'kamakura'
-            : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
+        : (rawTemp === 'invierno' || rawTemp === 'fuyu' || rawTemp === 'nieve')
+            ? 'invierno'
+            : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono' || rawTemp === 'otoño')
+                ? 'kamakura'
+                : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
 
     // Normalize Experience Aliases (esencial/guiado, completo/acompanado, libre, signature)
     const expKey = (rawExp === 'guiado' || rawExp === 'esencial')

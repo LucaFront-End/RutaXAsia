@@ -13,25 +13,62 @@ import {
     WHATSAPP_PHONE,
 } from '../data/japonData'
 import { fetchTourIndividuales } from '../lib/wixClient'
+import { useTripSearch } from '../context/TripContext'
 import FallingElements from '../components/FallingElements'
 import './pages.css'
 
 /**
  * JaponTemporada — Season page showing the 4 travel styles.
- * Route: /viajes/japon/:temporada (verano | sakura | momiji)
+ * Route: /viajes/japon/:temporada (verano | sakura | momiji | kamakura | invierno)
  */
 
 export default function JaponTemporada() {
     const { temporada } = useParams()
+    const { tripSearch, updateTripSearch } = useTripSearch()
     const [cmsDestinos, setCmsDestinos] = useState([])
     const rawTemp = (temporada || '').toLowerCase()
     const seasonKey = (rawTemp === 'verano' || rawTemp === 'akari')
         ? 'akari'
-        : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono')
-            ? 'kamakura'
-            : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
+        : (rawTemp === 'invierno' || rawTemp === 'fuyu' || rawTemp === 'nieve')
+            ? 'invierno'
+            : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono' || rawTemp === 'otoño')
+                ? 'kamakura'
+                : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
 
-    const season = TEMPORADAS[seasonKey]
+    const baseSeason = TEMPORADAS[seasonKey]
+
+    // Track which sub-season is selected when viewing the dual Otoño/Invierno page
+    const [selectedSubSeason, setSelectedSubSeason] = useState(() => {
+        if (rawTemp === 'invierno') return 'invierno'
+        if (tripSearch?.subSeason === 'invierno' || tripSearch?.temporada === 'invierno') return 'invierno'
+        return 'otono'
+    })
+
+    const [activeSplit, setActiveSplit] = useState(null)
+    const [mobileSeasonTab, setMobileSeasonTab] = useState(selectedSubSeason)
+
+    // Select season and dynamically update trip search dates
+    const handleSelectSeason = (sub) => {
+        setSelectedSubSeason(sub)
+        setMobileSeasonTab(sub)
+        if (sub === 'otono') {
+            updateTripSearch({
+                startDate: '2026-10-15',
+                endDate: '2026-10-24',
+                selectedMonth: 'Octubre 2026',
+                temporada: 'kamakura',
+                subSeason: 'otono',
+            })
+        } else if (sub === 'invierno') {
+            updateTripSearch({
+                startDate: '2026-12-15',
+                endDate: '2026-12-24',
+                selectedMonth: 'Diciembre 2026',
+                temporada: 'invierno',
+                subSeason: 'invierno',
+            })
+        }
+    }
 
     useEffect(() => { window.scrollTo(0, 0) }, [temporada])
 
@@ -58,34 +95,40 @@ export default function JaponTemporada() {
 
     const displayDestinos = cmsDestinos.length > 0 ? cmsDestinos : DESTINOS_DISPONIBLES
 
-    const [activeSplit, setActiveSplit] = useState(null)
-    const [mobileSeasonTab, setMobileSeasonTab] = useState('otono')
+    if (!baseSeason) return <Navigate to="/viajes/japon" replace />
 
-    if (!season) return <Navigate to="/viajes/japon" replace />
+    // Active season object for colors and cards below the hero
+    const isDualHero = seasonKey === 'kamakura'
+    const activeSeason = isDualHero
+        ? (selectedSubSeason === 'invierno' ? TEMPORADAS.invierno : TEMPORADAS.kamakura)
+        : baseSeason
+    const activeSeasonSlug = isDualHero
+        ? (selectedSubSeason === 'invierno' ? 'invierno' : 'kamakura')
+        : seasonKey
 
     return (
         <>
             <Helmet>
-                <title>{`Japón a la Carta — ${season.name} | RutaXAsia`}</title>
-                <meta name="description" content={`Elige tu forma de viajar a Japón en ${season.name}. Libre, Esencial, Completo o Signature. ${season.description} RutaXAsia.`} />
+                <title>{`Japón a la Carta — ${activeSeason.name} | RutaXAsia`}</title>
+                <meta name="description" content={`Elige tu forma de viajar a Japón en ${activeSeason.name}. Libre, Esencial, Completo o Signature. ${activeSeason.description} RutaXAsia.`} />
             </Helmet>
 
             {/* ===== HERO: DUAL SPLIT SLIDE FOR KAMAKURA (OTOÑO / INVIERNO) ===== */}
-            {seasonKey === 'kamakura' ? (
+            {isDualHero ? (
                 <section className="jac-split-hero">
                     {/* Mobile toggle between Otoño and Invierno */}
                     <div className="jac-split-mobile-switch">
                         <button
                             type="button"
                             className={mobileSeasonTab === 'otono' ? 'active' : ''}
-                            onClick={() => setMobileSeasonTab('otono')}
+                            onClick={() => handleSelectSeason('otono')}
                         >
                             🍁 Otoño
                         </button>
                         <button
                             type="button"
                             className={mobileSeasonTab === 'invierno' ? 'active' : ''}
-                            onClick={() => setMobileSeasonTab('invierno')}
+                            onClick={() => handleSelectSeason('invierno')}
                         >
                             ❄️ Invierno
                         </button>
@@ -94,9 +137,9 @@ export default function JaponTemporada() {
                     {/* Panel 1: Otoño (Momiji) */}
                     <div
                         className={`jac-split-panel jac-split-panel--otono ${activeSplit === 'otono' ? 'is-expanded' : activeSplit === 'invierno' ? 'is-collapsed' : ''} ${mobileSeasonTab === 'otono' ? 'mobile-active' : 'mobile-hidden'}`}
-                        onMouseEnter={() => setActiveSplit('otono')}
+                        onMouseEnter={() => { setActiveSplit('otono'); handleSelectSeason('otono'); }}
                         onMouseLeave={() => setActiveSplit(null)}
-                        onClick={() => setActiveSplit(activeSplit === 'otono' ? null : 'otono')}
+                        onClick={() => { setActiveSplit(activeSplit === 'otono' ? null : 'otono'); handleSelectSeason('otono'); }}
                     >
                         <div className="jac-split-bg">
                             <img src="/otono-japan.jpg" alt="Otoño en Japón" />
@@ -128,7 +171,14 @@ export default function JaponTemporada() {
                                 <span className="jac-split-chip">🍁 Gastronomía otoñal</span>
                                 <span className="jac-split-chip">🍁 Clima fresco y templado</span>
                             </div>
-                            <a href="#estilos" className="jac-split-btn" onClick={e => e.stopPropagation()}>
+                            <a
+                                href="#estilos"
+                                className="jac-split-btn"
+                                onClick={e => {
+                                    e.stopPropagation()
+                                    handleSelectSeason('otono')
+                                }}
+                            >
                                 Elige tu estilo de viaje <span className="jac-split-arrow">↓</span>
                             </a>
                         </div>
@@ -137,9 +187,9 @@ export default function JaponTemporada() {
                     {/* Panel 2: Invierno (Nieve & Onsen) */}
                     <div
                         className={`jac-split-panel jac-split-panel--invierno ${activeSplit === 'invierno' ? 'is-expanded' : activeSplit === 'otono' ? 'is-collapsed' : ''} ${mobileSeasonTab === 'invierno' ? 'mobile-active' : 'mobile-hidden'}`}
-                        onMouseEnter={() => setActiveSplit('invierno')}
+                        onMouseEnter={() => { setActiveSplit('invierno'); handleSelectSeason('invierno'); }}
                         onMouseLeave={() => setActiveSplit(null)}
-                        onClick={() => setActiveSplit(activeSplit === 'invierno' ? null : 'invierno')}
+                        onClick={() => { setActiveSplit(activeSplit === 'invierno' ? null : 'invierno'); handleSelectSeason('invierno'); }}
                     >
                         <div className="jac-split-bg">
                             <img src="https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1920&h=900&fit=crop&q=85" alt="Invierno en Japón" />
@@ -171,7 +221,14 @@ export default function JaponTemporada() {
                                 <span className="jac-split-chip">🏮 Iluminaciones invernales</span>
                                 <span className="jac-split-chip">🐒 Monos de Jigokudani</span>
                             </div>
-                            <a href="#estilos" className="jac-split-btn" onClick={e => e.stopPropagation()}>
+                            <a
+                                href="#estilos"
+                                className="jac-split-btn"
+                                onClick={e => {
+                                    e.stopPropagation()
+                                    handleSelectSeason('invierno')
+                                }}
+                            >
                                 Elige tu estilo de viaje <span className="jac-split-arrow">↓</span>
                             </a>
                         </div>
@@ -222,11 +279,11 @@ export default function JaponTemporada() {
             <section className="jac-experiences" id="estilos">
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>
+                        <span className="section-tag" style={{ background: `${activeSeason.colors.primary}15`, color: activeSeason.colors.primary }}>
                             ⛩️ 4 Formas de Viajar
                         </span>
                         <h2 className="section-title">
-                            ¿Cómo quieres vivir <span style={{ color: season.colors.primary }}>{season.name}</span>?
+                            ¿Cómo quieres vivir <span style={{ color: activeSeason.colors.primary }}>{activeSeason.name}</span>?
                         </h2>
                         <p className="section-subtitle">
                             Desde viajes a tu propio ritmo hasta la experiencia más exclusiva. Elige tu nivel de acompañamiento.
@@ -238,7 +295,7 @@ export default function JaponTemporada() {
                             const exp = EXPERIENCIAS[key]
                             return (
                                 <Link
-                                    to={`/viajes/japon/${seasonKey}/${key}`}
+                                    to={`/viajes/japon/${activeSeasonSlug}/${key}`}
                                     className={`jac-exp-card${exp.isSignature ? ' jac-exp-card--signature' : ''}`}
                                     key={key}
                                     data-animate="fade-up"
@@ -247,8 +304,8 @@ export default function JaponTemporada() {
                                     <div className="jac-exp-card-glow" />
                                     <div className="jac-exp-card-header">
                                         <span className="jac-exp-card-icon">{exp.icon}</span>
-                                        <span className="jac-exp-card-season-name" style={{ color: exp.isSignature ? '#d4af37' : season.colors.primary }}>
-                                            {season.name}
+                                        <span className="jac-exp-card-season-name" style={{ color: exp.isSignature ? '#d4af37' : activeSeason.colors.primary }}>
+                                            {activeSeason.name}
                                         </span>
                                         <h3 className="jac-exp-card-name">{exp.name}</h3>
                                         <p className="jac-exp-card-tagline">{exp.tagline}</p>
@@ -256,7 +313,7 @@ export default function JaponTemporada() {
                                     <ul className="jac-exp-card-features">
                                         {exp.includes.slice(0, 5).map((item, j) => (
                                             <li key={j}>
-                                                <span className="jac-exp-check" style={{ color: exp.isSignature ? '#d4af37' : season.colors.primary }}>✓</span>
+                                                <span className="jac-exp-check" style={{ color: exp.isSignature ? '#d4af37' : activeSeason.colors.primary }}>✓</span>
                                                 {item}
                                             </li>
                                         ))}
@@ -265,7 +322,7 @@ export default function JaponTemporada() {
                                         <span
                                             className="jac-exp-card-cta"
                                             style={{
-                                                background: exp.isSignature ? 'linear-gradient(135deg, #d4af37, #f5d97e)' : season.colors.primary,
+                                                background: exp.isSignature ? 'linear-gradient(135deg, #d4af37, #f5d97e)' : activeSeason.colors.primary,
                                                 color: exp.isSignature ? '#000' : '#fff',
                                             }}
                                         >
@@ -283,7 +340,7 @@ export default function JaponTemporada() {
             <section className="jac-destinos">
                 <div className="container">
                     <div className="section-header" data-animate="fade-up">
-                        <span className="section-tag" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>
+                        <span className="section-tag" style={{ background: `${activeSeason.colors.primary}15`, color: activeSeason.colors.primary }}>
                             🌸 Experiencias Disponibles
                         </span>
                         <p className="section-subtitle">
@@ -307,7 +364,7 @@ export default function JaponTemporada() {
                             </div>
                         ))}
                     </div>
-                    <p className="jac-destinos-note" style={{ color: season.colors.primary }}>Y muchas más...</p>
+                    <p className="jac-destinos-note" style={{ color: activeSeason.colors.primary }}>Y muchas más...</p>
                 </div>
             </section>
 
@@ -318,15 +375,15 @@ export default function JaponTemporada() {
                         {/* 1. Flexibilidad */}
                         <div className="jac-flex-box">
                             <div className="jac-flex-box-header">
-                                <span className="jac-flex-box-icon" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>🗺️</span>
-                                <h3 className="jac-flex-box-title" style={{ color: season.colors.primary }}>
+                                <span className="jac-flex-box-icon" style={{ background: `${activeSeason.colors.primary}15`, color: activeSeason.colors.primary }}>🗺️</span>
+                                <h3 className="jac-flex-box-title" style={{ color: activeSeason.colors.primary }}>
                                     Flexibilidad Total
                                 </h3>
                             </div>
                             <div className="jac-flex-items-list">
                                 {FLEXIBILIDAD.map((item, i) => (
                                     <div className="jac-flex-item" key={i}>
-                                        <span className="jac-flex-item-bullet" style={{ color: season.colors.primary }}>{item.icon || '✓'}</span>
+                                        <span className="jac-flex-item-bullet" style={{ color: activeSeason.colors.primary }}>{item.icon || '✓'}</span>
                                         <div className="jac-flex-item-text">
                                             <h4>{item.title}</h4>
                                             <p>{item.desc}</p>
@@ -339,15 +396,15 @@ export default function JaponTemporada() {
                         {/* 2. Extensiones */}
                         <div className="jac-flex-box">
                             <div className="jac-flex-box-header">
-                                <span className="jac-flex-box-icon" style={{ background: `${season.colors.primary}15`, color: season.colors.primary }}>🌏</span>
-                                <h3 className="jac-flex-box-title" style={{ color: season.colors.primary }}>
+                                <span className="jac-flex-box-icon" style={{ background: `${activeSeason.colors.primary}15`, color: activeSeason.colors.primary }}>🌏</span>
+                                <h3 className="jac-flex-box-title" style={{ color: activeSeason.colors.primary }}>
                                     Extensiones de Viaje
                                 </h3>
                             </div>
                             <div className="jac-flex-items-list">
                                 {EXTENSIONES.map((item, i) => (
                                     <div className="jac-flex-item" key={i}>
-                                        <span className="jac-flex-item-bullet" style={{ color: season.colors.primary }}>✦</span>
+                                        <span className="jac-flex-item-bullet" style={{ color: activeSeason.colors.primary }}>✦</span>
                                         <div className="jac-flex-item-text">
                                             <h4>
                                                 {item.name}
@@ -384,7 +441,7 @@ export default function JaponTemporada() {
             </section>
 
             {/* ===== HIGHLIGHTS STRIP ===== */}
-            <section className="jac-highlights-strip" style={{ background: season.colors.primary }} data-animate="fade-up">
+            <section className="jac-highlights-strip" style={{ background: activeSeason.colors.primary }} data-animate="fade-up">
                 <div className="container">
                     <div className="jac-highlights-row">
                         {HIGHLIGHTS_STRIP.map((h, i) => (
@@ -407,7 +464,7 @@ export default function JaponTemporada() {
                     <p className="jac-cta-subtitle">Y diseñamos tu experiencia contigo.</p>
                     <div className="jac-cta-actions">
                         <a
-                            href={`${WHATSAPP_BASE}SW-Hola%20quiero%20info%20sobre%20Japón%20${season.name}`}
+                            href={`${WHATSAPP_BASE}SW-Hola%20quiero%20info%20sobre%20Japón%20${activeSeason.name}`}
                             className="btn btn-primary jac-cta-btn"
                             target="_blank"
                             rel="noopener noreferrer"

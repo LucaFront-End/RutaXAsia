@@ -16,6 +16,7 @@ import './TripSelectorBar.css'
 const DESTINOS_OPTIONS = [
     { label: 'Japón a la Carta', slug: '/viajes/japon', icon: '⛩️' },
     { label: 'Japón Octubre 2026', slug: '/tours/octubre-japon-2026', icon: '🍁' },
+    { label: 'Tokio Compras y Sabores 2026', slug: '/tours/tokio-compras-sabores-2026', icon: '🛍️' },
     { label: 'Japón y Corea Octubre 2026', slug: '/tours/japon-corea-2026', icon: '🌸' },
     { label: 'Corea del Sur', slug: '/viajes/corea', icon: '🇰🇷' },
 ]
@@ -24,9 +25,9 @@ const MONTHS_OPTIONS = [
     { label: 'Septiembre 2026', key: '2026-09', seasonKey: 'kamakura', emoji: '🍁' },
     { label: 'Octubre 2026', key: '2026-10', seasonKey: 'kamakura', emoji: '🍁' },
     { label: 'Noviembre 2026', key: '2026-11', seasonKey: 'kamakura', emoji: '🍁' },
-    { label: 'Diciembre 2026', key: '2026-12', seasonKey: 'kamakura', emoji: '🍁' },
-    { label: 'Enero 2027', key: '2027-01', seasonKey: 'kamakura', emoji: '🍁' },
-    { label: 'Febrero 2027', key: '2027-02', seasonKey: 'kamakura', emoji: '🍁' },
+    { label: 'Diciembre 2026', key: '2026-12', seasonKey: 'invierno', emoji: '❄️' },
+    { label: 'Enero 2027', key: '2027-01', seasonKey: 'invierno', emoji: '❄️' },
+    { label: 'Febrero 2027', key: '2027-02', seasonKey: 'invierno', emoji: '❄️' },
     { label: 'Marzo 2027', key: '2027-03', seasonKey: 'sakura', emoji: '🌸' },
     { label: 'Abril 2027', key: '2027-04', seasonKey: 'sakura', emoji: '🌸' },
     { label: 'Mayo 2027', key: '2027-05', seasonKey: 'akari', emoji: '☀️' },
@@ -69,6 +70,7 @@ export default function TripSelectorBar({
         routeParams.temporada ||
         (location.pathname.includes('/sakura') ? 'sakura' :
          location.pathname.includes('/akari') || location.pathname.includes('/verano') ? 'akari' :
+         location.pathname.includes('/invierno') || location.pathname.includes('/fuyu') ? 'invierno' :
          location.pathname.includes('/kamakura') || location.pathname.includes('/momiji') || location.pathname.includes('/otono') ? 'kamakura' : null) ||
         currentData?.temporada ||
         tripSearch?.temporada

@@ -222,11 +222,14 @@ export default function TourDetail() {
                 {/* Itinerario día por día */}
                 <section className="td-tabs-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
                     <h2 className="td-section-label">Itinerario día por día</h2>
-                    <p className="td-tabs-subtitle">Seleccioná una ciudad en el mapa para ver el detalle</p>
+                    <p className="td-tabs-subtitle">
+                        {tour.isTokyoBarrios ? 'Seleccioná un barrio en el mapa para ver el detalle' : 'Seleccioná una ciudad en el mapa para ver el detalle'}
+                    </p>
                     <ItineraryMap
                         chapters={tour.chapters}
                         activeCity={activeCity}
                         onCityClick={setActiveCity}
+                        isTokyoBarrios={Boolean(tour.isTokyoBarrios)}
                     />
                 </section>
 

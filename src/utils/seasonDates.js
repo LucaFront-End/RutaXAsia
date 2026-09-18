@@ -44,25 +44,42 @@ export const SEASONS_INFO = {
     },
     kamakura: {
         key: 'kamakura',
-        name: 'Kamakura',
-        fullName: 'Kamakura (Otoño / Invierno)',
+        name: 'Otoño',
+        fullName: 'Otoño (Momiji / Kamakura)',
         emoji: '🍁',
-        label: '1 Sep — 15 Mar',
-        monthsText: '1 de Septiembre — 15 de Marzo',
+        label: '1 Sep — 30 Nov',
+        monthsText: '1 de Septiembre — 30 de Noviembre',
         color: '#c44900',
         heroBg: 'linear-gradient(135deg, #7f2b0a 0%, #c44900 50%, #e65100 100%)',
         startMonth: 9,
         startDay: 1,
+        endMonth: 11,
+        endDay: 30,
+        defaultMonth: 10,
+        defaultDay: 15,
+        defaultYear: 2026,
+    },
+    invierno: {
+        key: 'invierno',
+        name: 'Invierno',
+        fullName: 'Invierno (Nieve & Onsen)',
+        emoji: '❄️',
+        label: '1 Dic — 15 Mar',
+        monthsText: '1 de Diciembre — 15 de Marzo',
+        color: '#0284c7',
+        heroBg: 'linear-gradient(135deg, #0c4a6e 0%, #0284c7 50%, #38bdf8 100%)',
+        startMonth: 12,
+        startDay: 1,
         endMonth: 3,
         endDay: 15,
-        defaultMonth: 10,
+        defaultMonth: 12,
         defaultDay: 15,
         defaultYear: 2026,
     }
 }
 
 /**
- * Normalizes any season string/alias to 'sakura', 'akari', or 'kamakura'.
+ * Normalizes any season string/alias to 'sakura', 'akari', 'kamakura' (otono), or 'invierno'.
  */
 export function normalizeSeasonKey(str) {
     if (!str || typeof str !== 'string') return null
@@ -73,11 +90,13 @@ export function normalizeSeasonKey(str) {
     if (clean === 'akari' || clean === 'verano' || clean.includes('akari') || clean.includes('verano')) {
         return 'akari'
     }
+    if (clean === 'invierno' || clean === 'fuyu' || clean === 'nieve' || clean.includes('invierno') || clean.includes('fuyu')) {
+        return 'invierno'
+    }
     if (
         clean === 'kamakura' || clean === 'otono' || clean === 'otoño' || 
-        clean === 'momiji' || clean === 'koyo' || clean === 'invierno' || 
-        clean === 'fuyu' || clean.includes('otono') || clean.includes('otoño') || 
-        clean.includes('momiji') || clean.includes('kamakura') || clean.includes('invierno')
+        clean === 'momiji' || clean === 'koyo' || clean.includes('otono') || clean.includes('otoño') || 
+        clean.includes('momiji') || clean.includes('kamakura')
     ) {
         return 'kamakura'
     }
@@ -113,8 +132,13 @@ export function getSeasonForDate(dateStr) {
         return SEASONS_INFO.akari
     }
 
-    // Kamakura: 1 de Septiembre (09-01) al 15 de Marzo (03-15)
-    return SEASONS_INFO.kamakura
+    // Otoño (Momiji): 1 de Septiembre (09-01) al 30 de Noviembre (11-30)
+    if (m >= 9 && m <= 11) {
+        return SEASONS_INFO.kamakura
+    }
+
+    // Invierno: 1 de Diciembre (12-01) al 15 de Marzo (03-15)
+    return SEASONS_INFO.invierno
 }
 
 /**
