@@ -98,7 +98,7 @@ export default function ItineraryMap({ chapters, activeCity, onCityClick, isToky
             {/* LEFT: Map */}
             <div className="td-itinerary-map">
                 <span className="td-map-route-label">
-                    {isTokyoBarrios ? '📍 Barrios de Tokio & Excursiones' : 'Ruta del viaje'}
+                    Ruta del viaje
                 </span>
 
                 {isTokyoBarrios ? (

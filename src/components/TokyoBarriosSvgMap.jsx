@@ -1,462 +1,144 @@
 import React, { useState } from 'react'
 
 /* ===================================================================
-   TokyoBarriosSvgMap — Elegant vector SVG map of Greater Tokyo & Kanto.
-   Matches the cream (#faf5f0) and red (#dc2626) aesthetic of RutaXAsia.
-   Geographically accurate placement for:
-     1. CDMX -> Tokio (Narita)
-     2. Asakusa & Tokyo Skytree
-     3. Harajuku, Omotesando & Shinjuku
-     4. Ginza & Shibuya
-     5. Excursión Monte Fuji & Gotemba Outlets
-     6. Excursión Kamakura & Yokohama
-     7. Ueno, Ameyoko & Akihabara
-     8. Tsukiji Outer Market & Kappabashi
-     9. Daikanyama, Nakameguro & Ebisu
-    10. Regreso a CDMX (Narita)
+   TokyoBarriosSvgMap — Clean, modern, minimalist vector SVG map.
+   Matches the exact aesthetic of the other tours (Image 2):
+     - Cream background (#faf5f0)
+     - Single elegant geometric polygon outline (#dc2626, opacity 0.4, fill 0.03)
+     - Clean red route line connecting numbered circular markers
+     - Geographically accurate hotspots for the 10 days
+     - Zero visual clutter, elegant & modern
    =================================================================== */
 
-// Coordinates in viewBox 0 0 920 620
 const TOKYO_HOTSPOTS = [
-    {
-        day: 1,
-        x: 775,
-        y: 135,
-        title: 'Salida de México',
-        shortName: 'Vuelo CDMX',
-        barrio: 'Vuelo Internacional',
-        labelPos: 'bottom',
-    },
-    {
-        day: 2,
-        x: 640,
-        y: 205,
-        title: 'Asakusa & Skytree',
-        shortName: 'Asakusa & Skytree',
-        barrio: 'Asakusa & Sumida',
-        labelPos: 'right',
-    },
-    {
-        day: 3,
-        x: 430,
-        y: 255,
-        title: 'Harajuku & Shinjuku',
-        shortName: 'Harajuku & Shinjuku',
-        barrio: 'Shinjuku',
-        labelPos: 'left',
-    },
-    {
-        day: 4,
-        x: 460,
-        y: 320,
-        title: 'Ginza & Shibuya Crossing',
-        shortName: 'Shibuya & Ginza',
-        barrio: 'Shibuya',
-        labelPos: 'left',
-    },
-    {
-        day: 5,
-        x: 155,
-        y: 395,
-        title: 'Monte Fuji & Gotemba Outlets',
-        shortName: 'Monte Fuji & Gotemba',
-        barrio: 'Excursión Fuji',
-        labelPos: 'bottom',
-    },
-    {
-        day: 6,
-        x: 375,
-        y: 520,
-        title: 'Kamakura & Yokohama',
-        shortName: 'Kamakura & Yokohama',
-        barrio: 'Excursión Bahía',
-        labelPos: 'bottom',
-    },
-    {
-        day: 7,
-        x: 565,
-        y: 235,
-        title: 'Ueno & Akihabara',
-        shortName: 'Ueno & Akihabara',
-        barrio: 'Akihabara',
-        labelPos: 'top',
-    },
-    {
-        day: 8,
-        x: 555,
-        y: 330,
-        title: 'Tsukiji Market & Kappabashi',
-        shortName: 'Tsukiji & Kappabashi',
-        barrio: 'Tsukiji',
-        labelPos: 'right',
-    },
-    {
-        day: 9,
-        x: 475,
-        y: 385,
-        title: 'Daikanyama, Nakameguro & Ebisu',
-        shortName: 'Daikanyama & Ebisu',
-        barrio: 'Daikanyama / Ebisu',
-        labelPos: 'bottom-left',
-    },
-    {
-        day: 10,
-        x: 825,
-        y: 175,
-        title: 'Regreso a Ciudad de México',
-        shortName: 'Regreso a CDMX',
-        barrio: 'Vuelo de Regreso',
-        labelPos: 'bottom',
-    },
+    { day: 1, x: 420, y: 150, title: 'Salida de México (Vuelo CDMX)' },
+    { day: 2, x: 355, y: 205, title: 'Asakusa & Tokyo Skytree' },
+    { day: 3, x: 235, y: 230, title: 'Harajuku & Shinjuku' },
+    { day: 4, x: 260, y: 285, title: 'Ginza & Shibuya Crossing' },
+    { day: 5, x: 95,  y: 310, title: 'Excursión Monte Fuji & Gotemba' },
+    { day: 6, x: 235, y: 405, title: 'Excursión Kamakura & Yokohama' },
+    { day: 7, x: 315, y: 185, title: 'Ueno, Ameyoko & Akihabara' },
+    { day: 8, x: 340, y: 275, title: 'Tsukiji Market & Kappabashi' },
+    { day: 9, x: 275, y: 340, title: 'Daikanyama, Nakameguro & Ebisu' },
+    { day: 10, x: 440, y: 195, title: 'Regreso a Ciudad de México' },
 ]
 
 export default function TokyoBarriosSvgMap({ chapters = [], activeCity = 0, onCityClick }) {
     const [hoveredIndex, setHoveredIndex] = useState(null)
 
-    // Build the SVG path connecting all 10 hotspots in itinerary sequence
-    const routePathD = TOKYO_HOTSPOTS.map((p, idx) => {
-        return `${idx === 0 ? 'M' : 'L'} ${p.x} ${p.y}`
-    }).join(' ')
+    // Build the SVG path connecting the 10 hotspots in order
+    const routeD = TOKYO_HOTSPOTS.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
 
     return (
         <div
-            className="tokyo-svg-map-container"
+            className="tokyo-svg-map-wrapper"
             style={{
                 position: 'relative',
                 width: '100%',
                 height: '100%',
                 minHeight: '550px',
                 background: '#faf5f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 userSelect: 'none',
                 overflow: 'hidden',
             }}
         >
             <svg
-                viewBox="0 0 920 620"
-                style={{ width: '100%', height: '100%', display: 'block' }}
+                viewBox="0 0 500 500"
+                style={{ width: '100%', height: '100%', maxHeight: '600px', display: 'block' }}
                 preserveAspectRatio="xMidYMid meet"
-                aria-label="Mapa Ilustrado de Barrios de Tokio y Excursiones"
+                aria-label="Mapa de ruta de Tokio y Excursiones"
             >
-                <defs>
-                    {/* Shadow filter for pins and badges */}
-                    <filter id="map-pin-shadow" x="-30%" y="-30%" width="160%" height="160%">
-                        <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.18" />
-                    </filter>
-                    <filter id="map-glow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="3" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                    {/* Pattern for subtle grid */}
-                    <pattern id="map-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0,0,0,0.025)" strokeWidth="1" />
-                    </pattern>
-                </defs>
-
-                {/* 1. Base Map Background */}
-                <rect width="920" height="620" fill="#faf5f0" />
-                <rect width="920" height="620" fill="url(#map-grid)" />
-
-                {/* 2. Water Bodies (Tokyo Bay & Sagami Bay) */}
-                {/* Tokyo Bay (Bahía de Tokio) */}
+                {/* 1. Base Region Silhouette Outline (Stylized Geometric Vector) */}
                 <path
-                    d="M 520 370 
-                       C 540 370, 580 365, 625 365
-                       C 670 370, 710 395, 715 425
-                       C 720 460, 680 490, 645 520
-                       C 605 550, 560 575, 520 620
-                       L 480 620
-                       C 455 580, 445 545, 455 500
-                       C 465 460, 480 420, 500 390
+                    d="M 130 130
+                       L 270 110
+                       L 380 100
+                       L 440 115
+                       L 465 150
+                       L 475 210
+                       L 460 260
+                       L 420 330
+                       L 380 360
+                       L 355 310
+                       L 320 280
+                       L 285 320
+                       L 270 360
+                       L 255 430
+                       L 215 430
+                       L 170 390
+                       L 120 360
+                       L 70 325
+                       L 60 250
                        Z"
-                    fill="#eef4f8"
-                    stroke="#dc2626"
-                    strokeWidth="1.2"
-                    strokeOpacity="0.25"
-                />
-
-                {/* Sagami Bay / Pacific (South of Kamakura & Odawara) */}
-                <path
-                    d="M 160 520 
-                       C 220 540, 300 550, 370 560
-                       C 410 565, 435 590, 450 620
-                       L 0 620
-                       L 0 520
-                       Z"
-                    fill="#edf3f7"
-                    stroke="#dc2626"
-                    strokeWidth="1.2"
-                    strokeOpacity="0.2"
-                />
-
-                {/* Subtle wave ripples in Tokyo Bay */}
-                <path
-                    d="M 540 450 Q 555 445 570 450 T 600 450 M 520 480 Q 535 475 550 480 T 580 480 M 560 515 Q 575 510 590 515 T 620 515"
-                    fill="none"
-                    stroke="rgba(14, 165, 233, 0.25)"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                />
-
-                {/* Water body labels */}
-                <text
-                    x="565"
-                    y="470"
-                    fill="rgba(0, 0, 0, 0.22)"
-                    fontSize="11"
-                    fontStyle="italic"
-                    fontWeight="700"
-                    letterSpacing="3.5"
-                    textAnchor="middle"
-                >
-                    BAHÍA DE TOKIO
-                </text>
-                <text
-                    x="250"
-                    y="590"
-                    fill="rgba(0, 0, 0, 0.18)"
-                    fontSize="10"
-                    fontStyle="italic"
-                    fontWeight="700"
-                    letterSpacing="2.5"
-                    textAnchor="middle"
-                >
-                    BAHÍA DE SAGAMI
-                </text>
-
-                {/* 3. Rivers */}
-                {/* Sumida River (flowing through Asakusa & Ryogoku into Tokyo Bay) */}
-                <path
-                    d="M 615 120 
-                       C 610 160, 630 190, 625 215 
-                       C 620 240, 605 265, 595 295 
-                       C 585 320, 570 345, 550 365"
-                    fill="none"
-                    stroke="rgba(59, 130, 246, 0.3)"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                />
-                {/* Tama River (Tokyo - Kanagawa border) */}
-                <path
-                    d="M 370 320 
-                       C 410 340, 440 370, 480 395 
-                       C 495 405, 505 410, 515 415"
-                    fill="none"
-                    stroke="rgba(59, 130, 246, 0.22)"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                />
-
-                {/* 4. Geography & Province Labels */}
-                <text
-                    x="480"
-                    y="185"
-                    fill="rgba(220, 38, 38, 0.35)"
-                    fontSize="10.5"
-                    fontWeight="800"
-                    letterSpacing="3"
-                    textAnchor="middle"
-                >
-                    TOKIO (ÁREA METROPOLITANA)
-                </text>
-                <text
-                    x="345"
-                    y="460"
-                    fill="rgba(0, 0, 0, 0.22)"
-                    fontSize="9.5"
-                    fontWeight="750"
-                    letterSpacing="2"
-                    textAnchor="middle"
-                >
-                    KANAGAWA
-                </text>
-                <text
-                    x="755"
-                    y="275"
-                    fill="rgba(0, 0, 0, 0.18)"
-                    fontSize="9.5"
-                    fontWeight="750"
-                    letterSpacing="2.5"
-                    textAnchor="middle"
-                >
-                    CHIBA
-                </text>
-                <text
-                    x="210"
-                    y="310"
-                    fill="rgba(0, 0, 0, 0.18)"
-                    fontSize="9"
-                    fontWeight="750"
-                    letterSpacing="2"
-                    textAnchor="middle"
-                >
-                    YAMANASHI / FUJI
-                </text>
-
-                {/* 5. Landmarks & Natural Features */}
-                {/* Mount Fuji (stylized snowcap volcano) */}
-                <g transform="translate(100, 310)">
-                    {/* Mountain body */}
-                    <path
-                        d="M 10 75 L 55 10 L 100 75 Z"
-                        fill="#f7efe4"
-                        stroke="#dc2626"
-                        strokeWidth="1.6"
-                        strokeOpacity="0.45"
-                    />
-                    {/* Snowcap */}
-                    <path
-                        d="M 38 33 Q 48 42 55 36 Q 63 43 72 33 L 55 10 Z"
-                        fill="#ffffff"
-                        stroke="#dc2626"
-                        strokeWidth="1.2"
-                        strokeOpacity="0.4"
-                    />
-                    <text
-                        x="55"
-                        y="95"
-                        fill="#dc2626"
-                        fontSize="9.5"
-                        fontWeight="800"
-                        letterSpacing="0.8"
-                        textAnchor="middle"
-                    >
-                        MONTE FUJI (3,776 m)
-                    </text>
-                    <text
-                        x="55"
-                        y="108"
-                        fill="#666"
-                        fontSize="8"
-                        fontWeight="600"
-                        textAnchor="middle"
-                    >
-                        Gotemba Premium Outlets
-                    </text>
-                </g>
-
-                {/* Kamakura Daibutsu & Bay Landmark */}
-                <g transform="translate(375, 545)">
-                    <text
-                        x="0"
-                        y="0"
-                        fill="#7c2d12"
-                        fontSize="9"
-                        fontWeight="700"
-                        textAnchor="middle"
-                    >
-                        ⛩️ Kamakura (Gran Buda) & Yokohama
-                    </text>
-                </g>
-
-                {/* Hotel Base Banner: APA Hotel Ryogoku Ekimae Tower */}
-                <g transform="translate(605, 275)" filter="url(#map-pin-shadow)">
-                    <rect
-                        x="-85"
-                        y="-12"
-                        width="170"
-                        height="24"
-                        rx="12"
-                        fill="#ffffff"
-                        stroke="#b45309"
-                        strokeWidth="1.4"
-                    />
-                    <text
-                        x="0"
-                        y="4"
-                        fill="#b45309"
-                        fontSize="8.5"
-                        fontWeight="800"
-                        letterSpacing="0.3"
-                        textAnchor="middle"
-                    >
-                        🏨 Hotel Base: APA Tower Ryogoku
-                    </text>
-                </g>
-
-                {/* International Flight Arc (CDMX to Narita) */}
-                <path
-                    d="M 910 80 Q 840 100 780 135"
-                    fill="none"
+                    fill="rgba(220, 38, 38, 0.03)"
                     stroke="#dc2626"
                     strokeWidth="1.8"
-                    strokeDasharray="4 4"
-                    strokeOpacity="0.45"
-                />
-                <text x="880" y="78" fill="#dc2626" fontSize="12" textAnchor="middle">
-                    ✈️
-                </text>
-                <text
-                    x="845"
-                    y="68"
-                    fill="#dc2626"
-                    fontSize="8.5"
-                    fontWeight="800"
-                    letterSpacing="0.5"
-                    textAnchor="middle"
-                >
-                    VUELO DESDE CDMX
-                </text>
-
-                {/* 6. Itinerary Route Polyline */}
-                {/* Glow underlay */}
-                <path
-                    d={routePathD}
-                    fill="none"
-                    stroke="#dc2626"
-                    strokeWidth="4"
-                    strokeOpacity="0.18"
-                    strokeLinecap="round"
+                    strokeOpacity="0.4"
                     strokeLinejoin="round"
-                />
-                {/* Crisp dashed route */}
-                <path
-                    d={routePathD}
-                    fill="none"
-                    stroke="#dc2626"
-                    strokeWidth="2.2"
-                    strokeDasharray="7 5"
-                    strokeOpacity="0.65"
                     strokeLinecap="round"
-                    strokeLinejoin="round"
                 />
 
-                {/* 7. Hotspots (1 to 10) */}
+                {/* 2. Route Connecting Lines (Dashed + Solid exactly like ItineraryMap) */}
+                <path
+                    d={routeD}
+                    fill="none"
+                    stroke="#dc2626"
+                    strokeWidth="2"
+                    strokeOpacity="0.2"
+                    strokeDasharray="8 5"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                />
+                <path
+                    d={routeD}
+                    fill="none"
+                    stroke="#dc2626"
+                    strokeWidth="2.5"
+                    strokeOpacity="0.55"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                />
+
+                {/* 3. Numbered Hotspots (1 to 10) */}
                 {TOKYO_HOTSPOTS.map((spot, i) => {
                     const isActive = i === activeCity
                     const isHovered = i === hoveredIndex
                     const chapter = chapters[i] || {}
+                    const titleText = chapter.city || spot.title
 
                     return (
                         <g
-                            key={`hotspot-${spot.day}`}
-                            className={`map-hotspot-group ${isActive ? 'is-active' : ''}`}
+                            key={`spot-${spot.day}`}
+                            style={{ cursor: 'pointer' }}
                             onClick={() => onCityClick && onCityClick(i)}
                             onMouseEnter={() => setHoveredIndex(i)}
                             onMouseLeave={() => setHoveredIndex(null)}
-                            style={{ cursor: 'pointer' }}
                         >
-                            {/* Pulsing ripple for active dot */}
+                            {/* Pulsing ring for active stop */}
                             {isActive && (
                                 <>
                                     <circle
                                         cx={spot.x}
                                         cy={spot.y}
-                                        r="24"
+                                        r="22"
                                         fill="none"
                                         stroke="#dc2626"
                                         strokeWidth="2"
-                                        strokeOpacity="0.3"
+                                        strokeOpacity="0.35"
                                     >
                                         <animate
                                             attributeName="r"
-                                            values="18;28;18"
-                                            dur="2s"
+                                            values="18;26;18"
+                                            dur="2.2s"
                                             repeatCount="indefinite"
                                         />
                                         <animate
                                             attributeName="stroke-opacity"
-                                            values="0.5;0.1;0.5"
-                                            dur="2s"
+                                            values="0.45;0.08;0.45"
+                                            dur="2.2s"
                                             repeatCount="indefinite"
                                         />
                                     </circle>
@@ -470,25 +152,27 @@ export default function TokyoBarriosSvgMap({ chapters = [], activeCity = 0, onCi
                                 </>
                             )}
 
-                            {/* Base Circle Marker */}
+                            {/* Base Circular Pin */}
                             <circle
                                 cx={spot.x}
                                 cy={spot.y}
-                                r={isActive ? 17 : isHovered ? 15 : 13}
+                                r={isActive ? 18 : isHovered ? 16 : 14}
                                 fill={isActive ? '#dc2626' : isHovered ? '#dc2626' : '#ffffff'}
                                 stroke={isActive ? '#ffffff' : '#dc2626'}
-                                strokeWidth={isActive ? 2.5 : 2.2}
-                                filter="url(#map-pin-shadow)"
-                                style={{ transition: 'all 0.25s ease' }}
+                                strokeWidth={isActive ? 2.5 : 2.5}
+                                style={{
+                                    transition: 'all 0.25s ease',
+                                    filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.14))',
+                                }}
                             />
 
-                            {/* Day Number inside Marker */}
+                            {/* Number inside Circle */}
                             <text
                                 x={spot.x}
                                 y={spot.y + 0.5}
                                 fill={isActive || isHovered ? '#ffffff' : '#dc2626'}
-                                fontSize={isActive ? '11.5' : '10'}
-                                fontWeight="850"
+                                fontSize={isActive ? '12.5' : '11'}
+                                fontWeight="800"
                                 textAnchor="middle"
                                 dominantBaseline="central"
                                 style={{ pointerEvents: 'none', transition: 'all 0.25s ease' }}
@@ -496,76 +180,34 @@ export default function TokyoBarriosSvgMap({ chapters = [], activeCity = 0, onCi
                                 {spot.day}
                             </text>
 
-                            {/* Label Pill (Always visible for active, visible on hover for others) */}
+                            {/* Tooltip Pill (Active or Hovered) */}
                             {(isActive || isHovered) && (
                                 <g
-                                    transform={`translate(${
-                                        spot.labelPos === 'left'
-                                            ? spot.x - 12
-                                            : spot.labelPos === 'right'
-                                            ? spot.x + 12
-                                            : spot.x
-                                    }, ${
-                                        spot.labelPos === 'bottom' || spot.labelPos === 'bottom-left'
-                                            ? spot.y + 24
-                                            : spot.labelPos === 'top'
-                                            ? spot.y - 24
-                                            : spot.y - 12
-                                    })`}
-                                    filter="url(#map-pin-shadow)"
+                                    transform={`translate(${spot.x}, ${spot.y - 24})`}
                                     style={{ pointerEvents: 'none' }}
                                 >
                                     <rect
-                                        x={
-                                            spot.labelPos === 'left'
-                                                ? -150
-                                                : spot.labelPos === 'right'
-                                                ? 0
-                                                : -75
-                                        }
-                                        y="-13"
-                                        width="150"
-                                        height="26"
-                                        rx="13"
+                                        x="-70"
+                                        y="-12"
+                                        width="140"
+                                        height="24"
+                                        rx="12"
                                         fill={isActive ? '#dc2626' : '#ffffff'}
                                         stroke={isActive ? '#ffffff' : 'rgba(0,0,0,0.12)'}
                                         strokeWidth="1.2"
+                                        style={{ filter: 'drop-shadow(0 3px 8px rgba(0,0,0,0.16))' }}
                                     />
                                     <text
-                                        x={
-                                            spot.labelPos === 'left'
-                                                ? -75
-                                                : spot.labelPos === 'right'
-                                                ? 75
-                                                : 0
-                                        }
+                                        x="0"
                                         y="4"
                                         fill={isActive ? '#ffffff' : '#111827'}
                                         fontSize="9.5"
                                         fontWeight="750"
                                         textAnchor="middle"
                                     >
-                                        {`Día ${spot.day} · ${chapter.city || spot.shortName}`}
+                                        {titleText.length > 22 ? `${titleText.slice(0, 20)}…` : titleText}
                                     </text>
                                 </g>
-                            )}
-
-                            {/* Permanent Mini-Label for Non-Active stops so map is easy to read at a glance */}
-                            {!isActive && !isHovered && (
-                                <text
-                                    x={spot.x}
-                                    y={spot.labelPos === 'top' ? spot.y - 16 : spot.y + 20}
-                                    fill="#4b5563"
-                                    fontSize="8"
-                                    fontWeight="700"
-                                    textAnchor="middle"
-                                    style={{
-                                        pointerEvents: 'none',
-                                        textShadow: '0 1px 3px rgba(255,255,255,0.95)',
-                                    }}
-                                >
-                                    {spot.shortName}
-                                </text>
                             )}
                         </g>
                     )
