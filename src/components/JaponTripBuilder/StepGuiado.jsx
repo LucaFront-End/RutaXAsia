@@ -21,7 +21,7 @@ import { useTripSearch } from '../../context/TripContext'
  * - Auto-preselect free tours tagged for Esencial
  * - FloatingTicket & CheckoutModal
  */
-export default function StepGuiado({ season, temporadaKey }) {
+export default function StepGuiado({ season, temporadaKey, onSeasonChange }) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const [selectedDuration, setSelectedDuration] = useState(0) // 0: Express, 1: Clásico, 2: Explorador, 3: Grand Tour
     const [selectedExps, setSelectedExps] = useState([])
@@ -274,7 +274,7 @@ export default function StepGuiado({ season, temporadaKey }) {
                             {/* Paso 2: Selecciona Fecha de Inicio y Pasajeros */}
                             <div style={{ marginBottom: 24 }}>
                                 <div className="step3-section-title">📅 2. Selecciona Fecha de Inicio y Pasajeros</div>
-                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedDays={currentDays} selectedNights={currentNights} />
+                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedDays={currentDays} selectedNights={currentNights} season={season} temporadaKey={temporadaKey} onSeasonChange={onSeasonChange} />
                             </div>
 
                             {/* Dynamic Calculated Summary Banner */}

@@ -79,7 +79,7 @@ export default function JaponExperiencia() {
                 {expKey === 'libre' && <StepLibre season={season} temporadaKey={seasonKey} />}
                 {expKey === 'esencial' && <StepGuiado season={season} temporadaKey={seasonKey} />}
                 {expKey === 'completo' && <StepAcompanado season={season} temporadaKey={seasonKey} />}
-                {expKey === 'signature' && <StepSignature season={season} />}
+                {expKey === 'signature' && <StepSignature season={season} temporadaKey={seasonKey} />}
             </div>
 
             {/* ===== HIGHLIGHTS STRIP ===== */}

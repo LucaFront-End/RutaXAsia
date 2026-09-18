@@ -17,7 +17,7 @@ import { useTripSearch } from '../../context/TripContext'
  * StepSignature — Step 3 for "Signature" premium experience.
  * Dark theme with gold accents. Fully bespoke content.
  */
-export default function StepSignature({ season }) {
+export default function StepSignature({ season, temporadaKey, onSeasonChange }) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const hero = EXP_HEROES.signature
     const [interests, setInterests] = useState([])
@@ -64,7 +64,7 @@ export default function StepSignature({ season }) {
             {/* Diseñado para ti */}
             <section className="sig-section">
                 <div className="container">
-                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} />
+                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} season={season} temporadaKey={temporadaKey} onSeasonChange={onSeasonChange} />
                     <div className="sig-intro-grid">
                         <h3 className="sig-intro-lead">
                             Tu Viaje a Japón, <span>Diseñado Desde Cero</span>
