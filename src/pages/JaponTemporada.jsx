@@ -104,30 +104,32 @@ export default function JaponTemporada() {
                         </div>
                         <FallingElements type="momiji" />
 
-                        {/* Collapsed vertical indicator */}
-                        <div className="jac-split-collapsed-label">
-                            <span>🍁 OTOÑO (MOMIJI)</span>
-                        </div>
+                        {/* Collapsed vertical tab (only rendered when collapsed) */}
+                        {activeSplit === 'invierno' && (
+                            <div className="jac-split-collapsed-tab">
+                                <span>🍁 OTOÑO</span>
+                            </div>
+                        )}
 
                         <div className="jac-split-content">
-                            <span className="jac-hero-tag">
+                            <span className="jac-split-tag">
                                 🍁 Temporada Otoño
                             </span>
-                            <div className="jac-hero-torii">⛩️</div>
-                            <h1 className="jac-hero-title">
-                                VIVE JAPÓN EN <span className="jac-hero-title-accent" style={{ background: 'linear-gradient(90deg, #e65100, #ffb74d, #e65100)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>OTOÑO</span>
+                            <div className="jac-split-torii">⛩️</div>
+                            <h1 className="jac-split-title">
+                                VIVE JAPÓN EN <span className="jac-split-accent jac-split-accent--otono">OTOÑO</span>
                             </h1>
-                            <p className="jac-hero-subtitle">
+                            <p className="jac-split-desc">
                                 Los colores del otoño y templos serenos transforman Japón. Paisajes mágicos de Momiji, gastronomía de temporada y experiencias inolvidables.
                             </p>
-                            <div className="jac-hero-chips">
-                                <span className="jac-hero-chip">🍁 Momiji (Hojas rojas)</span>
-                                <span className="jac-hero-chip">🍁 Templos en tonos dorados</span>
-                                <span className="jac-hero-chip">🍁 Gastronomía otoñal</span>
-                                <span className="jac-hero-chip">🍁 Clima fresco y templado</span>
+                            <div className="jac-split-chips">
+                                <span className="jac-split-chip">🍁 Momiji (Hojas rojas)</span>
+                                <span className="jac-split-chip">🍁 Templos dorados</span>
+                                <span className="jac-split-chip">🍁 Gastronomía otoñal</span>
+                                <span className="jac-split-chip">🍁 Clima fresco y templado</span>
                             </div>
-                            <a href="#estilos" className="jac-hero-scroll-btn" onClick={e => e.stopPropagation()}>
-                                Elige tu estilo de viaje <span className="jac-hero-scroll-arrow">↓</span>
+                            <a href="#estilos" className="jac-split-btn" onClick={e => e.stopPropagation()}>
+                                Elige tu estilo de viaje <span className="jac-split-arrow">↓</span>
                             </a>
                         </div>
                     </div>
@@ -145,30 +147,32 @@ export default function JaponTemporada() {
                         </div>
                         <FallingElements type="invierno" />
 
-                        {/* Collapsed vertical indicator */}
-                        <div className="jac-split-collapsed-label">
-                            <span>❄️ INVIERNO (NIEVE & ONSEN)</span>
-                        </div>
+                        {/* Collapsed vertical tab (only rendered when collapsed) */}
+                        {activeSplit === 'otono' && (
+                            <div className="jac-split-collapsed-tab">
+                                <span>❄️ INVIERNO</span>
+                            </div>
+                        )}
 
                         <div className="jac-split-content">
-                            <span className="jac-hero-tag" style={{ borderColor: 'rgba(56, 189, 248, 0.4)', background: 'rgba(2, 132, 199, 0.15)' }}>
+                            <span className="jac-split-tag jac-split-tag--invierno">
                                 ❄️ Temporada Invierno
                             </span>
-                            <div className="jac-hero-torii" style={{ filter: 'drop-shadow(0 0 20px rgba(56, 189, 248, 0.6))' }}>⛩️</div>
-                            <h1 className="jac-hero-title">
-                                VIVE JAPÓN EN <span className="jac-hero-title-accent" style={{ background: 'linear-gradient(90deg, #38bdf8, #bae6fd, #38bdf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>INVIERNO</span>
+                            <div className="jac-split-torii jac-split-torii--invierno">⛩️</div>
+                            <h1 className="jac-split-title">
+                                VIVE JAPÓN EN <span className="jac-split-accent jac-split-accent--invierno">INVIERNO</span>
                             </h1>
-                            <p className="jac-hero-subtitle">
+                            <p className="jac-split-desc">
                                 Paisajes nevados, aguas termales Onsen humeantes con vista al Monte Fuji y las iluminaciones invernales más espectaculares de Japón.
                             </p>
-                            <div className="jac-hero-chips">
-                                <span className="jac-hero-chip">❄️ Onsen tradicional en la nieve</span>
-                                <span className="jac-hero-chip">🏔️ Monte Fuji nevado</span>
-                                <span className="jac-hero-chip">🏮 Iluminaciones invernales</span>
-                                <span className="jac-hero-chip">🐒 Monos de nieve en Jigokudani</span>
+                            <div className="jac-split-chips">
+                                <span className="jac-split-chip">❄️ Onsen en la nieve</span>
+                                <span className="jac-split-chip">🏔️ Monte Fuji nevado</span>
+                                <span className="jac-split-chip">🏮 Iluminaciones invernales</span>
+                                <span className="jac-split-chip">🐒 Monos de Jigokudani</span>
                             </div>
-                            <a href="#estilos" className="jac-hero-scroll-btn" onClick={e => e.stopPropagation()}>
-                                Elige tu estilo de viaje <span className="jac-hero-scroll-arrow">↓</span>
+                            <a href="#estilos" className="jac-split-btn" onClick={e => e.stopPropagation()}>
+                                Elige tu estilo de viaje <span className="jac-split-arrow">↓</span>
                             </a>
                         </div>
                     </div>

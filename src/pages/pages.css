@@ -626,7 +626,9 @@
 /* ===== JAC SPLIT HERO (OTOÑO & INVIERNO) ===== */
 .jac-split-hero {
     position: relative;
-    min-height: 80vh;
+    height: calc(100vh - 75px);
+    min-height: 580px;
+    max-height: 820px;
     display: flex;
     overflow: hidden;
     background: #0c0e16;
@@ -636,29 +638,33 @@
 .jac-split-panel {
     position: relative;
     flex: 1;
-    min-height: 80vh;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 130px 28px 70px;
+    padding: 85px 28px 45px;
     overflow: hidden;
     cursor: pointer;
     transition: flex 0.65s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
 }
 
+.jac-split-panel--otono {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 /* Hover / Active Expansion */
 .jac-split-panel.is-expanded {
-    flex: 9;
+    flex: 7.5;
     cursor: default;
 }
 
 .jac-split-panel.is-collapsed {
-    flex: 1.2;
-    filter: brightness(0.6);
+    flex: 1.1;
+    filter: brightness(0.55);
 }
 
 .jac-split-panel.is-collapsed:hover {
-    filter: brightness(0.9);
+    filter: brightness(0.85);
 }
 
 .jac-split-bg {
@@ -674,67 +680,236 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.78) saturate(1.15);
+    filter: brightness(0.75) saturate(1.15);
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
 }
 
 .jac-split-panel.is-expanded .jac-split-bg img {
     transform: scale(1.04);
-    filter: brightness(0.85) saturate(1.2);
+    filter: brightness(0.82) saturate(1.2);
 }
 
 .jac-split-content {
     position: relative;
     z-index: 3;
     text-align: center;
-    max-width: 620px;
+    max-width: 460px;
+    width: 100%;
     margin: 0 auto;
     transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.jac-split-panel.is-expanded .jac-split-content {
+    max-width: 580px;
 }
 
 .jac-split-panel.is-collapsed .jac-split-content {
     opacity: 0;
     pointer-events: none;
-    transform: translateY(24px) scale(0.92);
+    transform: translateY(20px) scale(0.9);
 }
 
-/* Collapsed vertical indicator */
-.jac-split-collapsed-label {
-    position: absolute;
-    z-index: 4;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-.jac-split-panel.is-collapsed .jac-split-collapsed-label {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.jac-split-collapsed-label span {
-    font-size: 0.82rem;
-    font-weight: 850;
-    letter-spacing: 0.22em;
+/* Tag / Season Badge */
+.jac-split-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #fff;
-    padding: 10px 22px;
-    background: rgba(12, 14, 22, 0.65);
+    margin-bottom: 0.5rem;
+    padding: 5px 15px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 100px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.jac-split-tag--invierno {
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(2, 132, 199, 0.15);
+}
+
+/* Torii / Icon */
+.jac-split-torii {
+    font-size: 1.9rem;
+    margin-bottom: 0.3rem;
+    filter: drop-shadow(0 0 14px rgba(220, 38, 38, 0.5));
+}
+
+.jac-split-torii--invierno {
+    filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.6));
+}
+
+/* Main Heading */
+.jac-split-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.55rem, 2.3vw, 2.35rem);
+    font-weight: 850;
+    color: #fff;
+    line-height: 1.15;
+    margin: 0 0 0.35rem;
+    letter-spacing: -0.5px;
+}
+
+.jac-split-accent {
+    display: block;
+    font-size: clamp(0.92rem, 1.35vw, 1.25rem);
+    font-weight: 750;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+}
+
+.jac-split-accent--otono {
+    background: linear-gradient(90deg, #ff7a18, #ffb347, #ff7a18);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.jac-split-accent--invierno {
+    background: linear-gradient(90deg, #38bdf8, #bae6fd, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Description / Excerpt */
+.jac-split-desc {
+    font-size: clamp(0.82rem, 0.96vw, 0.92rem);
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 410px;
+    margin: 0.45rem auto 1.15rem;
+    line-height: 1.58;
+    font-weight: 400;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.jac-split-panel.is-expanded .jac-split-desc {
+    max-width: 500px;
+    font-size: clamp(0.86rem, 1.05vw, 0.98rem);
+}
+
+/* Chips / Bullets */
+.jac-split-chips {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 auto 1.35rem;
+    max-width: 430px;
+}
+
+.jac-split-panel.is-expanded .jac-split-chips {
+    max-width: 560px;
+    gap: 0.55rem;
+}
+
+.jac-split-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff !important;
+    padding: 0.32rem 0.78rem;
+    border-radius: 100px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s ease;
+}
+
+.jac-split-chip:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px);
+}
+
+/* CTA Button */
+.jac-split-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 750;
+    text-decoration: none;
+    padding: 9px 24px;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border-radius: 100px;
+    background: rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.jac-split-btn:hover {
+    border-color: #ffffff;
+    background: #ffffff;
+    color: #0c0e16;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+}
+
+.jac-split-arrow {
+    display: inline-block;
+    animation: jac-bounce 2s infinite;
+}
+
+/* Collapsed vertical indicator tab */
+.jac-split-collapsed-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    cursor: pointer;
+    background: rgba(12, 14, 22, 0.35);
+    transition: background 0.3s ease;
+}
+
+.jac-split-collapsed-tab:hover {
+    background: rgba(12, 14, 22, 0.15);
+}
+
+.jac-split-collapsed-tab span {
+    transform: rotate(-90deg);
+    white-space: nowrap;
+    font-size: 0.8rem;
+    font-weight: 850;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 8px 18px;
+    background: rgba(12, 14, 22, 0.72);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 100px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.25s ease;
+}
+
+.jac-split-collapsed-tab:hover span {
+    transform: rotate(-90deg) scale(1.06);
+    border-color: rgba(255, 255, 255, 0.45);
 }
 
 /* Center subtle hint */
 .jac-split-hint {
     position: absolute;
-    bottom: 24px;
+    bottom: 18px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 5;
@@ -747,18 +922,18 @@
 }
 
 .jac-split-hint span {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
     font-weight: 750;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.85);
-    background: rgba(12, 14, 22, 0.6);
+    color: rgba(255, 255, 255, 0.82);
+    background: rgba(12, 14, 22, 0.65);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 6px 18px;
+    padding: 5px 16px;
     border-radius: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     text-transform: uppercase;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 /* Mobile switcher */
@@ -766,10 +941,12 @@
     display: none;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 880px) {
     .jac-split-hero {
         flex-direction: column;
-        min-height: auto;
+        height: auto;
+        min-height: 560px;
+        max-height: none;
     }
     .jac-split-hint {
         display: none;
@@ -777,26 +954,27 @@
     .jac-split-mobile-switch {
         display: flex;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
         position: absolute;
-        top: 92px;
+        top: 85px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 10;
-        background: rgba(12, 14, 22, 0.75);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        padding: 5px;
+        background: rgba(12, 14, 22, 0.8);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 4px;
         border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     }
     .jac-split-mobile-switch button {
         background: transparent;
         border: none;
         color: rgba(255, 255, 255, 0.7);
-        padding: 8px 18px;
+        padding: 7px 16px;
         border-radius: 100px;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 750;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -804,18 +982,20 @@
     .jac-split-mobile-switch button.active {
         background: var(--color-primary, #c44900);
         color: #fff;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
     }
     .jac-split-panel {
-        min-height: 80vh;
-        padding: 150px 20px 60px;
+        min-height: 540px;
+        height: auto;
+        padding: 135px 18px 45px;
         display: none;
+        border-right: none;
     }
     .jac-split-panel.mobile-active {
         display: flex;
         flex: 1;
     }
-    .jac-split-collapsed-label {
+    .jac-split-collapsed-tab {
         display: none !important;
     }
 }
