@@ -190,13 +190,15 @@ export const CITY_NAME_TO_KEY = {
  * Accepts either a cityKey (e.g. 'tokyo') or a display name (e.g. 'Tokyo')
  */
 export function getCityCoords(cityKeyOrName) {
+    if (!cityKeyOrName) return CITY_COORDINATES['tokyo']
+    const safeStr = typeof cityKeyOrName === 'string' ? cityKeyOrName : String(cityKeyOrName)
     // Direct key match
-    const key = cityKeyOrName.toLowerCase().replace(/\s+/g, '-')
+    const key = safeStr.toLowerCase().replace(/\s+/g, '-')
     if (CITY_COORDINATES[key]) {
         return CITY_COORDINATES[key]
     }
     // Legacy name mapping
-    const mappedKey = CITY_NAME_TO_KEY[cityKeyOrName]
+    const mappedKey = CITY_NAME_TO_KEY[safeStr]
     if (mappedKey && CITY_COORDINATES[mappedKey]) {
         return CITY_COORDINATES[mappedKey]
     }

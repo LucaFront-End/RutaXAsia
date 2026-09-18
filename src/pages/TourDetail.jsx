@@ -24,7 +24,8 @@ import DownloadItineraryModal from '../components/DownloadItineraryModal/Downloa
 
 export default function TourDetail() {
     const { slug } = useParams()
-    const tour = TOURS[slug]
+    const cleanSlug = (slug || '').toLowerCase().trim().replace(/\/+$/, '')
+    const tour = TOURS[cleanSlug] || TOURS[slug]
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const [lightbox, setLightbox] = useState(null)
     const [openFaq, setOpenFaq] = useState(null)
@@ -71,13 +72,17 @@ export default function TourDetail() {
     const priceDisplay = tour.priceMXN ? `${tour.price} / ${tour.priceMXN}` : tour.price
     const isSoldOut = tour.soldOut || tour.spotsLeft === 0
 
-    // Parse price to numeric for FloatingTicket
+    // Parse price to numeric for FloatingTicket safely
     let basePriceNum = 0
-    if (tour.priceMXN) {
+    if (typeof tour.priceMXN === 'number') {
+        basePriceNum = tour.priceMXN
+    } else if (tour.priceMXN && typeof tour.priceMXN === 'string') {
         const cleaned = tour.priceMXN.replace(/[^0-9.]/g, '')
         basePriceNum = parseFloat(cleaned) || 0
     }
-    if (!basePriceNum && tour.price) {
+    if (!basePriceNum && typeof tour.price === 'number') {
+        basePriceNum = tour.price
+    } else if (!basePriceNum && tour.price && typeof tour.price === 'string') {
         const cleaned = tour.price.replace(/[^0-9.]/g, '')
         basePriceNum = parseFloat(cleaned) || 0
     }
@@ -106,7 +111,7 @@ export default function TourDetail() {
                     <h1 className="td-hero-h1">{tour.title}</h1>
                     <p className="td-hero-sub">{tour.tagline}</p>
                     <div className="td-hero-chips">
-                        {tour.flagIcons.map((f, i) => <img key={i} src={`https://flagcdn.com/w40/${f.code}.png`} alt={f.name} className="td-chip-flag" />)}
+                        {tour.flagIcons?.map((f, i) => <img key={i} src={`https://flagcdn.com/w40/${f.code}.png`} alt={f.name} className="td-chip-flag" />)}
                         <span className="td-chip">📅 {tour.date}</span>
                         <span className="td-chip">⏱ {tour.duration}</span>
                         <span className="td-chip">🏙️ {tour.cities}</span>
@@ -240,13 +245,13 @@ export default function TourDetail() {
                         <div className="td-split-yes">
                             <h3 className="td-split-title">Incluye</h3>
                             <ul className="td-split-list">
-                                {tour.includes.map((item, i) => <li key={i}><span className="td-split-check">✓</span>{item}</li>)}
+                                {tour.includes?.map((item, i) => <li key={i}><span className="td-split-check">✓</span>{item}</li>)}
                             </ul>
                         </div>
                         <div className="td-split-no">
                             <h3 className="td-split-title">No incluye</h3>
                             <ul className="td-split-list">
-                                {tour.notIncludes.map((item, i) => <li key={i}><span className="td-split-x">✕</span>{item}</li>)}
+                                {tour.notIncludes?.map((item, i) => <li key={i}><span className="td-split-x">✕</span>{item}</li>)}
                             </ul>
                         </div>
                     </div>
@@ -256,7 +261,7 @@ export default function TourDetail() {
                 <section className="td-faq-section" style={{ paddingLeft: 0, paddingRight: 0 }}>
                     <h2 className="td-section-label">Preguntas frecuentes</h2>
                     <div className="td-faqs">
-                        {tour.faqs.map((faq, i) => (
+                        {tour.faqs?.map((faq, i) => (
                             <div key={i} className={`td-faq ${openFaq === i ? 'td-faq--open' : ''}`}>
                                 <button className="td-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                                     <span>{faq.q}</span>

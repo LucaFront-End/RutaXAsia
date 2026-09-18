@@ -774,7 +774,7 @@ const TOURS = {
         soldOut: false,
         price: '$38,490 MXN',
         priceSubtext: 'Precio por persona en pesos mexicanos · Impuestos incluidos · Base ocupación doble',
-        priceMXN: 38490,
+        priceMXN: null,
         priceNote: 'por persona · base doble · impuestos incluidos',
         badge: '🛍️ Tokio 2026',
         flagIcons: [{ code: 'jp', name: 'Japón' }],
@@ -945,6 +945,13 @@ const TOURS = {
 TOURS['sakura-2026'] = TOURS['sakura-2027']
 TOURS['tokio-compras-y-sabores-2026'] = TOURS['tokio-compras-sabores-2026']
 TOURS['tokyo-compras-sabores-2026'] = TOURS['tokio-compras-sabores-2026']
+TOURS['tokyo-compras-y-sabores-2026'] = TOURS['tokio-compras-sabores-2026']
+TOURS['tokio-entre-compras-y-sabores-2026'] = TOURS['tokio-compras-sabores-2026']
+TOURS['tokyo-entre-compras-y-sabores-2026'] = TOURS['tokio-compras-sabores-2026']
+TOURS['tokio-compras-sabores'] = TOURS['tokio-compras-sabores-2026']
+TOURS['tokio-compras-y-sabores'] = TOURS['tokio-compras-sabores-2026']
+TOURS['tokyo-compras-sabores'] = TOURS['tokio-compras-sabores-2026']
+TOURS['tokyo-compras-y-sabores'] = TOURS['tokio-compras-sabores-2026']
 
 /* Tour display order — use this array everywhere for consistent ordering */
 export const TOUR_ORDER = [
