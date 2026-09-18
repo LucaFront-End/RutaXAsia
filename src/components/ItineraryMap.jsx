@@ -1,8 +1,9 @@
 import { useEffect, useMemo } from 'react'
-import { MapContainer, GeoJSON, Polyline, Marker, Tooltip, TileLayer, useMap } from 'react-leaflet'
+import { MapContainer, GeoJSON, Polyline, Marker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { getCityCoords } from '../data/cityCoords'
+import TokyoBarriosSvgMap from './TokyoBarriosSvgMap'
 
 /* =========================================================
    ItineraryMap — Split layout: Map (left) + Detail (right)
@@ -97,68 +98,67 @@ export default function ItineraryMap({ chapters, activeCity, onCityClick, isToky
             {/* LEFT: Map */}
             <div className="td-itinerary-map">
                 <span className="td-map-route-label">
-                    {isTokyoBarrios ? '📍 Barrios de Tokio' : 'Ruta del viaje'}
+                    {isTokyoBarrios ? '📍 Barrios de Tokio & Excursiones' : 'Ruta del viaje'}
                 </span>
-                <MapContainer
-                    center={[35.68, 139.75]}
-                    zoom={isTokyoBarrios ? 11 : 5}
-                    scrollWheelZoom={false}
-                    dragging={false}
-                    zoomControl={false}
-                    attributionControl={false}
-                    doubleClickZoom={false}
-                    style={{ height: '100%', width: '100%', background: '#faf5f0' }}
-                >
-                    <FitAndLock
-                        hasJapan={hasJapan}
-                        hasKorea={hasKorea}
-                        isTokyoBarrios={isTokyoBarrios}
-                        points={points}
-                    />
 
-                    {isTokyoBarrios ? (
-                        <TileLayer
-                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                            subdomains="abcd"
-                            maxZoom={19}
+                {isTokyoBarrios ? (
+                    <TokyoBarriosSvgMap
+                        chapters={chapters}
+                        activeCity={activeCity}
+                        onCityClick={onCityClick}
+                    />
+                ) : (
+                    <MapContainer
+                        center={[35.68, 139.75]}
+                        zoom={5}
+                        scrollWheelZoom={false}
+                        dragging={false}
+                        zoomControl={false}
+                        attributionControl={false}
+                        doubleClickZoom={false}
+                        style={{ height: '100%', width: '100%', background: '#faf5f0' }}
+                    >
+                        <FitAndLock
+                            hasJapan={hasJapan}
+                            hasKorea={hasKorea}
+                            isTokyoBarrios={false}
+                            points={points}
                         />
-                    ) : (
-                        <>
-                            {hasJapan && <GeoJSON data={JAPAN_GEO} style={geoStyle} />}
-                            {hasKorea && <GeoJSON data={KOREA_GEO} style={geoStyle} />}
-                        </>
-                    )}
 
-                    <Polyline
-                        positions={routePositions}
-                        pathOptions={{ color: '#dc2626', weight: 2, opacity: 0.18, dashArray: '8 5' }}
-                    />
-                    <Polyline
-                        positions={routePositions}
-                        pathOptions={{ color: '#dc2626', weight: 2.5, opacity: 0.55, lineCap: 'round', lineJoin: 'round' }}
-                    />
+                        {hasJapan && <GeoJSON data={JAPAN_GEO} style={geoStyle} />}
+                        {hasKorea && <GeoJSON data={KOREA_GEO} style={geoStyle} />}
 
-                    {points.map((p, i) => {
-                        const isActive = i === activeCity
-                        return (
-                            <Marker
-                                key={`marker-${i}-${activeCity}`}
-                                position={p.coords}
-                                icon={makeDotIcon(i + 1, isActive)}
-                                eventHandlers={{ click: () => onCityClick(i) }}
-                            >
-                                <Tooltip
-                                    direction="top"
-                                    offset={[0, isActive ? -20 : -16]}
-                                    className={`td-city-tooltip ${isActive ? 'td-city-tooltip--active' : ''}`}
-                                    permanent={isActive}
+                        <Polyline
+                            positions={routePositions}
+                            pathOptions={{ color: '#dc2626', weight: 2, opacity: 0.18, dashArray: '8 5' }}
+                        />
+                        <Polyline
+                            positions={routePositions}
+                            pathOptions={{ color: '#dc2626', weight: 2.5, opacity: 0.55, lineCap: 'round', lineJoin: 'round' }}
+                        />
+
+                        {points.map((p, i) => {
+                            const isActive = i === activeCity
+                            return (
+                                <Marker
+                                    key={`marker-${i}-${activeCity}`}
+                                    position={p.coords}
+                                    icon={makeDotIcon(i + 1, isActive)}
+                                    eventHandlers={{ click: () => onCityClick(i) }}
                                 >
-                                    {p.city}
-                                </Tooltip>
-                            </Marker>
-                        )
-                    })}
-                </MapContainer>
+                                    <Tooltip
+                                        direction="top"
+                                        offset={[0, isActive ? -20 : -16]}
+                                        className={`td-city-tooltip ${isActive ? 'td-city-tooltip--active' : ''}`}
+                                        permanent={isActive}
+                                    >
+                                        {p.city}
+                                    </Tooltip>
+                                </Marker>
+                            )
+                        })}
+                    </MapContainer>
+                )}
             </div>
 
             {/* RIGHT: Detail panel */}
