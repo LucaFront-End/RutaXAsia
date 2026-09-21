@@ -33,7 +33,7 @@ export default function JaponTemporada() {
             ? 'invierno'
             : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono' || rawTemp === 'otoño')
                 ? 'kamakura'
-                : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
+                : (rawTemp === 'sakura' || rawTemp === 'primavera' ? 'sakura' : rawTemp)
 
     const baseSeason = TEMPORADAS[seasonKey]
 
@@ -105,6 +105,8 @@ export default function JaponTemporada() {
     const activeSeasonSlug = isDualHero
         ? (selectedSubSeason === 'invierno' ? 'invierno' : 'kamakura')
         : seasonKey
+
+    const season = activeSeason
 
     return (
         <>
@@ -243,7 +245,7 @@ export default function JaponTemporada() {
                 /* Standard Hero for Sakura & Akari */
                 <section
                     className="jac-hero jac-hero--season"
-                    style={{ '--season-primary': season.colors.primary }}
+                    style={{ '--season-primary': season?.colors?.primary || '#d6336c' }}
                 >
                     <div className="jac-hero-bg">
                         <img src={season.heroImage} alt={season.name} />
@@ -256,13 +258,13 @@ export default function JaponTemporada() {
                         </span>
                         <div className="jac-hero-torii" data-animate="fade-up" data-delay="200">⛩️</div>
                         <h1 className="jac-hero-title" data-animate="fade-up" data-delay="300">
-                            VIVE JAPÓN EN <span className="jac-hero-title-accent">{season.name.toUpperCase()}</span>
+                            VIVE JAPÓN EN <span className="jac-hero-title-accent">{(season.name || '').toUpperCase()}</span>
                         </h1>
                         <p className="jac-hero-subtitle" data-animate="fade-up" data-delay="400">
                             {season.description}
                         </p>
                         <div className="jac-hero-chips" data-animate="fade-up" data-delay="500">
-                            {season.highlights.map((h, i) => (
+                            {(season.highlights || []).map((h, i) => (
                                 <span className="jac-hero-chip" key={i}>
                                     {season.emoji} {h}
                                 </span>
