@@ -777,6 +777,7 @@ const TOURS = {
         priceMXN: null,
         priceNote: 'por persona · base doble · impuestos incluidos',
         badge: '🛍️ Tokio 2026',
+        temporada: 'otono',
         flagIcons: [{ code: 'jp', name: 'Japón' }],
         isTokyoBarrios: true,
         mapType: 'tokyo-barrios',

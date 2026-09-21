@@ -29,7 +29,7 @@ const SEASON_DATA = {
             { emoji: '🍱', title: 'Festivales de Primavera', desc: 'Tradición milenaria de picnics bajo los árboles florecidos y gastronomía temática de flor de cerezo.' },
             { emoji: '🏯', title: 'Castillos & Templos Vivos', desc: 'El Castillo de Osaka, Senso-ji y los pabellones de Kioto en su máximo esplendor natural.' },
         ],
-        matchTour: (t, text) => text.includes('sakura') || text.includes('primavera') || text.includes('marzo') || text.includes('abril'),
+        matchTour: (t, text) => t.slug !== 'tokio-compras-sabores-2026' && (text.includes('sakura') || text.includes('primavera') || text.includes('marzo') || text.includes('abril')),
         fallingSeason: 'sakura',
     },
     verano: {
@@ -53,7 +53,7 @@ const SEASON_DATA = {
             { emoji: '🏔️', title: 'Naturaleza & Monte Fuji', desc: 'Temporada oficial de ascenso al Monte Fuji, paisajes verdes en Hakone y días soleados.' },
             { emoji: '🎢', title: 'Parques & Diversión', desc: 'Universal Studios Japan (Super Nintendo World) y Tokyo DisneySea en su máxima energía.' },
         ],
-        matchTour: (t, text) => text.includes('verano') || text.includes('akari') || text.includes('julio') || text.includes('agosto') || text.includes('junio') || text.includes('compras'),
+        matchTour: (t, text) => t.slug !== 'tokio-compras-sabores-2026' && (text.includes('verano') || text.includes('akari') || text.includes('julio') || text.includes('agosto') || text.includes('junio')),
         fallingSeason: 'akari',
     },
     otono: {
@@ -77,7 +77,7 @@ const SEASON_DATA = {
             { emoji: '🌰', title: 'Gastronomía de Temporada', desc: 'Platos tradicionales con castañas, boniato dulce, setas matsutake y street food caliente.' },
             { emoji: '🏮', title: 'Iluminaciones Nocturnas', desc: 'Templos milenarios abiertos de noche con luces especiales que realzan el rojo de los arces.' },
         ],
-        matchTour: (t, text) => text.includes('otoño') || text.includes('otono') || text.includes('momiji') || text.includes('octubre') || text.includes('noviembre') || text.includes('septiembre'),
+        matchTour: (t, text) => t.slug === 'tokio-compras-sabores-2026' || text.includes('otoño') || text.includes('otono') || text.includes('momiji') || text.includes('octubre') || text.includes('noviembre') || text.includes('septiembre'),
         fallingSeason: 'kamakura',
     },
     invierno: {
@@ -101,7 +101,7 @@ const SEASON_DATA = {
             { emoji: '✨', title: 'Iluminaciones de Invierno', desc: 'Millones de luces LED en Shibuya, Roppongi y celebraciones de Año Nuevo.' },
             { emoji: '🐵', title: 'Monos de Nieve (Nagano)', desc: 'Encuentro con los macacos salvajes bañándose en aguas termales naturales en los Alpes Japoneses.' },
         ],
-        matchTour: (t, text) => text.includes('invierno') || text.includes('fuyu') || text.includes('diciembre') || text.includes('enero') || text.includes('febrero') || text.includes('año nuevo') || text.includes('ano nuevo'),
+        matchTour: (t, text) => t.slug !== 'tokio-compras-sabores-2026' && (text.includes('invierno') || text.includes('fuyu') || text.includes('año nuevo') || text.includes('ano nuevo') || text.includes('shogatsu') || (text.includes('enero') && !text.includes('noviembre')) || (text.includes('diciembre') && !text.includes('noviembre'))),
         fallingSeason: 'invierno',
     },
 }
