@@ -31,6 +31,8 @@ const STATIC_PAGES = [
 const STATIC_TOUR_SLUGS = [
     'sakura-2027',
     'octubre-japon-2026',
+    'tokio-compras-sabores-2026',
+    'ano-nuevo-japon-2027',
     'japon-corea-2026',
     'corea-otono-2026',
     'sakura-2026',

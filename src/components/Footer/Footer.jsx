@@ -38,9 +38,11 @@ function Footer() {
                             <li><Link to="/viajes/corea">Viajes a Corea</Link></li>
                             <li><Link to="/viajes/china">Viajes a China</Link></li>
                             <li><Link to="/tours/sakura-2027">Sakura 2027</Link></li>
-                            <li><Link to="/tours/verano-japon-2026">Verano en Japón</Link></li>
-                            <li><Link to="/tours/corea-junio-2026">Corea (Junio)</Link></li>
                             <li><Link to="/tours/octubre-japon-2026">Japón Octubre</Link></li>
+                            <li><Link to="/tours/tokio-compras-sabores-2026">Tokio Compras & Sabores</Link></li>
+                            <li><Link to="/tours/ano-nuevo-japon-2027">Año Nuevo en Japón 2027</Link></li>
+                            <li><Link to="/tours/japon-corea-2026">Japón & Corea</Link></li>
+                            <li><Link to="/tours/corea-otono-2026">Corea en Otoño</Link></li>
                         </ul>
                     </div>
  

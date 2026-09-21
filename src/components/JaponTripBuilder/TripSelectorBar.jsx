@@ -17,6 +17,7 @@ const DESTINOS_OPTIONS = [
     { label: 'Japón a la Carta', slug: '/viajes/japon', icon: '⛩️' },
     { label: 'Japón Octubre 2026', slug: '/tours/octubre-japon-2026', icon: '🍁' },
     { label: 'Tokio Compras y Sabores 2026', slug: '/tours/tokio-compras-sabores-2026', icon: '🛍️' },
+    { label: 'Año Nuevo en Japón 2027', slug: '/tours/ano-nuevo-japon-2027', icon: '🎍' },
     { label: 'Japón y Corea Octubre 2026', slug: '/tours/japon-corea-2026', icon: '🌸' },
     { label: 'Corea del Sur', slug: '/viajes/corea', icon: '🇰🇷' },
 ]
