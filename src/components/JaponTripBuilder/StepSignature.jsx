@@ -10,6 +10,7 @@ import {
 import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
+import KamakuraSplitHero from '../KamakuraSplitHero'
 
 import { useTripSearch } from '../../context/TripContext'
 
@@ -17,7 +18,14 @@ import { useTripSearch } from '../../context/TripContext'
  * StepSignature — Step 3 for "Signature" premium experience.
  * Dark theme with gold accents. Fully bespoke content.
  */
-export default function StepSignature({ season, temporadaKey, onSeasonChange }) {
+export default function StepSignature({
+    season,
+    temporadaKey,
+    onSeasonChange,
+    isDualHero,
+    activeSubSeason,
+    onSelectSubSeason,
+}) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const hero = EXP_HEROES.signature
     const [interests, setInterests] = useState([])
@@ -40,29 +48,41 @@ export default function StepSignature({ season, temporadaKey, onSeasonChange }) 
 
     const waMsg = `SW-Hola quiero info sobre Japón Signature - ${season.name}.${interests.length ? ` Tengo especial interés en: ${interests.map(name => interestList.find(x => x.name === name)?.label || name).join(', ')}.` : ''}`
 
+    const isSplitHero = isDualHero || temporadaKey === 'kamakura' || season?.key === 'kamakura' || season?.key === 'invierno'
+
     return (
         <div className="sig-wrapper">
-            {/* Hero — Dark Premium */}
-            <div className="sig-hero-wrapper">
-                <div className="sig-hero-bg">
-                    <img src={season.heroImage} alt={`${season.name} Signature`} />
-                </div>
-                <div className="sig-hero-overlay" />
-                <div className="sig-hero-content container">
-                    <div className="sig-hero-badge">
-                        <span>👑 {season.name} Signature</span>
+            {/* Hero */}
+            {isSplitHero ? (
+                <KamakuraSplitHero
+                    activeSubSeason={activeSubSeason || (season?.key === 'invierno' ? 'invierno' : 'otono')}
+                    onSelectSeason={onSelectSubSeason}
+                    experienceName="Signature"
+                    scrollTargetId="#configurador"
+                    buttonText="Diseña tu Experiencia Signature"
+                />
+            ) : (
+                <div className="sig-hero-wrapper">
+                    <div className="sig-hero-bg">
+                        <img src={season.heroImage} alt={`${season.name} Signature`} />
                     </div>
-                    <h2 className="sig-hero-title">
-                        {hero.headline.split(' ').slice(0, 3).join(' ')}{' '}
-                        <span>{hero.headline.split(' ').slice(3).join(' ')}</span>
-                    </h2>
-                    <p className="sig-hero-desc">{hero.subheadline}</p>
-                    <p className="sig-hero-quote">{hero.message}</p>
+                    <div className="sig-hero-overlay" />
+                    <div className="sig-hero-content container">
+                        <div className="sig-hero-badge">
+                            <span>👑 {season.name} Signature</span>
+                        </div>
+                        <h2 className="sig-hero-title">
+                            {hero.headline.split(' ').slice(0, 3).join(' ')}{' '}
+                            <span>{hero.headline.split(' ').slice(3).join(' ')}</span>
+                        </h2>
+                        <p className="sig-hero-desc">{hero.subheadline}</p>
+                        <p className="sig-hero-quote">{hero.message}</p>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Diseñado para ti */}
-            <section className="sig-section">
+            <section className="sig-section" id="configurador">
                 <div className="container">
                     <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} season={season} temporadaKey={temporadaKey} onSeasonChange={onSeasonChange} />
                     <div className="sig-intro-grid">

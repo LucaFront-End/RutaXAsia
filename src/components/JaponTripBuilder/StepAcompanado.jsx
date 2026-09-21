@@ -12,6 +12,7 @@ import './StepStyles.css'
 import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
+import KamakuraSplitHero from '../KamakuraSplitHero'
 import { fetchPreciosCategoriasDias, fetchTourIndividuales, fetchItinerariosCompletos } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
@@ -25,7 +26,13 @@ import { useTripSearch } from '../../context/TripContext'
  * - Matching Optional Add-ons (Complementos) with Esencial
  * - FloatingTicket & CheckoutModal integration
  */
-export default function StepAcompanado({ season, temporadaKey }) {
+export default function StepAcompanado({
+    season,
+    temporadaKey,
+    isDualHero,
+    activeSubSeason,
+    onSelectSubSeason,
+}) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const hero = EXP_HEROES.acompanado
 
@@ -53,8 +60,8 @@ export default function StepAcompanado({ season, temporadaKey }) {
                     return temp === sName || temp === tKey ||
                         (tKey === 'akari' && (temp === 'verano' || temp === 'akari')) ||
                         (tKey === 'verano' && (temp === 'verano' || temp === 'akari')) ||
-                        (tKey === 'kamakura' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono')) ||
-                        (tKey === 'momiji' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono'))
+                        (tKey === 'kamakura' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono' || temp === 'invierno')) ||
+                        (tKey === 'momiji' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono' || temp === 'invierno'))
                 }
 
                 const filtered = (allPrices || []).filter(p => {
@@ -225,25 +232,37 @@ export default function StepAcompanado({ season, temporadaKey }) {
         })
     }, [allTours])
 
+    const isSplitHero = isDualHero || temporadaKey === 'kamakura' || season?.key === 'kamakura' || season?.key === 'invierno'
+
     return (
         <>
             {/* Hero */}
-            <div className="step3-hero">
-                <div className="step3-hero-bg">
-                    <img src={season.heroImage} alt={`${season.name} Completo`} />
-                </div>
-                <div className="step3-hero-content container">
-                    <div className="step3-hero-badge">
-                        {season.emoji} {season.name} — Completo
+            {isSplitHero ? (
+                <KamakuraSplitHero
+                    activeSubSeason={activeSubSeason || (season?.key === 'invierno' ? 'invierno' : 'otono')}
+                    onSelectSeason={onSelectSubSeason}
+                    experienceName="Completo"
+                    scrollTargetId="#configurador"
+                    buttonText="Configura tu Pase Completo"
+                />
+            ) : (
+                <div className="step3-hero">
+                    <div className="step3-hero-bg">
+                        <img src={season.heroImage} alt={`${season.name} Completo`} />
                     </div>
-                    <h2 className="step3-hero-headline">{hero.headline}</h2>
-                    <p className="step3-hero-sub">{hero.subheadline}</p>
-                    <p className="step3-hero-message">"{hero.message}"</p>
+                    <div className="step3-hero-content container">
+                        <div className="step3-hero-badge">
+                            {season.emoji} {season.name} — Completo
+                        </div>
+                        <h2 className="step3-hero-headline">{hero.headline}</h2>
+                        <p className="step3-hero-sub">{hero.subheadline}</p>
+                        <p className="step3-hero-message">"{hero.message}"</p>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Todo Incluido Checklist Board */}
-            <section className="step3-section" style={{ background: season.colors.bg }}>
+            <section className="step3-section" style={{ background: season.colors.bg }} id="configurador">
                 <div className="container">
                     <div className="step3-section-title">✅ Todo Incluido — Tu Pase de Abordar Todo en Uno</div>
                     <div className="acomp-todo-checklist-board">

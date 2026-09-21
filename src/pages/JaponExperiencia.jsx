@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import {
@@ -6,6 +6,7 @@ import {
     EXPERIENCIAS,
     HIGHLIGHTS_STRIP,
 } from '../data/japonData'
+import { useTripSearch } from '../context/TripContext'
 import StepLibre from '../components/JaponTripBuilder/StepLibre'
 import StepGuiado from '../components/JaponTripBuilder/StepGuiado'
 import StepAcompanado from '../components/JaponTripBuilder/StepAcompanado'
@@ -16,22 +17,21 @@ import './pages.css'
 /**
  * JaponExperiencia — Individual experience landing page.
  * Route: /viajes/japon/:temporada/:experiencia
- * Example: /viajes/japon/akari/esencial | /viajes/japon/sakura/completo
+ * Example: /viajes/japon/akari/esencial | /viajes/japon/sakura/completo | /viajes/japon/kamakura/esencial
  */
 export default function JaponExperiencia() {
     const { temporada, experiencia } = useParams()
+    const { tripSearch, updateTripSearch } = useTripSearch()
 
     const rawTemp = (temporada || '').toLowerCase()
     const rawExp = (experiencia || '').toLowerCase()
 
-    // Normalize Season Aliases (akari/verano, kamakura/momiji/koyo, sakura, invierno/fuyu)
+    // Normalize Season Aliases (akari/verano, kamakura/momiji/koyo/otono/invierno, sakura)
     const seasonKey = (rawTemp === 'verano' || rawTemp === 'akari')
         ? 'akari'
-        : (rawTemp === 'invierno' || rawTemp === 'fuyu' || rawTemp === 'nieve')
-            ? 'invierno'
-            : (rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono' || rawTemp === 'otoño')
-                ? 'kamakura'
-                : (rawTemp === 'sakura' ? 'sakura' : rawTemp)
+        : (rawTemp === 'invierno' || rawTemp === 'fuyu' || rawTemp === 'nieve' || rawTemp === 'momiji' || rawTemp === 'kamakura' || rawTemp === 'koyo' || rawTemp === 'otono' || rawTemp === 'otoño')
+            ? 'kamakura'
+            : (rawTemp === 'sakura' || rawTemp === 'primavera' ? 'sakura' : rawTemp)
 
     // Normalize Experience Aliases (esencial/guiado, completo/acompanado, libre, signature)
     const expKey = (rawExp === 'guiado' || rawExp === 'esencial')
@@ -40,20 +40,54 @@ export default function JaponExperiencia() {
             ? 'completo'
             : (rawExp === 'libre' || rawExp === 'signature' ? rawExp : rawExp)
 
-    const season = TEMPORADAS[seasonKey]
+    const isDualHero = seasonKey === 'kamakura'
+
+    // Track which sub-season is selected for Kamakura (Otoño vs Invierno)
+    const [selectedSubSeason, setSelectedSubSeason] = useState(() => {
+        if (rawTemp === 'invierno' || rawTemp === 'fuyu' || rawTemp === 'nieve') return 'invierno'
+        if (tripSearch?.subSeason === 'invierno' || tripSearch?.temporada === 'invierno') return 'invierno'
+        return 'otono'
+    })
+
+    const handleSelectSubSeason = (sub) => {
+        setSelectedSubSeason(sub)
+        if (sub === 'otono') {
+            updateTripSearch({
+                startDate: '2026-10-15',
+                endDate: '2026-10-24',
+                selectedMonth: 'Octubre 2026',
+                temporada: 'kamakura',
+                subSeason: 'otono',
+            })
+        } else if (sub === 'invierno') {
+            updateTripSearch({
+                startDate: '2026-12-15',
+                endDate: '2026-12-24',
+                selectedMonth: 'Diciembre 2026',
+                temporada: 'invierno',
+                subSeason: 'invierno',
+            })
+        }
+    }
+
+    const baseSeason = TEMPORADAS[seasonKey]
+    const activeSeason = isDualHero
+        ? (selectedSubSeason === 'invierno' ? TEMPORADAS.invierno : TEMPORADAS.kamakura)
+        : baseSeason
+
     const exp = EXPERIENCIAS[expKey]
 
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [temporada, experiencia])
 
-    if (!season || !exp) return <Navigate to="/viajes/japon" replace />
+    if (!baseSeason || !exp) return <Navigate to="/viajes/japon" replace />
 
     return (
         <>
             <Helmet>
-                <title>{`${season.name} ${exp.name} — Japón a la Carta | RutaXAsia`}</title>
-                <meta name="description" content={`${season.name} ${exp.name}: ${exp.tagline} Descubre esta experiencia única y diseña tu viaje a Japón a tu medida con RutaXAsia.`} />
+                <title>{`${activeSeason.name} ${exp.name} — Japón a la Carta | RutaXAsia`}</title>
+                <meta name="description" content={`${activeSeason.name} ${exp.name}: ${exp.tagline} Descubre esta experiencia única y diseña tu viaje a Japón a tu medida con RutaXAsia.`} />
             </Helmet>
 
             {/* ===== STICKY SELECTION PATH ===== */}
@@ -64,7 +98,7 @@ export default function JaponExperiencia() {
                     </Link>
                     <span className="jac-path-divider">/</span>
                     <Link to={`/viajes/japon/${seasonKey}`} className="jac-path-step">
-                        {season.emoji} {season.name}
+                        {activeSeason.emoji} {activeSeason.name}
                     </Link>
                     <span className="jac-path-divider">/</span>
                     <span className="jac-path-step jac-path-step--active">
@@ -75,17 +109,49 @@ export default function JaponExperiencia() {
 
             {/* ===== INTERACTIVE EXPERIENCES WRAPPER ===== */}
             <div className="jtb-wrapper" style={{
-                '--jtb-primary': season.colors.primary,
-                '--jtb-bg': season.colors.bg
+                '--jtb-primary': activeSeason.colors.primary,
+                '--jtb-bg': activeSeason.colors.bg
             }}>
-                {expKey === 'libre' && <StepLibre season={season} temporadaKey={seasonKey} />}
-                {expKey === 'esencial' && <StepGuiado season={season} temporadaKey={seasonKey} />}
-                {expKey === 'completo' && <StepAcompanado season={season} temporadaKey={seasonKey} />}
-                {expKey === 'signature' && <StepSignature season={season} temporadaKey={seasonKey} />}
+                {expKey === 'libre' && (
+                    <StepLibre
+                        season={activeSeason}
+                        temporadaKey={seasonKey}
+                        isDualHero={isDualHero}
+                        activeSubSeason={selectedSubSeason}
+                        onSelectSubSeason={handleSelectSubSeason}
+                    />
+                )}
+                {expKey === 'esencial' && (
+                    <StepGuiado
+                        season={activeSeason}
+                        temporadaKey={seasonKey}
+                        isDualHero={isDualHero}
+                        activeSubSeason={selectedSubSeason}
+                        onSelectSubSeason={handleSelectSubSeason}
+                    />
+                )}
+                {expKey === 'completo' && (
+                    <StepAcompanado
+                        season={activeSeason}
+                        temporadaKey={seasonKey}
+                        isDualHero={isDualHero}
+                        activeSubSeason={selectedSubSeason}
+                        onSelectSubSeason={handleSelectSubSeason}
+                    />
+                )}
+                {expKey === 'signature' && (
+                    <StepSignature
+                        season={activeSeason}
+                        temporadaKey={seasonKey}
+                        isDualHero={isDualHero}
+                        activeSubSeason={selectedSubSeason}
+                        onSelectSubSeason={handleSelectSubSeason}
+                    />
+                )}
             </div>
 
             {/* ===== HIGHLIGHTS STRIP ===== */}
-            <section className="jac-highlights-strip" style={{ background: season.colors.primary }}>
+            <section className="jac-highlights-strip" style={{ background: activeSeason.colors.primary }}>
                 <div className="container">
                     <div className="jac-highlights-row">
                         {HIGHLIGHTS_STRIP.map((h, i) => (

@@ -9,6 +9,7 @@ import CheckoutModal from './CheckoutModal'
 import TripSelectorBar from './TripSelectorBar'
 import FloatingTicket from './FloatingTicket'
 import RecommendedExperiencesCMS from './RecommendedExperiencesCMS'
+import KamakuraSplitHero from '../KamakuraSplitHero'
 import { fetchPreciosCategoriasDias, fetchTourIndividuales } from '../../lib/wixClient'
 
 import { useTripSearch } from '../../context/TripContext'
@@ -21,7 +22,14 @@ import { useTripSearch } from '../../context/TripContext'
  * 3. Calculation Banner & Floating Ticket
  * 4. Dynamic CMS tour preselection if marked for Libre
  */
-export default function StepLibre({ season, temporadaKey, onSeasonChange }) {
+export default function StepLibre({
+    season,
+    temporadaKey,
+    onSeasonChange,
+    isDualHero,
+    activeSubSeason,
+    onSelectSubSeason,
+}) {
     const { tripSearch: selectorData, updateTripSearch: setSelectorData } = useTripSearch()
     const [selectedDuration, setSelectedDuration] = useState(0)
     const [addedExperiences, setAddedExperiences] = useState([])
@@ -46,8 +54,8 @@ export default function StepLibre({ season, temporadaKey, onSeasonChange }) {
                     return temp === sName || temp === tKey ||
                         (tKey === 'akari' && (temp === 'verano' || temp === 'akari')) ||
                         (tKey === 'verano' && (temp === 'verano' || temp === 'akari')) ||
-                        (tKey === 'kamakura' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono')) ||
-                        (tKey === 'momiji' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono'))
+                        (tKey === 'kamakura' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono' || temp === 'invierno')) ||
+                        (tKey === 'momiji' && (temp === 'momiji' || temp === 'kamakura' || temp === 'koyo' || temp === 'otono' || temp === 'invierno'))
                 }
 
                 const filtered = (allPrices || []).filter(p => {
@@ -205,25 +213,37 @@ export default function StepLibre({ season, temporadaKey, onSeasonChange }) {
     const pricePerPerson = basePrice + extrasTotal
     const totalPrice = pricePerPerson * passengersCount
 
+    const isSplitHero = isDualHero || temporadaKey === 'kamakura' || season?.key === 'kamakura' || season?.key === 'invierno'
+
     return (
         <>
             {/* Hero */}
-            <div className="step3-hero">
-                <div className="step3-hero-bg">
-                    <img src={season.heroImage} alt={`${season.name} Libre`} />
-                </div>
-                <div className="step3-hero-content container">
-                    <div className="step3-hero-badge">
-                        {season.emoji} {season.name} — Libre
+            {isSplitHero ? (
+                <KamakuraSplitHero
+                    activeSubSeason={activeSubSeason || (season?.key === 'invierno' ? 'invierno' : 'otono')}
+                    onSelectSeason={onSelectSubSeason}
+                    experienceName="Libre"
+                    scrollTargetId="#configurador"
+                    buttonText="Configura tu Pase Libre"
+                />
+            ) : (
+                <div className="step3-hero">
+                    <div className="step3-hero-bg">
+                        <img src={season.heroImage} alt={`${season.name} Libre`} />
                     </div>
-                    <h2 className="step3-hero-headline">{hero.headline}</h2>
-                    <p className="step3-hero-sub">{hero.subheadline}</p>
-                    <p className="step3-hero-message">"{hero.message}"</p>
+                    <div className="step3-hero-content container">
+                        <div className="step3-hero-badge">
+                            {season.emoji} {season.name} — Libre
+                        </div>
+                        <h2 className="step3-hero-headline">{hero.headline}</h2>
+                        <p className="step3-hero-sub">{hero.subheadline}</p>
+                        <p className="step3-hero-message">"{hero.message}"</p>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Includes */}
-            <section className="step3-section" style={{ background: season.colors.bg }}>
+            <section className="step3-section" style={{ background: season.colors.bg }} id="configurador">
                 <div className="container">
                     <div className="step3-section-title">✅ Tu viaje ya incluye</div>
                     <div className="jtb-pass-includes-grid">
