@@ -48,11 +48,11 @@ export const TEMPORADAS = {
     },
     kamakura: {
         key: 'kamakura',
-        name: 'Otoño',
-        fullName: 'Kamakura (Otoño)',
-        emoji: '🍁',
-        months: '1 de Septiembre — 30 de Noviembre',
-        description: 'Los colores del otoño y templos serenos transforman Japón. Paisajes mágicos de Momiji, gastronomía de temporada y experiencias inolvidables.',
+        name: 'Kamakura',
+        fullName: 'Kamakura (Otoño e Invierno)',
+        emoji: '🍁❄️',
+        months: '1 de Septiembre — 15 de Marzo',
+        description: 'Los colores del otoño (Momiji) y los paisajes nevados con aguas termales Onsen en invierno. 2 temporadas según tus fechas.',
         heroImage: '/otono-japan.jpg',
         cardImage: '/otono-japan.jpg',
         colors: {
@@ -62,14 +62,14 @@ export const TEMPORADAS = {
             gradient: 'linear-gradient(135deg, #fde8d0 0%, #e8a87c 100%)',
             heroBg: 'linear-gradient(135deg, #7f2b0a 0%, #c44900 50%, #e65100 100%)',
         },
-        highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal', 'Clima fresco y templado'],
+        highlights: ['Momiji (Hojas rojas)', 'Onsen en la nieve', 'Monte Fuji & Templos', 'Clima templado e invernal'],
     },
     invierno: {
         key: 'invierno',
         name: 'Invierno',
         fullName: 'Fuyu (Invierno)',
         emoji: '❄️',
-        months: '1 de Diciembre — 28 de Febrero',
+        months: '1 de Diciembre — 15 de Marzo',
         description: 'Paisajes nevados, aguas termales Onsen humeantes con vista al Monte Fuji y las iluminaciones invernales más espectaculares del planeta.',
         heroImage: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1920&h=900&fit=crop&q=85',
         cardImage: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop&q=85',
@@ -94,7 +94,7 @@ TEMPORADAS.koyo = TEMPORADAS.kamakura
 TEMPORADAS.fuyu = TEMPORADAS.invierno
 TEMPORADAS.nieve = TEMPORADAS.invierno
 
-export const TEMPORADA_ORDER = ['sakura', 'akari', 'kamakura', 'invierno']
+export const TEMPORADA_ORDER = ['sakura', 'akari', 'kamakura']
 
 /* ==========================================
    EXPERIENCIAS (Travel Styles)

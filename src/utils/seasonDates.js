@@ -44,17 +44,17 @@ export const SEASONS_INFO = {
     },
     kamakura: {
         key: 'kamakura',
-        name: 'Otoño',
-        fullName: 'Otoño (Momiji / Kamakura)',
-        emoji: '🍁',
-        label: '1 Sep — 30 Nov',
-        monthsText: '1 de Septiembre — 30 de Noviembre',
+        name: 'Kamakura',
+        fullName: 'Kamakura (Otoño e Invierno)',
+        emoji: '🍁❄️',
+        label: '1 Sep — 15 Mar',
+        monthsText: '1 de Septiembre — 15 de Marzo',
         color: '#c44900',
         heroBg: 'linear-gradient(135deg, #7f2b0a 0%, #c44900 50%, #e65100 100%)',
         startMonth: 9,
         startDay: 1,
-        endMonth: 11,
-        endDay: 30,
+        endMonth: 3,
+        endDay: 15,
         defaultMonth: 10,
         defaultDay: 15,
         defaultYear: 2026,
@@ -148,6 +148,9 @@ export function isDateInSeason(dateStr, seasonKey) {
     const activeSeason = getSeasonDetails(seasonKey)
     if (!activeSeason) return true // no restriction if season isn't locked
     const dateSeason = getSeasonForDate(dateStr)
+    if (activeSeason.key === 'kamakura') {
+        return dateSeason?.key === 'kamakura' || dateSeason?.key === 'invierno'
+    }
     return dateSeason?.key === activeSeason.key
 }
 

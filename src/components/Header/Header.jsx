@@ -161,7 +161,7 @@ function Header() {
                             {/* Kamakura */}
                             <div className="nav-jac-season-group">
                                 <Link to="/viajes/japon/kamakura" className="nav-jac-season-header" onClick={closeMenu}>
-                                    <span className="nav-jac-season-emoji">🍁</span>
+                                    <span className="nav-jac-season-emoji">🍁❄️</span>
                                     <span className="nav-jac-season-name">Kamakura</span>
                                     <span className="nav-jac-season-dates">1 Sep — 15 Mar</span>
                                 </Link>
