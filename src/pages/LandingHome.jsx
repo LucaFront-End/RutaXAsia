@@ -470,7 +470,7 @@ function LandingHome({ landingData }) {
                                 temp: '10°C — 20°C',
                                 photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop',
                                 color: '#f8b4c8',
-                                link: '/viajes/japon/sakura',
+                                link: '/temporadas/primavera',
                                 highlights: ['Sakura (Cerezos en flor)', 'Festivales de primavera', 'Clima perfecto para caminar'],
                             },
                             {
@@ -480,17 +480,17 @@ function LandingHome({ landingData }) {
                                 temp: '25°C — 35°C',
                                 photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop',
                                 color: '#f5a623',
-                                link: '/viajes/japon/akari',
+                                link: '/temporadas/verano',
                                 highlights: ['Matsuri (Festivales)', 'Fuegos artificiales Hanabi', 'Playas de Okinawa'],
                             },
                             {
                                 season: 'Otoño',
                                 emoji: '🍂',
-                                months: '1 Sep — 15 Mar',
+                                months: '1 Sep — 30 Nov',
                                 temp: '10°C — 20°C',
                                 photo: '/otono-japan.jpg',
                                 color: '#d4602a',
-                                link: '/viajes/japon/kamakura',
+                                link: '/temporadas/otono',
                                 highlights: ['Momiji (Hojas rojas)', 'Templos en tonos dorados', 'Gastronomía otoñal'],
                             },
                             {
@@ -500,7 +500,7 @@ function LandingHome({ landingData }) {
                                 temp: '-2°C — 10°C',
                                 photo: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&h=1000&fit=crop',
                                 color: '#7bb8d9',
-                                link: '/viajes/japon',
+                                link: '/temporadas/invierno',
                                 highlights: ['Onsen (Aguas termales)', 'Monos de nieve', 'Iluminaciones navideñas'],
                             },
                         ].map((s, i) => (
