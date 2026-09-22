@@ -321,12 +321,14 @@ export default function TripSelectorBar({
                         const isEnd = tempEndDate === dateStr
                         const inRange = tempStartDate && tempEndDate && dateStr >= tempStartDate && dateStr <= tempEndDate
                         const daySeason = getSeasonForDate(dateStr)
-                        const isMatchSeason = !effectiveSeasonKey || daySeason?.key === effectiveSeasonKey
+                        const isMatchSeason = !effectiveSeasonKey || isDateInSeason(dateStr, effectiveSeasonKey)
 
                         let className = 'cal-day-num'
                         if (inRange) className += ' cal-day-num--in-range'
+                        if (isStart) className += ' cal-day-num--start'
+                        if (isEnd) className += ' cal-day-num--end'
                         if (isStart || isEnd) className += ' cal-day-num--selected'
-                        if (!isMatchSeason) className += ' cal-day-num--other-season'
+                        if (!isMatchSeason && !inRange) className += ' cal-day-num--other-season'
 
                         return (
                             <span

@@ -970,8 +970,10 @@ const TOURS = {
         priceNote: 'por persona · base doble · impuestos incluidos',
         badge: '🎍 Año Nuevo 2027',
         flagIcons: [{ code: 'jp', name: 'Japón' }],
-        heroImage: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1920&h=1080&fit=crop&q=85',
+        heroImage: '/images/tours/ano-nuevo-japon.jpg',
         gallery: [
+            { img: '/images/tours/ano-nuevo-japon.jpg', caption: 'Celebración tradicional de Año Nuevo en Japón' },
+            { img: '/images/tours/ano-nuevo-hanabi.jpg', caption: 'Fuegos artificiales de Año Nuevo sobre la bahía' },
             { img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=900&h=600&fit=crop', caption: 'Monte Fuji nevado en invierno' },
             { img: '/images/journey/sensoji.jpeg', caption: 'Templo Senso-ji en Asakusa, Tokio' },
             { img: '/images/tours/kinkakuji.jpg', caption: 'Kinkaku-ji (Pabellón Dorado), Kioto' },

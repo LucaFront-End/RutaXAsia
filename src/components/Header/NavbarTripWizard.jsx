@@ -139,7 +139,7 @@ export default function NavbarTripWizard({ isOpen, onClose, targetTrip }) {
                                                                 setTempEndDate('')
                                                             }
                                                         }}
-                                                        className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
+                                                        className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart ? ' cal-day-num--start' : ''}${isEnd ? ' cal-day-num--end' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
                                                         style={{ cursor: 'pointer' }}
                                                     >
                                                         {day}
@@ -172,7 +172,7 @@ export default function NavbarTripWizard({ isOpen, onClose, targetTrip }) {
                                                                 setTempEndDate('')
                                                             }
                                                         }}
-                                                        className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
+                                                        className={`cal-day-num${inRange ? ' cal-day-num--in-range' : ''}${isStart ? ' cal-day-num--start' : ''}${isEnd ? ' cal-day-num--end' : ''}${isStart || isEnd ? ' cal-day-num--selected' : ''}`}
                                                         style={{ cursor: 'pointer' }}
                                                     >
                                                         {day}

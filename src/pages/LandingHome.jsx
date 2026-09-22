@@ -150,8 +150,8 @@ const TRIPS = [
         flagIcons: [{ code: 'jp', name: 'Japón' }],
         badge: '🎍 Gran Preventa 2027',
         soldOut: false,
-        image: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&h=400&fit=crop',
-        heroImage: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1920&h=1080&fit=crop&q=85',
+        image: '/images/tours/ano-nuevo-japon.jpg',
+        heroImage: '/images/tours/ano-nuevo-japon.jpg',
         includes: ['10 noches con desayuno', 'Tren bala Shinkansen', 'Hatsumode en Kioto', 'Guía en español 24/7'],
     },
     {

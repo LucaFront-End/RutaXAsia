@@ -339,16 +339,35 @@
 }
 
 .cal-day-num--in-range {
-    background: rgba(233, 30, 122, 0.12);
-    color: var(--color-primary);
-    font-weight: 600;
+    background: rgba(220, 38, 38, 0.14) !important;
+    color: #b91c1c !important;
+    font-weight: 700 !important;
+    border-radius: 0 !important;
+}
+
+.cal-day-num--start {
+    border-top-left-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.cal-day-num--end {
+    border-top-right-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.cal-day-num--start.cal-day-num--end {
+    border-radius: 8px !important;
 }
 
 .cal-day-num--selected {
-    background: var(--color-primary) !important;
+    background: var(--color-primary, #d32f2f) !important;
     color: #fff !important;
-    font-weight: 800;
-    box-shadow: 0 4px 10px rgba(233, 30, 122, 0.35);
+    font-weight: 800 !important;
+    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.35);
 }
 
 .cal-day-num--other-season {
