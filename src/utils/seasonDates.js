@@ -174,20 +174,27 @@ export function syncSeasonsWithCms(pricesList) {
 
         if (startParsed && endParsed) {
             let effectiveStart = startParsed
+            let effectiveEnd = endParsed
+
             // Kamakura safeguard: cannot start before 2026-10-16
             if (tempKey === 'kamakura' && startParsed.iso < '2026-10-16') {
                 effectiveStart = { year: 2026, month: 10, day: 16, iso: '2026-10-16' }
             }
 
+            // Akari: Summer season in Japan runs through August 31
+            if (tempKey === 'akari' && endParsed.iso < '2027-08-31') {
+                effectiveEnd = { year: 2027, month: 8, day: 31, iso: '2027-08-31' }
+            }
+
             SEASONS_INFO[tempKey].startDate = effectiveStart.iso
-            SEASONS_INFO[tempKey].endDate = endParsed.iso
+            SEASONS_INFO[tempKey].endDate = effectiveEnd.iso
             SEASONS_INFO[tempKey].startMonth = effectiveStart.month
             SEASONS_INFO[tempKey].startDay = effectiveStart.day
-            SEASONS_INFO[tempKey].endMonth = endParsed.month
-            SEASONS_INFO[tempKey].endDay = endParsed.day
+            SEASONS_INFO[tempKey].endMonth = effectiveEnd.month
+            SEASONS_INFO[tempKey].endDay = effectiveEnd.day
 
-            SEASONS_INFO[tempKey].label = `${effectiveStart.day} ${shortMonths[effectiveStart.month]} — ${endParsed.day} ${shortMonths[endParsed.month]}`
-            SEASONS_INFO[tempKey].monthsText = `${effectiveStart.day} de ${longMonths[effectiveStart.month]} — ${endParsed.day} de ${longMonths[endParsed.month]}`
+            SEASONS_INFO[tempKey].label = `${effectiveStart.day} ${shortMonths[effectiveStart.month]} — ${effectiveEnd.day} ${shortMonths[effectiveEnd.month]}`
+            SEASONS_INFO[tempKey].monthsText = `${effectiveStart.day} de ${longMonths[effectiveStart.month]} — ${effectiveEnd.day} de ${longMonths[effectiveEnd.month]}`
         }
     }
 
