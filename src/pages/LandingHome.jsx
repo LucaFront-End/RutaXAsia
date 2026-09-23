@@ -486,7 +486,7 @@ function LandingHome({ landingData }) {
                             {
                                 season: 'Otoño',
                                 emoji: '🍂',
-                                months: '1 Sep — 30 Nov',
+                                months: '16 Oct — 30 Nov',
                                 temp: '10°C — 20°C',
                                 photo: '/otono-japan.jpg',
                                 color: '#d4602a',

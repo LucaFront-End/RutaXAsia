@@ -51,7 +51,7 @@ export const TEMPORADAS = {
         name: 'Kamakura',
         fullName: 'Kamakura (Otoño e Invierno)',
         emoji: '🍁❄️',
-        months: '1 de Septiembre — 15 de Marzo',
+        months: '16 de Octubre — 15 de Marzo',
         description: 'Los colores del otoño (Momiji) y los paisajes nevados con aguas termales Onsen en invierno. 2 temporadas según tus fechas.',
         heroImage: '/otono-japan.jpg',
         cardImage: '/otono-japan.jpg',

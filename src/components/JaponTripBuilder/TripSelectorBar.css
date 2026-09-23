@@ -382,6 +382,21 @@
     border: 1px dashed #e91e7a;
 }
 
+.cal-day-num--disabled {
+    opacity: 0.22 !important;
+    color: #a0a0a0 !important;
+    background: transparent !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    text-decoration: line-through;
+}
+
+.cal-nav-btn:disabled {
+    opacity: 0.25 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
 /* Month view */
 .month-view-subtitle {
     font-size: 0.85rem;

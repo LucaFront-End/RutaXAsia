@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { useTripSearch } from '../../context/TripContext'
 import './Header.css'
 
 const WHATSAPP_URL = 'https://wa.me/525657929121?text=SW-Hola%20quiero%20cotizar%20un%20viaje'
@@ -14,6 +15,7 @@ const TOUR_LINKS = [
 ]
 
 function Header() {
+    const { seasonsInfo } = useTripSearch()
     const [scrolled, setScrolled] = useState(false)
     const [hidden, setHidden] = useState(false)
     const [menuOpen, setMenuOpen] = useState(false)
@@ -133,7 +135,7 @@ function Header() {
                                 <Link to="/viajes/japon/sakura" className="nav-jac-season-header" onClick={closeMenu}>
                                     <span className="nav-jac-season-emoji">🌸</span>
                                     <span className="nav-jac-season-name">Sakura</span>
-                                    <span className="nav-jac-season-dates">16 Mar — 15 Abr</span>
+                                    <span className="nav-jac-season-dates">{seasonsInfo?.sakura?.label || '16 Mar — 15 Abr'}</span>
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/sakura/libre" onClick={closeMenu}>🌿 Libre</Link>
@@ -148,7 +150,7 @@ function Header() {
                                 <Link to="/viajes/japon/akari" className="nav-jac-season-header" onClick={closeMenu}>
                                     <span className="nav-jac-season-emoji">☀️</span>
                                     <span className="nav-jac-season-name">Akari</span>
-                                    <span className="nav-jac-season-dates">16 Abr — 31 Ago</span>
+                                    <span className="nav-jac-season-dates">{seasonsInfo?.akari?.label || '16 Abr — 31 Ago'}</span>
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/akari/libre" onClick={closeMenu}>🌿 Libre</Link>
@@ -163,7 +165,7 @@ function Header() {
                                 <Link to="/viajes/japon/kamakura" className="nav-jac-season-header" onClick={closeMenu}>
                                     <span className="nav-jac-season-emoji">🍁❄️</span>
                                     <span className="nav-jac-season-name">Kamakura</span>
-                                    <span className="nav-jac-season-dates">1 Sep — 15 Mar</span>
+                                    <span className="nav-jac-season-dates">{seasonsInfo?.kamakura?.label || '16 Oct — 15 Mar'}</span>
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/kamakura/libre" onClick={closeMenu}>🌿 Libre</Link>

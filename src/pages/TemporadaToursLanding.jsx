@@ -63,7 +63,7 @@ const SEASON_DATA = {
         emoji: '🍁',
         cartaSlug: 'kamakura',
         cartaName: 'Kamakura',
-        monthsText: '1 de Septiembre — 30 de Noviembre',
+        monthsText: '16 de Octubre — 30 de Noviembre',
         colors: {
             primary: '#c44900',
             secondary: '#e8a87c',
@@ -302,7 +302,7 @@ export default function TemporadaToursLanding() {
                     </h2>
                     <p style={{ fontSize: '1.05rem', color: '#cbd5e1', lineHeight: 1.7, margin: '0 0 32px' }}>
                         {season.key === 'otono' || season.key === 'invierno'
-                            ? <>En nuestra modalidad <strong>Japón a la Carta</strong>, tanto Otoño como Invierno se coordinan en la temporada <strong>Kamakura</strong> (1 Sep — 15 Mar), donde puedes elegir entre los colores del Momiji o los paisajes de nieve y Onsen. Descubre las 4 experiencias (Libre, Esencial, Completo y Signature) para viajar a tu propio ritmo.</>
+                            ? <>En nuestra modalidad <strong>Japón a la Carta</strong>, tanto Otoño como Invierno se coordinan en la temporada <strong>Kamakura</strong> (16 Oct — 15 Mar), donde puedes elegir entre los colores del Momiji o los paisajes de nieve y Onsen. Descubre las 4 experiencias (Libre, Esencial, Completo y Signature) para viajar a tu propio ritmo.</>
                             : <>Explora las 4 modalidades de <strong>Japón a la Carta</strong> (Libre, Esencial, Completo y Signature) para viajar en temporada <strong>{season.cartaName}</strong> con fechas y duración a tu medida.</>
                         }
                     </p>

@@ -92,7 +92,7 @@ const EDITIONS = [
     },
     {
         name: 'Kamakura — Otoño Momiji',
-        dates: '1 Sep — 15 Mar',
+        dates: '16 Oct — 15 Mar',
         desc: 'Los templos milenarios teñidos de rojo y oro, clima templado perfecto para caminar y aguas termales Onsen.',
         badge: '🍁 Otoño / Invierno',
         link: '/tours/octubre-japon-2026',

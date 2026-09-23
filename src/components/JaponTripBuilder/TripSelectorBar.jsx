@@ -23,7 +23,6 @@ const DESTINOS_OPTIONS = [
 ]
 
 const MONTHS_OPTIONS = [
-    { label: 'Septiembre 2026', key: '2026-09', seasonKey: 'kamakura', emoji: '🍁' },
     { label: 'Octubre 2026', key: '2026-10', seasonKey: 'kamakura', emoji: '🍁' },
     { label: 'Noviembre 2026', key: '2026-11', seasonKey: 'kamakura', emoji: '🍁' },
     { label: 'Diciembre 2026', key: '2026-12', seasonKey: 'invierno', emoji: '❄️' },
@@ -55,7 +54,7 @@ export default function TripSelectorBar({
     temporadaKey = null,
     onSeasonChange = null,
 }) {
-    const { tripSearch, updateTripSearch } = useTripSearch()
+    const { tripSearch, updateTripSearch, seasonsInfo } = useTripSearch()
     const navigate = useNavigate()
     const location = useLocation()
     const routeParams = useParams()
@@ -76,7 +75,7 @@ export default function TripSelectorBar({
         currentData?.temporada ||
         tripSearch?.temporada
     )
-    const activeSeason = getSeasonDetails(effectiveSeasonKey)
+    const activeSeason = (seasonsInfo && effectiveSeasonKey && seasonsInfo[effectiveSeasonKey]) || getSeasonDetails(effectiveSeasonKey)
 
     // Determine exact trip duration in days and nights
     const daysCount = selectedDays || (selectedNights ? selectedNights + 2 : 8)
@@ -103,7 +102,7 @@ export default function TripSelectorBar({
         if (effectiveSeasonKey) {
             return getDefaultDateForSeason(effectiveSeasonKey)
         }
-        return '2026-10-15'
+        return '2026-10-20'
     }, [currentData.startDate, effectiveSeasonKey])
 
     const [openModal, setOpenModal] = useState(null) // 'destino' | 'dates' | 'passengers' | null
@@ -154,7 +153,7 @@ export default function TripSelectorBar({
         if (openModal === 'dates') {
             let start = currentData.startDate
             if (!start || (effectiveSeasonKey && !isDateInSeason(start, effectiveSeasonKey))) {
-                start = effectiveSeasonKey ? getDefaultDateForSeason(effectiveSeasonKey) : '2026-10-15'
+                start = effectiveSeasonKey ? getDefaultDateForSeason(effectiveSeasonKey) : '2026-10-20'
             }
             setTempStartDate(start)
             setTempEndDate(getCalculatedEndDate(start, daysCount))
@@ -197,9 +196,15 @@ export default function TripSelectorBar({
     const handleAttemptDateSelect = (selectedDateStr) => {
         if (!selectedDateStr) return
 
+        // Check if date belongs to ANY valid travel season
+        const detectedSeason = getSeasonForDate(selectedDateStr)
+        if (!detectedSeason) {
+            // Out of season bounds (e.g. September 2027 or before Oct 16 2026)
+            return
+        }
+
         // If there is an active season, check if the date belongs to it
         if (effectiveSeasonKey && !isDateInSeason(selectedDateStr, effectiveSeasonKey)) {
-            const detectedSeason = getSeasonForDate(selectedDateStr)
             setConflictedDate(selectedDateStr)
             setTargetSeason(detectedSeason)
             setShowConflictModal(true)
@@ -322,21 +327,26 @@ export default function TripSelectorBar({
                         const inRange = tempStartDate && tempEndDate && dateStr >= tempStartDate && dateStr <= tempEndDate
                         const daySeason = getSeasonForDate(dateStr)
                         const isMatchSeason = !effectiveSeasonKey || isDateInSeason(dateStr, effectiveSeasonKey)
+                        const isOutOfSeason = !daySeason
 
                         let className = 'cal-day-num'
-                        if (inRange) className += ' cal-day-num--in-range'
-                        if (isStart) className += ' cal-day-num--start'
-                        if (isEnd) className += ' cal-day-num--end'
-                        if (isStart || isEnd) className += ' cal-day-num--selected'
-                        if (!isMatchSeason && !inRange) className += ' cal-day-num--other-season'
+                        if (isOutOfSeason) {
+                            className += ' cal-day-num--disabled'
+                        } else {
+                            if (inRange) className += ' cal-day-num--in-range'
+                            if (isStart) className += ' cal-day-num--start'
+                            if (isEnd) className += ' cal-day-num--end'
+                            if (isStart || isEnd) className += ' cal-day-num--selected'
+                            if (!isMatchSeason && !inRange) className += ' cal-day-num--other-season'
+                        }
 
                         return (
                             <span
                                 key={day}
-                                onClick={() => handleAttemptDateSelect(dateStr)}
+                                onClick={() => !isOutOfSeason && handleAttemptDateSelect(dateStr)}
                                 className={className}
-                                title={!isMatchSeason ? `Corresponde a ${daySeason?.name || 'otra temporada'}` : ''}
-                                style={{ cursor: 'pointer' }}
+                                title={isOutOfSeason ? 'Fecha fuera de temporada de viaje' : (!isMatchSeason ? `Corresponde a ${daySeason?.name || 'otra temporada'}` : '')}
+                                style={{ cursor: isOutOfSeason ? 'not-allowed' : 'pointer' }}
                             >
                                 {day}
                             </span>
@@ -567,6 +577,8 @@ export default function TripSelectorBar({
                                                 </div>
                                                 <input
                                                     type="date"
+                                                    min={activeSeason?.startDate || "2026-10-16"}
+                                                    max={activeSeason?.endDate || "2027-08-31"}
                                                     value={tempStartDate}
                                                     onChange={e => handleAttemptDateSelect(e.target.value)}
                                                 />
@@ -582,6 +594,7 @@ export default function TripSelectorBar({
                                                 type="button"
                                                 className="cal-nav-btn"
                                                 onClick={handlePrevMonth}
+                                                disabled={(m1Year === 2026 && m1Month <= 9) || m1Year < 2026}
                                                 aria-label="Mes anterior"
                                             >
                                                 ‹
@@ -593,6 +606,7 @@ export default function TripSelectorBar({
                                                 type="button"
                                                 className="cal-nav-btn"
                                                 onClick={handleNextMonth}
+                                                disabled={(m1Year === 2027 && m1Month >= 6) || m1Year > 2027}
                                                 aria-label="Mes siguiente"
                                             >
                                                 ›

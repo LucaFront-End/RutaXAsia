@@ -132,7 +132,7 @@ export default function BlogPost() {
                                 <span className="bp-jac-season-emoji">🍁</span>
                                 <div className="bp-jac-season-info">
                                     <strong>Kamakura</strong>
-                                    <small>1 Sep — 15 Mar</small>
+                                    <small>16 Oct — 15 Mar</small>
                                 </div>
                                 <span className="bp-jac-arrow">→</span>
                             </Link>

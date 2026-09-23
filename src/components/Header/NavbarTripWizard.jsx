@@ -4,15 +4,17 @@ import { useTripSearch } from '../../context/TripContext'
 import './NavbarTripWizard.css'
 
 const MONTHS_OPTIONS = [
-    { label: 'Marzo 2026', key: '2026-03' },
-    { label: 'Abril 2026', key: '2026-04' },
-    { label: 'Mayo 2026', key: '2026-05' },
-    { label: 'Junio 2026', key: '2026-06' },
-    { label: 'Julio 2026', key: '2026-07' },
-    { label: 'Agosto 2026', key: '2026-08' },
-    { label: 'Septiembre 2026', key: '2026-09' },
     { label: 'Octubre 2026', key: '2026-10' },
     { label: 'Noviembre 2026', key: '2026-11' },
+    { label: 'Diciembre 2026', key: '2026-12' },
+    { label: 'Enero 2027', key: '2027-01' },
+    { label: 'Febrero 2027', key: '2027-02' },
+    { label: 'Marzo 2027', key: '2027-03' },
+    { label: 'Abril 2027', key: '2027-04' },
+    { label: 'Mayo 2027', key: '2027-05' },
+    { label: 'Junio 2027', key: '2027-06' },
+    { label: 'Julio 2027', key: '2027-07' },
+    { label: 'Agosto 2027', key: '2027-08' },
 ]
 
 export default function NavbarTripWizard({ isOpen, onClose, targetTrip }) {
@@ -22,8 +24,8 @@ export default function NavbarTripWizard({ isOpen, onClose, targetTrip }) {
     const [step, setStep] = useState(1) // 1: Fechas, 2: Personas
     const [dateTab, setDateTab] = useState(tripSearch.dateMode || 'exact') // 'exact' | 'month'
 
-    const [tempStartDate, setTempStartDate] = useState(tripSearch.startDate || '2026-10-15')
-    const [tempEndDate, setTempEndDate] = useState(tripSearch.endDate || '2026-10-28')
+    const [tempStartDate, setTempStartDate] = useState(tripSearch.startDate || '2026-10-20')
+    const [tempEndDate, setTempEndDate] = useState(tripSearch.endDate || '2026-10-29')
     const [tempMonth, setTempMonth] = useState(tripSearch.selectedMonth || 'Octubre 2026')
     const [tempAdults, setTempAdults] = useState(tripSearch.adults || 2)
     const [tempChildren, setTempChildren] = useState(tripSearch.children || 0)

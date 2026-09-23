@@ -48,8 +48,8 @@ export default function JaponTemporada() {
         setSelectedSubSeason(sub)
         if (sub === 'otono') {
             updateTripSearch({
-                startDate: '2026-10-15',
-                endDate: '2026-10-24',
+                startDate: '2026-10-20',
+                endDate: '2026-10-29',
                 selectedMonth: 'Octubre 2026',
                 temporada: 'kamakura',
                 subSeason: 'otono',
