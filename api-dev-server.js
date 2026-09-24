@@ -444,6 +444,13 @@ app.all('/api/user-update-viajeros', async (req, res) => {
 app.all('/api/:route', async (req, res) => {
     const route = req.params.route;
     try {
+        if (!process.env.VITE_WIX_API_KEY) {
+            const liveRes = await fetch(`https://rutaxasia.com/api/${route}`);
+            if (liveRes.ok) {
+                const liveData = await liveRes.json();
+                return res.json(liveData);
+            }
+        }
         const mod = await import(`./api/${route}.js`);
         if (mod && mod.default) {
             return mod.default(req, res);
