@@ -298,7 +298,7 @@ export default function StepLibre({
                             {/* Paso 2: Selecciona Fecha de Inicio y Pasajeros */}
                             <div style={{ marginBottom: 24 }}>
                                 <div className="step3-section-title">📅 2. Selecciona Fecha de Inicio y Pasajeros</div>
-                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedDays={currentDays} selectedNights={currentNights} season={season} temporadaKey={temporadaKey} onSeasonChange={onSeasonChange} />
+                                <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} selectedDays={currentDays} selectedNights={currentNights} season={season} temporadaKey={temporadaKey} onSeasonChange={onSeasonChange} experiencia="libre" />
                             </div>
 
                             {/* Dynamic Calculated Summary Banner */}

@@ -303,3 +303,138 @@ export function formatDateForDisplay(dateStr) {
     const monthName = months[m - 1] || ''
     return `${d} de ${monthName} de ${y}`
 }
+
+/**
+ * checkDateRestrictions — Validates booking lead-time (colchón) and cutoff dates.
+ *
+ * Rules:
+ * 1. Colchón de anticipación (Kamakura y Akari):
+ *    - Japón Libre: mínimo 7 días de colchón desde hoy.
+ *    - Japón Esencial / Completo / Signature: mínimo 20 días de colchón desde hoy.
+ * 2. Fechas límite para temporada Sakura:
+ *    - Sakura Esencial / Completo / Signature: cierre el 15 de Enero del año del viaje.
+ *    - Sakura Libre: cierre el 15 de Febrero del año del viaje.
+ *
+ * Returns an object with restriction details and pre-formatted WhatsApp link for options.
+ */
+export function checkDateRestrictions(dateStr, seasonKey, experienceKey, referenceDate = new Date()) {
+    if (!dateStr || typeof dateStr !== 'string') {
+        return { isRestricted: false }
+    }
+
+    const parts = dateStr.split('-').map(Number)
+    if (parts.length < 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) {
+        return { isRestricted: false }
+    }
+
+    const targetYear = parts[0]
+    const targetMonth = parts[1] // 1-12
+    const targetDay = parts[2]
+    const targetDate = new Date(targetYear, targetMonth - 1, targetDay, 0, 0, 0)
+
+    const today = new Date(referenceDate)
+    today.setHours(0, 0, 0, 0)
+
+    const diffMs = targetDate.getTime() - today.getTime()
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+
+    const sKey = normalizeSeasonKey(seasonKey) || 'kamakura'
+    const sDetails = getSeasonDetails(sKey) || SEASONS_INFO.kamakura
+
+    // Normalize experience
+    const rawExp = String(experienceKey || '').toLowerCase()
+    let expKey = 'esencial'
+    let expName = 'Japón Esencial'
+    if (rawExp.includes('libre')) {
+        expKey = 'libre'
+        expName = 'Japón Libre'
+    } else if (rawExp.includes('completo')) {
+        expKey = 'completo'
+        expName = 'Japón Completo'
+    } else if (rawExp.includes('signature')) {
+        expKey = 'signature'
+        expName = 'Japón Signature'
+    }
+
+    const formattedDate = formatDateForDisplay(dateStr)
+
+    // Rule 1: Sakura Cutoff Deadlines
+    if (sKey === 'sakura') {
+        // Sakura Esencial / Completo / Signature: cutoff 15 de Enero
+        if (expKey !== 'libre') {
+            const sakuraEsencialCutoff = new Date(targetYear, 0, 15, 23, 59, 59) // 15 Ene
+            if (today > sakuraEsencialCutoff) {
+                const waText = encodeURIComponent(
+                    `Hola RutaXAsia, me gustaría consultar opciones para viajar a Japón en temporada Sakura (${expName}) para la fecha ${formattedDate}. Veo que la fecha límite regular fue el 15 de Enero, ¿podrían apoyarme a revisar disponibilidad de último momento?`
+                )
+                return {
+                    isRestricted: true,
+                    type: 'sakura_deadline',
+                    title: 'Cierre de Reservas Sakura (15 de Enero)',
+                    subtitle: 'Fecha límite de reservación regular alcanzada',
+                    message: `Para viajar en temporada Sakura en modalidad ${expName}, las reservas regulares cerraron el 15 de Enero debido a la alta demanda de la floración de cerezos y disponibilidad limitada en Japón.`,
+                    ctaMessage: 'Envíanos un mensaje a WhatsApp para que nuestro equipo revise directamente con nuestros corresponsales en Tokio y Kioto si es posible abrir una plaza para ti.',
+                    selectedDate: dateStr,
+                    formattedDate,
+                    seasonName: sDetails.name,
+                    seasonEmoji: sDetails.emoji,
+                    experienceName: expName,
+                    whatsappUrl: `https://wa.me/525657929121?text=${waText}`,
+                }
+            }
+        } else {
+            // Sakura Libre: cutoff 15 de Febrero
+            const sakuraLibreCutoff = new Date(targetYear, 1, 15, 23, 59, 59) // 15 Feb
+            if (today > sakuraLibreCutoff) {
+                const waText = encodeURIComponent(
+                    `Hola RutaXAsia, me gustaría consultar opciones para viajar a Japón en temporada Sakura (${expName}) para la fecha ${formattedDate}. Veo que la fecha límite regular fue el 15 de Febrero, ¿podrían apoyarme a revisar disponibilidad de último momento?`
+                )
+                return {
+                    isRestricted: true,
+                    type: 'sakura_deadline',
+                    title: 'Cierre de Reservas Sakura Libre (15 de Febrero)',
+                    subtitle: 'Fecha límite de reservación regular alcanzada',
+                    message: `Para viajar en temporada Sakura en modalidad ${expName}, las reservas regulares cerraron el 15 de Febrero debido a la alta ocupación en temporada alta de cerezos.`,
+                    ctaMessage: 'Envíanos un mensaje a WhatsApp para verificar opciones de itinerarios y trenes disponibles.',
+                    selectedDate: dateStr,
+                    formattedDate,
+                    seasonName: sDetails.name,
+                    seasonEmoji: sDetails.emoji,
+                    experienceName: expName,
+                    whatsappUrl: `https://wa.me/525657929121?text=${waText}`,
+                }
+            }
+        }
+    }
+
+    // Rule 2: Colchón de anticipación (Lead time) para Kamakura, Akari y general
+    // Libre: 7 días de colchón
+    // Esencial / Completo / Signature: 20 días de colchón
+    const requiredColchonDays = expKey === 'libre' ? 7 : 20
+
+    if (diffDays < requiredColchonDays) {
+        const waText = encodeURIComponent(
+            `Hola RutaXAsia, me interesa viajar a Japón en fecha ${formattedDate} (${sDetails.name} · ${expName}). Requiere un colchón de ${requiredColchonDays} días de anticipación, ¿podrían apoyarme para ver opciones disponibles para viajar en esta fecha?`
+        )
+        return {
+            isRestricted: true,
+            type: 'lead_time',
+            daysRequired: requiredColchonDays,
+            daysCurrent: diffDays,
+            title: `Se requieren ${requiredColchonDays} días de colchón de anticipación`,
+            subtitle: `Salida con menos de ${requiredColchonDays} días de anticipación`,
+            message: expKey === 'libre'
+                ? `Para viajar en modalidad Japón Libre solicitamos al menos 7 días de colchón de anticipación para garantizar tus reservas de alojamiento, traslados y documentación.`
+                : `Para viajar en modalidad ${expName} solicitamos al menos 20 días de colchón de anticipación para coordinar guías en español, reservaciones exclusivas y logística completa en destino.`,
+            ctaMessage: `Para viajar el ${formattedDate}, por favor escríbenos directamente por WhatsApp y nuestro equipo te apoyará con opciones viables de confirmación exprés.`,
+            selectedDate: dateStr,
+            formattedDate,
+            seasonName: sDetails.name,
+            seasonEmoji: sDetails.emoji,
+            experienceName: expName,
+            whatsappUrl: `https://wa.me/525657929121?text=${waText}`,
+        }
+    }
+
+    return { isRestricted: false }
+}

@@ -10,6 +10,7 @@ import {
     isDateInSeason,
     getDefaultDateForSeason,
     formatDateForDisplay,
+    checkDateRestrictions,
 } from '../../utils/seasonDates'
 import './TripSelectorBar.css'
 
@@ -53,6 +54,7 @@ export default function TripSelectorBar({
     season = null,
     temporadaKey = null,
     onSeasonChange = null,
+    experiencia = null,
 }) {
     const { tripSearch, updateTripSearch, seasonsInfo } = useTripSearch()
     const navigate = useNavigate()
@@ -61,6 +63,19 @@ export default function TripSelectorBar({
 
     const currentData = selectorData || tripSearch
     const handleUpdate = onChange || updateTripSearch
+
+    // Resolve active experience
+    const effectiveExperienceKey = (
+        experiencia ||
+        routeParams.experiencia ||
+        (location.pathname.includes('/libre') ? 'libre' :
+         location.pathname.includes('/esencial') ? 'esencial' :
+         location.pathname.includes('/completo') ? 'completo' :
+         location.pathname.includes('/signature') ? 'signature' : null) ||
+        currentData?.experiencia ||
+        tripSearch?.experiencia ||
+        'esencial'
+    ).toLowerCase()
 
     // Resolve active season (from props, route params, path, or stored search)
     const effectiveSeasonKey = normalizeSeasonKey(
@@ -132,6 +147,9 @@ export default function TripSelectorBar({
     const [conflictedDate, setConflictedDate] = useState(null)
     const [targetSeason, setTargetSeason] = useState(null)
 
+    // Date Restriction Modal State (Colchón & Sakura cutoff)
+    const [restrictionModalData, setRestrictionModalData] = useState(null)
+
     const modalRef = useRef(null)
 
     // Sync when effective season changes
@@ -173,17 +191,17 @@ export default function TripSelectorBar({
         }
     }, [openModal, daysCount, currentData, effectiveSeasonKey, activeSeason, getCalculatedEndDate])
 
-    // Close on outside click (unless conflict modal is active)
+    // Close on outside click (unless conflict modal or restriction modal is active)
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (showConflictModal) return // Don't close calendar while conflict modal is up
+            if (showConflictModal || restrictionModalData) return // Don't close calendar while conflict or restriction modal is up
             if (modalRef.current && !modalRef.current.contains(e.target)) {
                 setOpenModal(null)
             }
         }
         document.addEventListener('mousedown', handleClickOutside)
         return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [showConflictModal])
+    }, [showConflictModal, restrictionModalData])
 
     // Direct in-season selection
     const handleSelectStartDate = (startDateStr) => {
@@ -192,7 +210,7 @@ export default function TripSelectorBar({
         setTempEndDate(computedEnd)
     }
 
-    // Intercept date selection with season check
+    // Intercept date selection with season check and advance notice / cutoff restrictions
     const handleAttemptDateSelect = (selectedDateStr) => {
         if (!selectedDateStr) return
 
@@ -200,6 +218,17 @@ export default function TripSelectorBar({
         const detectedSeason = getSeasonForDate(selectedDateStr)
         if (!detectedSeason) {
             // Out of season bounds (e.g. September 2027 or before Oct 16 2026)
+            return
+        }
+
+        // Check if date violates lead-time (colchón: Libre 7d, Esencial/Completo 20d) or Sakura cutoff
+        const restriction = checkDateRestrictions(
+            selectedDateStr,
+            effectiveSeasonKey || detectedSeason.key,
+            effectiveExperienceKey
+        )
+        if (restriction && restriction.isRestricted) {
+            setRestrictionModalData(restriction)
             return
         }
 
@@ -328,6 +357,8 @@ export default function TripSelectorBar({
                         const daySeason = getSeasonForDate(dateStr)
                         const isMatchSeason = !effectiveSeasonKey || isDateInSeason(dateStr, effectiveSeasonKey)
                         const isOutOfSeason = !daySeason
+                        const restriction = (!isOutOfSeason && daySeason) ? checkDateRestrictions(dateStr, effectiveSeasonKey || daySeason.key, effectiveExperienceKey) : null
+                        const hasRestriction = Boolean(restriction?.isRestricted)
 
                         let className = 'cal-day-num'
                         if (isOutOfSeason) {
@@ -338,6 +369,7 @@ export default function TripSelectorBar({
                             if (isEnd) className += ' cal-day-num--end'
                             if (isStart || isEnd) className += ' cal-day-num--selected'
                             if (!isMatchSeason && !inRange) className += ' cal-day-num--other-season'
+                            if (hasRestriction && !inRange && !isStart && !isEnd) className += ' cal-day-num--has-colchon'
                         }
 
                         return (
@@ -345,10 +377,19 @@ export default function TripSelectorBar({
                                 key={day}
                                 onClick={() => !isOutOfSeason && handleAttemptDateSelect(dateStr)}
                                 className={className}
-                                title={isOutOfSeason ? 'Fecha fuera de temporada de viaje' : (!isMatchSeason ? `Corresponde a ${daySeason?.name || 'otra temporada'}` : '')}
+                                title={
+                                    isOutOfSeason
+                                        ? 'Fecha fuera de temporada de viaje'
+                                        : hasRestriction
+                                            ? `Requiere consulta (${restriction.title})`
+                                            : !isMatchSeason
+                                                ? `Corresponde a ${daySeason?.name || 'otra temporada'}`
+                                                : ''
+                                }
                                 style={{ cursor: isOutOfSeason ? 'not-allowed' : 'pointer' }}
                             >
                                 {day}
+                                {hasRestriction && <span className="cal-day-colchon-dot" />}
                             </span>
                         )
                     })}
@@ -781,6 +822,66 @@ export default function TripSelectorBar({
                                 onClick={handleKeepCurrentSeason}
                             >
                                 Mantenerse en temporada {activeSeason?.name}
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* ================= DATE RESTRICTION / COLCHÓN / SAKURA POPUP MODAL ================= */}
+            {restrictionModalData && createPortal(
+                <div
+                    className="trip-restriction-overlay"
+                    onClick={() => setRestrictionModalData(null)}
+                    role="dialog"
+                    aria-modal="true"
+                >
+                    <div className="trip-restriction-modal" onClick={e => e.stopPropagation()}>
+                        <button
+                            type="button"
+                            className="restriction-close-btn"
+                            onClick={() => setRestrictionModalData(null)}
+                            aria-label="Cerrar"
+                        >
+                            ✕
+                        </button>
+
+                        <div className="restriction-icon-wrap">
+                            <span className="restriction-icon">
+                                {restrictionModalData.type === 'sakura_deadline' ? '🌸' : '⏳'}
+                            </span>
+                        </div>
+
+                        <div className="restriction-badge">
+                            {restrictionModalData.seasonEmoji} Temporada {restrictionModalData.seasonName} · {restrictionModalData.experienceName}
+                        </div>
+
+                        <h3 className="restriction-title">{restrictionModalData.title}</h3>
+
+                        <div className="restriction-date-box">
+                            <div className="restriction-date-label">Fecha que seleccionaste:</div>
+                            <div className="restriction-date-val">📅 {restrictionModalData.formattedDate}</div>
+                        </div>
+
+                        <p className="restriction-desc">{restrictionModalData.message}</p>
+                        <p className="restriction-cta-desc">{restrictionModalData.ctaMessage}</p>
+
+                        <div className="restriction-actions">
+                            <a
+                                href={restrictionModalData.whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn restriction-wa-btn"
+                            >
+                                💬 Enviar mensaje a WhatsApp para ver opciones →
+                            </a>
+                            <button
+                                type="button"
+                                className="btn restriction-back-btn"
+                                onClick={() => setRestrictionModalData(null)}
+                            >
+                                Elegir otra fecha disponible
                             </button>
                         </div>
                     </div>

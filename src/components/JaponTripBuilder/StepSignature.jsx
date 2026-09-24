@@ -84,7 +84,7 @@ export default function StepSignature({
             {/* Diseñado para ti */}
             <section className="sig-section" id="configurador">
                 <div className="container">
-                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} season={season} temporadaKey={temporadaKey} onSeasonChange={onSeasonChange} />
+                    <TripSelectorBar selectorData={selectorData} onChange={setSelectorData} season={season} temporadaKey={temporadaKey} onSeasonChange={onSeasonChange} experiencia="signature" />
                     <div className="sig-intro-grid">
                         <h3 className="sig-intro-lead">
                             Tu Viaje a Japón, <span>Diseñado Desde Cero</span>

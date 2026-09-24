@@ -355,6 +355,7 @@ export default function TourDetailSakuraV2() {
                         selectedNights={(activePass.daysNum || 12) - 2}
                         isFixedDates={true}
                         fixedDatesText={cmsDatesText}
+                        experiencia="completo"
                     />
 
                     {/* Selector de Pases (Explorador 12d vs Grand Tour 14d) */}

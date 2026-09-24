@@ -290,6 +290,7 @@ export default function StepAcompanado({
                         selectedNights={(activePass.daysNum || 12) - 2}
                         isFixedDates={true}
                         fixedDatesText={cmsDatesText || (season?.key === 'momiji' ? '15 Oct — 28 Oct 2026 (Salida Grupal)' : '22 Marzo — 2 Abril 2027 (Salida Grupal)')}
+                        experiencia="completo"
                     />
 
                     <div className="libre-layout">
