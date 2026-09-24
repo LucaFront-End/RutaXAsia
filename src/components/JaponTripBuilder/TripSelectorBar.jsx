@@ -214,14 +214,24 @@ export default function TripSelectorBar({
     const handleAttemptDateSelect = (selectedDateStr) => {
         if (!selectedDateStr) return
 
-        // Check if date belongs to ANY valid travel season
+        // 1. Date is completely out of season range (e.g. before Oct 16 2026 or Sept 2027)
         const detectedSeason = getSeasonForDate(selectedDateStr)
         if (!detectedSeason) {
-            // Out of season bounds (e.g. September 2027 or before Oct 16 2026)
+            setConflictedDate(selectedDateStr)
+            setTargetSeason(null)
+            setShowConflictModal(true)
             return
         }
 
-        // Check if date violates lead-time (colchón: Libre 7d, Esencial/Completo 20d) or Sakura cutoff
+        // 2. Date belongs to another active travel season (e.g. clicked Sakura while in Kamakura)
+        if (effectiveSeasonKey && !isDateInSeason(selectedDateStr, effectiveSeasonKey)) {
+            setConflictedDate(selectedDateStr)
+            setTargetSeason(detectedSeason)
+            setShowConflictModal(true)
+            return
+        }
+
+        // 3. Inside active season: check lead-time colchón (Libre 7d, Esencial 20d) or Sakura cutoff
         const restriction = checkDateRestrictions(
             selectedDateStr,
             effectiveSeasonKey || detectedSeason.key,
@@ -232,15 +242,7 @@ export default function TripSelectorBar({
             return
         }
 
-        // If there is an active season, check if the date belongs to it
-        if (effectiveSeasonKey && !isDateInSeason(selectedDateStr, effectiveSeasonKey)) {
-            setConflictedDate(selectedDateStr)
-            setTargetSeason(detectedSeason)
-            setShowConflictModal(true)
-            return
-        }
-
-        // Inside season: proceed
+        // 4. Inside season and valid: proceed
         handleSelectStartDate(selectedDateStr)
     }
 
@@ -375,18 +377,18 @@ export default function TripSelectorBar({
                         return (
                             <span
                                 key={day}
-                                onClick={() => !isOutOfSeason && handleAttemptDateSelect(dateStr)}
+                                onClick={() => handleAttemptDateSelect(dateStr)}
                                 className={className}
                                 title={
                                     isOutOfSeason
-                                        ? 'Fecha fuera de temporada de viaje'
+                                        ? 'Fecha fuera de temporada de viaje (haz clic para consultar)'
                                         : hasRestriction
                                             ? `Requiere consulta (${restriction.title})`
                                             : !isMatchSeason
                                                 ? `Corresponde a ${daySeason?.name || 'otra temporada'}`
                                                 : ''
                                 }
-                                style={{ cursor: isOutOfSeason ? 'not-allowed' : 'pointer' }}
+                                style={{ cursor: 'pointer' }}
                             >
                                 {day}
                                 {hasRestriction && <span className="cal-day-colchon-dot" />}
@@ -755,7 +757,7 @@ export default function TripSelectorBar({
                 document.body
             )}
 
-            {/* ================= SEASON CONFLICT MODAL VIA PORTAL ================= */}
+            {/* ================= SEASON CONFLICT / OUT-OF-RANGE MODAL VIA PORTAL ================= */}
             {showConflictModal && createPortal(
                 <div className="season-conflict-overlay" onClick={handleKeepCurrentSeason}>
                     <div className="season-conflict-modal" onClick={e => e.stopPropagation()}>
@@ -769,61 +771,111 @@ export default function TripSelectorBar({
                         </button>
 
                         <div className="sc-badge">
-                            <span>⚠️ Fecha fuera de temporada</span>
+                            <span>{targetSeason ? '⚠️ Fecha fuera de temporada' : '⚠️ Fecha fuera de rango'}</span>
                         </div>
 
-                        <h3 className="sc-title">
-                            Esta fecha corresponde a otra temporada
-                        </h3>
+                        {targetSeason ? (
+                            <>
+                                <h3 className="sc-title">
+                                    Esta fecha corresponde a otra temporada
+                                </h3>
 
-                        <div className="sc-cards-grid">
-                            {/* Temporada actual */}
-                            <div className="sc-card sc-card--current">
-                                <span className="sc-card-tag">Temporada actual</span>
-                                <div className="sc-card-emoji">{activeSeason ? activeSeason.emoji : '🎌'}</div>
-                                <h4 className="sc-card-name">{activeSeason ? activeSeason.name : 'Actual'}</h4>
-                                <p className="sc-card-range">{activeSeason ? activeSeason.monthsText : ''}</p>
-                            </div>
+                                <div className="sc-cards-grid">
+                                    {/* Temporada actual */}
+                                    <div className="sc-card sc-card--current">
+                                        <span className="sc-card-tag">Temporada actual</span>
+                                        <div className="sc-card-emoji">{activeSeason ? activeSeason.emoji : '🎌'}</div>
+                                        <h4 className="sc-card-name">{activeSeason ? activeSeason.name : 'Actual'}</h4>
+                                        <p className="sc-card-range">{activeSeason ? activeSeason.monthsText : ''}</p>
+                                    </div>
 
-                            <div className="sc-vs-divider">
-                                <span>vs</span>
-                            </div>
+                                    <div className="sc-vs-divider">
+                                        <span>vs</span>
+                                    </div>
 
-                            {/* Temporada de la fecha elegida */}
-                            <div className="sc-card sc-card--target">
-                                <span className="sc-card-tag sc-card-tag--highlight">Temporada de tu fecha</span>
-                                <div className="sc-card-emoji">{targetSeason ? targetSeason.emoji : '🗓️'}</div>
-                                <h4 className="sc-card-name">{targetSeason ? targetSeason.name : 'Destino'}</h4>
-                                <p className="sc-card-range">{targetSeason ? targetSeason.monthsText : ''}</p>
-                                <div className="sc-date-pill">
+                                    {/* Temporada de la fecha elegida */}
+                                    <div className="sc-card sc-card--target">
+                                        <span className="sc-card-tag sc-card-tag--highlight">Temporada de tu fecha</span>
+                                        <div className="sc-card-emoji">{targetSeason.emoji}</div>
+                                        <h4 className="sc-card-name">{targetSeason.name}</h4>
+                                        <p className="sc-card-range">{targetSeason.monthsText}</p>
+                                        <div className="sc-date-pill">
+                                            📅 {formatDateForDisplay(conflictedDate)}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p className="sc-description">
+                                    Has seleccionado el <strong>{formatDateForDisplay(conflictedDate)}</strong>, una fecha asignada a la temporada <strong>{targetSeason.fullName || targetSeason.name}</strong>. Actualmente estás configurando tu viaje en <strong>{activeSeason?.name}</strong>.
+                                </p>
+                                <p className="sc-question">
+                                    ¿Deseas cambiar a la temporada <strong>{targetSeason.name}</strong> para continuar con esta fecha o prefieres mantenerte en <strong>{activeSeason?.name}</strong>?
+                                </p>
+
+                                <div className="sc-actions">
+                                    <button
+                                        type="button"
+                                        className="sc-btn sc-btn--switch"
+                                        onClick={handleSwitchToTargetSeason}
+                                    >
+                                        {targetSeason.emoji} Cambiar a temporada {targetSeason.name}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="sc-btn sc-btn--stay"
+                                        onClick={handleKeepCurrentSeason}
+                                    >
+                                        Mantenerse en temporada {activeSeason?.name}
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="sc-title">
+                                    Fecha fuera del rango de viaje
+                                </h3>
+
+                                <div className="sc-date-pill" style={{ margin: '14px auto 18px', display: 'inline-block' }}>
                                     📅 {formatDateForDisplay(conflictedDate)}
                                 </div>
-                            </div>
-                        </div>
 
-                        <p className="sc-description">
-                            Has seleccionado el <strong>{formatDateForDisplay(conflictedDate)}</strong>, una fecha asignada a la temporada <strong>{targetSeason?.fullName || targetSeason?.name}</strong>. Actualmente estás configurando tu viaje en <strong>{activeSeason?.name}</strong>.
-                        </p>
-                        <p className="sc-question">
-                            ¿Deseas cambiar a la temporada <strong>{targetSeason?.name}</strong> para continuar con esta fecha o prefieres mantenerte en <strong>{activeSeason?.name}</strong>?
-                        </p>
+                                <p className="sc-description">
+                                    Has seleccionado el <strong>{formatDateForDisplay(conflictedDate)}</strong>, la cual se encuentra fuera de las temporadas de viaje habilitadas en Japón a la Carta.
+                                </p>
 
-                        <div className="sc-actions">
-                            <button
-                                type="button"
-                                className="sc-btn sc-btn--switch"
-                                onClick={handleSwitchToTargetSeason}
-                            >
-                                {targetSeason?.emoji} Cambiar a temporada {targetSeason?.name}
-                            </button>
-                            <button
-                                type="button"
-                                className="sc-btn sc-btn--stay"
-                                onClick={handleKeepCurrentSeason}
-                            >
-                                Mantenerse en temporada {activeSeason?.name}
-                            </button>
-                        </div>
+                                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '14px 18px', margin: '0 auto 18px', textAlign: 'left', fontSize: '0.85rem' }}>
+                                    <div style={{ fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>Periodos disponibles en Japón a la Carta:</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', color: '#475569' }}>
+                                        <div>🍁 <strong>Kamakura (Otoño e Invierno)</strong>: 16 de Octubre 2026 al 15 de Marzo 2027</div>
+                                        <div>🌸 <strong>Sakura</strong>: 16 de Marzo 2027 al 10 de Abril 2027</div>
+                                        <div>☀️ <strong>Akari (Primavera y Verano)</strong>: 11 de Abril 2027 al 31 de Agosto 2027</div>
+                                    </div>
+                                </div>
+
+                                <p className="sc-question" style={{ fontSize: '0.88rem', color: '#64748b' }}>
+                                    Si necesitas viajar en esta fecha especial, contáctanos por WhatsApp para consultar opciones personalizadas.
+                                </p>
+
+                                <div className="sc-actions">
+                                    <a
+                                        href={`https://wa.me/525657929121?text=${encodeURIComponent(`Hola RutaXAsia, me gustaría consultar opciones para viajar a Japón en la fecha ${formatDateForDisplay(conflictedDate)}, ya que se encuentra fuera del rango regular del catálogo.`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn restriction-wa-btn"
+                                        style={{ textDecoration: 'none' }}
+                                    >
+                                        💬 Consultar opciones en WhatsApp →
+                                    </a>
+                                    <button
+                                        type="button"
+                                        className="sc-btn sc-btn--stay"
+                                        onClick={handleKeepCurrentSeason}
+                                    >
+                                        Elegir una fecha dentro de temporada
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>,
                 document.body
