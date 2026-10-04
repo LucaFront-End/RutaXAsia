@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { fetchTourIndividuales } from '../lib/wixClient'
 import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
+import TourDateRestrictionModal from '../components/TourDateRestrictionModal'
+import { checkTourDateRestrictions, getMinTourDate } from '../utils/seasonDates'
 import './TourIndividualDetail.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
@@ -50,19 +52,18 @@ export default function TourIndividualDetail() {
     const [loading, setLoading] = useState(true)
     const [currentTour, setCurrentTour] = useState(null)
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [restrictionModalData, setRestrictionModalData] = useState(null)
 
     // Interactive booking state
     const [modality, setModality] = useState('anfitrion') // 'anfitrion' | 'locatario'
     const [travelers, setTravelers] = useState(2)
     const [openFaq, setOpenFaq] = useState(null)
 
-    // Minimum date is tomorrow
-    const tomorrowStr = useMemo(() => {
-        const d = new Date()
-        d.setDate(d.getDate() + 1)
-        return d.toISOString().split('T')[0]
+    // 15 days cushion lead-time as default minimum date
+    const minTourDateStr = useMemo(() => {
+        return getMinTourDate(new Date(), 15)
     }, [])
-    const [selectedDate, setSelectedDate] = useState(tomorrowStr)
+    const [selectedDate, setSelectedDate] = useState(minTourDateStr)
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -416,9 +417,16 @@ export default function TourIndividualDetail() {
                                     <div className="tour-booking-date-wrap">
                                         <input
                                             type="date"
-                                            min={tomorrowStr}
+                                            min={minTourDateStr}
                                             value={selectedDate}
-                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            onChange={(e) => {
+                                                const val = e.target.value
+                                                setSelectedDate(val)
+                                                const check = checkTourDateRestrictions(val, currentTour?.title || currentTour?.tituloDePgina || 'Tour')
+                                                if (check.isRestricted) {
+                                                    setRestrictionModalData(check)
+                                                }
+                                            }}
                                             className="tour-booking-date-input"
                                         />
                                         <span className="tour-booking-date-display">
@@ -469,7 +477,14 @@ export default function TourIndividualDetail() {
                                 <button
                                     type="button"
                                     className="tour-booking-buy-btn"
-                                    onClick={() => setIsCheckoutOpen(true)}
+                                    onClick={() => {
+                                        const check = checkTourDateRestrictions(selectedDate, currentTour?.title || currentTour?.tituloDePgina || 'Tour')
+                                        if (check.isRestricted) {
+                                            setRestrictionModalData(check)
+                                            return
+                                        }
+                                        setIsCheckoutOpen(true)
+                                    }}
                                 >
                                     💳 Comprar / Reservar en Línea
                                 </button>
@@ -551,6 +566,12 @@ export default function TourIndividualDetail() {
                     `Viajeros: ${travelers} persona${travelers > 1 ? 's' : ''} (${formatPrice(unitPrice)} MXN c/u). ` +
                     `Total: ${formatPrice(totalPrice)} MXN.`
                 }
+            />
+
+            {/* 15 Days Cushion Lead-Time Restriction Modal */}
+            <TourDateRestrictionModal
+                restrictionData={restrictionModalData}
+                onClose={() => setRestrictionModalData(null)}
             />
         </div>
     )

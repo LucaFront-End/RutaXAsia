@@ -21,6 +21,8 @@ import { useTripSearch } from '../context/TripContext'
 import FloatingTicket from '../components/JaponTripBuilder/FloatingTicket'
 import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
 import DownloadItineraryModal from '../components/DownloadItineraryModal/DownloadItineraryModal'
+import TourDateRestrictionModal from '../components/TourDateRestrictionModal'
+import { checkTourDateRestrictions } from '../utils/seasonDates'
 
 export default function TourDetail() {
     const { slug } = useParams()
@@ -33,8 +35,8 @@ export default function TourDetail() {
     const [activeCity, setActiveCity] = useState(0)
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [isPdfModalOpen, setIsPdfModalOpen] = useState(false)
-
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false)
+    const [restrictionModalData, setRestrictionModalData] = useState(null)
 
     useEffect(() => { window.scrollTo(0, 0) }, [slug])
 
@@ -87,10 +89,16 @@ export default function TourDetail() {
         basePriceNum = parseFloat(cleaned) || 0
     }
 
-    const adults = selectorData.adults || 2
-    const children = selectorData.children || 0
-    const passengersCount = adults + children
-    const totalPrice = basePriceNum
+    const handleReserveClick = () => {
+        if (tour?.startDate) {
+            const check = checkTourDateRestrictions(tour.startDate, tour.title)
+            if (check.isRestricted) {
+                setRestrictionModalData(check)
+                return
+            }
+        }
+        setIsTicketModalOpen(true)
+    }
 
     return (
         <>
@@ -98,6 +106,7 @@ export default function TourDetail() {
                 <title>{tour.seoTitle}</title>
                 <meta name="description" content={tour.seoDescription} />
             </Helmet>
+
 
             {/* ===== 1. CINEMATIC HERO — Full screen ===== */}
             <section className="td-hero">
@@ -286,7 +295,7 @@ export default function TourDetail() {
                             type="button"
                             className="td-bottom-btn td-bottom-btn--reserve"
                             style={{ border: 'none', cursor: 'pointer' }}
-                            onClick={() => setIsTicketModalOpen(true)}
+                            onClick={handleReserveClick}
                         >
                             Reservar
                         </button>
@@ -324,7 +333,7 @@ export default function TourDetail() {
                             type="button"
                             className="td-float-btn"
                             style={{ border: 'none', cursor: 'pointer' }}
-                            onClick={() => setIsTicketModalOpen(true)}
+                            onClick={handleReserveClick}
                         >
                             Reservar
                         </button>
@@ -366,6 +375,14 @@ export default function TourDetail() {
                                 hideQuantity={true}
                                 customReserveBtnText={tour.anticipoDisplay ? `Apartar Online (${tour.anticipoDisplay})` : 'Apartar con Pago Online'}
                                 onOpenCheckout={() => {
+                                    if (tour?.startDate) {
+                                        const check = checkTourDateRestrictions(tour.startDate, tour.title)
+                                        if (check.isRestricted) {
+                                            setIsTicketModalOpen(false)
+                                            setRestrictionModalData(check)
+                                            return
+                                        }
+                                    }
                                     setIsTicketModalOpen(false)
                                     setIsCheckoutOpen(true)
                                 }}
@@ -409,6 +426,12 @@ export default function TourDetail() {
                 isOpen={isPdfModalOpen}
                 onClose={() => setIsPdfModalOpen(false)}
                 tour={tour}
+            />
+
+            {/* 15 Days Cushion Lead-Time Restriction Modal */}
+            <TourDateRestrictionModal
+                restrictionData={restrictionModalData}
+                onClose={() => setRestrictionModalData(null)}
             />
         </>
     )

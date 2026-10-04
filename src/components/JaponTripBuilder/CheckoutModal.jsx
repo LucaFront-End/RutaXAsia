@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTripSearch } from '../../context/TripContext'
+import { checkTourDateRestrictions } from '../../utils/seasonDates'
 import './StepStyles.css'
 
 /**
@@ -284,6 +285,13 @@ export default function CheckoutModal({
         if (e) e.preventDefault()
         if (isToursSueltos) {
             if (step === 1) {
+                if (pendingTour && pendingTour.date) {
+                    const check = checkTourDateRestrictions(pendingTour.date, pendingTour.name)
+                    if (check.isRestricted) {
+                        setApiError(`El tour "${pendingTour.name}" requiere un colchón de 15 días de anticipación (fecha seleccionada: ${check.formattedDate}). Por favor selecciona una fecha posterior o contáctanos por WhatsApp.`)
+                        return
+                    }
+                }
                 // Confirm the staged tour with the chosen assistance type
                 if (pendingTour) {
                     onConfirmTour(pendingTour, assistanceType)
@@ -323,6 +331,19 @@ export default function CheckoutModal({
     const handleCheckoutSubmit = async (e) => {
         if (e) e.preventDefault()
         if (!validateBuyer() || !validateTravelers()) return
+
+        if (isToursSueltos) {
+            for (const t of activeToursList) {
+                if (t.date) {
+                    const check = checkTourDateRestrictions(t.date, t.name)
+                    if (check.isRestricted) {
+                        setStatus('checkout')
+                        setApiError(`El tour "${t.name}" requiere un colchón de 15 días de anticipación (fecha: ${check.formattedDate}). Por favor selecciona una fecha con al menos 15 días de margen o escríbenos a WhatsApp.`)
+                        return
+                    }
+                }
+            }
+        }
 
         setStatus('processing')
         setApiError('')

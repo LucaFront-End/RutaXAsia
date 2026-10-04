@@ -1,4 +1,4 @@
-import { syncSeasonsWithCms, SEASONS_INFO, getSeasonForDate, checkDateRestrictions, formatDateForDisplay } from './src/utils/seasonDates.js'
+import { syncSeasonsWithCms, SEASONS_INFO, getSeasonForDate, checkDateRestrictions, checkTourDateRestrictions, getMinTourDate, formatDateForDisplay } from './src/utils/seasonDates.js'
 import fs from 'fs'
 import path from 'path'
 
@@ -108,6 +108,27 @@ async function runCompleteE2E() {
 
     const testCompExact = checkDateRestrictions('2026-10-14', 'kamakura', 'completo', refDate) // 20 días exactos
     check(testCompExact.isRestricted === false, 'Japón Completo con 20 días exactos o más está PERMITIDO')
+
+    // Test Tours de RutaXAsia (15 días de colchón)
+    const testTourUnder = checkTourDateRestrictions('2026-10-05', 'Tour Tokio Moderno', refDate) // 11 días
+    check(testTourUnder.isRestricted === true, 'Tour con 11 días activa restricción de 15 días de colchón')
+    check(testTourUnder.daysRequired === 15, 'Tours de RutaXAsia exigen mínimo 15 días de colchón')
+    check(testTourUnder.daysCurrent === 11, 'Cálculo exacto de días transcurridos para tour = 11')
+    check(testTourUnder.whatsappUrl.includes('colch%C3%B3n%20de%2015%20d%C3%ADas'), 'Mensaje WhatsApp incluye 15 días de colchón')
+    check(testTourUnder.whatsappUrl.includes('Tour%20Tokio%20Moderno'), 'Mensaje WhatsApp incluye nombre del tour')
+
+    const testTourExact = checkTourDateRestrictions('2026-10-09', 'Tour Tokio Moderno', refDate) // 15 días exactos
+    check(testTourExact.isRestricted === false, 'Tour con 15 días exactos o más está PERMITIDO')
+
+    const testTourOver = checkTourDateRestrictions('2026-10-25', 'Tour Tokio Moderno', refDate) // 31 días
+    check(testTourOver.isRestricted === false, 'Tour con más de 15 días está PERMITIDO')
+
+    const minDateCalculated = getMinTourDate(refDate, 15)
+    check(minDateCalculated === '2026-10-09', `getMinTourDate calcula correctamente fecha con 15 días: ${minDateCalculated}`)
+
+    // Test checkDateRestrictions with 'tour'
+    const testGenericTour = checkDateRestrictions('2026-10-05', 'kamakura', 'tour', refDate)
+    check(testGenericTour.isRestricted === true && testGenericTour.daysRequired === 15, 'checkDateRestrictions clasifica tours con 15 días de colchón')
 
     // -------------------------------------------------------------
     // FASE 4: Verificación de Fechas Límite Sakura (15 Ene vs 15 Feb)

@@ -5,6 +5,8 @@ import { fetchTourIndividuales } from '../lib/wixClient'
 import { useTripSearch } from '../context/TripContext'
 import FloatingTicket from '../components/JaponTripBuilder/FloatingTicket'
 import CheckoutModal from '../components/JaponTripBuilder/CheckoutModal'
+import TourDateRestrictionModal from '../components/TourDateRestrictionModal'
+import { checkTourDateRestrictions, getMinTourDate } from '../utils/seasonDates'
 import './ToursIndividualesPage.css'
 
 const WHATSAPP_BASE = 'https://wa.me/525657929121?text='
@@ -103,12 +105,11 @@ export default function ToursIndividualesPage({ whatsappOnly = false }) {
     // Side Drawer Details state (holds tour object or null)
     const [detailDrawerTour, setDetailDrawerTour] = useState(null)
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+    const [restrictionModalData, setRestrictionModalData] = useState(null)
 
-    // Tomorrow date as default minimum date
-    const tomorrowStr = useMemo(() => {
-        const d = new Date()
-        d.setDate(d.getDate() + 1)
-        return d.toISOString().split('T')[0]
+    // 15 days lead time (colchón) as default minimum date for tours
+    const minTourDateStr = useMemo(() => {
+        return getMinTourDate(new Date(), 15)
     }, [])
 
     // Close drawer on ESC key
@@ -272,10 +273,21 @@ function getCityIcon(cityName = '') {
 
     // Handle date change for a tour
     const handleDateChange = (tourId, dateStr) => {
-        setTourDates(prev => ({ ...prev, [tourId]: dateStr }))
+        const tourObj = (typeof tourId === 'object' && tourId !== null)
+            ? tourId
+            : (tours.find(t => t.id === tourId) || detailDrawerTour || { id: tourId })
+        const effectiveId = tourObj.id || tourId
+        const tourTitle = tourObj.title || tourObj.tituloDePgina || 'Tour'
+
+        const check = checkTourDateRestrictions(dateStr, tourTitle)
+        if (check.isRestricted) {
+            setRestrictionModalData(check)
+        }
+
+        setTourDates(prev => ({ ...prev, [effectiveId]: dateStr }))
         // If already added, update date in selectedTours
         setSelectedTours(prev => prev.map(item =>
-            item.id === tourId ? { ...item, date: dateStr } : item
+            item.id === effectiveId ? { ...item, date: dateStr } : item
         ))
     }
 
@@ -296,11 +308,17 @@ function getCityIcon(cityName = '') {
     // Open checkout modal staging this tour (does NOT commit to selectedTours until confirmed)
     const handleAddAndOpenCheckout = (tour) => {
         const chosenModality = tourModalities[tour.id] || 'anfitrion'
-        const chosenDate = tourDates[tour.id] || tomorrowStr
+        const chosenDate = tourDates[tour.id] || minTourDateStr
         const chosenQty = tourQuantities[tour.id] || 1
         const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
         const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
         const unitPrice = chosenModality === 'anfitrion' ? priceAnfitrion : priceLocatario
+
+        const check = checkTourDateRestrictions(chosenDate, tour.title)
+        if (check.isRestricted) {
+            setRestrictionModalData(check)
+            return
+        }
 
         const staged = {
             id: tour.id,
@@ -391,7 +409,12 @@ function getCityIcon(cityName = '') {
 
     const confirmAddTourWithModality = (tour, modality) => {
         if (!tour) return
-        const chosenDate = tourDates[tour.id] || tomorrowStr
+        const chosenDate = tourDates[tour.id] || minTourDateStr
+        const check = checkTourDateRestrictions(chosenDate, tour.title)
+        if (check.isRestricted) {
+            setRestrictionModalData(check)
+            return
+        }
         const chosenQty = tourQuantities[tour.id] || 1
         const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
         const priceLocatario = tour.priceLocatarioNum || Math.round(priceAnfitrion * 1.5)
@@ -475,7 +498,7 @@ function getCityIcon(cityName = '') {
 
     // Active drawer tour calculations
     const drawerTourModality = detailDrawerTour ? (tourModalities[detailDrawerTour.id] || 'anfitrion') : 'anfitrion'
-    const drawerTourDate = detailDrawerTour ? (tourDates[detailDrawerTour.id] || tomorrowStr) : tomorrowStr
+    const drawerTourDate = detailDrawerTour ? (tourDates[detailDrawerTour.id] || minTourDateStr) : minTourDateStr
     const drawerTourQty = detailDrawerTour ? (tourQuantities[detailDrawerTour.id] || 1) : 1
     const drawerPriceAnfitrion = detailDrawerTour ? (detailDrawerTour.priceAnfitrionNum || detailDrawerTour.priceNum || 800) : 800
     const drawerPriceLocatario = detailDrawerTour ? (detailDrawerTour.priceLocatarioNum || Math.round(drawerPriceAnfitrion * 1.5)) : 1200
@@ -573,8 +596,8 @@ function getCityIcon(cityName = '') {
                                         children: 0,
                                         dateMode: 'specific',
                                         selectedMonth: null,
-                                        startDate: selectedTours[0]?.date || tomorrowStr,
-                                        endDate: selectedTours[selectedTours.length - 1]?.date || tomorrowStr,
+                                        startDate: selectedTours[0]?.date || minTourDateStr,
+                                        endDate: selectedTours[selectedTours.length - 1]?.date || minTourDateStr,
                                     }}
                                     selectedPkg={null}
                                     includedExps={[]}
@@ -593,6 +616,13 @@ function getCityIcon(cityName = '') {
                                         if (selectedTours.length === 0) {
                                             alert('Por favor selecciona al menos un tour antes de proceder.')
                                             return
+                                        }
+                                        for (const t of selectedTours) {
+                                            const check = checkTourDateRestrictions(t.date, t.name)
+                                            if (check.isRestricted) {
+                                                setRestrictionModalData(check)
+                                                return
+                                            }
                                         }
                                         setIsCheckoutOpen(true)
                                     }}
@@ -624,7 +654,7 @@ function getCityIcon(cityName = '') {
                                 {filteredTours.map((tour) => {
                                     const isAdded = selectedTours.some(item => item.id === tour.id)
                                     const currentModality = tourModalities[tour.id] || 'anfitrion'
-                                    const currentDate = tourDates[tour.id] || tomorrowStr
+                                    const currentDate = tourDates[tour.id] || minTourDateStr
                                     const currentQty = tourQuantities[tour.id] || 1
 
                                     const priceAnfitrion = tour.priceAnfitrionNum || tour.priceNum || 800
@@ -729,7 +759,7 @@ function getCityIcon(cityName = '') {
                                                             type="date"
                                                             className="tours-indiv-date-chip-native"
                                                             value={currentDate}
-                                                            min={tomorrowStr}
+                                                            min={minTourDateStr}
                                                             onChange={(e) => handleDateChange(tour.id, e.target.value)}
                                                         />
                                                     </div>
@@ -802,7 +832,7 @@ function getCityIcon(cityName = '') {
                 {detailDrawerTour && (() => {
                     const isDrawerTourAdded = selectedTours.some(t => t.id === detailDrawerTour.id)
                     const currentDrawerModality = tourModalities[detailDrawerTour.id] || 'anfitrion'
-                    const currentDrawerDate = tourDates[detailDrawerTour.id] || tomorrowStr
+                    const currentDrawerDate = tourDates[detailDrawerTour.id] || minTourDateStr
                     const currentDrawerQty = tourQuantities[detailDrawerTour.id] || 1
 
                     const drawerPriceAnfitrion = detailDrawerTour.priceAnfitrionNum || detailDrawerTour.priceNum || 800
@@ -922,7 +952,7 @@ function getCityIcon(cityName = '') {
                                                 type="date"
                                                 className="tours-drawer-date-input"
                                                 value={currentDrawerDate}
-                                                min={tomorrowStr}
+                                                min={minTourDateStr}
                                                 onChange={(e) => handleDateChange(detailDrawerTour.id, e.target.value)}
                                             />
                                         </div>
@@ -1156,6 +1186,12 @@ function getCityIcon(cityName = '') {
                     `Tours seleccionados (${(pendingTour && !selectedTours.some(t => t.id === pendingTour.id) ? [...selectedTours, pendingTour] : selectedTours).length}): ` +
                     (pendingTour && !selectedTours.some(t => t.id === pendingTour.id) ? [...selectedTours, pendingTour] : selectedTours).map(t => `${t.name} [${t.modalityLabel || (t.modality === 'anfitrion' ? '👑 Anfitrión' : '🏮 Locataria')}] (📅 ${formatDateLabel(t.date)}) - ${t.quantity || 1} persona(s) [${formatPrice((t.price || 0) * (t.quantity || 1))} MXN]`).join('; ')
                 }
+            />
+
+            {/* 15 Days Cushion Lead-Time Restriction Modal */}
+            <TourDateRestrictionModal
+                restrictionData={restrictionModalData}
+                onClose={() => setRestrictionModalData(null)}
             />
         </div>
     )

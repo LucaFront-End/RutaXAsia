@@ -361,6 +361,9 @@ export function checkDateRestrictions(dateStr, seasonKey, experienceKey, referen
     } else if (rawExp.includes('signature')) {
         expKey = 'signature'
         expName = 'Japón Signature'
+    } else if (rawExp.includes('tour')) {
+        expKey = 'tour'
+        expName = 'Tours RutaXAsia'
     }
 
     const formattedDate = formatDateForDisplay(dateStr)
@@ -414,10 +417,11 @@ export function checkDateRestrictions(dateStr, seasonKey, experienceKey, referen
         }
     }
 
-    // Rule 2: Colchón de anticipación (Lead time) para Kamakura, Akari y general
+    // Rule 2: Colchón de anticipación (Lead time)
     // Libre: 7 días de colchón
+    // Tours: 15 días de colchón
     // Esencial / Completo / Signature: 20 días de colchón
-    const requiredColchonDays = expKey === 'libre' ? 7 : 20
+    const requiredColchonDays = expKey === 'libre' ? 7 : (expKey === 'tour' ? 15 : 20)
 
     if (diffDays < requiredColchonDays) {
         const waText = encodeURIComponent(
@@ -432,13 +436,84 @@ export function checkDateRestrictions(dateStr, seasonKey, experienceKey, referen
             subtitle: `Salida con menos de ${requiredColchonDays} días de anticipación`,
             message: expKey === 'libre'
                 ? `Para viajar en modalidad Japón Libre solicitamos al menos 7 días de colchón de anticipación para garantizar tus reservas de alojamiento, traslados y documentación.`
-                : `Para viajar en modalidad ${expName} solicitamos al menos 20 días de colchón de anticipación para coordinar guías en español, reservaciones exclusivas y logística completa en destino.`,
+                : (expKey === 'tour'
+                    ? `Para comprar o reservar tours de RutaXAsia solicitamos al menos 15 días de colchón de anticipación para coordinar accesos, traslados, reservaciones y guías locales.`
+                    : `Para viajar en modalidad ${expName} solicitamos al menos 20 días de colchón de anticipación para coordinar guías en español, reservaciones exclusivas y logística completa en destino.`),
             ctaMessage: `Para viajar el ${formattedDate}, por favor escríbenos directamente por WhatsApp y nuestro equipo te apoyará con opciones viables de confirmación exprés.`,
             selectedDate: dateStr,
             formattedDate,
             seasonName: sDetails.name,
             seasonEmoji: sDetails.emoji,
             experienceName: expName,
+            whatsappUrl: `https://wa.me/525657929121?text=${waText}`,
+        }
+    }
+
+    return { isRestricted: false }
+}
+
+/**
+ * getMinTourDate — Returns the minimum allowed date string (YYYY-MM-DD) for booking tours,
+ * enforcing a 15-day anticipation lead time (colchón) from the reference date.
+ */
+export function getMinTourDate(referenceDate = new Date(), leadDays = 15) {
+    const d = new Date(referenceDate)
+    d.setHours(0, 0, 0, 0)
+    d.setDate(d.getDate() + leadDays)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+}
+
+/**
+ * checkTourDateRestrictions — Validates the 15-day booking cushion (colchón) for individual or group tours.
+ *
+ * @param {string} dateStr - Target date string in YYYY-MM-DD or parseable format
+ * @param {string} tourTitle - Name of the tour for context and pre-filled WhatsApp message
+ * @param {Date} [referenceDate] - Custom reference date (defaults to today)
+ * @returns {object} Restriction result with isRestricted, daysRequired, message, whatsappUrl
+ */
+export function checkTourDateRestrictions(dateStr, tourTitle = 'Tour', referenceDate = new Date()) {
+    if (!dateStr || typeof dateStr !== 'string') {
+        return { isRestricted: false }
+    }
+
+    const parts = dateStr.split('-').map(Number)
+    if (parts.length < 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) {
+        return { isRestricted: false }
+    }
+
+    const targetYear = parts[0]
+    const targetMonth = parts[1] // 1-12
+    const targetDay = parts[2]
+    const targetDate = new Date(targetYear, targetMonth - 1, targetDay, 0, 0, 0)
+
+    const today = new Date(referenceDate)
+    today.setHours(0, 0, 0, 0)
+
+    const diffMs = targetDate.getTime() - today.getTime()
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+
+    const requiredColchonDays = 15
+
+    if (diffDays < requiredColchonDays) {
+        const formattedDate = formatDateForDisplay(dateStr)
+        const waText = encodeURIComponent(
+            `Hola RutaXAsia, me interesa comprar o reservar el tour "${tourTitle}" para la fecha ${formattedDate}. Requiere un colchón de 15 días de anticipación, ¿podrían apoyarme para ver opciones disponibles para esta fecha?`
+        )
+        return {
+            isRestricted: true,
+            type: 'tour_lead_time',
+            daysRequired: requiredColchonDays,
+            daysCurrent: diffDays,
+            title: `Se requieren 15 días de colchón de anticipación`,
+            subtitle: `Tour con menos de 15 días de anticipación`,
+            message: `Para comprar o reservar tours de RutaXAsia solicitamos al menos 15 días de colchón de anticipación para garantizar disponibilidad de accesos, traslados y coordinación de anfitriones o guías locales.`,
+            ctaMessage: `Para realizar este tour el ${formattedDate}, por favor escríbenos directamente a WhatsApp y nuestro equipo verificará opciones de último momento para confirmar tu lugar.`,
+            selectedDate: dateStr,
+            formattedDate,
+            tourTitle,
             whatsappUrl: `https://wa.me/525657929121?text=${waText}`,
         }
     }
