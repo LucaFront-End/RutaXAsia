@@ -87,7 +87,6 @@ const TRIPS = [
             { title: 'Año Nuevo en Japón', img: '/images/tours/ano-nuevo-japon.jpg' },
             { title: 'Fuegos Artificiales', img: '/images/tours/ano-nuevo-hanabi.jpg' },
             { title: 'Monte Fuji Nevado', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&h=500&fit=crop' },
-            { title: 'Kinkaku-ji, Kioto', img: '/images/tours/kinkakuji.jpg' },
         ],
         includes: ['10 noches con desayuno', 'Tren bala Shinkansen', 'Hatsumode en Kioto', 'Guía en español 24/7'],
     },
@@ -575,7 +574,7 @@ function Home({ cityOverride } = {}) {
                             {
                                 season: 'Primavera',
                                 emoji: '🌸',
-                                months: '16 Mar — 15 Abr',
+                                months: '18 Mar — 15 Abr',
                                 temp: '10°C — 20°C',
                                 photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop',
                                 color: '#f8b4c8',
@@ -585,7 +584,7 @@ function Home({ cityOverride } = {}) {
                             {
                                 season: 'Verano',
                                 emoji: '☀️',
-                                months: '16 Abr — 31 Ago',
+                                months: '16 Abr — 30 Sep',
                                 temp: '25°C — 35°C',
                                 photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop',
                                 color: '#f5a623',

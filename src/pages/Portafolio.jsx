@@ -78,14 +78,14 @@ const FALLBACK_ALBUMS = [
 const EDITIONS = [
     {
         name: 'Sakura en Japón',
-        dates: '16 Mar — 15 Abr',
+        dates: '18 Mar — 15 Abr',
         desc: 'La edición más demandada del año. Cerezos en flor en Tokio, Kioto, Osaka, Nara y vista al Monte Fuji.',
         badge: '🌸 Primavera',
         link: '/viajes/japon/sakura',
     },
     {
         name: 'Akari — Verano & Matsuri',
-        dates: '16 Abr — 31 Ago',
+        dates: '16 Abr — 30 Sep',
         desc: 'Festivales tradicionales japoneses, espectáculos pirotécnicos Hanabi, ambiente vibrante y yukatas.',
         badge: '☀️ Verano',
         link: '/viajes/japon/akari',

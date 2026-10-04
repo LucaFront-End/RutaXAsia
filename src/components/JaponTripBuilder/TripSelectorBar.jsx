@@ -35,6 +35,7 @@ const MONTHS_OPTIONS = [
     { label: 'Junio 2027', key: '2027-06', seasonKey: 'akari', emoji: '☀️' },
     { label: 'Julio 2027', key: '2027-07', seasonKey: 'akari', emoji: '☀️' },
     { label: 'Agosto 2027', key: '2027-08', seasonKey: 'akari', emoji: '☀️' },
+    { label: 'Septiembre 2027', key: '2027-09', seasonKey: 'akari', emoji: '☀️' },
 ]
 
 const MONTH_NAMES = [
@@ -621,7 +622,7 @@ export default function TripSelectorBar({
                                                 <input
                                                     type="date"
                                                     min={activeSeason?.startDate || "2026-10-16"}
-                                                    max={activeSeason?.endDate || "2027-08-31"}
+                                                    max={activeSeason?.endDate || "2027-09-30"}
                                                     value={tempStartDate}
                                                     onChange={e => handleAttemptDateSelect(e.target.value)}
                                                 />
@@ -649,7 +650,7 @@ export default function TripSelectorBar({
                                                 type="button"
                                                 className="cal-nav-btn"
                                                 onClick={handleNextMonth}
-                                                disabled={(m1Year === 2027 && m1Month >= 6) || m1Year > 2027}
+                                                disabled={(m1Year === 2027 && m1Month >= 7) || m1Year > 2027}
                                                 aria-label="Mes siguiente"
                                             >
                                                 ›
@@ -847,8 +848,8 @@ export default function TripSelectorBar({
                                     <div style={{ fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>Periodos disponibles en Japón a la Carta:</div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', color: '#475569' }}>
                                         <div>🍁 <strong>Kamakura (Otoño e Invierno)</strong>: 16 de Octubre 2026 al 15 de Marzo 2027</div>
-                                        <div>🌸 <strong>Sakura</strong>: 16 de Marzo 2027 al 10 de Abril 2027</div>
-                                        <div>☀️ <strong>Akari (Primavera y Verano)</strong>: 11 de Abril 2027 al 31 de Agosto 2027</div>
+                                        <div>🌸 <strong>Sakura</strong>: 18 de Marzo 2027 al 15 de Abril 2027</div>
+                                        <div>☀️ <strong>Akari (Primavera y Verano)</strong>: 16 de Abril 2027 al 30 de Septiembre 2027</div>
                                     </div>
                                 </div>
 

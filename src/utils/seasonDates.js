@@ -2,8 +2,8 @@
  * seasonDates.js — Centralized date rules and helpers for Japan travel seasons.
  * 
  * Seasons:
- * 🌸 Sakura: 16 de Marzo — 15 de Abril (2027)
- * ☀️ Akari: 16 de Abril — 31 de Agosto (2027)
+ * 🌸 Sakura: 18 de Marzo — 15 de Abril (2027)
+ * ☀️ Akari: 16 de Abril — 30 de Septiembre (2027)
  * 🍁 Kamakura: 16 de Octubre — 15 de Marzo (2026-2027)
  *    - Otoño (Momiji): 16 de Octubre — 30 de Noviembre (2026)
  *    - Invierno (Fuyu): 1 de Diciembre — 15 de Marzo (2026-2027)
@@ -15,14 +15,14 @@ export const SEASONS_INFO = {
         name: 'Sakura',
         fullName: 'Sakura (Primavera)',
         emoji: '🌸',
-        label: '16 Mar — 15 Abr',
-        monthsText: '16 de Marzo — 15 de Abril',
+        label: '18 Mar — 15 Abr',
+        monthsText: '18 de Marzo — 15 de Abril',
         color: '#d6336c',
         heroBg: 'linear-gradient(135deg, #8e2458 0%, #c2185b 50%, #e91e7a 100%)',
-        startDate: '2027-03-16',
+        startDate: '2027-03-18',
         endDate: '2027-04-15',
         startMonth: 3,
-        startDay: 16,
+        startDay: 18,
         endMonth: 4,
         endDay: 15,
         defaultMonth: 3,
@@ -34,16 +34,16 @@ export const SEASONS_INFO = {
         name: 'Akari',
         fullName: 'Akari (Verano)',
         emoji: '☀️',
-        label: '16 Abr — 31 Ago',
-        monthsText: '16 de Abril — 31 de Agosto',
+        label: '16 Abr — 30 Sep',
+        monthsText: '16 de Abril — 30 de Septiembre',
         color: '#2d6a4f',
         heroBg: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)',
         startDate: '2027-04-16',
-        endDate: '2027-08-31',
+        endDate: '2027-09-30',
         startMonth: 4,
         startDay: 16,
-        endMonth: 8,
-        endDay: 31,
+        endMonth: 9,
+        endDay: 30,
         defaultMonth: 5,
         defaultDay: 15,
         defaultYear: 2027,
@@ -181,9 +181,16 @@ export function syncSeasonsWithCms(pricesList) {
                 effectiveStart = { year: 2026, month: 10, day: 16, iso: '2026-10-16' }
             }
 
-            // Akari: Summer season in Japan runs through August 31
-            if (tempKey === 'akari' && endParsed.iso < '2027-08-31') {
-                effectiveEnd = { year: 2027, month: 8, day: 31, iso: '2027-08-31' }
+            // Sakura safeguard: 18 Mar to 15 Abr
+            if (tempKey === 'sakura') {
+                effectiveStart = { year: 2027, month: 3, day: 18, iso: '2027-03-18' }
+                effectiveEnd = { year: 2027, month: 4, day: 15, iso: '2027-04-15' }
+            }
+
+            // Akari: Summer season in Japan runs through September 30
+            if (tempKey === 'akari') {
+                effectiveStart = { year: 2027, month: 4, day: 16, iso: '2027-04-16' }
+                effectiveEnd = { year: 2027, month: 9, day: 30, iso: '2027-09-30' }
             }
 
             SEASONS_INFO[tempKey].startDate = effectiveStart.iso
@@ -224,21 +231,21 @@ export function getSeasonForDate(dateStr) {
         return SEASONS_INFO.kamakura
     }
 
-    // Sakura: 16 de Marzo 2027 al 15 de Abril 2027
-    const sakuraStart = SEASONS_INFO.sakura.startDate || '2027-03-16'
+    // Sakura: 18 de Marzo 2027 al 15 de Abril 2027
+    const sakuraStart = SEASONS_INFO.sakura.startDate || '2027-03-18'
     const sakuraEnd = SEASONS_INFO.sakura.endDate || '2027-04-15'
     if (dateStr >= sakuraStart && dateStr <= sakuraEnd) {
         return SEASONS_INFO.sakura
     }
 
-    // Akari: 16 de Abril 2027 al 31 de Agosto 2027
+    // Akari: 16 de Abril 2027 al 30 de Septiembre 2027
     const akariStart = SEASONS_INFO.akari.startDate || '2027-04-16'
-    const akariEnd = SEASONS_INFO.akari.endDate || '2027-08-31'
+    const akariEnd = SEASONS_INFO.akari.endDate || '2027-09-30'
     if (dateStr >= akariStart && dateStr <= akariEnd) {
         return SEASONS_INFO.akari
     }
 
-    // Any date outside active Japan travel seasons (such as September 2027 or pre-Oct 16 2026) is null
+    // Any date outside active Japan travel seasons is null
     return null
 }
 
@@ -261,13 +268,13 @@ export function isDateInSeason(dateStr, seasonKey) {
         return dateStr >= start && dateStr <= end
     }
     if (activeSeason.key === 'sakura') {
-        const start = activeSeason.startDate || '2027-03-16'
+        const start = activeSeason.startDate || '2027-03-18'
         const end = activeSeason.endDate || '2027-04-15'
         return dateStr >= start && dateStr <= end
     }
     if (activeSeason.key === 'akari') {
         const start = activeSeason.startDate || '2027-04-16'
-        const end = activeSeason.endDate || '2027-08-31'
+        const end = activeSeason.endDate || '2027-09-30'
         return dateStr >= start && dateStr <= end
     }
 

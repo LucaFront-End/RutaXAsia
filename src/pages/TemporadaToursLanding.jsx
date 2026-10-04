@@ -15,7 +15,7 @@ const SEASON_DATA = {
         emoji: '🌸',
         cartaSlug: 'sakura',
         cartaName: 'Sakura',
-        monthsText: '16 de Marzo — 15 de Abril',
+        monthsText: '18 de Marzo — 15 de Abril',
         colors: {
             primary: '#d6336c',
             secondary: '#f8b4c8',
@@ -39,7 +39,7 @@ const SEASON_DATA = {
         emoji: '☀️',
         cartaSlug: 'akari',
         cartaName: 'Akari',
-        monthsText: '16 de Abril — 31 de Agosto',
+        monthsText: '16 de Abril — 30 de Septiembre',
         colors: {
             primary: '#2d6a4f',
             secondary: '#95d5b2',

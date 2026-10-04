@@ -82,11 +82,14 @@ async function runE2ETest() {
         { date: '2026-12-15', expectedSeason: 'invierno', desc: '15 Diciembre 2026 (Kamakura Invierno)' },
         { date: '2027-01-20', expectedSeason: 'invierno', desc: '20 Enero 2027 (Kamakura Invierno)' },
         { date: '2027-03-15', expectedSeason: 'invierno', desc: '15 Marzo 2027 (Último día Kamakura)' },
+        { date: '2027-03-16', expectedSeason: null, desc: '16 Marzo 2027 (Transición entre Kamakura y Sakura)' },
         { date: '2027-03-20', expectedSeason: 'sakura', desc: '20 Marzo 2027 (Sakura)' },
+        { date: '2027-04-15', expectedSeason: 'sakura', desc: '15 Abril 2027 (Último día Sakura)' },
+        { date: '2027-04-16', expectedSeason: 'akari', desc: '16 Abril 2027 (Primer día Akari)' },
         { date: '2027-05-15', expectedSeason: 'akari', desc: '15 Mayo 2027 (Akari)' },
-        { date: '2027-08-31', expectedSeason: 'akari', desc: '31 Agosto 2027 (Último día Akari)' },
-        { date: '2027-09-01', expectedSeason: null, desc: '1 Septiembre 2027 (BLOQUEADO - Fuera de temporada)' },
-        { date: '2027-09-15', expectedSeason: null, desc: '15 Septiembre 2027 (BLOQUEADO - Fuera de temporada)' },
+        { date: '2027-08-31', expectedSeason: 'akari', desc: '31 Agosto 2027 (Akari verano)' },
+        { date: '2027-09-15', expectedSeason: 'akari', desc: '15 Septiembre 2027 (Akari verano extendido)' },
+        { date: '2027-09-30', expectedSeason: 'akari', desc: '30 Septiembre 2027 (Último día Akari)' },
         { date: '2027-10-01', expectedSeason: null, desc: '1 Octubre 2027 (BLOQUEADO - Fuera de temporada)' },
     ]
 

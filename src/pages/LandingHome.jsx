@@ -466,7 +466,7 @@ function LandingHome({ landingData }) {
                             {
                                 season: 'Primavera',
                                 emoji: '🌸',
-                                months: '16 Mar — 15 Abr',
+                                months: '18 Mar — 15 Abr',
                                 temp: '10°C — 20°C',
                                 photo: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&h=1000&fit=crop',
                                 color: '#f8b4c8',
@@ -476,7 +476,7 @@ function LandingHome({ landingData }) {
                             {
                                 season: 'Verano',
                                 emoji: '☀️',
-                                months: '16 Abr — 31 Ago',
+                                months: '16 Abr — 30 Sep',
                                 temp: '25°C — 35°C',
                                 photo: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1000&fit=crop',
                                 color: '#f5a623',

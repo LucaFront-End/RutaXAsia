@@ -135,7 +135,7 @@ function Header() {
                                 <Link to="/viajes/japon/sakura" className="nav-jac-season-header" onClick={closeMenu}>
                                     <span className="nav-jac-season-emoji">🌸</span>
                                     <span className="nav-jac-season-name">Sakura</span>
-                                    <span className="nav-jac-season-dates">{seasonsInfo?.sakura?.label || '16 Mar — 15 Abr'}</span>
+                                    <span className="nav-jac-season-dates">{seasonsInfo?.sakura?.label || '18 Mar — 15 Abr'}</span>
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/sakura/libre" onClick={closeMenu}>🌿 Libre</Link>
@@ -150,7 +150,7 @@ function Header() {
                                 <Link to="/viajes/japon/akari" className="nav-jac-season-header" onClick={closeMenu}>
                                     <span className="nav-jac-season-emoji">☀️</span>
                                     <span className="nav-jac-season-name">Akari</span>
-                                    <span className="nav-jac-season-dates">{seasonsInfo?.akari?.label || '16 Abr — 31 Ago'}</span>
+                                    <span className="nav-jac-season-dates">{seasonsInfo?.akari?.label || '16 Abr — 30 Sep'}</span>
                                 </Link>
                                 <div className="nav-jac-exp-row">
                                     <Link to="/viajes/japon/akari/libre" onClick={closeMenu}>🌿 Libre</Link>
