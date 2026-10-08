@@ -89,6 +89,11 @@ export default function TourDetail() {
         basePriceNum = parseFloat(cleaned) || 0
     }
 
+    const adults = selectorData?.adults || 2
+    const children = selectorData?.children || 0
+    const passengersCount = adults + children
+    const totalPrice = basePriceNum
+
     const handleReserveClick = () => {
         if (tour?.startDate) {
             const check = checkTourDateRestrictions(tour.startDate, tour.title)
@@ -130,7 +135,7 @@ export default function TourDetail() {
                             <button
                                 type="button"
                                 className="td-hero-btn"
-                                onClick={() => setIsTicketModalOpen(true)}
+                                onClick={handleReserveClick}
                                 style={{ border: 'none', cursor: 'pointer' }}
                             >
                                 Reservar
